@@ -1,10 +1,26 @@
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
-import { getCacheOptions } from "./cookies"
+
+// IMPORTANT: Do not statically import server-only utilities here.
+// This module is consumed by Client Components (e.g., Nav), and a static
+// import of next/headers (via ./cookies) will break the client bundle.
+// Instead, use a tiny dynamic helper that only imports server utilities
+// on the server and returns a no-op on the client.
+async function safeGetCacheOptions(tag: string): Promise<{ tags: string[] } | {}> {
+  if (typeof window !== "undefined") {
+    return {}
+  }
+  try {
+    const mod = await import("./cookies")
+    return await mod.getCacheOptions(tag)
+  } catch {
+    return {}
+  }
+}
 
 export const listCategories = async (query?: Record<string, any>) => {
   const next = {
-    ...(await getCacheOptions("categories")),
+    ...(await safeGetCacheOptions("categories")),
   }
 
   const limit = query?.limit || 100
@@ -30,7 +46,7 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
   const handle = `${categoryHandle.join("/")}`
 
   const next = {
-    ...(await getCacheOptions("categories")),
+    ...(await safeGetCacheOptions("categories")),
   }
 
   return sdk.client

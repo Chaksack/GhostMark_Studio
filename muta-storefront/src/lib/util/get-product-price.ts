@@ -3,26 +3,29 @@ import { getPercentageDiff } from "./get-percentage-diff"
 import { convertToLocale } from "./money"
 
 export const getPricesForVariant = (variant: any) => {
-  if (!variant?.calculated_price?.calculated_amount) {
+  const calc = variant?.calculated_price
+  const amount = calc?.calculated_amount
+  // Ensure we only compute for variants that truly have a numeric calculated amount
+  if (typeof amount !== "number") {
     return null
   }
 
   return {
-    calculated_price_number: variant.calculated_price.calculated_amount,
+    calculated_price_number: amount,
     calculated_price: convertToLocale({
-      amount: variant.calculated_price.calculated_amount,
-      currency_code: variant.calculated_price.currency_code,
+      amount,
+      currency_code: calc.currency_code,
     }),
-    original_price_number: variant.calculated_price.original_amount,
+    original_price_number: calc.original_amount,
     original_price: convertToLocale({
-      amount: variant.calculated_price.original_amount,
-      currency_code: variant.calculated_price.currency_code,
+      amount: calc.original_amount,
+      currency_code: calc.currency_code,
     }),
-    currency_code: variant.calculated_price.currency_code,
-    price_type: variant.calculated_price.calculated_price.price_list_type,
+    currency_code: calc.currency_code,
+    price_type: calc.calculated_price?.price_list_type,
     percentage_diff: getPercentageDiff(
-      variant.calculated_price.original_amount,
-      variant.calculated_price.calculated_amount
+      calc.original_amount,
+      amount
     ),
   }
 }
@@ -44,7 +47,7 @@ export function getProductPrice({
     }
 
     const cheapestVariant: any = product.variants
-      .filter((v: any) => !!v.calculated_price)
+      .filter((v: any) => typeof v?.calculated_price?.calculated_amount === "number")
       .sort((a: any, b: any) => {
         return (
           a.calculated_price.calculated_amount -

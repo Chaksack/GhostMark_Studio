@@ -1,130 +1,112 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { listProducts } from "@lib/data/products"
-import { getRegion, listRegions } from "@lib/data/regions"
+
 import ProductTemplate from "@modules/products/templates"
+import { listProducts } from "@lib/data/products"
+import { getRegion } from "@lib/data/regions"
 import { HttpTypes } from "@medusajs/types"
 
 type Props = {
-  params: Promise<{ countryCode: string; handle: string }>
-  searchParams: Promise<{ v_id?: string }>
+  params: Promise<{ handle: string; countryCode: string }>
+  searchParams: Promise<{
+    v_id?: string
+  }>
 }
 
-export async function generateStaticParams() {
-  try {
-    const countryCodes = await listRegions().then((regions) =>
-      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
-    )
+async function getProductByHandle(handle: string, countryCode: string) {
+  const {
+    response: { products },
+  } = await listProducts({
+    pageParam: 1,
+    countryCode,
+    queryParams: {
+      handle,
+      limit: 1,
+      fields:
+        "+metadata,+tags,*images,*variants,*variants.options,*options,*variants.images,*type,*collection",
+    },
+  })
 
-    if (!countryCodes) {
-      return []
-    }
+  return products?.[0]
+}
 
-    const promises = countryCodes.map(async (country) => {
-      const { response } = await listProducts({
-        countryCode: country,
-        queryParams: { limit: 100, fields: "handle" },
-      })
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { handle, countryCode } = await props.params
+  const product = await getProductByHandle(handle, countryCode)
 
-      return {
-        country,
-        products: response.products,
-      }
-    })
+  if (!product) {
+    return {}
+  }
 
-    const countryProducts = await Promise.all(promises)
+  const title = `${product.title} | Medusa Store`
+  const description = product.description || `${product.title} product`
 
-    return countryProducts
-      .flatMap((countryData) =>
-        countryData.products.map((product) => ({
-          countryCode: countryData.country,
-          handle: product.handle,
-        }))
-      )
-      .filter((param) => param.handle)
-  } catch (error) {
-    console.error(
-      `Failed to generate static paths for product pages: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }.`
-    )
-    return []
+  return {
+    title,
+    description,
+    alternates: { canonical: `/products/${handle}` },
   }
 }
 
 function getImagesForVariant(
-  product: HttpTypes.StoreProduct,
+  product: HttpTypes.StoreProduct | undefined,
   selectedVariantId?: string
 ) {
-  if (!selectedVariantId || !product.variants) {
-    return product.images
+  if (!product) return [] as HttpTypes.StoreProductImage[]
+
+  // When no specific variant is selected, show all available images:
+  // - product-level images
+  // - all variant images (flattened)
+  if (!selectedVariantId || !product.variants?.length) {
+    const base = product.images ?? []
+    const variantImgs = (product.variants || [])
+      .flatMap((v: any) => (v?.images as HttpTypes.StoreProductImage[] | undefined) || [])
+    // De-duplicate by URL to avoid repeats
+    const seen = new Set<string>()
+    const all = [...base, ...variantImgs].filter((img) => {
+      const key = img?.url || img?.id || ""
+      if (!key) return false
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+    return all
   }
 
-  const variant = product.variants!.find((v) => v.id === selectedVariantId)
-  if (!variant || !variant.images.length) {
-    return product.images
+  const variant = product.variants.find((v) => v.id === selectedVariantId)
+  const variantImages = (variant as any)?.images as
+    | HttpTypes.StoreProductImage[]
+    | undefined
+
+  if (variantImages && variantImages.length > 0) {
+    return variantImages
   }
 
-  const imageIdsMap = new Map(variant.images.map((i) => [i.id, true]))
-  return product.images!.filter((i) => imageIdsMap.has(i.id))
+  // Fallback to product-level images when the selected variant has none
+  return product.images ?? []
 }
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
-  const { handle } = params
-  const region = await getRegion(params.countryCode)
+export default async function ProductPage(props: Props) {
+  const { handle, countryCode } = await props.params
+  const { v_id } = await props.searchParams
 
+  const region = await getRegion(countryCode)
   if (!region) {
     notFound()
   }
 
-  const product = await listProducts({
-    countryCode: params.countryCode,
-    queryParams: { handle },
-  }).then(({ response }) => response.products[0])
-
+  const product = await getProductByHandle(handle, countryCode)
   if (!product) {
     notFound()
   }
 
-  return {
-    title: `${product.title} | Medusa Store`,
-    description: `${product.title}`,
-    openGraph: {
-      title: `${product.title} | Medusa Store`,
-      description: `${product.title}`,
-      images: product.thumbnail ? [product.thumbnail] : [],
-    },
-  }
-}
-
-export default async function ProductPage(props: Props) {
-  const params = await props.params
-  const region = await getRegion(params.countryCode)
-  const searchParams = await props.searchParams
-
-  const selectedVariantId = searchParams.v_id
-
-  if (!region) {
-    notFound()
-  }
-
-  const pricedProduct = await listProducts({
-    countryCode: params.countryCode,
-    queryParams: { handle: params.handle },
-  }).then(({ response }) => response.products[0])
-
-  const images = getImagesForVariant(pricedProduct, selectedVariantId)
-
-  if (!pricedProduct) {
-    notFound()
-  }
+  const images = getImagesForVariant(product, v_id)
 
   return (
     <ProductTemplate
-      product={pricedProduct}
+      product={product}
       region={region}
-      countryCode={params.countryCode}
+      countryCode={countryCode}
       images={images}
     />
   )

@@ -115,10 +115,12 @@ export async function addToCart({
   variantId,
   quantity,
   countryCode,
+  metadata,
 }: {
   variantId: string
   quantity: number
   countryCode: string
+  metadata?: Record<string, unknown>
 }) {
   if (!variantId) {
     throw new Error("Missing variant ID when adding to cart")
@@ -140,6 +142,8 @@ export async function addToCart({
       {
         variant_id: variantId,
         quantity,
+        // Forward any custom metadata to the line item (e.g., design editor data)
+        ...(metadata ? { metadata } : {}),
       },
       {},
       headers
@@ -152,6 +156,96 @@ export async function addToCart({
       revalidateTag(fulfillmentCacheTag)
     })
     .catch(medusaError)
+}
+
+/**
+ * Adds a customizable product line item to an existing Medusa cart and nests the
+ * provided design metadata (Konva JSON, preview URL, etc.) in the line item's metadata.
+ *
+ * This function is intended for client-side usage from a Next.js storefront when a
+ * user finalizes a custom design. It optionally accepts an explicit cartId; when not
+ * provided, it falls back to the cart id from cookies (or creates one if needed by
+ * using the countryCode fallback parameter).
+ */
+export async function addToCustomProductCart({
+  cartId,
+  variantId,
+  designMetadata,
+  quantity = 1,
+  countryCode,
+}: {
+  /**
+   * Optional explicit cart id. If omitted, the function will try to read the cart id
+   * from cookies; if still missing, it will create a cart using the provided countryCode.
+   */
+  cartId?: string
+  /** The product variant id to add. */
+  variantId: string
+  /** The custom design metadata to persist in the line item metadata. */
+  designMetadata: {
+    designDataJson: string
+    previewImageUrl: string
+    isCustomized: true
+    [key: string]: unknown
+  }
+  /** Quantity to add (defaults to 1). */
+  quantity?: number
+  /**
+   * Country code used only when we need to create a new cart (i.e., when no cart id is
+   * provided and there is no existing cart in cookies).
+   */
+  countryCode?: string
+}) {
+  if (!variantId) {
+    throw new Error("Missing variant ID when adding a customized product to cart")
+  }
+
+  // Resolve or create cart
+  let targetCartId = cartId || (await getCartId()) || undefined
+
+  if (!targetCartId) {
+    if (!countryCode) {
+      throw new Error(
+        "No cart found. Either provide a cartId or a countryCode so a cart can be created."
+      )
+    }
+
+    const cart = await getOrSetCart(countryCode)
+    if (!cart) {
+      throw new Error("Failed to create or retrieve a cart before adding line item")
+    }
+    targetCartId = cart.id
+  }
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  try {
+    await sdk.store.cart.createLineItem(
+      targetCartId,
+      {
+        variant_id: variantId,
+        quantity,
+        metadata: {
+          // Store the design payload in the metadata field under a clear namespace
+          customization: {
+            ...designMetadata,
+          },
+        },
+      },
+      {},
+      headers
+    )
+
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+    const fulfillmentCacheTag = await getCacheTag("fulfillment")
+    revalidateTag(fulfillmentCacheTag)
+  } catch (e) {
+    // Normalize Medusa SDK/network errors to a readable message
+    throw medusaError(e)
+  }
 }
 
 export async function updateLineItem({

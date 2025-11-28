@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
+import { getProductPrice } from "@lib/util/get-product-price"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -116,6 +117,19 @@ export default function ProductActions({
     return false
   }, [selectedVariant])
 
+  // Determine if the selected variant has a calculable price for current region
+  const hasPrice = useMemo(() => {
+    try {
+      const { variantPrice } = getProductPrice({
+        product,
+        variantId: selectedVariant?.id,
+      })
+      return !!variantPrice
+    } catch {
+      return false
+    }
+  }, [product, selectedVariant?.id])
+
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
@@ -126,10 +140,31 @@ export default function ProductActions({
 
     setIsAdding(true)
 
+    // Try to read any saved design data from localStorage and attach to line item metadata
+    let metadata: Record<string, unknown> | undefined = undefined
+    try {
+      const key = `design:${product.id}:${selectedVariant.id}`
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        // Only include small fields to avoid exceeding metadata size limits
+        const { previewDataUrl, elements, updatedAt } = parsed || {}
+        metadata = {
+          design_preview: previewDataUrl?.slice(0, 100000),
+          design_elements: elements,
+          design_updated_at: updatedAt || new Date().toISOString(),
+          design_key: key,
+        }
+      }
+    } catch (e) {
+      // ignore metadata errors
+    }
+
     await addToCart({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+      metadata,
     })
 
     setIsAdding(false)
@@ -169,7 +204,8 @@ export default function ProductActions({
             !selectedVariant ||
             !!disabled ||
             isAdding ||
-            !isValidVariant
+            !isValidVariant ||
+            !hasPrice
           }
           variant="primary"
           className="w-full h-10"
@@ -178,10 +214,31 @@ export default function ProductActions({
         >
           {!selectedVariant && !options
             ? "Select variant"
+            : !hasPrice
+            ? "Unavailable in this region"
             : !inStock || !isValidVariant
             ? "Out of stock"
             : "Add to cart"}
         </Button>
+        {/* Customize button linking to the design editor */}
+        <Button
+          onClick={() => {
+            if (!product?.id) return
+            const params = new URLSearchParams()
+            if (selectedVariant?.id) params.set('v_id', selectedVariant.id)
+            router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
+          }}
+          variant="secondary"
+          className="w-full h-10"
+          data-testid="customize-product-button"
+        >
+          Customize design
+        </Button>
+        {!hasPrice && selectedVariant && (
+          <p className="text-xs text-ui-fg-muted">
+            This variant is not available for purchase in your selected region.
+          </p>
+        )}
         <MobileActions
           product={product}
           variant={selectedVariant}

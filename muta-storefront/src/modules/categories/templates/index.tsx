@@ -8,8 +8,10 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import { listCollections } from "@lib/data/collections"
+import { listCategories } from "@lib/data/categories"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   category,
   sortBy,
   page,
@@ -36,12 +38,28 @@ export default function CategoryTemplate({
 
   getParents(category)
 
+  // Fetch collections and categories server-side for sidebar lists
+  // Note: this component is a server component, so we can call server utilities directly
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const dataPromise = Promise.all([
+    listCollections({ limit: "200", fields: "id,handle,title" }).catch(() => ({ collections: [] })),
+    listCategories().catch(() => []),
+  ])
+
+  const [collectionsRes, allCategories] = await dataPromise
+
   return (
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
-      <RefinementList sortBy={sort} data-testid="sort-by-container" />
+      <RefinementList
+        sortBy={sort}
+        data-testid="sort-by-container"
+        collections={collectionsRes.collections}
+        categories={allCategories?.map((c: any) => ({ id: c.id, handle: c.handle, name: c.name }))}
+        activeCategoryHandle={category.handle}
+      />
       <div className="w-full">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4">
           {parents &&

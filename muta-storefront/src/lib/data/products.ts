@@ -53,36 +53,103 @@ export const listProducts = async ({
     ...(await getCacheOptions("products")),
   }
 
-  return sdk.client
-    .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
-      `/store/products`,
-      {
-        method: "GET",
-        query: {
-          limit,
-          offset,
-          region_id: region?.id,
-          fields:
-            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
-          ...queryParams,
-        },
-        headers,
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ products, count }) => {
-      const nextPage = count > offset + limit ? pageParam + 1 : null
+  try {
+    // Respect caller-supplied `fields` (e.g., PDP needs options/variants.options)
+    const customFields = (queryParams as any)?.fields as string | undefined
+    // Build a small retry mechanism with progressively simpler `fields`
+    const fieldAttempts: (string | null)[] = customFields && customFields.trim().length
+      ? [
+          // Try exactly what the caller requested
+          customFields,
+          // If that fails for retriable reasons, fall back to letting backend defaults apply
+          null,
+        ]
+      : [
+          // Primary: full set incl. joins that some backends may not support
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,+product_tags,+product_tags.tag",
+          // Fallback 1: keep tags but drop join shape that may cause 500s
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags",
+          // Fallback 2: minimal essentials (price + metadata); UI copes without tags
+          "*variants.calculated_price,+metadata",
+          // Fallback 3: omit fields entirely and let backend defaults apply
+          null,
+        ]
 
-      return {
-        response: {
-          products,
-          count,
-        },
-        nextPage: nextPage,
-        queryParams,
+    let lastError: any = null
+    for (const fieldsAttempt of fieldAttempts) {
+      try {
+        const { products, count } = await sdk.client.fetch<{
+          products: HttpTypes.StoreProduct[]
+          count: number
+        }>(`/store/products`, {
+          method: "GET",
+          query: {
+            limit,
+            offset,
+            region_id: region?.id,
+            // Never forward `expand` as the backend rejects it in this setup
+            ...((() => {
+              const qp: any = queryParams || {}
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { expand: _omitExpand, fields: _omitFields, ...rest } = qp
+              return rest
+            })()),
+            ...(fieldsAttempt ? { fields: fieldsAttempt } : {}),
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        })
+
+        const nextPage = count > offset + limit ? pageParam + 1 : null
+
+        return {
+          response: {
+            products,
+            count,
+          },
+          nextPage: nextPage,
+          queryParams,
+        }
+      } catch (e: any) {
+        lastError = e
+        const status: number | undefined = e?.response?.status || e?.status
+        const code: number | string | undefined = e?.code
+        const name: string | undefined = e?.name
+        const retriable =
+          (typeof status === "number" && status >= 500) ||
+          code === 23 || // TimeoutError code seen in logs
+          (typeof name === "string" && /Timeout/i.test(name))
+
+        if (!retriable) {
+          // Do not keep retrying for 4xx etc.
+          break
+        }
+        // Otherwise, continue to next fieldsAttempt
       }
-    })
+    }
+
+    // If we reach here, all attempts failed
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Failed to list products after retries:", lastError)
+    }
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+      queryParams,
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // Surface details in development to help diagnose backend/query issues
+      console.error("Failed to list products:", e)
+    }
+    // Fail gracefully by returning an empty result set to avoid runtime crashes
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+      queryParams,
+    }
+  }
 }
 
 /**
@@ -104,33 +171,23 @@ export const listProductsWithSort = async ({
   nextPage: number | null
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
 }> => {
+  // Use backend pagination and ordering to avoid fetching large datasets (which may time out)
   const limit = queryParams?.limit || 12
 
-  const {
-    response: { products, count },
-  } = await listProducts({
-    pageParam: 0,
+  const { response, nextPage: serverNextPage } = await listProducts({
+    pageParam: Math.max(page, 1),
     queryParams: {
       ...queryParams,
-      limit: 100,
+      limit,
+      // Prefer backend ordering when available; fallback to created_at
+      order: (queryParams as any)?.order || (sortBy as string) || "created_at",
     },
     countryCode,
   })
 
-  const sortedProducts = sortProducts(products, sortBy)
-
-  const pageParam = (page - 1) * limit
-
-  const nextPage = count > pageParam + limit ? pageParam + limit : null
-
-  const paginatedProducts = sortedProducts.slice(pageParam, pageParam + limit)
-
   return {
-    response: {
-      products: paginatedProducts,
-      count,
-    },
-    nextPage,
+    response,
+    nextPage: serverNextPage,
     queryParams,
   }
 }

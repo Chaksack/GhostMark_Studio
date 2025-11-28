@@ -4,6 +4,15 @@ import "styles/globals.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
+    title: "GhostMark Studio",
+    description: "Print on demand business",
+    keywords: "GhostMark Studio",
+        icons: {
+            icon: "/favicon.ico",
+            shortcut: "/favicon.ico",
+            apple: "/apple-touch-icon.png",
+        },
+
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {

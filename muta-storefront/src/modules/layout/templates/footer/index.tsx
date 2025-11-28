@@ -1,6 +1,8 @@
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { Text, clx } from "@medusajs/ui"
+import { Ghost } from 'lucide-react';
+
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
@@ -12,18 +14,29 @@ export default async function Footer() {
   const productCategories = await listCategories()
 
   return (
-    <footer className="border-t border-ui-border-base w-full">
+    <footer className="border-t bg-black text-white border-ui-border-base w-full">
       <div className="content-container flex flex-col w-full">
-        <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
+        <div className="flex flex-col gap-y-2 xsmall:flex-row items-start justify-between py-10">
           <div>
+    <div className="flex items-center">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
+              className="txt-compact-xlarge-plus hover:text-ui-fg-base"
+              data-testid="nav-store-link"
             >
-              Medusa Store
+               <img
+                 src={"/ghostmark-logo-white.png"}
+                 alt="GhostMark Logo"
+                 className="h-[250px]"
+               />
             </LocalizedClientLink>
           </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
+              <p className="text-xs mt-4">Your all-in-one platform for designing, printing, <br/>
+                  and shipping custom products worldwide.</p>
+          </div>
+          
+
+          <div className="text-small-regular text-white gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
                 <span className="txt-small-plus txt-ui-fg-base">
@@ -108,17 +121,17 @@ export default async function Footer() {
                 </ul>
               </div>
             )}
-            <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Medusa</span>
+             <div className="flex flex-col text-white gap-y-2">
+              <span className="txt-small-plus txt-ui-fg-base">Print on demand</span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
                   <a
                     href="https://github.com/medusajs"
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                    className="text-white hover:text-ui-fg-base"
                   >
-                    GitHub
+                    About GhostMark Studio
                   </a>
                 </li>
                 <li>
@@ -126,9 +139,9 @@ export default async function Footer() {
                     href="https://docs.medusajs.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                    className="text-white hover:text-ui-fg-base"
                   >
-                    Documentation
+                    Leadership Team
                   </a>
                 </li>
                 <li>
@@ -136,18 +149,88 @@ export default async function Footer() {
                     href="https://github.com/medusajs/nextjs-starter-medusa"
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                    className="text-white hover:text-ui-fg-base"
                   >
-                    Source code
+                    Customer Stories
+                  </a>
+                </li>
+              </ul>
+            </div>
+             <div className="flex flex-col text-white gap-y-2">
+              <span className="txt-small-plus txt-ui-fg-base">Integration</span>
+              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+                <li>
+                  <a
+                    href="https://github.com/medusajs"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    About GhostMark Studio
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://docs.medusajs.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    Leadership Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/medusajs/nextjs-starter-medusa"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    Customer Stories
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="flex flex-col text-white gap-y-2">
+              <span className="txt-small-plus txt-ui-fg-base">Company</span>
+              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+                <li>
+                  <a
+                    href="https://github.com/medusajs"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    About GhostMark Studio
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://docs.medusajs.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    Leadership Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/medusajs/nextjs-starter-medusa"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white hover:text-ui-fg-base"
+                  >
+                    Customer Stories
                   </a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div className="flex w-full mb-16 justify-between text-ui-fg-muted">
+        <div className="flex w-full text-white mb-16 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Medusa Store. All rights reserved.
+            © {new Date().getFullYear()} GhostMark Studio. All rights reserved.
           </Text>
           <MedusaCTA />
         </div>

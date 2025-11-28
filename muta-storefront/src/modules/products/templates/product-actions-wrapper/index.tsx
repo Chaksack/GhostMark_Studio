@@ -13,7 +13,14 @@ export default async function ProductActionsWrapper({
   region: HttpTypes.StoreRegion
 }) {
   const product = await listProducts({
-    queryParams: { id: [id] },
+    queryParams: {
+      id: [id],
+      limit: 1,
+      // Ensure variants and their option types are loaded for the PDP option selectors
+      // Note: Passing fields here overrides the default in listProducts, so include all needed ones
+      fields:
+        "+metadata,+tags,*images,*variants,*variants.options,*variants.images,*variants.calculated_price,+variants.inventory_quantity,*options",
+    },
     regionId: region.id,
   }).then(({ response }) => response.products[0])
 

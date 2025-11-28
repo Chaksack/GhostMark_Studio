@@ -1,33 +1,57 @@
-import { Github } from "@medusajs/icons"
 import { Button, Heading } from "@medusajs/ui"
+import { Star } from "lucide-react"
+import React from "react"
+
 
 const Hero = () => {
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
-        <span>
+    <div className="h-[75vh] max-w-7xl mx-auto relative ">
+      <div className="absolute inset-0 z-10 grid lg:grid-cols-2 items-center px-6 md:px-10">
+        {/* Left column */}
+        <div className="flex flex-col items-start gap-6 max-w-2xl">
           <Heading
             level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
+            className="text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight"
           >
-            Ecommerce Starter Template
+            <span className="block">Grow your print on</span>
+            <span className="block">demand business</span>
+            <span className="block">with Gelato</span>
           </Heading>
-          <Heading
-            level="h2"
-            className="text-3xl leading-10 text-ui-fg-subtle font-normal"
-          >
-            Powered by Medusa and Next.js
-          </Heading>
-        </span>
-        <a
-          href="https://github.com/medusajs/nextjs-starter-medusa"
-          target="_blank"
-        >
-          <Button variant="secondary">
-            View on GitHub
-            <Github />
-          </Button>
-        </a>
+
+          <div className="space-y-3 text-left">
+            <p className="text-ui-fg-subtle text-xl">Peak season is here</p>
+            <p className="text-ui-fg-subtle">
+              Let&apos;s make this your most profitable quarter yet with the world&apos;s
+              largest <a className="underline hover:text-ui-fg-base">print on demand</a> network
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Button size="large">Create for free</Button>
+            <Button size="large" variant="secondary">
+              See our products
+            </Button>
+          </div>
+
+          <div className="mt-2 flex items-center gap-3">
+            <div className="text-2xl font-semibold">shopify</div>
+            <div className="flex items-center gap-1 text-green-600">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="h-5 w-5 fill-current" />
+              ))}
+            </div>
+            <span className="text-ui-fg-subtle">4.8 / 5</span>
+            <span className="text-ui-fg-muted text-sm">based on 611 reviews</span>
+          </div>
+        </div>
+
+        {/* Right column visual */}
+        <div className="relative hidden lg:block h-full">
+          <div className="absolute right-6 top-8 w-[55%] h-[75%] rounded-3xl bg-gradient-to-b from-rose-300 to-rose-500 opacity-80" />
+          <div className="absolute left-0 bottom-6 w-[80%] h-[85%] rounded-3xl bg-gradient-to-b from-violet-200 to-sky-300 shadow-xl" />
+          {/* Foreground mock card to give depth */}
+          <div className="absolute left-8 bottom-10 right-16 top-14 rounded-3xl border border-ui-border-base bg-ui-bg-base/60 backdrop-blur-sm shadow-2xl" />
+        </div>
       </div>
     </div>
   )

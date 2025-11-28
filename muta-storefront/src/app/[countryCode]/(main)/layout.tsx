@@ -8,9 +8,18 @@ import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
 import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
+import Breadcrumbs from "@modules/common/components/breadcrumbs"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
+    title: "GhostMark Studio",
+    description: "Print on demand business",
+    keywords: "GhostMark Studio",
+    icons: {
+        icon: "/favicon.ico",
+        shortcut: "/favicon.ico",
+        apple: "/apple-touch-icon.png",
+    },
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
@@ -27,6 +36,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   return (
     <>
       <Nav />
+      <Breadcrumbs />
       {customer && cart && (
         <CartMismatchBanner customer={customer} cart={cart} />
       )}
