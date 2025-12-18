@@ -28,7 +28,8 @@
     "@medusajs/medusa": "2.11.3",
     "@medusajs/auth": "2.11.3",
     "@medusajs/auth-google": "2.11.3",
-    "@medusajs/auth-emailpass": "2.11.3"
+    "@medusajs/auth-emailpass": "2.11.3",
+    "nodemailer": "^6.9.15"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.11.3",

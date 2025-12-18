@@ -11,10 +11,12 @@ import WishlistButton from "@modules/layout/components/wishlist-button"
 import { Search } from "lucide-react"
 import { DropdownMenu } from "./dropdown-menu"
 import { Ghost } from 'lucide-react';
+import { retrieveCustomer } from "@lib/data/customer"
 
 
 export default async function Nav() {
   const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+  const customer = await retrieveCustomer().catch(() => null)
 
   // Fetch collections and categories to populate the Products dropdown
   const [{ collections }, { types }, categories] = await Promise.all([
@@ -50,11 +52,9 @@ export default async function Nav() {
   ]
 
   const menuItems = {
-    startSelling: ['Shopify', 'Etsy', 'WooCommerce', 'BigCommerce', 'Custom store'],
-    toolsAndApps: ['Design maker', 'Product creator', 'Mockup studio', 'Personalization studio'],
-    pricing: ['Pricing overview', 'Shipping rates', 'Product catalog'],
-    resources: ['Blog', 'Customer stories', 'Help center', 'Webinars', 'Guides'],
-    gelatoConnect: ['API', 'Integrations', 'Partners']
+    resources: ['Customer stories', 'Help center'],
+    categories: ['Design', 'Print', 'Shipping'],
+      collections: ['Custom products', 'Custom designs', 'Custom prints']
   }
 
   return (
@@ -86,15 +86,6 @@ export default async function Nav() {
                 className="w-full border border-ui-border-base rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-ui-fg-base focus:border-ui-fg-base"
               />
             </div>
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
-                className="hover:text-ui-fg-base"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
             <Suspense
               fallback={
                 <LocalizedClientLink
@@ -121,18 +112,81 @@ export default async function Nav() {
             >
               <CartButton />
             </Suspense>
+              <div className="hidden small:flex items-center gap-x-6 h-full">
+                  <LocalizedClientLink
+                      className="inline-flex items-center rounded-md bg-black text-white px-3 py-2 text-sm font-medium hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black transition-colors max-w-[180px]"
+                      href="/account"
+                      data-testid="nav-account-link"
+                      aria-label={customer ? `Account (${[
+                        (customer as any)?.first_name,
+                        (customer as any)?.last_name,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || (customer as any)?.email || "Account"})` : "Account"}
+                  >
+                      <span className="truncate">
+                        {(() => {
+                          if (!customer) return "Account"
+                          const first = (customer as any)?.first_name as string | undefined
+                          const last = (customer as any)?.last_name as string | undefined
+                          const email = (customer as any)?.email as string | undefined
+                          const full = [first, last].filter(Boolean).join(" ").trim()
+                          if (full) return full
+                          if (email) return email.split("@")[0] || "Account"
+                          return "Account"
+                        })()}
+                      </span>
+                  </LocalizedClientLink>
+              </div>
           </div>
         </nav>
       </header>
 
       <nav className="content-container w-full flex items-center space-x-6 py-3 text-sm border-t border-gray-100 bg-white">
-        {/* Products dropdown shows Collections and Categories with links */}
+        {/* Products dropdown shows Types, Collections, and Categories with direct links */}
         <DropdownMenu label="Products" sections={productSections} />
-        <DropdownMenu label="Start selling" items={menuItems.startSelling} />
-        <DropdownMenu  label="Tools and apps" items={menuItems.toolsAndApps} />
-        <DropdownMenu label="Pricing" items={menuItems.pricing} />
-        <DropdownMenu label="Resources" items={menuItems.resources} />
-        <DropdownMenu label="GelatoConnect" items={menuItems.gelatoConnect} />
+
+        {/* Dedicated Categories menu linking to category pages */}
+        <DropdownMenu
+          label="Categories"
+          sections={[
+            {
+              title: "Categories",
+              items: (categories || []).map((cat: any) => ({
+                label: cat.name || cat.handle || "Category",
+                href: `/categories/${cat.handle}`,
+              })),
+            },
+          ]}
+        />
+
+        {/* Dedicated Collections menu linking to collection pages */}
+        <DropdownMenu
+          label="Collections"
+          sections={[
+            {
+              title: "Collections",
+              items: (collections || []).map((c) => ({
+                label: c.title || c.handle || "Collection",
+                href: `/collections/${c.handle}`,
+              })),
+            },
+          ]}
+        />
+
+        {/* Resources menu now links to Help Center and Customer Stories */}
+        <DropdownMenu
+          label="Resources"
+          sections={[
+            {
+              title: "Resources",
+              items: [
+                { label: "Help center", href: "/help-center" },
+                { label: "Customer stories", href: "/customer-stories" },
+              ],
+            },
+          ]}
+        />
       </nav>
     </div>
   )

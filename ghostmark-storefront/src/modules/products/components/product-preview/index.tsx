@@ -125,25 +125,25 @@ export default async function ProductPreview({
     <LocalizedClientLink href={`/products/${product.handle}`} className="group block">
       <div
         data-testid="product-wrapper"
-        className="rounded-xl border border-ui-border-base hover:border-ui-fg-muted transition-colors bg-ui-bg-base overflow-hidden"
+        className="rounded-lg border border-ui-border-base hover:border-ui-fg-muted transition-colors bg-ui-bg-base overflow-hidden"
       >
         <div className="relative p-0">
           <Thumbnail
             thumbnail={product.thumbnail}
             images={product.images}
-            size="square"
+            size="small"
             isFeatured={isFeatured}
             className="rounded-none shadow-none"
           />
           {badge && (
-            <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black text-white text-xs font-medium px-3 py-1">
+            <span className="pointer-events-none absolute left-2.5 top-2.5 rounded-full bg-black text-white text-[10px] font-medium px-2.5 py-0.5">
               {badge}
             </span>
           )}
         </div>
-        <div className="px-4 py-4">
-          <div className="flex items-start justify-between gap-3">
-            <Text className="text-ui-fg-base text-[18px] font-semibold leading-snug line-clamp-2" data-testid="product-title">
+        <div className="px-3 py-3">
+          <div className="flex items-start justify-between gap-2">
+            <Text className="text-ui-fg-base text-[16px] font-semibold leading-snug line-clamp-2" data-testid="product-title">
               {product.title}
             </Text>
             <div className="flex items-center gap-x-1 whitespace-nowrap">
@@ -153,18 +153,18 @@ export default async function ProductPreview({
               {cheapestPrice && (
                 <PreviewPrice
                   price={cheapestPrice}
-                  priceClassName="text-ui-fg-base font-semibold"
-                  containerClassName="flex items-baseline gap-1"
+                  priceClassName="text-ui-fg-base font-semibold text-[13px]"
+                  containerClassName="flex items-baseline gap-0.5"
                 />
               )}
             </div>
           </div>
           {/* Product type + tags row */}
           {(productTypeLabel || tags.length > 0) && (
-            <div className="mt-2 flex flex-wrap gap-1" data-testid="product-preview-tags">
+            <div className="mt-1.5 flex flex-wrap gap-1" data-testid="product-preview-tags">
               {productTypeLabel && (
                 <span
-                  className="inline-flex items-center rounded-full border border-ui-border-base bg-ui-bg-subtle px-2 py-0.5 text-[10px] text-ui-fg-subtle"
+                  className="inline-flex items-center rounded-full border border-ui-border-base bg-ui-bg-subtle px-1.5 py-0.5 text-[9px] text-ui-fg-subtle"
                   data-testid="product-type-chip"
                 >
                   {productTypeLabel}
@@ -182,37 +182,37 @@ export default async function ProductPreview({
                   return (
                     <span
                       key={(t as any)?.id || `${label}-${idx}`}
-                      className="inline-flex items-center rounded-full border border-ui-border-base bg-ui-bg-subtle px-2 py-0.5 text-[10px] text-ui-fg-subtle"
+                      className="inline-flex items-center rounded-full border border-ui-border-base bg-ui-bg-subtle px-1.5 py-0.5 text-[9px] text-ui-fg-subtle"
                     >
                       {label}
                     </span>
                   )
                 })}
-            </div>
-          )}
-          {/* Secondary price line e.g. with Gelato+ */}
-          {cheapestPrice && (
-            <div className="mt-1 flex items-center gap-1 text-[13px]">
+          </div>
+        )}
+        {/* Secondary price line e.g. with Gelato+ */}
+        {cheapestPrice && (
+            <div className="mt-1 flex items-center gap-1 text-[12px]">
               <span className="text-green-500 font-medium">{cheapestPrice.calculated_price}</span>
-              <span className="text-[12px] text-green-700">with GHOSTMARK+ </span>
+              <span className="text-[11px] text-green-700">with GHOSTMARK+ </span>
             </div>
           )}
           {/* Compact price summary to mirror Gelato-style cards */}
-          <div className="mt-1 leading-snug">
-            <p className="text-[11px] text-ui-fg-muted">
+          <div className="mt-0.5 leading-snug">
+            <p className="text-[10px] text-ui-fg-muted">
               Excl. shipping & taxes
             </p>
-            <p className="text-[11px] text-ui-fg-muted">Produced in 24–72h</p>
+            <p className="text-[10px] text-ui-fg-muted">Produced in 24–72h</p>
           </div>
           {/* Capability line */}
           {embroideryAvailable && (
-            <p className="mt-2 text-[13px] text-ui-fg-base flex items-center gap-1">
-              <span className="inline-block h-4 w-4 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] leading-4 text-center">i</span>
+            <p className="mt-1.5 text-[12px] text-ui-fg-base flex items-center gap-1">
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[9px] leading-[14px] text-center">i</span>
               Embroidery available
             </p>
           )}
           {/* Meta bullets row */}
-          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ui-fg-muted">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ui-fg-muted">
             {[
               typeof locationsCount === "number" && locationsCount > 0
                 ? `${locationsCount} locations`
@@ -233,14 +233,14 @@ export default async function ProductPreview({
                     <span>{content as any}</span>
                   )}
                   {idx < arr.length - 1 && (
-                    <span className="h-1 w-1 rounded-full bg-ui-fg-muted/60 inline-block align-middle" />
+                    <span className="h-[3px] w-[3px] rounded-full bg-ui-fg-muted/60 inline-block align-middle" />
                   )}
                 </span>
               ))}
           </div>
         </div>
           {/* Quick actions row */}
-          <div className="px-4 pb-4 pt-0">
+          <div className="px-3 pb-3 pt-0">
             <div className="flex items-center gap-2">
               {/* Wishlist icon button (apparel only) */}
               <QuickWishlistButton isApparel={isApparel} productId={product.id} />
