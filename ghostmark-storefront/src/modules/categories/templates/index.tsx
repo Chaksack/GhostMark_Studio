@@ -45,7 +45,9 @@ export default async function CategoryTemplate({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const dataPromise = Promise.all([
     listCollections({ limit: "200", fields: "id,handle,title" }).catch(() => ({ collections: [] })),
-    listCategories().catch(() => []),
+    // Fetch a larger set to ensure deep category trees are fully available
+    // for building the parent->children map used to aggregate descendants.
+    listCategories({ limit: "1000" }).catch(() => []),
   ])
 
   const [collectionsRes, allCategories] = await dataPromise
@@ -116,7 +118,39 @@ export default async function CategoryTemplate({
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
-            categoryId={category.id}
+            // If no specific product type is selected, show all products
+            // in this category including its descendant categories.
+            // Otherwise, keep the single category filter and let the
+            // client-side type refinement do its work.
+            {...(() => {
+              if (!productType) {
+                // Build a robust parent->children map from all categories to
+                // ensure we include descendants at any depth, even if the
+                // current category object doesn't have deeply populated children.
+                const childrenByParent = new Map<string, string[]>()
+                ;(allCategories || []).forEach((cat: any) => {
+                  const parentId = cat?.parent_category?.id
+                  if (parentId) {
+                    const arr = childrenByParent.get(parentId) || []
+                    arr.push(cat.id)
+                    childrenByParent.set(parentId, arr)
+                  }
+                })
+
+                const visited = new Set<string>()
+                const collectIds = (id: string): string[] => {
+                  if (!id || visited.has(id)) return []
+                  visited.add(id)
+                  const direct = childrenByParent.get(id) || []
+                  const deeper = direct.flatMap((cid) => collectIds(cid))
+                  return [id, ...deeper]
+                }
+
+                const ids = collectIds(category.id)
+                return { categoryIds: ids }
+              }
+              return { categoryId: category.id }
+            })()}
             productType={productType}
             countryCode={countryCode}
           />

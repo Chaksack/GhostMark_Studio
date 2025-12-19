@@ -21,6 +21,7 @@ export default async function PaginatedProducts({
   page,
   collectionId,
   categoryId,
+  categoryIds,
   productType,
   productsIds,
   countryCode,
@@ -29,6 +30,7 @@ export default async function PaginatedProducts({
   page: number
   collectionId?: string
   categoryId?: string
+  categoryIds?: string[]
   productType?: string
   productsIds?: string[]
   countryCode: string
@@ -41,7 +43,11 @@ export default async function PaginatedProducts({
     queryParams["collection_id"] = [collectionId]
   }
 
-  if (categoryId) {
+  if (categoryIds && categoryIds.length > 0) {
+    // When multiple category IDs are provided, include all of them so that
+    // visiting a parent category shows products from all its descendants too.
+    queryParams["category_id"] = categoryIds
+  } else if (categoryId) {
     queryParams["category_id"] = [categoryId]
   }
 
@@ -62,14 +68,97 @@ export default async function PaginatedProducts({
     return null
   }
 
-  let {
-    response: { products, count },
-  } = await listProductsWithSort({
-    page,
-    queryParams,
-    sortBy,
-    countryCode,
-  })
+  // Some backends interpret category_id[]=A&category_id[]=B as an AND filter,
+  // which drastically under-returns results (only products that belong to ALL
+  // categories). To ensure Men/Women parent categories show ALL products across
+  // their descendant categories, aggregate per-category and union client-side
+  // when multiple categoryIds are provided.
+  let products: any[] = []
+  let count = 0
+
+  if (Array.isArray(queryParams.category_id) && queryParams.category_id.length > 1) {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        "[PaginatedProducts] Union path active. category_ids=",
+        queryParams.category_id,
+        "page=",
+        page,
+        "sortBy=",
+        sortBy
+      )
+    }
+    const ids = queryParams.category_id
+    const AGG_LIMIT = 100
+    const AGG_MAX = 800 // cap total to prevent excessive load
+
+    const seen = new Map<string, any>()
+
+    for (const id of ids) {
+      let serverPage = 1
+      let nextPage: number | null = 1
+      while (nextPage) {
+        const { response, nextPage: np } = await listProductsWithSort({
+          page: serverPage,
+          // Fetch per-category to force an OR-like union across categories
+          queryParams: { ...queryParams, category_id: [id], limit: AGG_LIMIT },
+          sortBy,
+          countryCode,
+        })
+        const batch = Array.isArray(response.products) ? response.products : []
+        if (process.env.NODE_ENV !== "production") {
+          console.log(
+            `[PaginatedProducts] Fetched ${batch.length} products for category ${id} (page ${serverPage}).`
+          )
+        }
+        for (const p of batch) {
+          if (!seen.has(p.id)) {
+            seen.set(p.id, p)
+          }
+        }
+        nextPage = np
+        serverPage = np || 0
+        if (!nextPage || seen.size >= AGG_MAX) {
+          break
+        }
+      }
+      if (seen.size >= AGG_MAX) {
+        break
+      }
+    }
+
+    // Convert to array and sort by created_at desc (default storefront behavior)
+    const union = Array.from(seen.values())
+    try {
+      union.sort((a: any, b: any) => {
+        const ad = new Date(a?.created_at || a?.createdAt || 0).getTime()
+        const bd = new Date(b?.created_at || b?.createdAt || 0).getTime()
+        return bd - ad
+      })
+    } catch (_) {
+      // no-op if dates are missing
+    }
+
+    // Local pagination on the union
+    count = union.length
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `[PaginatedProducts] Union size after de-duplication: ${count}. Performing local pagination for page ${page}.`
+      )
+    }
+    const start = (page - 1) * PRODUCT_LIMIT
+    const end = start + PRODUCT_LIMIT
+    products = union.slice(start, end)
+  } else {
+    // Default path: rely on backend pagination
+    const res = await listProductsWithSort({
+      page,
+      queryParams,
+      sortBy,
+      countryCode,
+    })
+    products = res.response.products
+    count = res.response.count
+  }
 
   // Helpers used for client-side matching of a product against a type text
   const normalize = (val: unknown): string => {

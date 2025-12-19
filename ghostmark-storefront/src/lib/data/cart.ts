@@ -379,7 +379,11 @@ export async function deleteLineItem(lineId: string) {
   }
 
   await sdk.store.cart
-    .deleteLineItem(cartId, lineId, headers)
+    // Note: The Medusa SDK method signature is (cartId, lineId, query?, headers?)
+    // Passing headers as the 3rd argument mistakenly treats them as query params,
+    // causing `authorization` to end up in the URL. Ensure we pass an empty query
+    // object and provide headers in the 4th argument.
+    .deleteLineItem(cartId, lineId, {}, headers)
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)

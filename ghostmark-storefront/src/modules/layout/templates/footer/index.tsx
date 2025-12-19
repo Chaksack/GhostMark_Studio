@@ -27,7 +27,7 @@ export default async function Footer() {
                <img
                  src={"/ghostmark-logo-white.png"}
                  alt="GhostMark Logo"
-                 className="h-[250px]"
+                 className="h-24"
                />
             </LocalizedClientLink>
           </div>
