@@ -21,6 +21,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   isFeatured,
   className,
   "data-testid": dataTestid,
+
 }) => {
   const initialImage = thumbnail || images?.[0]?.url
 

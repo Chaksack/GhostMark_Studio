@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer } from 'react-konva'
-import { Upload, Info, Undo, Redo, Circle, Plus, Minus, RotateCcw } from 'lucide-react';
+import { Upload, Info, Undo, Redo, Circle, Plus, Minus, RotateCcw, Type, Image, Palette, Layers } from 'lucide-react';
 import { ChevronDown, ChevronLeft } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { HttpTypes } from '@medusajs/types'
@@ -145,6 +145,10 @@ export default function TShirtDesigner(props: Props) {
     const [uploadedImg, setUploadedImg] = useState<HTMLImageElement | null>(null)
     const [uploadedPos, setUploadedPos] = useState({ x: 170, y: 190 })
     const [uploadedSize, setUploadedSize] = useState({ width: 160, height: 160 })
+    // Enhanced upload states
+    const [isDragOver, setIsDragOver] = useState(false)
+    const [uploadQueue, setUploadQueue] = useState<File[]>([])
+    const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
     // transform/selection state for uploaded image
     const [imgSelected, setImgSelected] = useState(false)
     const imgNodeRef = useRef<any>(null)
@@ -297,6 +301,15 @@ export default function TShirtDesigner(props: Props) {
     }, [])
     const [selectedSize, setSelectedSize] = useState('S');
     const [selectedView, setSelectedView] = useState('front');
+    // Left sidebar state
+    const [leftSidebarTab, setLeftSidebarTab] = useState<'product' | 'upload' | 'text' | 'templates' | 'layers' | 'areas'>('product')
+    const [textSettings, setTextSettings] = useState({
+        fontSize: 18,
+        fontFamily: 'Inter',
+        fontWeight: 'normal',
+        color: '#000000',
+        alignment: 'left'
+    })
     // price dropdown state
     const [showPriceDetails, setShowPriceDetails] = useState(false)
     const priceBtnRef = useRef<HTMLButtonElement | null>(null)
@@ -368,17 +381,46 @@ export default function TShirtDesigner(props: Props) {
       }
     }, [imgSelected, uploadedImg])
 
-    // Center the canvas content and apply a pleasant default zoom when first ready
+    // Center-locked zoom system based on Context7 patterns
     const hasSetInitialViewRef = useRef(false)
     const computeCenteredPos = useCallback((scale: number) => {
-      // Keep the viewport centered regardless of scale
+      // Always center the view around the mockup/design area
       const W = Math.max(stageSize.width, 1)
       const H = Math.max(stageSize.height, 1)
+      const centerX = W / 2
+      const centerY = H / 2
+      
+      // Calculate position to keep center point fixed during zoom
       return {
-        x: Math.round((1 - scale) * W / 2),
-        y: Math.round((1 - scale) * H / 2),
+        x: centerX - (centerX * scale),
+        y: centerY - (centerY * scale),
       }
     }, [stageSize.width, stageSize.height])
+    
+    // Enhanced zoom controls that maintain center position
+    const handleZoomIn = useCallback(() => {
+      setStageScale((prevScale) => {
+        const newScale = Math.min(MAX_SCALE, prevScale * SCALE_BY)
+        // Update position to maintain center
+        setStagePos(computeCenteredPos(newScale))
+        return Number(newScale.toFixed(3))
+      })
+    }, [computeCenteredPos])
+    
+    const handleZoomOut = useCallback(() => {
+      setStageScale((prevScale) => {
+        const newScale = Math.max(MIN_SCALE, prevScale / SCALE_BY)
+        // Update position to maintain center
+        setStagePos(computeCenteredPos(newScale))
+        return Number(newScale.toFixed(3))
+      })
+    }, [computeCenteredPos])
+    
+    const handleZoomReset = useCallback(() => {
+      const resetScale = DEFAULT_ZOOM
+      setStageScale(resetScale)
+      setStagePos(computeCenteredPos(resetScale))
+    }, [computeCenteredPos])
 
     useEffect(() => {
       if (stageSize.width === 0 || stageSize.height === 0) return
@@ -529,6 +571,55 @@ export default function TShirtDesigner(props: Props) {
       }
     }, [activeZoneRect, mockupFit])
 
+    // Enhanced drag and drop handlers
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(true)
+    }, [])
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(false)
+    }, [])
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(false)
+
+      const files = Array.from(e.dataTransfer.files)
+      const imageFiles = files.filter(file => file.type.startsWith('image/'))
+      
+      if (imageFiles.length > 0) {
+        const file = imageFiles[0] // Use first image
+        const reader = new FileReader()
+        reader.onload = () => {
+          const img = new window.Image()
+          img.crossOrigin = 'anonymous'
+          img.src = String(reader.result || '')
+          img.onload = () => {
+            let maxW = 240, maxH = 240, originX = 120, originY = 150
+            const container = activeZoneRect || mockupFit
+            if (container) {
+              maxW = Math.max(1, container.width)
+              maxH = Math.max(1, container.height)
+              originX = container.x
+              originY = container.y
+            }
+            const ratio = Math.min(maxW / img.width, maxH / img.height, 1)
+            setUploadedSize({ width: Math.round(img.width * ratio), height: Math.round(img.height * ratio) })
+            setUploadedPos({ x: Math.round(originX + (maxW - Math.round(img.width * ratio)) / 2), y: Math.round(originY + (maxH - Math.round(img.height * ratio)) / 2) })
+            setUploadedImg(img)
+            setImgSelected(true)
+            setTimeout(() => pushHistory(snapshotNow()), 0)
+          }
+        }
+        reader.readAsDataURL(file)
+      }
+    }, [activeZoneRect, mockupFit, pushHistory, snapshotNow])
+
     // Observe container size to make the Stage fill the entire center area
     useEffect(() => {
       const el = canvasContainerRef.current
@@ -574,18 +665,25 @@ export default function TShirtDesigner(props: Props) {
         if (!stage) return { designDataJson: JSON.stringify({}), previewDataUrl: '', designOnlyDataUrl: '' }
         // Serialize stage (includes nodes and positions)
         const designDataJson = stage.toJSON?.() || JSON.stringify({})
+        // Safe stage export function for the exporter
+        const safeStageExport = (options?: any) => {
+          try {
+            return stage.toDataURL?.(options || { pixelRatio: 2 }) || ""
+          } catch (error: any) {
+            if (error.message?.includes('insecure') || error.message?.includes('tainted') || error.name === 'SecurityError') {
+              console.warn('Canvas is tainted, cannot export directly:', error.message)
+              return ''
+            }
+            return ''
+          }
+        }
+
         // Export high-res preview including mockup and design
         let previewDataUrl = ''
         let designOnlyDataUrl = ''
-        // Important: Avoid calling toDataURL on a tainted canvas to prevent Konva from
-        // logging an error ("The operation is insecure"). We already detect taint via
-        // the image loader. When tainted, skip export and return an empty preview.
+        // Use safe export to avoid CORS errors
         if (!mockupTainted) {
-          try {
-            previewDataUrl = stage.toDataURL?.({ pixelRatio: 2 }) || ''
-          } catch {
-            previewDataUrl = ''
-          }
+          previewDataUrl = safeStageExport({ pixelRatio: 2 })
         }
         // Always try to export a design-only PNG by hiding the background layer
         try {
@@ -595,7 +693,7 @@ export default function TShirtDesigner(props: Props) {
             bgLayer.visible(false)
             stage.draw()
           }
-          designOnlyDataUrl = stage.toDataURL?.({ pixelRatio: 2 }) || ''
+          designOnlyDataUrl = safeStageExport({ pixelRatio: 2 })
           if (bgLayer && typeof bgLayer.visible === 'function') {
             bgLayer.visible(prevVisible)
             stage.draw()
@@ -623,6 +721,49 @@ export default function TShirtDesigner(props: Props) {
     const [previewUrl, setPreviewUrl] = useState<string>("")
     const [previewLoading, setPreviewLoading] = useState(false)
     const [previewNote, setPreviewNote] = useState<string | null>(null)
+    
+    // Print areas state (enhanced Gelato-style)
+    const [printAreas, setPrintAreas] = useState<any[]>([])
+    const [activePrintArea, setActivePrintArea] = useState<string | null>(null)
+    const [showPrintAreaBounds, setShowPrintAreaBounds] = useState(true)
+
+    // Fetch print areas when variant changes
+    useEffect(() => {
+      if (!selectedVariantId) return
+      
+      const fetchPrintAreas = async () => {
+        try {
+          const response = await fetch(`/api/variants/${selectedVariantId}?countryCode=US`)
+          if (response.ok) {
+            const data = await response.json()
+            if (data.printAreas && Array.isArray(data.printAreas)) {
+              setPrintAreas(data.printAreas)
+              // Auto-select first print area
+              if (data.printAreas.length > 0 && !activePrintArea) {
+                setActivePrintArea(data.printAreas[0].id)
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to fetch print areas:', error)
+          // Fallback to mockup zones
+          if (mockupZones) {
+            const fallbackAreas = Object.entries(mockupZones).map(([key, zone], index) => ({
+              id: `area_${index + 1}`,
+              name: key.charAt(0).toUpperCase() + key.slice(1),
+              boundaries: zone,
+              type: key.includes('front') ? 'front' : key.includes('back') ? 'back' : 'custom'
+            }))
+            setPrintAreas(fallbackAreas)
+            if (fallbackAreas.length > 0) {
+              setActivePrintArea(fallbackAreas[0].id)
+            }
+          }
+        }
+      }
+      
+      fetchPrintAreas()
+    }, [selectedVariantId, mockupZones])
 
     // Close preview on Escape key
     useEffect(() => {
@@ -636,100 +777,457 @@ export default function TShirtDesigner(props: Props) {
       return () => document.removeEventListener('keydown', onKey)
     }, [previewOpen])
 
+    // Enhanced preview with CORS-safe fallback system
     const handlePreview = useCallback(async () => {
       const stage = stageRef.current as any
       if (!stage) return
       setPreviewLoading(true)
       setPreviewNote(null)
+      
       try {
-        let url = ""
-        if (!mockupTainted) {
-          // Composite export (mockup + design)
-          url = stage.toDataURL?.({ pixelRatio: 2 }) || ""
-        } else {
-          // Fallback: hide mockup layer temporarily to avoid tainted canvas
-          const bgLayer = bgLayerRef.current as any
-          const prevVisible = bgLayer?.visible?.() ?? true
+        // Safe stage export function that handles CORS errors gracefully
+        const attemptStageExport = (options?: any) => {
           try {
-            if (bgLayer && typeof bgLayer.visible === 'function') {
-              bgLayer.visible(false)
-              stage.draw()
+            return stage.toDataURL?.(options || { pixelRatio: 2 }) || ""
+          } catch (error: any) {
+            // Catch any CORS/tainted canvas errors
+            if (error.message?.includes('insecure') || error.message?.includes('tainted') || error.name === 'SecurityError') {
+              console.warn('Canvas is tainted, cannot export directly:', error.message)
+              return null
             }
-            url = stage.toDataURL?.({ pixelRatio: 2 }) || ""
-            setPreviewNote("Preview excludes product image due to image host CORS. Final print uses your uploaded design.")
-          } finally {
-            if (bgLayer && typeof bgLayer.visible === 'function') {
-              bgLayer.visible(prevVisible)
-              stage.draw()
+            throw error // Re-throw if it's a different error
+          }
+        }
+        
+        // First try: Use Konva stage directly (best quality with full product image)
+        // Only attempt if we think the canvas isn't tainted
+        if (!mockupTainted) {
+          const dataUrl = attemptStageExport()
+          if (dataUrl && dataUrl !== "data:," && dataUrl.length > 100) {
+            setPreviewUrl(dataUrl)
+            setPreviewOpen(true)
+            setPreviewNote(null) // Clear any previous notes
+            return
+          }
+        }
+        
+        // Fallback: Create CORS-safe preview
+        const tempCanvas = document.createElement('canvas')
+        const tempCtx = tempCanvas.getContext('2d')
+        if (!tempCtx) throw new Error('Could not create canvas context')
+        
+        // Set dimensions based on mockup fit
+        const scale = 2
+        const baseWidth = mockupFit?.width || 400
+        const baseHeight = mockupFit?.height || 400
+        tempCanvas.width = baseWidth * scale
+        tempCanvas.height = baseHeight * scale
+        
+        // Scale context for high DPI
+        tempCtx.scale(scale, scale)
+        
+        // Fill background
+        tempCtx.fillStyle = '#ffffff'
+        tempCtx.fillRect(0, 0, baseWidth, baseHeight)
+        
+        // Try to draw the actual product mockup image
+        if (mockupImage && mockupFit) {
+          try {
+            // Attempt to draw the mockup image
+            tempCtx.drawImage(
+              mockupImage,
+              0, // Draw at origin since we're using mockupFit dimensions
+              0,
+              baseWidth,
+              baseHeight
+            )
+          } catch (e) {
+            console.warn('CORS prevented mockup image drawing, using styled placeholder')
+            // Fallback: Create an attractive product placeholder
+            
+            // Background gradient
+            const gradient = tempCtx.createLinearGradient(0, 0, 0, baseHeight)
+            gradient.addColorStop(0, '#f8fafc')
+            gradient.addColorStop(1, '#e2e8f0')
+            tempCtx.fillStyle = gradient
+            tempCtx.fillRect(0, 0, baseWidth, baseHeight)
+            
+            // Product shape outline (t-shirt like shape)
+            tempCtx.strokeStyle = '#cbd5e1'
+            tempCtx.lineWidth = 3
+            tempCtx.fillStyle = '#ffffff'
+            
+            // Draw a t-shirt-like shape
+            const centerX = baseWidth / 2
+            const centerY = baseHeight / 2
+            const shirtWidth = baseWidth * 0.7
+            const shirtHeight = baseHeight * 0.8
+            
+            tempCtx.beginPath()
+            // Shoulders
+            tempCtx.moveTo(centerX - shirtWidth * 0.4, centerY - shirtHeight * 0.4)
+            tempCtx.lineTo(centerX - shirtWidth * 0.3, centerY - shirtHeight * 0.45)
+            tempCtx.lineTo(centerX - shirtWidth * 0.2, centerY - shirtHeight * 0.4)
+            // Right shoulder to armpit
+            tempCtx.lineTo(centerX + shirtWidth * 0.2, centerY - shirtHeight * 0.4)
+            tempCtx.lineTo(centerX + shirtWidth * 0.3, centerY - shirtHeight * 0.45)
+            tempCtx.lineTo(centerX + shirtWidth * 0.4, centerY - shirtHeight * 0.4)
+            // Right side
+            tempCtx.lineTo(centerX + shirtWidth * 0.35, centerY + shirtHeight * 0.4)
+            // Bottom
+            tempCtx.lineTo(centerX - shirtWidth * 0.35, centerY + shirtHeight * 0.4)
+            // Left side back to start
+            tempCtx.closePath()
+            
+            tempCtx.fill()
+            tempCtx.stroke()
+            
+            // Add product label
+            tempCtx.fillStyle = '#64748b'
+            tempCtx.font = 'bold 14px Inter, sans-serif'
+            tempCtx.textAlign = 'center'
+            tempCtx.fillText(product?.title || 'Custom Product', centerX, baseHeight - 20)
+          }
+        } else {
+          // No mockup available - create a generic product shape
+          const gradient = tempCtx.createLinearGradient(0, 0, 0, baseHeight)
+          gradient.addColorStop(0, '#f1f5f9')
+          gradient.addColorStop(1, '#e2e8f0')
+          tempCtx.fillStyle = gradient
+          tempCtx.fillRect(0, 0, baseWidth, baseHeight)
+          
+          tempCtx.fillStyle = '#64748b'
+          tempCtx.font = 'bold 16px Inter, sans-serif'
+          tempCtx.textAlign = 'center'
+          tempCtx.fillText('Product Preview', baseWidth / 2, baseHeight / 2)
+        }
+        
+        // Draw print area boundaries for context
+        if (showPrintAreaBounds && printAreas.length > 0) {
+          printAreas.forEach((area) => {
+            const bounds = area.boundaries || area.position
+            if (!bounds) return
+            
+            const isActive = area.id === activePrintArea
+            tempCtx.strokeStyle = isActive ? '#3b82f6' : '#94a3b8'
+            tempCtx.lineWidth = isActive ? 3 : 2
+            tempCtx.setLineDash(isActive ? [8, 4] : [4, 4])
+            tempCtx.strokeRect(
+              bounds.x || 0,
+              bounds.y || 0,
+              bounds.w || bounds.width || 100,
+              bounds.h || bounds.height || 100
+            )
+            tempCtx.setLineDash([]) // Reset dash pattern
+          })
+        }
+
+        // Draw uploaded design elements
+        if (uploadedImg) {
+          try {
+            // Calculate positioning relative to the canvas/mockup area
+            const scale = baseWidth / (mockupFit?.width || baseWidth)
+            const relativeX = Math.max(0, (uploadedPos.x - (mockupFit?.x || 0)) * scale)
+            const relativeY = Math.max(0, (uploadedPos.y - (mockupFit?.y || 0)) * scale)
+            const scaledWidth = uploadedSize.width * scale
+            const scaledHeight = uploadedSize.height * scale
+            
+            // Ensure the design stays within canvas bounds
+            const finalX = Math.min(relativeX, baseWidth - scaledWidth)
+            const finalY = Math.min(relativeY, baseHeight - scaledHeight)
+            
+            // Check if design is within active print area (visual indicator)
+            let withinPrintArea = false
+            if (activePrintArea && printAreas.length > 0) {
+              const activeArea = printAreas.find(area => area.id === activePrintArea)
+              if (activeArea && activeArea.boundaries) {
+                const bounds = activeArea.boundaries
+                withinPrintArea = (
+                  finalX >= bounds.x &&
+                  finalY >= bounds.y &&
+                  finalX + scaledWidth <= bounds.x + (bounds.w || bounds.width) &&
+                  finalY + scaledHeight <= bounds.y + (bounds.h || bounds.height)
+                )
+              }
+            }
+            
+            // Add subtle overlay if design is outside print area
+            if (!withinPrintArea && printAreas.length > 0) {
+              tempCtx.save()
+              tempCtx.globalAlpha = 0.7
+              tempCtx.drawImage(uploadedImg, finalX, finalY, scaledWidth, scaledHeight)
+              tempCtx.restore()
+              
+              // Add warning indicator
+              tempCtx.fillStyle = '#ef4444'
+              tempCtx.font = 'bold 12px Inter, sans-serif'
+              tempCtx.fillText('⚠ Outside print area', finalX, finalY - 5)
+            } else {
+              tempCtx.drawImage(uploadedImg, finalX, finalY, scaledWidth, scaledHeight)
+            }
+          } catch (e) {
+            console.warn('Could not draw uploaded image in preview:', e)
+            // Draw an attractive placeholder for user's design
+            const scale = baseWidth / (mockupFit?.width || baseWidth)
+            const relativeX = Math.max(0, (uploadedPos.x - (mockupFit?.x || 0)) * scale)
+            const relativeY = Math.max(0, (uploadedPos.y - (mockupFit?.y || 0)) * scale)
+            const scaledWidth = uploadedSize.width * scale
+            const scaledHeight = uploadedSize.height * scale
+            
+            // Create a gradient placeholder
+            const designGradient = tempCtx.createLinearGradient(relativeX, relativeY, relativeX + scaledWidth, relativeY + scaledHeight)
+            designGradient.addColorStop(0, '#ddd6fe')
+            designGradient.addColorStop(1, '#c4b5fd')
+            
+            tempCtx.fillStyle = designGradient
+            tempCtx.fillRect(relativeX, relativeY, scaledWidth, scaledHeight)
+            
+            // Add a stylish border
+            tempCtx.strokeStyle = '#8b5cf6'
+            tempCtx.lineWidth = 2
+            tempCtx.strokeRect(relativeX, relativeY, scaledWidth, scaledHeight)
+            
+            // Add "Your Design" text
+            tempCtx.fillStyle = '#6d28d9'
+            tempCtx.font = 'bold 12px Inter, sans-serif'
+            tempCtx.textAlign = 'center'
+            tempCtx.fillText('Your Design', relativeX + scaledWidth / 2, relativeY + scaledHeight / 2)
+          }
+        }
+        
+        // Draw text if visible (always CORS-safe)
+        if (textVisible && textContent) {
+          const scale = baseWidth / (mockupFit?.width || baseWidth)
+          const scaledFontSize = Math.max(12, textFontSize * scale)
+          
+          tempCtx.font = `${textSettings.fontWeight === 'bold' ? 'bold ' : ''}${scaledFontSize}px ${textSettings.fontFamily}`
+          tempCtx.fillStyle = textSettings.color
+          tempCtx.textAlign = 'left'
+          
+          // Calculate relative position and ensure it's visible
+          const relativeTextX = Math.max(10, (dragTextPos.x - 60 - (mockupFit?.x || 0)) * scale)
+          const relativeTextY = Math.max(scaledFontSize + 10, (dragTextPos.y - (mockupFit?.y || 0)) * scale)
+          
+          // Add text shadow for better visibility
+          tempCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+          tempCtx.shadowBlur = 2
+          tempCtx.shadowOffsetX = 1
+          tempCtx.shadowOffsetY = 1
+          
+          tempCtx.fillText(textContent, relativeTextX, relativeTextY)
+          
+          // Clear shadow for subsequent draws
+          tempCtx.shadowColor = 'transparent'
+          tempCtx.shadowBlur = 0
+          tempCtx.shadowOffsetX = 0
+          tempCtx.shadowOffsetY = 0
+        }
+        
+        // Safe canvas export to handle CORS taint
+        let previewDataUrl: string
+        try {
+          previewDataUrl = tempCanvas.toDataURL('image/png', 0.9)
+        } catch (error: any) {
+          if (error.message?.includes('insecure') || error.message?.includes('tainted') || error.name === 'SecurityError') {
+            console.warn('Fallback canvas is also tainted, using final fallback:', error.message)
+            // Create a completely clean canvas as final fallback
+            const cleanCanvas = document.createElement('canvas')
+            cleanCanvas.width = 400
+            cleanCanvas.height = 400
+            const cleanCtx = cleanCanvas.getContext('2d')!
+            
+            // Clean gradient background
+            const gradient = cleanCtx.createLinearGradient(0, 0, 0, 400)
+            gradient.addColorStop(0, '#f8fafc')
+            gradient.addColorStop(1, '#e2e8f0')
+            cleanCtx.fillStyle = gradient
+            cleanCtx.fillRect(0, 0, 400, 400)
+            
+            // Product outline
+            cleanCtx.strokeStyle = '#cbd5e1'
+            cleanCtx.lineWidth = 3
+            cleanCtx.fillStyle = '#ffffff'
+            cleanCtx.fillRect(100, 50, 200, 250)
+            cleanCtx.strokeRect(100, 50, 200, 250)
+            
+            // Text
+            cleanCtx.fillStyle = '#64748b'
+            cleanCtx.font = 'bold 16px sans-serif'
+            cleanCtx.textAlign = 'center'
+            cleanCtx.fillText('Custom Design Preview', 200, 200)
+            cleanCtx.fillText('Your design will appear here', 200, 230)
+            
+            previewDataUrl = cleanCanvas.toDataURL('image/png', 0.9)
+          } else {
+            throw error
+          }
+        }
+        
+        setPreviewUrl(previewDataUrl)
+        setPreviewOpen(true)
+        
+        // Show informative note about the preview with print area context
+        let note = ""
+        if (mockupImage) {
+          note = "Preview shows your design on the product. Final print quality will be optimized for production."
+        } else {
+          note = "Preview shows design layout. Actual product image will be included in the final result."
+        }
+        
+        // Add print area information
+        if (printAreas.length > 0 && activePrintArea) {
+          const activeArea = printAreas.find(area => area.id === activePrintArea)
+          if (activeArea) {
+            note += ` Currently viewing "${activeArea.name}" print area.`
+            if (activeArea.printMethods && activeArea.printMethods.length > 0) {
+              note += ` Available methods: ${activeArea.printMethods.join(', ')}.`
             }
           }
         }
-        setPreviewUrl(url)
-        setPreviewOpen(true)
-      } catch {
-        setPreviewUrl("")
-        setPreviewOpen(true)
-        setPreviewNote("Could not generate preview. Try a different image or check network/CORS settings.")
+        
+        setPreviewNote(note)
+        
+      } catch (error) {
+        console.error('Preview generation failed:', error)
+        
+        // Final fallback: Show a basic design representation
+        try {
+          const fallbackCanvas = document.createElement('canvas')
+          const fallbackCtx = fallbackCanvas.getContext('2d')
+          if (fallbackCtx) {
+            fallbackCanvas.width = 400
+            fallbackCanvas.height = 400
+            
+            fallbackCtx.fillStyle = '#f1f5f9'
+            fallbackCtx.fillRect(0, 0, 400, 400)
+            
+            fallbackCtx.fillStyle = '#64748b'
+            fallbackCtx.font = 'bold 24px Inter, sans-serif'
+            fallbackCtx.textAlign = 'center'
+            fallbackCtx.fillText('Design Preview', 200, 180)
+            
+            fallbackCtx.font = '16px Inter, sans-serif'
+            fallbackCtx.fillText('Your custom design', 200, 210)
+            fallbackCtx.fillText('will appear here', 200, 235)
+            
+            // Safe export for final fallback canvas
+            try {
+              setPreviewUrl(fallbackCanvas.toDataURL())
+            } catch (canvasError: any) {
+              // Even the clean fallback canvas failed - set empty URL
+              console.warn('Final fallback canvas export failed:', canvasError.message)
+              setPreviewUrl("")
+            }
+            setPreviewOpen(true)
+            setPreviewNote("Preview temporarily unavailable. Your design will be applied to the final product.")
+          }
+        } catch (fallbackError) {
+          setPreviewUrl("")
+          setPreviewOpen(true)
+          setPreviewNote("Preview unavailable due to browser security restrictions.")
+        }
       } finally {
         setPreviewLoading(false)
       }
-    }, [mockupTainted])
+    }, [mockupTainted, mockupFit, uploadedImg, uploadedPos, uploadedSize, textVisible, textContent, textSettings, textFontSize, dragTextPos, product])
 
     return (
         <>
-         <div className="flex h-screen bg-white">
+         <div className="flex h-screen bg-gray-50">
             {/* Far Left Toolbar */}
-            <div className="w-16 mx-auto px-2 bg-white flex flex-col items-center py-4 gap-1">
+            <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-1 shadow-sm">
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
-                    title="Product"
+                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 text-gray-600 transition-all duration-200"
+                    title="Back to Product"
                     onClick={() => router.back()}
                 >
                     <ChevronLeft className="w-5 h-5" />
-                    <span className="text-[10px]">Back</span>
+                    <span className="text-[9px] font-medium">Back</span>
                 </button>
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
-                    title="Product"
-                >
-                    <Upload className="w-5 h-5" />
-                    <span className="text-[10px]">Product</span>
-                </button>
-                <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
-                    title="Files"
+                    className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 ${
+                        leftSidebarTab === 'product' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                    }`}
+                    title="Product Options"
+                    onClick={() => setLeftSidebarTab('product')}
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    <span className="text-[10px]">Files</span>
+                    <span className="text-[9px] font-medium">Product</span>
                 </button>
+                <label className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 cursor-pointer ${
+                    leftSidebarTab === 'upload' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                }`}
+                  title="Upload Images"
+                  onClick={() => setLeftSidebarTab('upload')}
+                >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          const files = Array.from(e.target.files)
+                          files.forEach(file => {
+                            const reader = new FileReader()
+                            reader.onload = () => {
+                              const img = new window.Image()
+                              img.crossOrigin = 'anonymous'
+                              img.src = String(reader.result || '')
+                              img.onload = () => {
+                                let maxW = 240, maxH = 240, originX = 120, originY = 150
+                                const container = activeZoneRect || mockupFit
+                                if (container) {
+                                  maxW = Math.max(1, container.width)
+                                  maxH = Math.max(1, container.height)
+                                  originX = container.x
+                                  originY = container.y
+                                }
+                                const ratio = Math.min(maxW / img.width, maxH / img.height, 1)
+                                setUploadedSize({ width: Math.round(img.width * ratio), height: Math.round(img.height * ratio) })
+                                setUploadedPos({ x: Math.round(originX + (maxW - Math.round(img.width * ratio)) / 2), y: Math.round(originY + (maxH - Math.round(img.height * ratio)) / 2) })
+                                setUploadedImg(img)
+                                setImgSelected(true)
+                                setTimeout(() => pushHistory(snapshotNow()), 0)
+                              }
+                            }
+                            reader.readAsDataURL(file)
+                          })
+                        }
+                      }}
+                    />
+                    <Upload className="w-5 h-5" />
+                    <span className="text-[9px] font-medium">Upload</span>
+                </label>
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
-                    title="Text"
+                    className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 ${
+                        leftSidebarTab === 'text' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                    }`}
+                    title="Add Text"
                     onClick={() => {
-                      // Toggle text layer visibility and capture in history
-                      setTextVisible((prev) => {
-                        const next = !prev
-                        // snapshot after state settles
+                      setLeftSidebarTab('text')
+                      if (!textVisible) {
+                        setTextVisible(true)
                         setTimeout(() => pushHistory(snapshotNow()), 0)
-                        return next
-                      })
+                      }
                     }}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                    </svg>
-                    <span className="text-[10px]">Text</span>
+                    <Type className="w-5 h-5" />
+                    <span className="text-[9px] font-medium">Text</span>
                 </button>
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
+                    className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 ${
+                        leftSidebarTab === 'templates' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                    }`}
                     title="Templates"
+                    onClick={() => setLeftSidebarTab('templates')}
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
                     </svg>
-                    <span className="text-[10px]">Templates</span>
+                    <span className="text-[9px] font-medium">Templates</span>
                 </button>
                 <button
                     className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
@@ -741,13 +1239,26 @@ export default function TShirtDesigner(props: Props) {
                     <span className="text-[10px]">Graphics</span>
                 </button>
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
+                    className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 ${
+                        leftSidebarTab === 'layers' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                    }`}
                     title="Layers"
+                    onClick={() => setLeftSidebarTab('layers')}
+                >
+                    <Layers className="w-5 h-5" />
+                    <span className="text-[9px] font-medium">Layers</span>
+                </button>
+                <button
+                    className={`w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 transition-all duration-200 ${
+                        leftSidebarTab === 'areas' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                    }`}
+                    title="Print Areas"
+                    onClick={() => setLeftSidebarTab('areas')}
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span className="text-[10px]">Layers</span>
+                    <span className="text-[9px] font-medium">Areas</span>
                 </button>
                 <button
                     className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
@@ -760,15 +1271,14 @@ export default function TShirtDesigner(props: Props) {
                     <span className="text-[10px]">Shutterstock</span>
                 </button>
                 <button
-                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-gray-100 rounded gap-1 text-gray-700"
-                    title="Shapes"
+                    className="w-12 h-12 flex flex-col items-center justify-center hover:bg-blue-50 hover:text-blue-600 rounded-lg gap-1 text-gray-600 transition-all duration-200"
+                    title="Shapes & Graphics"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="3" strokeWidth={2} />
                         <rect x="5" y="5" width="6" height="6" strokeWidth={2} />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 8l-3 5 3 5" />
                     </svg>
-                    <span className="text-[10px]">Shapes</span>
+                    <span className="text-[9px] font-medium">Shapes</span>
                 </button>
                 <div className="flex-1"></div>
                 <button
@@ -782,135 +1292,571 @@ export default function TShirtDesigner(props: Props) {
                 </button>
             </div>
 
-            {/* Left Sidebar - Design Tools */}
-            <div className="w-80 border-r border-gray-200 p-6 overflow-y-auto">
-
-
-                {/* Product Info (dynamic) */}
-                {product && (
-                  <div className="mb-4" data-testid="design-left-product-info">
-                    {product.collection && (
-                      <LocalizedClientLink
-                        href={`/collections/${product.collection.handle}`}
-                        className="text-[12px] text-ui-fg-muted hover:text-ui-fg-subtle"
-                      >
-                        {product.collection.title}
-                      </LocalizedClientLink>
+            {/* Left Sidebar - Product Info & Options */}
+            <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+                {/* Header Section */}
+                <div className="p-6 border-b border-gray-100">
+                    {/* Product Info (dynamic) */}
+                    {product && (
+                      <div className="mb-4" data-testid="design-left-product-info">
+                        {product.collection && (
+                          <LocalizedClientLink
+                            href={`/collections/${product.collection.handle}`}
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            {product.collection.title}
+                          </LocalizedClientLink>
+                        )}
+                        <h1 className="font-bold text-lg mb-2 text-gray-900">
+                          {product.title}
+                        </h1>
+                        {(() => {
+                          const subtitleFromMeta = (product as any)?.metadata?.subtitle as string | undefined
+                          const raw = subtitleFromMeta || product.description || ''
+                          if (!raw) return null
+                          const firstSentenceMatch = raw.match(/[^.!?\n]+[.!?]?/)
+                          const first = firstSentenceMatch ? firstSentenceMatch[0] : raw
+                          const short = first.length > 160 ? first.slice(0, 157).trim() + '…' : first
+                          return <p className="text-sm text-gray-600 leading-relaxed">{short}</p>
+                        })()}
+                      </div>
                     )}
-                    <h2 className="font-semibold text-base mb-1 text-ui-fg-base">
-                      {product.title}
-                    </h2>
-                    {(() => {
-                      const subtitleFromMeta = (product as any)?.metadata?.subtitle as string | undefined
-                      const raw = subtitleFromMeta || product.description || ''
-                      if (!raw) return null
-                      const firstSentenceMatch = raw.match(/[^.!?\n]+[.!?]?/)
-                      const first = firstSentenceMatch ? firstSentenceMatch[0] : raw
-                      const short = first.length > 160 ? first.slice(0, 157).trim() + '…' : first
-                      return <p className="text-sm text-ui-fg-subtle">{short}</p>
-                    })()}
-                  </div>
-                )}
-
-                {/* Variant Options (PDP-style) */}
-                {product?.options && product.options.length > 0 && (
-                  <div className="mb-6" data-testid="design-left-variant-options">
-                    <div className="flex flex-col gap-y-4">
-                      {product.options.map((option) => (
-                        <div key={option.id}>
-                          <OptionSelect
-                            option={option}
-                            current={optionState[option.id]}
-                            updateOption={setOptionValue}
-                            title={option.title}
-                            disabled={false}
-                            data-testid="option-select"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Info Box */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold text-sm mb-2">Make your design stand out</h3>
-                    <p className="text-sm text-gray-700">
-                        Add prints to multiple areas to create a premium, branded look.{' '}
-                        <a href="#" className="text-blue-600 hover:underline">Learn More</a>
-                    </p>
                 </div>
 
+                {/* Functional Sidebar Content */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="p-6">
+                        {/* Tab Content */}
+                        {leftSidebarTab === 'product' && (
+                            <>
+                                {/* Variant Options (PDP-style) */}
+                                {product?.options && product.options.length > 0 && (
+                                  <div className="mb-6" data-testid="design-left-variant-options">
+                                    <h3 className="font-semibold text-sm mb-4 text-gray-900">Product Options</h3>
+                                    <div className="flex flex-col gap-y-4">
+                                      {product.options.map((option) => (
+                                        <div key={option.id}>
+                                          <OptionSelect
+                                            option={option}
+                                            current={optionState[option.id]}
+                                            updateOption={setOptionValue}
+                                            title={option.title}
+                                            disabled={false}
+                                            data-testid="option-select"
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
 
+                                {/* Design Tips */}
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 mb-6">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-sm mb-2 text-gray-900">Design Pro Tip</h3>
+                                            <p className="text-sm text-gray-700 leading-relaxed">
+                                                Add prints to multiple areas to create a premium, branded look. Use high-resolution images for best quality.
+                                            </p>
+                                            <a href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2 inline-block">Learn More →</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Upload Tab */}
+                        {leftSidebarTab === 'upload' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="font-semibold text-sm mb-4 text-gray-900">Upload Images</h3>
+                                    
+                                    {/* Enhanced Upload Area */}
+                                    <label className="relative block w-full h-32 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer group">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                if (e.target.files) {
+                                                    const files = Array.from(e.target.files)
+                                                    files.forEach(file => {
+                                                        const reader = new FileReader()
+                                                        reader.onload = () => {
+                                                            const img = new window.Image()
+                                                            img.crossOrigin = 'anonymous'
+                                                            img.src = String(reader.result || '')
+                                                            img.onload = () => {
+                                                                let maxW = 240, maxH = 240, originX = 120, originY = 150
+                                                                const container = activeZoneRect || mockupFit
+                                                                if (container) {
+                                                                    maxW = Math.max(1, container.width)
+                                                                    maxH = Math.max(1, container.height)
+                                                                    originX = container.x
+                                                                    originY = container.y
+                                                                }
+                                                                const ratio = Math.min(maxW / img.width, maxH / img.height, 1)
+                                                                setUploadedSize({ width: Math.round(img.width * ratio), height: Math.round(img.height * ratio) })
+                                                                setUploadedPos({ x: Math.round(originX + (maxW - Math.round(img.width * ratio)) / 2), y: Math.round(originY + (maxH - Math.round(img.height * ratio)) / 2) })
+                                                                setUploadedImg(img)
+                                                                setImgSelected(true)
+                                                                setTimeout(() => pushHistory(snapshotNow()), 0)
+                                                            }
+                                                        }
+                                                        reader.readAsDataURL(file)
+                                                    })
+                                                }
+                                            }}
+                                        />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                            <Upload className="w-8 h-8 text-gray-400 group-hover:text-blue-500 mb-2" />
+                                            <p className="text-sm text-gray-600 group-hover:text-blue-600 text-center">
+                                                <span className="font-medium">Click to upload</span> or drag and drop
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                                        </div>
+                                    </label>
+                                    
+                                    {/* Upload Progress */}
+                                    {Object.entries(uploadProgress).map(([filename, progress]) => (
+                                        <div key={filename} className="mt-3 p-3 bg-gray-50 rounded-lg">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-medium text-gray-700 truncate">{filename}</span>
+                                                <span className="text-xs text-gray-500">{progress}%</span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                                <div 
+                                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                                                    style={{ width: `${progress}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Recent Uploads */}
+                                {uploadedImg && (
+                                    <div>
+                                        <h4 className="font-medium text-sm text-gray-900 mb-3">Current Image</h4>
+                                        <div className="p-3 border border-gray-200 rounded-lg">
+                                            <div className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
+                                                <img 
+                                                    src={uploadedImg.src} 
+                                                    alt="Current upload"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                            <p className="text-xs text-gray-600">Click and drag on canvas to reposition</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Text Tab */}
+                        {leftSidebarTab === 'text' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="font-semibold text-sm mb-4 text-gray-900">Text Settings</h3>
+                                    
+                                    {/* Text Content */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Content</label>
+                                        <textarea
+                                            value={textContent}
+                                            onChange={(e) => setTextContent(e.target.value)}
+                                            placeholder="Enter your text here..."
+                                            className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                                            rows={3}
+                                        />
+                                    </div>
+
+                                    {/* Font Settings */}
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+                                            <div className="flex items-center space-x-2">
+                                                <input
+                                                    type="range"
+                                                    min="12"
+                                                    max="72"
+                                                    value={textFontSize}
+                                                    onChange={(e) => setTextFontSize(Number(e.target.value))}
+                                                    className="flex-1"
+                                                />
+                                                <span className="text-sm font-medium text-gray-600 w-8">{textFontSize}</span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
+                                            <select
+                                                value={textSettings.fontFamily}
+                                                onChange={(e) => setTextSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
+                                                className="w-full p-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            >
+                                                <option value="Inter">Inter</option>
+                                                <option value="Arial">Arial</option>
+                                                <option value="Helvetica">Helvetica</option>
+                                                <option value="Times New Roman">Times New Roman</option>
+                                                <option value="Georgia">Georgia</option>
+                                                <option value="Courier New">Courier New</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Font Weight</label>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {['normal', 'bold', 'lighter'].map((weight) => (
+                                                    <button
+                                                        key={weight}
+                                                        onClick={() => setTextSettings(prev => ({ ...prev, fontWeight: weight }))}
+                                                        className={`p-2 rounded-lg border text-sm font-medium transition-all ${
+                                                            textSettings.fontWeight === weight
+                                                                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                                : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                                                        }`}
+                                                    >
+                                                        {weight.charAt(0).toUpperCase() + weight.slice(1)}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                                            <div className="flex items-center space-x-2">
+                                                <input
+                                                    type="color"
+                                                    value={textSettings.color}
+                                                    onChange={(e) => setTextSettings(prev => ({ ...prev, color: e.target.value }))}
+                                                    className="w-12 h-10 rounded-lg border border-gray-200"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={textSettings.color}
+                                                    onChange={(e) => setTextSettings(prev => ({ ...prev, color: e.target.value }))}
+                                                    className="flex-1 p-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Text Actions */}
+                                    <div className="pt-4 border-t border-gray-200">
+                                        <button
+                                            onClick={() => {
+                                                if (!textVisible) {
+                                                    setTextVisible(true)
+                                                    setTimeout(() => pushHistory(snapshotNow()), 0)
+                                                }
+                                            }}
+                                            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                        >
+                                            {textVisible ? 'Update Text' : 'Add Text to Design'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Templates Tab */}
+                        {leftSidebarTab === 'templates' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="font-semibold text-sm mb-4 text-gray-900">Design Templates</h3>
+                                    
+                                    {/* Template Categories */}
+                                    <div className="grid grid-cols-2 gap-3 mb-4">
+                                        {['Business', 'Personal', 'Events', 'Logos'].map((category) => (
+                                            <button
+                                                key={category}
+                                                className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-sm font-medium text-gray-700"
+                                            >
+                                                {category}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Template Grid */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {Array.from({ length: 6 }, (_, i) => (
+                                            <div key={i} className="aspect-square bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer border-2 border-transparent hover:border-blue-300">
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <span className="text-gray-500 text-sm">Template {i + 1}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Layers Tab */}
+                        {leftSidebarTab === 'layers' && (
+                            <div className="space-y-4">
+                                <h3 className="font-semibold text-sm mb-4 text-gray-900">Layers</h3>
+                                
+                                {/* Layer List */}
+                                <div className="space-y-2">
+                                    {/* Background Layer */}
+                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                                            <span className="text-sm text-gray-600">Background</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <button className="text-gray-400 hover:text-gray-600">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Image Layer */}
+                                    {uploadedImg && (
+                                        <div className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                                            imgSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
+                                        }`}>
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                                                <span className="text-sm text-gray-700">Uploaded Image</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <button 
+                                                    className="text-gray-400 hover:text-gray-600"
+                                                    onClick={() => setImgSelected(true)}
+                                                >
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                                <button 
+                                                    className="text-red-400 hover:text-red-600"
+                                                    onClick={() => {
+                                                        setUploadedImg(null)
+                                                        setImgSelected(false)
+                                                        setTimeout(() => pushHistory(snapshotNow()), 0)
+                                                    }}
+                                                >
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Text Layer */}
+                                    {textVisible && (
+                                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-gray-200">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                                                <span className="text-sm text-gray-700">Text Layer</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <button className="text-gray-400 hover:text-gray-600">
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                                <button 
+                                                    className="text-red-400 hover:text-red-600"
+                                                    onClick={() => {
+                                                        setTextVisible(false)
+                                                        setTimeout(() => pushHistory(snapshotNow()), 0)
+                                                    }}
+                                                >
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Print Areas Tab - Gelato Style */}
+                        {leftSidebarTab === 'areas' && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold text-sm text-gray-900">Print Areas</h3>
+                                    <button
+                                        onClick={() => setShowPrintAreaBounds(!showPrintAreaBounds)}
+                                        className={`p-2 rounded-lg transition-colors ${
+                                            showPrintAreaBounds ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                        }`}
+                                        title={showPrintAreaBounds ? 'Hide boundaries' : 'Show boundaries'}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                {/* Print Areas List */}
+                                <div className="space-y-3">
+                                    {printAreas.length > 0 ? printAreas.map((area) => (
+                                        <div
+                                            key={area.id}
+                                            className={`p-4 rounded-xl border-2 transition-all cursor-pointer hover:shadow-md ${
+                                                area.id === activePrintArea 
+                                                    ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                                                    : 'border-gray-200 bg-white hover:border-blue-300'
+                                            }`}
+                                            onClick={() => setActivePrintArea(area.id)}
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-3 h-3 rounded-full ${
+                                                        area.type === 'front' ? 'bg-blue-500' : 
+                                                        area.type === 'back' ? 'bg-green-500' : 
+                                                        area.type === 'sleeve' ? 'bg-purple-500' : 'bg-gray-500'
+                                                    }`} />
+                                                    <span className="font-semibold text-sm text-gray-900">{area.name}</span>
+                                                </div>
+                                                {area.id === activePrintArea && (
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                                                )}
+                                            </div>
+                                            
+                                            <div className="space-y-2 text-xs text-gray-600">
+                                                <div className="flex justify-between">
+                                                    <span>Type:</span>
+                                                    <span className="font-medium capitalize">{area.type}</span>
+                                                </div>
+                                                {area.constraints && (
+                                                    <div className="flex justify-between">
+                                                        <span>Max size:</span>
+                                                        <span className="font-medium">
+                                                            {area.constraints.maxWidth}×{area.constraints.maxHeight}px
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {area.printMethods && (
+                                                    <div className="flex justify-between">
+                                                        <span>Methods:</span>
+                                                        <span className="font-medium capitalize">
+                                                            {area.printMethods.join(', ')}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {area.pricing && (
+                                                    <div className="flex justify-between">
+                                                        <span>Base cost:</span>
+                                                        <span className="font-medium text-green-600">
+                                                            ${area.pricing.basePrice?.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <div className="text-center py-8 text-gray-500">
+                                            <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <p className="font-medium">No print areas configured</p>
+                                            <p className="text-sm mt-1">Select a different variant to see print areas</p>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Print Area Guidelines */}
+                                {printAreas.length > 0 && (
+                                    <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                        <div className="flex items-start gap-3">
+                                            <svg className="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <div className="text-amber-800 text-sm">
+                                                <p className="font-medium mb-2">Design Guidelines</p>
+                                                <ul className="space-y-1 text-xs">
+                                                    <li>• Keep designs within the highlighted print areas</li>
+                                                    <li>• Use high-resolution images (300 DPI or higher)</li>
+                                                    <li>• Avoid placing text too close to boundaries</li>
+                                                    <li>• Consider print method limitations for color count</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
-            {/* Center - Product Preview */}
-            <div className="flex-1 flex flex-col">
-                {/* Top Toolbar */}
-                <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-gray-100 rounded">
-                            <Info className="w-5 h-5" />
-                        </button>
-                        <button
-                          className={`p-2 rounded ${canUndo ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                          title="Undo"
-                          onClick={handleUndo}
-                          disabled={!canUndo}
-                        >
-                            <Undo className="w-5 h-5" />
-                        </button>
-                        <button
-                          className={`p-2 rounded ${canRedo ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                          title="Redo"
-                          onClick={handleRedo}
-                          disabled={!canRedo}
-                        >
-                            <Redo className="w-5 h-5" />
-                        </button>
-                        {/* Zoom controls */}
-                        <div className="flex items-center gap-1 ml-2">
-                          <button
-                            type="button"
-                            className="p-2 hover:bg-gray-100 rounded"
-                            title="Zoom out"
-                            onClick={() => {
-                              setStageScale((prev) => {
-                                const next = Math.max(MIN_SCALE, prev / SCALE_BY)
-                                return Number(next.toFixed(3))
-                              })
-                            }}
-                          >
-                            <Minus className="w-5 h-5" />
-                          </button>
-                          <span className="text-sm w-14 text-center tabular-nums">
-                            {Math.round(stageScale * 100)}%
-                          </span>
-                          <button
-                            type="button"
-                            className="p-2 hover:bg-gray-100 rounded"
-                            title="Zoom in"
-                            onClick={() => {
-                              setStageScale((prev) => {
-                                const next = Math.min(MAX_SCALE, prev * SCALE_BY)
-                                return Number(next.toFixed(3))
-                              })
-                            }}
-                          >
-                            <Plus className="w-5 h-5" />
-                          </button>
-                          <button
-                            type="button"
-                            className="p-2 hover:bg-gray-100 rounded"
-                            title="Reset view"
-                            onClick={() => {
-                              const next = DEFAULT_ZOOM
-                              setStageScale(next)
-                              setStagePos(computeCenteredPos(next))
-                            }}
-                          >
-                            <RotateCcw className="w-5 h-5" />
-                          </button>
+            {/* Center - Canvas & Design Area */}
+            <div className="flex-1 flex flex-col bg-white">
+                {/* Modern Top Toolbar */}
+                <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center bg-gray-50 rounded-lg p-1 gap-1">
+                            <button className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all duration-200 text-gray-600">
+                                <Info className="w-4 h-4" />
+                            </button>
+                            <div className="w-px h-6 bg-gray-200" />
+                            <button
+                              className={`p-2 rounded-md transition-all duration-200 ${canUndo ? 'hover:bg-white hover:shadow-sm text-gray-700' : 'opacity-40 cursor-not-allowed text-gray-400'}`}
+                              title="Undo"
+                              onClick={handleUndo}
+                              disabled={!canUndo}
+                            >
+                                <Undo className="w-4 h-4" />
+                            </button>
+                            <button
+                              className={`p-2 rounded-md transition-all duration-200 ${canRedo ? 'hover:bg-white hover:shadow-sm text-gray-700' : 'opacity-40 cursor-not-allowed text-gray-400'}`}
+                              title="Redo"
+                              onClick={handleRedo}
+                              disabled={!canRedo}
+                            >
+                                <Redo className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {/* Modern Zoom Controls */}
+                        <div className="flex items-center bg-gray-50 rounded-lg p-1 gap-1 ml-3">
+                            <button
+                              type="button"
+                              className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all duration-200 text-gray-700"
+                              title="Zoom out"
+                              onClick={handleZoomOut}
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm w-16 text-center tabular-nums font-medium text-gray-700 bg-white rounded-md py-2 px-3 shadow-sm">
+                              {Math.round(stageScale * 100)}%
+                            </span>
+                            <button
+                              type="button"
+                              className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all duration-200 text-gray-700"
+                              title="Zoom in"
+                              onClick={handleZoomIn}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                            <div className="w-px h-6 bg-gray-200" />
+                            <button
+                              type="button"
+                              className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all duration-200 text-gray-700"
+                              title="Reset view"
+                              onClick={handleZoomReset}
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
                         </div>
                         {/* Variant selector moved to left sidebar */}
                     </div>
@@ -926,8 +1872,10 @@ export default function TShirtDesigner(props: Props) {
                             {errorMessage}
                           </div>
                         )}
-                        {/* Upload image into canvas */}
-                        <label className="px-6 py-2 border border-gray-500 text-sm rounded-lg hover:bg-gray-100 font-medium cursor-pointer">
+                        {/* Modern Upload Button */}
+                        <label className="px-4 py-2.5 bg-white border-2 border-gray-300 text-sm rounded-xl hover:border-blue-400 hover:bg-blue-50 font-medium cursor-pointer transition-all duration-200 flex items-center gap-2 shadow-sm">
+                            <Upload className="w-4 h-4" />
+                            <span>Upload Image</span>
                             <input
                               type="file"
                               accept="image/*"
@@ -962,13 +1910,12 @@ export default function TShirtDesigner(props: Props) {
                                 reader.readAsDataURL(file)
                               }}
                             />
-                            Upload image
-                          </label>
+                        </label>
                         <button
                           type="button"
                           onClick={handlePreview}
                           disabled={previewLoading}
-                          className="px-6 py-2 border border-gray-500 text-sm rounded-lg hover:bg-gray-100 font-medium disabled:opacity-50"
+                          className="px-4 py-2.5 bg-white border-2 border-gray-300 text-sm rounded-xl hover:border-gray-400 hover:bg-gray-50 font-medium disabled:opacity-50 transition-all duration-200 shadow-sm"
                         >
                             {previewLoading ? 'Preparing…' : 'Preview'}
                         </button>
@@ -987,7 +1934,7 @@ export default function TShirtDesigner(props: Props) {
                           <button
                             ref={priceBtnRef}
                             type="button"
-                            className="flex items-center gap-1 text-xl font-bold px-2 py-1 rounded hover:bg-gray-100 whitespace-nowrap"
+                            className="flex items-center gap-2 text-xl font-bold px-3 py-2 rounded-xl hover:bg-gray-50 whitespace-nowrap transition-all duration-200"
                             title="Show price details"
                             aria-expanded={showPriceDetails}
                           >
@@ -996,7 +1943,7 @@ export default function TShirtDesigner(props: Props) {
                             >
                               {priceString || '—'}
                             </span>
-                            <ChevronDown className={`transition-transform ${showPriceDetails ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 transition-transform ${showPriceDetails ? 'rotate-180' : ''}`} />
                           </button>
                           {/* DPI badge next to price (inline, not absolutely positioned) */}
                           <span
@@ -1044,10 +1991,30 @@ export default function TShirtDesigner(props: Props) {
                     </div>
                 </div>
 
-                {/* Product Image - Full-bleed canvas area */}
-                <div className="flex-1 relative">
-                    {/* Konva canvas fills the entire center area */}
-                    <div ref={canvasContainerRef} className="absolute inset-0">
+                {/* Modern Canvas Area with Drag & Drop */}
+                <div 
+                    className={`flex-1 relative transition-all duration-200 ${
+                        isDragOver ? 'bg-blue-100 border-4 border-dashed border-blue-400' : 'bg-gray-50'
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
+                    {/* Professional canvas container with subtle pattern */}
+                    <div ref={canvasContainerRef} className="absolute inset-0" style={{
+                        backgroundImage: isDragOver ? 'none' : `radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px)`,
+                        backgroundSize: '20px 20px'
+                    }}>
+                        {/* Drag overlay */}
+                        {isDragOver && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 backdrop-blur-sm">
+                                <div className="text-center">
+                                    <Upload className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold text-blue-700 mb-2">Drop your image here</h3>
+                                    <p className="text-blue-600">Release to add to your design</p>
+                                </div>
+                            </div>
+                        )}
                         {stageSize.width > 0 && stageSize.height > 0 && (
                             <Stage
                               ref={stageRef}
@@ -1058,7 +2025,7 @@ export default function TShirtDesigner(props: Props) {
                               scaleY={stageScale}
                               x={stagePos.x}
                               y={stagePos.y}
-                              draggable={stageScale > 1}
+                              draggable={false}
                               onMouseDown={(e: any) => {
                                 // Deselect when clicking empty space (stage) or non-design layers
                                 const clickedOnEmpty = e.target === e.target.getStage()
@@ -1066,27 +2033,15 @@ export default function TShirtDesigner(props: Props) {
                                   setImgSelected(false)
                                 }
                               }}
-                              onDragEnd={(e) => setStagePos({ x: e.target.x(), y: e.target.y() })}
                               onWheel={(e: any) => {
                                 e.evt.preventDefault()
-                                const stage = stageRef.current
-                                if (!stage) return
-                                const oldScale = stageScale
-                                const pointer = stage.getPointerPosition()
-                                if (!pointer) return
-                                const mousePointTo = {
-                                  x: (pointer.x - stagePos.x) / oldScale,
-                                  y: (pointer.y - stagePos.y) / oldScale,
-                                }
                                 const direction = e.evt.deltaY > 0 ? -1 : 1
-                                const newScaleRaw = direction > 0 ? oldScale * SCALE_BY : oldScale / SCALE_BY
+                                const newScaleRaw = direction > 0 ? stageScale * SCALE_BY : stageScale / SCALE_BY
                                 const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleRaw))
-                                const newPos = {
-                                  x: pointer.x - mousePointTo.x * newScale,
-                                  y: pointer.y - mousePointTo.y * newScale,
-                                }
+                                
+                                // Center-locked zoom: always zoom towards center
                                 setStageScale(Number(newScale.toFixed(3)))
-                                setStagePos({ x: Math.round(newPos.x), y: Math.round(newPos.y) })
+                                setStagePos(computeCenteredPos(newScale))
                               }}
                             >
                                 {/* Background/mockup layer */}
@@ -1098,9 +2053,64 @@ export default function TShirtDesigner(props: Props) {
                                       <Rect x={0} y={0} width={stageSize.width} height={stageSize.height} fill="#f3f4f6" />
                                     )}
                                 </Layer>
-                                {/* Guides layer: show active mockup zone if available */}
+                                {/* Enhanced Print Areas Layer - Gelato Style */}
                                 <Layer listening={false}>
-                                  {activeZoneRect && (
+                                  {showPrintAreaBounds && printAreas.map((area, index) => {
+                                    const isActive = area.id === activePrintArea
+                                    const bounds = area.boundaries || area.position
+                                    if (!bounds) return null
+                                    
+                                    return (
+                                      <React.Fragment key={area.id}>
+                                        {/* Print area boundary */}
+                                        <Rect
+                                          x={bounds.x || 0}
+                                          y={bounds.y || 0}
+                                          width={bounds.w || bounds.width || 100}
+                                          height={bounds.h || bounds.height || 100}
+                                          stroke={isActive ? "#3b82f6" : "#94a3b8"}
+                                          strokeWidth={isActive ? 3 : 2}
+                                          dash={isActive ? [8, 4] : [4, 4]}
+                                          opacity={isActive ? 0.9 : 0.6}
+                                        />
+                                        {/* Print area label */}
+                                        <Rect
+                                          x={(bounds.x || 0) - 2}
+                                          y={(bounds.y || 0) - 24}
+                                          width={Math.max(60, area.name.length * 8)}
+                                          height={20}
+                                          fill={isActive ? "#3b82f6" : "#64748b"}
+                                          cornerRadius={4}
+                                          opacity={0.9}
+                                        />
+                                        <Text
+                                          x={(bounds.x || 0) + 6}
+                                          y={(bounds.y || 0) - 20}
+                                          text={area.name}
+                                          fontSize={12}
+                                          fontFamily="Inter, sans-serif"
+                                          fill="white"
+                                          fontWeight="600"
+                                        />
+                                        {/* Corner markers for active area */}
+                                        {isActive && (
+                                          <>
+                                            {/* Top-left */}
+                                            <Rect x={bounds.x - 3} y={bounds.y - 3} width={10} height={10} fill="#3b82f6" />
+                                            {/* Top-right */}
+                                            <Rect x={bounds.x + (bounds.w || bounds.width) - 7} y={bounds.y - 3} width={10} height={10} fill="#3b82f6" />
+                                            {/* Bottom-left */}
+                                            <Rect x={bounds.x - 3} y={bounds.y + (bounds.h || bounds.height) - 7} width={10} height={10} fill="#3b82f6" />
+                                            {/* Bottom-right */}
+                                            <Rect x={bounds.x + (bounds.w || bounds.width) - 7} y={bounds.y + (bounds.h || bounds.height) - 7} width={10} height={10} fill="#3b82f6" />
+                                          </>
+                                        )}
+                                      </React.Fragment>
+                                    )
+                                  })}
+                                  
+                                  {/* Fallback: Legacy mockup zone display if no print areas */}
+                                  {printAreas.length === 0 && activeZoneRect && (
                                     <Rect
                                       x={activeZoneRect.x}
                                       y={activeZoneRect.y}
@@ -1133,10 +2143,11 @@ export default function TShirtDesigner(props: Props) {
                                         <Text
                                           x={dragTextPos.x - 60}
                                           y={dragTextPos.y - 14}
-                                          text={textContent}
+                                          text={textContent || 'Sample Text'}
                                           fontSize={textFontSize}
-                                          fill="#ffffff"
-                                          fontStyle="bold"
+                                          fill={textSettings.color}
+                                          fontFamily={textSettings.fontFamily}
+                                          fontStyle={textSettings.fontWeight === 'bold' ? 'bold' : 'normal'}
                                           draggable
                                           onDblClick={() => {
                                             const next = window.prompt('Edit text', textContent || '')
@@ -1271,75 +2282,172 @@ export default function TShirtDesigner(props: Props) {
                     </div>
                 </div>
 
-                {/* Bottom - Design Placements */}
-                <div className="content-container p-4">
-                    <div className="flex gap-3 justify-center">
-                        {views.map((view) => (
-                            <button
-                                key={view.id}
-                                onClick={() => setSelectedView(view.id)}
-                                className={`flex flex-col items-center gap-2 p-3 rounded transition-colors ${
-                                    selectedView === view.id
-                                        ? 'bg-gray-100 border-2 border-gray-900'
-                                        : 'bg-white border-2 border-gray-200 hover:border-gray-300'
-                                }`}
-                            >
-                                <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                                    <div className="w-12 h-12 bg-white rounded" />
-                                </div>
-                                <span className="text-xs font-medium">{view.label}</span>
-                            </button>
-                        ))}
+                {/* Modern Bottom Panel - View Selector */}
+                <div className="bg-white border-t border-gray-200 p-6">
+                    <div className="max-w-4xl mx-auto">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 text-center">Design Areas</h3>
+                        <div className="flex gap-4 justify-center">
+                            {views.map((view) => (
+                                <button
+                                    key={view.id}
+                                    onClick={() => setSelectedView(view.id)}
+                                    className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 ${
+                                        selectedView === view.id
+                                            ? 'bg-blue-50 border-2 border-blue-500 shadow-lg transform scale-105'
+                                            : 'bg-white border-2 border-gray-200 hover:border-blue-300 hover:shadow-md hover:scale-102'
+                                    }`}
+                                >
+                                    <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-colors ${
+                                        selectedView === view.id ? 'bg-blue-100' : 'bg-gray-50'
+                                    }`}>
+                                        <div className={`w-14 h-14 rounded-lg transition-colors ${
+                                            selectedView === view.id ? 'bg-white shadow-sm' : 'bg-white'
+                                        }`} />
+                                    </div>
+                                    <span className={`text-sm font-medium transition-colors ${
+                                        selectedView === view.id ? 'text-blue-700' : 'text-gray-700'
+                                    }`}>{view.label}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        {/* Preview Modal */}
+        {/* Enhanced Preview Modal */}
         {previewOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
             role="dialog"
             aria-modal="true"
             onMouseDown={() => setPreviewOpen(false)}
           >
             <div
-              className="bg-white rounded-xl shadow-2xl w-[min(92vw,900px)] max-h-[80vh] overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-[min(95vw,1200px)] max-h-[90vh] overflow-hidden"
               onMouseDown={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="text-base font-semibold">Preview</h3>
+              {/* Enhanced Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Design Preview</h3>
+                    <p className="text-sm text-gray-600">Your customized {product?.title || 'product'}</p>
+                  </div>
+                </div>
                 <div className="flex items-center gap-3">
-                  {/* Price display */}
-                  <span className="text-lg font-bold whitespace-nowrap">{priceString || '—'}</span>
-                  {/* Place order triggers finalize */}
+                  {/* DPI Quality Indicator */}
+                  {dpiInfo.dpi && (
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${dpiInfo.tone === 'good' ? 'bg-emerald-100 text-emerald-700' : dpiInfo.tone === 'fair' ? 'bg-amber-100 text-amber-700' : dpiInfo.tone === 'poor' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {dpiInfo.dpi} DPI - {dpiInfo.label}
+                    </div>
+                  )}
+                  {/* Price Display */}
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600">Total Price</div>
+                    <div className="text-xl font-bold text-gray-900">{priceString || '—'}</div>
+                  </div>
+                  {/* Close Button */}
+                  <button
+                    type="button"
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    aria-label="Close preview"
+                    onClick={() => setPreviewOpen(false)}
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Preview Content */}
+              <div className="p-8 overflow-auto bg-gradient-to-br from-gray-50 to-gray-100" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+                {previewUrl ? (
+                  <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="relative">
+                      {/* Drop shadow container */}
+                      <div className="absolute inset-0 translate-x-2 translate-y-2 bg-black/20 rounded-2xl blur-xl"></div>
+                      {/* Preview image */}
+                      <img 
+                        src={previewUrl} 
+                        alt="Design preview" 
+                        className="relative bg-white rounded-2xl shadow-2xl max-w-full h-auto border-8 border-white"
+                        style={{ maxHeight: '600px', objectFit: 'contain' }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-600 font-medium">No preview available</p>
+                      <p className="text-gray-500 text-sm mt-1">Add some design elements to see a preview</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Preview Notes */}
+                {previewNote && (
+                  <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <p className="text-amber-800 text-sm">{previewNote}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Enhanced Footer */}
+              <div className="flex items-center justify-between p-6 border-t border-gray-100 bg-white">
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handlePreview}
+                    disabled={previewLoading}
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  >
+                    Refresh Preview
+                  </button>
+                  <div className="text-sm text-gray-500">
+                    High-resolution preview ready for production
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewOpen(false)}
+                    className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  >
+                    Continue Editing
+                  </button>
                   <button
                     type="button"
                     onClick={() => { if (onFinalize) onFinalize() }}
                     disabled={!!submitting}
-                    className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+                    className="px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold shadow-lg"
                   >
-                    {submitting ? 'Placing…' : 'Place order'}
-                  </button>
-                  <button
-                    type="button"
-                    className="p-2 rounded hover:bg-gray-100"
-                    aria-label="Close preview"
-                    onClick={() => setPreviewOpen(false)}
-                  >
-                    ✕
+                    {submitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Adding to Cart...
+                      </div>
+                    ) : (
+                      'Add to Cart'
+                    )}
                   </button>
                 </div>
-              </div>
-              <div className="p-4 overflow-auto" style={{ maxHeight: 'calc(80vh - 64px)' }}>
-                {previewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={previewUrl} alt="Design preview" className="max-w-full h-auto mx-auto" />
-                ) : (
-                  <div className="text-sm text-gray-600">No preview available.</div>
-                )}
-                {previewNote && (
-                  <p className="mt-3 text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">{previewNote}</p>
-                )}
               </div>
             </div>
           </div>
