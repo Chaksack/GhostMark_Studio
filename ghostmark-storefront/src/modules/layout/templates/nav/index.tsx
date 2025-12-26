@@ -8,10 +8,10 @@ import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import WishlistButton from "@modules/layout/components/wishlist-button"
-import { Search } from "lucide-react"
 import { DropdownMenu } from "./dropdown-menu"
 import { Ghost } from 'lucide-react';
 import { retrieveCustomer } from "@lib/data/customer"
+import SearchBox from "@modules/layout/components/search"
 
 
 export default async function Nav() {
@@ -78,13 +78,8 @@ export default async function Nav() {
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="relative w-1/2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full border border-ui-border-base rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-ui-fg-base focus:border-ui-fg-base"
-              />
+            <div className="w-1/2">
+              <SearchBox />
             </div>
             <Suspense
               fallback={

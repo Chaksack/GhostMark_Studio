@@ -39,6 +39,28 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   const router = useRouter()
   const countryCode = useParams().countryCode as string
 
+  // Helper to extract a normalized product type string
+  const productType = useMemo(() => {
+    const p: any = product as any
+    const t = p?.type ?? p?.product_type
+    let raw: string | undefined
+    if (!t) raw = undefined
+    else if (typeof t === "string") raw = t
+    else raw = t?.value || t?.title || t?.name || t?.handle
+    return (raw || "").toString().trim().toLowerCase()
+  }, [product])
+
+  // Helper to check if product is customizable (POD)
+  const isCustomizable = useMemo(() => {
+    const customizableTypes = ['t-shirt', 'tshirt', 'hoodie', 'mug', 'sticker', 'poster', 'canvas', 'pillow', 'phone case', 'pod']
+    return customizableTypes.some(type => productType.includes(type) || productType === type)
+  }, [productType])
+
+  // Explicit flag for POD products (print-on-demand)
+  const isPOD = useMemo(() => {
+    return productType === 'pod' || productType.includes('pod')
+  }, [productType])
+
   const price = getProductPrice({
     product: product,
     variantId: variant?.id,
@@ -121,10 +143,14 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               </Button>}
               <Button
                 onClick={() => {
-                  if (!product?.id) return
-                  const params = new URLSearchParams()
-                  if (variant?.id) params.set("v_id", variant.id)
-                  router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
+                  if (isCustomizable) {
+                    if (!product?.id) return
+                    const params = new URLSearchParams()
+                    if (variant?.id) params.set("v_id", variant.id)
+                    router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
+                  } else {
+                    handleAddToCart()
+                  }
                 }}
                 disabled={!inStock || !variant}
                 className="w-full"
@@ -135,7 +161,11 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   ? "Select variant"
                   : !inStock
                   ? "Out of stock"
-                  : "Customise & Purchase"}
+                  : isPOD
+                  ? "customise & checkout"
+                  : isCustomizable
+                  ? "Customize and Checkout"
+                  : "Buy now"}
               </Button>
             </div>
           </div>

@@ -1,8 +1,8 @@
 {
   "name": "muta",
   "version": "0.0.1",
-  "description": "A starter for Medusa projects.",
-  "author": "Medusa (https://medusajs.com)",
+  "description": "GhostMark Studio - Custom product design platform.",
+  "author": "GhostMark Studio",
   "license": "MIT",
   "keywords": [
     "sqlite",
@@ -29,7 +29,8 @@
     "@medusajs/auth": "2.11.3",
     "@medusajs/auth-google": "2.11.3",
     "@medusajs/auth-emailpass": "2.11.3",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^6.9.15",
+    "@heroicons/react": "^2.2.0"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.11.3",

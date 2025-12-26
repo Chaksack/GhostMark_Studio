@@ -56,30 +56,34 @@ export const listProducts = async ({
   try {
     // Respect caller-supplied `fields` (e.g., PDP needs options/variants.options)
     const customFields = (queryParams as any)?.fields as string | undefined
-    // Build a retry mechanism that starts with the safest request first to avoid
-    // MikroORM joined filter issues on some backends. We gradually increase richness.
+    // Optimized field selection for better performance - start with essential fields
+    // and gradually add more complex joins if needed
     const fieldAttempts: (string | null)[] = customFields && customFields.trim().length
       ? [
           // Try exactly what the caller requested
           customFields,
-          // Then try with no explicit fields to let backend defaults apply
+          // Then try optimized essential fields
+          "*variants.calculated_price,+metadata,+options,+variants.options,+images,+type,+categories",
+          // Add inventory and variant images
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type,+categories",
+          // Add tags for better filtering support
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+type,+categories",
+          // Last resort with product_tags joins
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+product_tags,+product_tags.tag,+type,+categories",
+          // Fallback to no explicit fields
           null,
-          // Then a minimal essential set
-          "*variants.calculated_price,+metadata",
-          // Then add common variant fields still considered safe
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags",
-          // Last resort (most join heavy) — include product_tags joins which some setups can't handle
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,+product_tags,+product_tags.tag",
         ]
       : [
-          // Start safest: omit fields entirely
+          // Start with optimized essential fields including type and categories
+          "*variants.calculated_price,+metadata,+options,+variants.options,+images,+type,+categories",
+          // Add inventory and variant images
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type,+categories",
+          // Add tags for better filtering support
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+type,+categories",
+          // Include product_tags joins if supported
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+product_tags,+product_tags.tag,+type,+categories",
+          // Fallback to no explicit fields
           null,
-          // Minimal essentials (price + metadata)
-          "*variants.calculated_price,+metadata",
-          // Add images/inventory and tags (but avoid product_tags join)
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags",
-          // Heaviest last: include product_tags join shapes that may cause 500s
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,+product_tags,+product_tags.tag",
         ]
 
     let lastError: any = null
@@ -160,19 +164,21 @@ export const listProducts = async ({
 }
 
 /**
- * This will fetch 100 products to the Next.js cache and sort them based on the sortBy parameter.
- * It will then return the paginated products based on the page and limit parameters.
+ * Enhanced product listing with sorting and optional type filtering
+ * Uses backend pagination and ordering for better performance
  */
 export const listProductsWithSort = async ({
   page = 0,
   queryParams,
   sortBy = "created_at",
   countryCode,
+  productType,
 }: {
   page?: number
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
   sortBy?: SortOptions
   countryCode: string
+  productType?: string
 }): Promise<{
   response: { products: HttpTypes.StoreProduct[]; count: number }
   nextPage: number | null
@@ -181,20 +187,55 @@ export const listProductsWithSort = async ({
   // Use backend pagination and ordering to avoid fetching large datasets (which may time out)
   const limit = queryParams?.limit || 12
 
+  // Build enhanced query params with optional type filtering
+  let enhancedQueryParams = {
+    ...queryParams,
+    limit,
+    // Prefer backend ordering when available; fallback to created_at
+    order: (queryParams as any)?.order || (sortBy as string) || "created_at",
+  }
+
+  // Try to add type filtering at the backend level if productType is specified
+  // This reduces the need for client-side filtering
+  if (productType && !queryParams?.collection_id && !queryParams?.category_id) {
+    // For global product type searches, try backend filtering first
+    try {
+      const typeFilteredParams = {
+        ...enhancedQueryParams,
+        type: productType,
+      }
+      
+      const { response, nextPage: serverNextPage } = await listProducts({
+        pageParam: Math.max(page, 1),
+        queryParams: typeFilteredParams,
+        countryCode,
+      })
+
+      // If backend filtering worked (returned some products), use it
+      if (response.products.length > 0 || response.count > 0) {
+        return {
+          response,
+          nextPage: serverNextPage,
+          queryParams: typeFilteredParams,
+        }
+      }
+    } catch (error) {
+      // Backend type filtering failed, fall back to standard approach
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("Backend type filtering failed, falling back to standard approach:", error)
+      }
+    }
+  }
+
   const { response, nextPage: serverNextPage } = await listProducts({
     pageParam: Math.max(page, 1),
-    queryParams: {
-      ...queryParams,
-      limit,
-      // Prefer backend ordering when available; fallback to created_at
-      order: (queryParams as any)?.order || (sortBy as string) || "created_at",
-    },
+    queryParams: enhancedQueryParams,
     countryCode,
   })
 
   return {
     response,
     nextPage: serverNextPage,
-    queryParams,
+    queryParams: enhancedQueryParams,
   }
 }

@@ -108,6 +108,58 @@ export default function DesignEditorWrapper(props: Props) {
     )
   }, [productMockupUrl, images, product, variant])
 
+  // State for enhanced design areas from variant API
+  const [designAreasData, setDesignAreasData] = useState<{
+    designAreas: any[]
+    productTypeDesignAreas: any[]
+    designCapabilities: any
+  } | null>(null)
+  
+  // State for design cost
+  const [designCost, setDesignCost] = useState(0)
+
+  // Fetch enhanced design areas when variant changes
+  useEffect(() => {
+    if (!variant?.id || !countryCode) return
+    
+    const fetchDesignAreas = async () => {
+      try {
+        // First try the variant API
+        const response = await fetch(`/api/variants/${variant.id}?countryCode=${countryCode}`)
+        if (response.ok) {
+          const data = await response.json()
+          setDesignAreasData({
+            designAreas: data.designAreas || [],
+            productTypeDesignAreas: data.productTypeDesignAreas || [],
+            designCapabilities: data.designCapabilities || {}
+          })
+        } else {
+          // Fallback: try to get design areas from product type if available
+          console.log('Variant API failed, falling back to product type detection')
+          if (product?.type_id) {
+            try {
+              const productTypeResponse = await fetch(`/api/store/product-types/${product.type_id}/design-areas`)
+              if (productTypeResponse.ok) {
+                const productTypeData = await productTypeResponse.json()
+                setDesignAreasData({
+                  designAreas: productTypeData.designAreas || [],
+                  productTypeDesignAreas: productTypeData.designAreas || [],
+                  designCapabilities: productTypeData.capabilities || {}
+                })
+              }
+            } catch (fallbackError) {
+              console.warn('Product type fallback also failed:', fallbackError)
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to fetch design areas:', error)
+      }
+    }
+    
+    fetchDesignAreas()
+  }, [variant?.id, countryCode, product?.type_id])
+
   // Resolve mockup zones from variant or product metadata. Expect either an object or a JSON string.
   const mockupZones = useMemo(() => {
     const metaVariant = (variant as any)?.metadata
@@ -121,6 +173,35 @@ export default function DesignEditorWrapper(props: Props) {
     } catch {}
     return undefined
   }, [variant, product])
+
+  // Enhanced mockup zones that can use design areas if legacy zones aren't available
+  const enhancedMockupZones = useMemo(() => {
+    // Prefer existing mockup zones for backward compatibility
+    if (mockupZones) return mockupZones
+    
+    // Fall back to design areas from product type if available
+    if (designAreasData?.designAreas?.length) {
+      const zones: Record<string, { x: number; y: number; w: number; h: number }> = {}
+      
+      designAreasData.designAreas.forEach((area: any) => {
+        // Convert design area boundaries to mockup zone format (normalized 0-1 coordinates)
+        // Assuming mockup image dimensions for normalization - this should be adjusted based on actual mockup size
+        const mockupWidth = 500 // Default mockup width - should be dynamic
+        const mockupHeight = 600 // Default mockup height - should be dynamic
+        
+        zones[area.type || 'default'] = {
+          x: (area.boundaries?.x || area.position?.x || 0) / mockupWidth,
+          y: (area.boundaries?.y || area.position?.y || 0) / mockupHeight,
+          w: (area.boundaries?.w || area.dimensions?.width || 200) / mockupWidth,
+          h: (area.boundaries?.h || area.dimensions?.height || 200) / mockupHeight
+        }
+      })
+      
+      return Object.keys(zones).length > 0 ? zones : undefined
+    }
+    
+    return undefined
+  }, [mockupZones, designAreasData])
 
   const handleFinalizeAndAddToCart = useCallback(async () => {
     if (!variant?.id) return
@@ -160,7 +241,10 @@ export default function DesignEditorWrapper(props: Props) {
       isCustomized: true as const,
       rawDesignImageUrl: rawDesignImageUrl || null,
       mockupImageUrl: mockupUrl || null,
-      mockupZones: mockupZones || null,
+      mockupZones: enhancedMockupZones || null,
+      designAreas: designAreasData?.designAreas || null,
+      designCapabilities: designAreasData?.designCapabilities || null,
+      designCost: 0, // Will be calculated in the design editor
     }
 
     try {
@@ -251,7 +335,10 @@ export default function DesignEditorWrapper(props: Props) {
       {/* Render the base editor UI */}
       <BaseDesignEditor
         mockupUrl={mockupUrl}
-        mockupZones={mockupZones}
+        mockupZones={enhancedMockupZones}
+        designAreas={designAreasData?.designAreas}
+        designCapabilities={designAreasData?.designCapabilities}
+        onDesignCostChange={setDesignCost}
         onRegisterExporter={setExporter}
         variants={(product?.variants || []).map((v: any) => ({ id: v.id, title: v.title || v.sku || v.id }))}
         selectedVariantId={variant?.id}

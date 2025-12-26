@@ -7,6 +7,7 @@ import { Heading, Text, Button } from "@medusajs/ui"
 import CollectionsTiles from "@modules/store/templates/sections/collections-tiles"
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
+import { getProductTypesForFilter } from "@lib/data/product-types"
 
 import PaginatedProducts from "./paginated-products"
 
@@ -25,15 +26,20 @@ const StoreTemplate = async ({
 }) => {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const { collections } = await listCollections({
-    limit: "200",
-    fields: "id,handle,title",
-  })
-  // Fetch categories and normalize to a simple, serializable shape
-  const rawCategories = await listCategories({
-    limit: 200,
-    fields: "id,handle,name,parent_category",
-  }).catch(() => [])
+  
+  // Fetch data for sidebar filters
+  const [{ collections }, rawCategories, productTypes] = await Promise.all([
+    listCollections({
+      limit: "200",
+      fields: "id,handle,title",
+    }).catch(() => ({ collections: [] })),
+    // Fetch categories and normalize to a simple, serializable shape
+    listCategories({
+      limit: 200,
+      fields: "id,handle,name,parent_category",
+    }).catch(() => []),
+    getProductTypesForFilter().catch(() => []),
+  ])
 
   // Prefer top-level categories for the left panel (to match expectations)
   const simpleCategories = (Array.isArray(rawCategories) ? rawCategories : [])
@@ -57,6 +63,7 @@ const StoreTemplate = async ({
           collections={collections}
           categories={simpleCategories}
           productType={productType}
+          productTypes={productTypes}
         />
         <div className="w-full">
           <div className="mb-8">

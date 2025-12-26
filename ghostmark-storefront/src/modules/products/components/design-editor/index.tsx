@@ -10,6 +10,13 @@ import LocalizedClientLink from '@modules/common/components/localized-client-lin
 import OptionSelect from '@modules/products/components/product-actions/option-select'
 import { isEqual } from 'lodash'
 
+// Toast notification utility (simplified)
+const toast = {
+  success: (message: string) => console.log('✅', message),
+  warning: (message: string) => console.log('⚠️', message),
+  error: (message: string) => console.log('❌', message)
+}
+
 type ExportResult = { designDataJson: string; previewDataUrl: string; designOnlyDataUrl: string }
 
 type Props = {
@@ -19,6 +26,22 @@ type Props = {
   // normalized to the mockup image box (0..1). Example:
   // { front: { x:0.2, y:0.2, w:0.6, h:0.4 } }
   mockupZones?: Record<string, { x: number; y: number; w: number; h: number }>
+  // Enhanced design areas from product type configuration
+  designAreas?: any[]
+  // Design capabilities and constraints
+  designCapabilities?: {
+    maxPrintAreas?: number
+    supportedFormats?: string[]
+    maxFileSize?: string
+    minResolution?: string
+    recommendedResolution?: string
+    colorModes?: string[]
+    maxColors?: number
+    printMethods?: string[]
+    hasProductTypeSupport?: boolean
+  }
+  // Callback for design cost changes
+  onDesignCostChange?: (cost: number) => void
   // Register an export function that callers (wrapper) can use
   onRegisterExporter?: (fn: () => Promise<ExportResult>) => void
   // Variant selection support (provided by Wrapper)
@@ -111,7 +134,7 @@ function useHtmlImage(src?: string): { image: HTMLImageElement | null; tainted: 
 }
 
 export default function TShirtDesigner(props: Props) {
-    const { mockupUrl, mockupZones, onRegisterExporter, variants = [], selectedVariantId, onSelectVariant, priceString, priceDetails, onFinalize, submitting, errorMessage, priceWarning, product } = props
+    const { mockupUrl, mockupZones, designAreas, designCapabilities, onDesignCostChange, onRegisterExporter, variants = [], selectedVariantId, onSelectVariant, priceString, priceDetails, onFinalize, submitting, errorMessage, priceWarning, product } = props
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -725,45 +748,132 @@ export default function TShirtDesigner(props: Props) {
     // Print areas state (enhanced Gelato-style)
     const [printAreas, setPrintAreas] = useState<any[]>([])
     const [activePrintArea, setActivePrintArea] = useState<string | null>(null)
+    const [selectedPrintAreas, setSelectedPrintAreas] = useState<Set<string>>(new Set())
     const [showPrintAreaBounds, setShowPrintAreaBounds] = useState(true)
+    const [designAreaImages, setDesignAreaImages] = useState<Record<string, {
+      id: string
+      url: string
+      position: { x: number; y: number }
+      scale: number
+      angle: number
+      layerOrder: number
+    }[]>>({}) // Images per design area
 
-    // Fetch print areas when variant changes
-    useEffect(() => {
-      if (!selectedVariantId) return
-      
-      const fetchPrintAreas = async () => {
-        try {
-          const response = await fetch(`/api/variants/${selectedVariantId}?countryCode=US`)
-          if (response.ok) {
-            const data = await response.json()
-            if (data.printAreas && Array.isArray(data.printAreas)) {
-              setPrintAreas(data.printAreas)
-              // Auto-select first print area
-              if (data.printAreas.length > 0 && !activePrintArea) {
-                setActivePrintArea(data.printAreas[0].id)
-              }
-            }
-          }
-        } catch (error) {
-          console.warn('Failed to fetch print areas:', error)
-          // Fallback to mockup zones
-          if (mockupZones) {
-            const fallbackAreas = Object.entries(mockupZones).map(([key, zone], index) => ({
-              id: `area_${index + 1}`,
-              name: key.charAt(0).toUpperCase() + key.slice(1),
-              boundaries: zone,
-              type: key.includes('front') ? 'front' : key.includes('back') ? 'back' : 'custom'
-            }))
-            setPrintAreas(fallbackAreas)
-            if (fallbackAreas.length > 0) {
-              setActivePrintArea(fallbackAreas[0].id)
-            }
-          }
+    // Handle multiple print area selection
+    const togglePrintAreaSelection = useCallback((areaId: string) => {
+      setSelectedPrintAreas(prev => {
+        const newSet = new Set(prev)
+        if (newSet.has(areaId)) {
+          newSet.delete(areaId)
+        } else {
+          newSet.add(areaId)
         }
+        return newSet
+      })
+    }, [])
+
+    // Add image to specific design area
+    const addImageToDesignArea = useCallback((areaId: string, imageUrl: string, position?: { x: number; y: number }) => {
+      const newImage = {
+        id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        url: imageUrl,
+        position: position || { x: 0.5, y: 0.5 }, // Normalized coordinates
+        scale: 1.0,
+        angle: 0,
+        layerOrder: (designAreaImages[areaId]?.length || 0) + 1
       }
+
+      setDesignAreaImages(prev => ({
+        ...prev,
+        [areaId]: [...(prev[areaId] || []), newImage]
+      }))
+    }, [designAreaImages])
+
+    // Remove image from design area
+    const removeImageFromDesignArea = useCallback((areaId: string, imageId: string) => {
+      setDesignAreaImages(prev => ({
+        ...prev,
+        [areaId]: (prev[areaId] || []).filter(img => img.id !== imageId)
+      }))
+    }, [])
+
+    // Update image in design area
+    const updateImageInDesignArea = useCallback((areaId: string, imageId: string, updates: any) => {
+      setDesignAreaImages(prev => ({
+        ...prev,
+        [areaId]: (prev[areaId] || []).map(img => 
+          img.id === imageId ? { ...img, ...updates } : img
+        )
+      }))
+    }, [])
+
+    // Calculate total pricing for selected areas and images
+    const calculateTotalDesignCost = useCallback(() => {
+      let total = 0
       
-      fetchPrintAreas()
-    }, [selectedVariantId, mockupZones])
+      selectedPrintAreas.forEach(areaId => {
+        const area = printAreas.find(a => a.id === areaId)
+        if (!area?.pricing) return
+
+        // Base price for the area
+        total += area.pricing.basePrice || 0
+
+        // Cost per image/layer in this area
+        const imagesInArea = designAreaImages[areaId] || []
+        total += imagesInArea.length * (area.pricing.layerPrice || 0)
+
+        // Setup fee (once per area)
+        total += area.pricing.setupFee || 0
+      })
+
+      return total
+    }, [selectedPrintAreas, printAreas, designAreaImages])
+
+    // Notify parent of design cost changes
+    useEffect(() => {
+      if (onDesignCostChange) {
+        const cost = calculateTotalDesignCost()
+        onDesignCostChange(cost)
+      }
+    }, [onDesignCostChange, calculateTotalDesignCost])
+
+    // Initialize print areas from designAreas prop
+    useEffect(() => {
+      if (designAreas && Array.isArray(designAreas) && designAreas.length > 0) {
+        setPrintAreas(designAreas)
+        // Auto-select first print area
+        if (designAreas.length > 0 && !activePrintArea) {
+          setActivePrintArea(designAreas[0].id)
+          setSelectedPrintAreas(new Set([designAreas[0].id]))
+        }
+      } else if (mockupZones) {
+        // Fallback to mockup zones if no design areas available
+        const fallbackAreas = Object.entries(mockupZones).map(([key, zone], index) => ({
+          id: `area_${index + 1}`,
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          boundaries: zone,
+          position: { x: zone.x, y: zone.y },
+          dimensions: { width: zone.w, height: zone.h },
+          type: key.includes('front') ? 'front' : key.includes('back') ? 'back' : 'custom',
+          printMethods: ['digital'],
+          constraints: {
+            minWidth: 50,
+            minHeight: 50,
+            maxWidth: Math.round(zone.w * 500),
+            maxHeight: Math.round(zone.h * 600),
+            margin: 10
+          }
+        }))
+        setPrintAreas(fallbackAreas)
+        if (fallbackAreas.length > 0) {
+          setActivePrintArea(fallbackAreas[0].id)
+        }
+      } else {
+        // Clear print areas if none available
+        setPrintAreas([])
+        setActivePrintArea(null)
+      }
+    }, [designAreas, mockupZones])
 
     // Close preview on Escape key
     useEffect(() => {
@@ -1712,15 +1822,24 @@ export default function TShirtDesigner(props: Props) {
                                     {printAreas.length > 0 ? printAreas.map((area) => (
                                         <div
                                             key={area.id}
-                                            className={`p-4 rounded-xl border-2 transition-all cursor-pointer hover:shadow-md ${
-                                                area.id === activePrintArea 
+                                            className={`p-4 rounded-xl border-2 transition-all hover:shadow-md relative ${
+                                                selectedPrintAreas.has(area.id)
                                                     ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                                                    : area.id === activePrintArea
+                                                    ? 'border-purple-500 bg-purple-50 shadow-md'
                                                     : 'border-gray-200 bg-white hover:border-blue-300'
                                             }`}
-                                            onClick={() => setActivePrintArea(area.id)}
                                         >
+                                            {/* Area Header with Selection */}
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-3">
+                                                    {/* Multi-select checkbox */}
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedPrintAreas.has(area.id)}
+                                                        onChange={() => togglePrintAreaSelection(area.id)}
+                                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                    />
                                                     <div className={`w-3 h-3 rounded-full ${
                                                         area.type === 'front' ? 'bg-blue-500' : 
                                                         area.type === 'back' ? 'bg-green-500' : 
@@ -1728,10 +1847,29 @@ export default function TShirtDesigner(props: Props) {
                                                     }`} />
                                                     <span className="font-semibold text-sm text-gray-900">{area.name}</span>
                                                 </div>
-                                                {area.id === activePrintArea && (
-                                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                                                )}
+                                                <div className="flex items-center gap-2">
+                                                    {/* Active area indicator */}
+                                                    {area.id === activePrintArea && (
+                                                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                                                    )}
+                                                    {/* Selected area indicator */}
+                                                    {selectedPrintAreas.has(area.id) && (
+                                                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                                                    )}
+                                                </div>
                                             </div>
+                                            
+                                            {/* Set as Active Button */}
+                                            <button
+                                                onClick={() => setActivePrintArea(area.id)}
+                                                className={`w-full mb-3 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                                                    area.id === activePrintArea
+                                                        ? 'bg-purple-200 text-purple-800'
+                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
+                                            >
+                                                {area.id === activePrintArea ? 'Active Area' : 'Set as Active'}
+                                            </button>
                                             
                                             <div className="space-y-2 text-xs text-gray-600">
                                                 <div className="flex justify-between">
@@ -1763,6 +1901,58 @@ export default function TShirtDesigner(props: Props) {
                                                     </div>
                                                 )}
                                             </div>
+
+                                            {/* Images in this Area */}
+                                            {designAreaImages[area.id] && designAreaImages[area.id].length > 0 && (
+                                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-xs font-medium text-gray-700">
+                                                            Images ({designAreaImages[area.id].length})
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {designAreaImages[area.id].map((image, index) => (
+                                                            <div
+                                                                key={image.id}
+                                                                className="relative group bg-gray-50 rounded border p-1"
+                                                            >
+                                                                <img
+                                                                    src={image.url}
+                                                                    alt={`Design ${index + 1}`}
+                                                                    className="w-full h-12 object-cover rounded"
+                                                                />
+                                                                <button
+                                                                    onClick={() => removeImageFromDesignArea(area.id, image.id)}
+                                                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Add Image to Area Button */}
+                                            {selectedPrintAreas.has(area.id) && (
+                                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                                    <button
+                                                        onClick={() => {
+                                                            // Use the current uploaded image if available
+                                                            if (uploadedImg?.src) {
+                                                                addImageToDesignArea(area.id, uploadedImg.src)
+                                                                toast.success(`Image added to ${area.name}`)
+                                                            } else {
+                                                                toast.warning('Please upload an image first')
+                                                            }
+                                                        }}
+                                                        className="w-full px-2 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded transition-colors"
+                                                        disabled={!uploadedImg?.src}
+                                                    >
+                                                        Add Current Image
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     )) : (
                                         <div className="text-center py-8 text-gray-500">
@@ -1775,6 +1965,40 @@ export default function TShirtDesigner(props: Props) {
                                     )}
                                 </div>
                                 
+                                {/* Design Cost Summary */}
+                                {selectedPrintAreas.size > 0 && (
+                                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                                        <div className="flex items-start gap-3">
+                                            <svg className="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                            </svg>
+                                            <div className="text-green-800 text-sm">
+                                                <p className="font-medium mb-2">Design Cost Breakdown</p>
+                                                <div className="space-y-1 text-xs">
+                                                    {Array.from(selectedPrintAreas).map(areaId => {
+                                                        const area = printAreas.find(a => a.id === areaId)
+                                                        if (!area?.pricing) return null
+                                                        const images = designAreaImages[areaId] || []
+                                                        const areaCost = (area.pricing.basePrice || 0) + 
+                                                                        images.length * (area.pricing.layerPrice || 0) +
+                                                                        (area.pricing.setupFee || 0)
+                                                        return (
+                                                            <div key={areaId} className="flex justify-between">
+                                                                <span>{area.name} ({images.length} images):</span>
+                                                                <span className="font-medium">${areaCost.toFixed(2)}</span>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    <div className="pt-2 mt-2 border-t border-green-300 flex justify-between font-semibold">
+                                                        <span>Total Design Cost:</span>
+                                                        <span>${calculateTotalDesignCost().toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Print Area Guidelines */}
                                 {printAreas.length > 0 && (
                                     <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">

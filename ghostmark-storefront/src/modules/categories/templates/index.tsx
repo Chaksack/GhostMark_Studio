@@ -10,6 +10,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { HttpTypes } from "@medusajs/types"
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
+import { getProductTypesForFilter } from "@lib/data/product-types"
 
 export default async function CategoryTemplate({
   category,
@@ -40,7 +41,7 @@ export default async function CategoryTemplate({
 
   getParents(category)
 
-  // Fetch collections and categories server-side for sidebar lists
+  // Fetch collections, categories, and product types server-side for sidebar lists
   // Note: this component is a server component, so we can call server utilities directly
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const dataPromise = Promise.all([
@@ -48,9 +49,11 @@ export default async function CategoryTemplate({
     // Fetch a larger set to ensure deep category trees are fully available
     // for building the parent->children map used to aggregate descendants.
     listCategories({ limit: "1000" }).catch(() => []),
+    // Fetch product types for filtering
+    getProductTypesForFilter().catch(() => []),
   ])
 
-  const [collectionsRes, allCategories] = await dataPromise
+  const [collectionsRes, allCategories, productTypes] = await dataPromise
 
   return (
     <div
@@ -64,6 +67,7 @@ export default async function CategoryTemplate({
         categories={allCategories?.map((c: any) => ({ id: c.id, handle: c.handle, name: c.name }))}
         activeCategoryHandle={category.handle}
         productType={productType}
+        productTypes={productTypes}
       />
       <div className="w-full">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4">
@@ -118,38 +122,72 @@ export default async function CategoryTemplate({
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
-            // If no specific product type is selected, show all products
-            // in this category including its descendant categories.
-            // Otherwise, keep the single category filter and let the
-            // client-side type refinement do its work.
+            // Always include descendant categories so each category page shows
+            // all of its products across the full tree, then apply any
+            // optional type refinement client-side.
             {...(() => {
-              if (!productType) {
-                // Build a robust parent->children map from all categories to
-                // ensure we include descendants at any depth, even if the
-                // current category object doesn't have deeply populated children.
-                const childrenByParent = new Map<string, string[]>()
-                ;(allCategories || []).forEach((cat: any) => {
-                  const parentId = cat?.parent_category?.id
-                  if (parentId) {
-                    const arr = childrenByParent.get(parentId) || []
-                    arr.push(cat.id)
-                    childrenByParent.set(parentId, arr)
-                  }
-                })
+              // Build a robust set of descendant ids using two sources:
+              // 1) Global parent->children map from allCategories
+              // 2) Direct traversal of category.category_children tree
+              // Merge both to avoid gaps from partial population on either source.
+              const childrenByParent = new Map<string, string[]>()
+              ;(allCategories || []).forEach((cat: any) => {
+                const parentId = cat?.parent_category?.id
+                if (parentId) {
+                  const arr = childrenByParent.get(parentId) || []
+                  arr.push(cat.id)
+                  childrenByParent.set(parentId, arr)
+                }
+              })
 
-                const visited = new Set<string>()
-                const collectIds = (id: string): string[] => {
-                  if (!id || visited.has(id)) return []
-                  visited.add(id)
+              const visited = new Set<string>()
+              const collectViaMap = (id: string): string[] => {
+                if (!id || visited.has(id)) return []
+                visited.add(id)
+                const direct = childrenByParent.get(id) || []
+                const deeper = direct.flatMap((cid) => collectViaMap(cid))
+                return [id, ...deeper]
+              }
+
+              const collectViaChildren = (node: any): string[] => {
+                if (!node?.id || visited.has(node.id)) return []
+                visited.add(node.id)
+                const kids = Array.isArray(node.category_children)
+                  ? node.category_children
+                  : []
+                const deeper = kids.flatMap((c: any) => collectViaChildren(c))
+                return [node.id, ...deeper]
+              }
+
+              // Collect using both paths with an independent visited per path then merge
+              const setCombined = new Set<string>()
+              ;(() => {
+                const v = new Set<string>()
+                const walk = (id: string): string[] => {
+                  if (!id || v.has(id)) return []
+                  v.add(id)
                   const direct = childrenByParent.get(id) || []
-                  const deeper = direct.flatMap((cid) => collectIds(cid))
+                  const deeper = direct.flatMap((cid) => walk(cid))
                   return [id, ...deeper]
                 }
+                walk(category.id).forEach((x) => setCombined.add(x))
+              })()
+              ;(() => {
+                const v = new Set<string>()
+                const walk = (node: any): string[] => {
+                  if (!node?.id || v.has(node.id)) return []
+                  v.add(node.id)
+                  const kids = Array.isArray(node.category_children)
+                    ? node.category_children
+                    : []
+                  const deeper = kids.flatMap((c: any) => walk(c))
+                  return [node.id, ...deeper]
+                }
+                walk(category).forEach((x) => setCombined.add(x))
+              })()
 
-                const ids = collectIds(category.id)
-                return { categoryIds: ids }
-              }
-              return { categoryId: category.id }
+              const ids = Array.from(setCombined)
+              return { categoryIds: ids }
             })()}
             productType={productType}
             countryCode={countryCode}

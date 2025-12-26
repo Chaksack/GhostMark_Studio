@@ -68,93 +68,98 @@ export default async function PaginatedProducts({
     return null
   }
 
-  // Some backends interpret category_id[]=A&category_id[]=B as an AND filter,
-  // which drastically under-returns results (only products that belong to ALL
-  // categories). To ensure Men/Women parent categories show ALL products across
-  // their descendant categories, aggregate per-category and union client-side
-  // when multiple categoryIds are provided.
+  // Improved category handling - try backend filtering first, fall back to union if needed
   let products: any[] = []
   let count = 0
 
   if (Array.isArray(queryParams.category_id) && queryParams.category_id.length > 1) {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        "[PaginatedProducts] Union path active. category_ids=",
-        queryParams.category_id,
-        "page=",
+    // Try backend filtering with multiple category IDs first (works with some backends)
+    try {
+      const res = await listProductsWithSort({
         page,
-        "sortBy=",
-        sortBy
-      )
-    }
-    const ids = queryParams.category_id
-    const AGG_LIMIT = 100
-    const AGG_MAX = 800 // cap total to prevent excessive load
-
-    const seen = new Map<string, any>()
-
-    for (const id of ids) {
-      let serverPage = 1
-      let nextPage: number | null = 1
-      while (nextPage) {
-        const { response, nextPage: np } = await listProductsWithSort({
-          page: serverPage,
-          // Fetch per-category to force an OR-like union across categories
-          queryParams: { ...queryParams, category_id: [id], limit: AGG_LIMIT },
-          sortBy,
-          countryCode,
-        })
-        const batch = Array.isArray(response.products) ? response.products : []
+        queryParams,
+        sortBy,
+        countryCode,
+        productType,
+      })
+      
+      // If backend returned products, use them
+      if (res.response.products.length > 0 || res.response.count > 0) {
+        products = res.response.products
+        count = res.response.count
+        
         if (process.env.NODE_ENV !== "production") {
-          console.log(
-            `[PaginatedProducts] Fetched ${batch.length} products for category ${id} (page ${serverPage}).`
-          )
+          console.log(`[PaginatedProducts] Backend multi-category filtering succeeded. Count: ${count}`)
         }
-        for (const p of batch) {
-          if (!seen.has(p.id)) {
-            seen.set(p.id, p)
+      } else {
+        throw new Error("Backend multi-category filtering returned no results")
+      }
+    } catch (error) {
+      // Fall back to client-side union for backends that don't support multi-category filtering
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[PaginatedProducts] Falling back to client-side union for categories:", queryParams.category_id)
+      }
+      
+      const ids = queryParams.category_id
+      const AGG_LIMIT = 100
+      const AGG_MAX = 600 // Reduced from 800 for better performance
+      const seen = new Map<string, any>()
+
+      for (const id of ids) {
+        let serverPage = 1
+        let nextPage: number | null = 1
+        while (nextPage && seen.size < AGG_MAX) {
+          const { response, nextPage: np } = await listProductsWithSort({
+            page: serverPage,
+            queryParams: { ...queryParams, category_id: [id], limit: AGG_LIMIT },
+            sortBy,
+            countryCode,
+            productType,
+          })
+          
+          const batch = Array.isArray(response.products) ? response.products : []
+          for (const p of batch) {
+            if (!seen.has(p.id)) {
+              seen.set(p.id, p)
+            }
+          }
+          nextPage = np
+          serverPage = np || 0
+          if (!nextPage || seen.size >= AGG_MAX) {
+            break
           }
         }
-        nextPage = np
-        serverPage = np || 0
-        if (!nextPage || seen.size >= AGG_MAX) {
+        if (seen.size >= AGG_MAX) {
           break
         }
       }
-      if (seen.size >= AGG_MAX) {
-        break
+
+      // Convert to array and sort
+      const union = Array.from(seen.values())
+      try {
+        union.sort((a: any, b: any) => {
+          const ad = new Date(a?.created_at || a?.createdAt || 0).getTime()
+          const bd = new Date(b?.created_at || b?.createdAt || 0).getTime()
+          return bd - ad
+        })
+      } catch (_) {
+        // no-op if dates are missing
       }
-    }
 
-    // Convert to array and sort by created_at desc (default storefront behavior)
-    const union = Array.from(seen.values())
-    try {
-      union.sort((a: any, b: any) => {
-        const ad = new Date(a?.created_at || a?.createdAt || 0).getTime()
-        const bd = new Date(b?.created_at || b?.createdAt || 0).getTime()
-        return bd - ad
-      })
-    } catch (_) {
-      // no-op if dates are missing
+      // Local pagination on the union
+      count = union.length
+      const start = (page - 1) * PRODUCT_LIMIT
+      const end = start + PRODUCT_LIMIT
+      products = union.slice(start, end)
     }
-
-    // Local pagination on the union
-    count = union.length
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        `[PaginatedProducts] Union size after de-duplication: ${count}. Performing local pagination for page ${page}.`
-      )
-    }
-    const start = (page - 1) * PRODUCT_LIMIT
-    const end = start + PRODUCT_LIMIT
-    products = union.slice(start, end)
   } else {
-    // Default path: rely on backend pagination
+    // Single category or collection - use standard backend pagination
     const res = await listProductsWithSort({
       page,
       queryParams,
       sortBy,
       countryCode,
+      productType,
     })
     products = res.response.products
     count = res.response.count
@@ -254,53 +259,28 @@ export default async function PaginatedProducts({
     )
   }
 
-  // If we're on a category or collection page and have a productType context,
-  // apply a safe client-side refinement to approximate type-based filtering
-  // without sending unsupported fields to the backend.
-  if (productType && (collectionId || categoryId) && Array.isArray(products)) {
-    const needle = productType.toLowerCase()
-    products = products.filter((p) => matchesType(p, needle))
-  }
-
-  // For the generic All-products view with a selected productType, we need to
-  // show ALL products belonging to that type. Since backend type filters are
-  // unreliable in this setup, fetch a broader set and refine client-side, then
-  // paginate locally.
-  if (productType && !collectionId && !categoryId) {
-    const needle = productType.toLowerCase()
-
-    // Aggregate multiple pages to approximate "all" without sending type filters
-    const AGG_LIMIT = 100 // per request
-    const AGG_MAX = 400   // safety cap
-
-    // Start by fetching a larger page to reduce round-trips
-    let aggregated: any[] = []
-    let serverPage = 1
-    let nextPage: number | null = 1
-
-    while (nextPage) {
-      const { response, nextPage: np } = await listProductsWithSort({
-        page: serverPage,
-        queryParams: { ...queryParams, limit: AGG_LIMIT },
-        sortBy,
-        countryCode,
-      })
-      aggregated = aggregated.concat(response.products || [])
-      nextPage = np
-      serverPage = np || 0
-      if (!nextPage || aggregated.length >= AGG_MAX) {
-        break
+  // Apply client-side product type filtering only when backend filtering wasn't applied
+  // This is now a fallback for cases where backend type filtering is not supported
+  if (productType && Array.isArray(products) && products.length > 0) {
+    // Check if we already have type-filtered results from backend
+    const hasBackendTypeFiltering = 
+      !collectionId && !categoryId && !(categoryIds && categoryIds.length > 0)
+    
+    // If we have collection/category context or backend filtering failed, apply client-side filtering
+    if (!hasBackendTypeFiltering) {
+      const needle = productType.toLowerCase()
+      const originalCount = products.length
+      products = products.filter((p) => matchesType(p, needle))
+      
+      // Adjust count proportionally if we filtered products
+      if (originalCount > 0 && products.length !== originalCount) {
+        count = Math.round(count * (products.length / originalCount))
+      }
+      
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`[PaginatedProducts] Applied client-side type filter for "${productType}". Results: ${products.length}`)
       }
     }
-
-    const filtered = aggregated.filter((p) => matchesType(p, needle))
-
-    // Local pagination on the filtered result set
-    const filteredCount = filtered.length
-    const start = (page - 1) * PRODUCT_LIMIT
-    const end = start + PRODUCT_LIMIT
-    products = filtered.slice(start, end)
-    count = filteredCount
   }
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
@@ -308,7 +288,7 @@ export default async function PaginatedProducts({
   return (
     <>
       <ul
-        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
+        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 large:grid-cols-5 gap-4 small:gap-6"
         data-testid="products-list"
       >
         {products.map((p) => {

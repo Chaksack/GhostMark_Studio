@@ -16,16 +16,18 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
     {
       label: "Product Information",
       component: <ProductInfoTab product={product} />,
+      defaultOpen: true, // Open by default following Context7 best practices
     },
     {
-      label: "Shipping & Returns",
+      label: "Shipping & Returns", 
       component: <ShippingInfoTab />,
+      defaultOpen: false,
     },
   ]
 
   return (
     <div className="w-full">
-      <Accordion type="multiple">
+      <Accordion type="multiple" defaultValue={["Product Information"]}>
         {tabs.map((tab, i) => (
           <Accordion.Item
             key={i}
@@ -42,9 +44,28 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
 }
 
 const ProductInfoTab = ({ product }: ProductTabsProps) => {
+  // Enhanced description handling - prioritize metadata.description over product.description
+  const meta: any = (product as any)?.metadata || {}
+  const fullDescription = (meta.description || product.description || "").trim()
+  
   return (
-    <div className="text-small-regular py-8">
-      <div className="grid grid-cols-2 gap-x-8">
+    <div className="py-8">
+      {/* Product Description - following Context7 best practices for information sections */}
+      {fullDescription && (
+        <div className="mb-10">
+          <h3 className="font-semibold text-lg block mb-4 text-ui-fg-base">Product Description</h3>
+          <div className="prose prose-sm max-w-none">
+            <p className="text-ui-fg-base whitespace-pre-line leading-relaxed text-base">
+              {fullDescription}
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* Product Specifications */}
+      <div className="mb-8">
+        <h3 className="font-semibold text-lg block mb-4 text-ui-fg-base">Product Specifications</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
         <div className="flex flex-col gap-y-4">
           <div>
             <span className="font-semibold">Material</span>
@@ -57,20 +78,21 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
           <div>
             <span className="font-semibold">Type</span>
             <p>{product.type ? product.type.value : "-"}</p>
+            </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Weight</span>
-            <p>{product.weight ? `${product.weight} g` : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Dimensions</span>
-            <p>
-              {product.length && product.width && product.height
-                ? `${product.length}L x ${product.width}W x ${product.height}H`
-                : "-"}
-            </p>
+          <div className="flex flex-col gap-y-4">
+            <div>
+              <span className="font-semibold">Weight</span>
+              <p>{product.weight ? `${product.weight} g` : "-"}</p>
+            </div>
+            <div>
+              <span className="font-semibold">Dimensions</span>
+              <p>
+                {product.length && product.width && product.height
+                  ? `${product.length}L x ${product.width}W x ${product.height}H`
+                  : "-"}
+              </p>
+            </div>
           </div>
         </div>
       </div>

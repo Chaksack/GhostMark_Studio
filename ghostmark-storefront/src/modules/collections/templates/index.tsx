@@ -9,6 +9,7 @@ import { Heading, Text, Button } from "@medusajs/ui"
 import CollectionsTiles from "@modules/store/templates/sections/collections-tiles"
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
+import { getProductTypesForFilter } from "@lib/data/product-types"
 
 export default async function CollectionTemplate({
   sortBy,
@@ -25,11 +26,16 @@ export default async function CollectionTemplate({
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const { collections } = await listCollections({
-    limit: "200",
-    fields: "id,handle,title",
-  })
-  const product_categories = await listCategories().catch(() => [])
+  
+  // Fetch data for sidebar filters
+  const [{ collections }, product_categories, productTypes] = await Promise.all([
+    listCollections({
+      limit: "200",
+      fields: "id,handle,title",
+    }).catch(() => ({ collections: [] })),
+    listCategories().catch(() => []),
+    getProductTypesForFilter().catch(() => []),
+  ])
 
   return (
     <div className="flex flex-col">
@@ -77,6 +83,7 @@ export default async function CollectionTemplate({
             name: c.name,
           }))}
           productType={productType}
+          productTypes={productTypes}
         />
         <div className="w-full">
           <div className="mb-8">
