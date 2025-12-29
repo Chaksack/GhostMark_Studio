@@ -130,72 +130,153 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
   }
 
   private getTemplateContent(template: string, data: Record<string, any>) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.STORE_URL || 'https://localhost:8000'
+    const logoUrl = `${baseUrl}/icon.png`
+    
     const templates: Record<string, any> = {
       'order-confirmation': {
         subject: 'Order Confirmation - {{order_display_id}} | GhostMark Studio',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-            <div style="background: #1f2937; padding: 40px 20px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Order Confirmed</h1>
-              <p style="color: #d1d5db; margin: 10px 0 0; font-size: 16px;">Thank you for choosing GhostMark Studio</p>
-            </div>
-            
-            <div style="padding: 40px 20px;">
-              <p style="font-size: 18px; color: #374151; margin: 0 0 20px;">Hi {{customer_first_name}},</p>
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Confirmation</title>
+          </head>
+          <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; background-color: #f5f5f5;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb;">
+              <!-- Header with Logo -->
+              <div style="background: #000000; padding: 40px 20px; text-align: center;">
+                <img src="${logoUrl}" alt="GhostMark Studio" width="80" height="80" style="display: block; margin: 0 auto 20px; border-radius: 8px;" />
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.025em;">Order Confirmed</h1>
+                <p style="color: #d1d5db; margin: 10px 0 0; font-size: 16px;">Thank you for choosing GhostMark Studio</p>
+              </div>
               
-              <p style="font-size: 16px; color: #6b7280; line-height: 1.6; margin: 0 0 30px;">
-                Great news! Your order <strong style="color: #1f2937;">{{order_display_id}}</strong> has been confirmed and is now being processed.
-              </p>
-
-              <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 30px; margin: 30px 0;">
-                <h3 style="color: #374151; margin: 0 0 20px; font-size: 18px; font-weight: 600;">Order Summary</h3>
-                <p><strong>Order ID:</strong> {{order_display_id}}</p>
-                <p><strong>Customer Type:</strong> {{customer_type}}</p>
-                <p><strong>Quantity:</strong> {{total_quantity}} units</p>
-                <p><strong>Total:</strong> {{order_total}}</p>
-              </div>
-
-              <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 20px; margin: 30px 0;">
-                <h4 style="color: #047857; margin: 0 0 10px; font-size: 16px;">What happens next?</h4>
-                <p style="color: #059669; margin: 0; font-size: 14px; line-height: 1.5;">
-                  • Your order will be processed within 1-2 business days<br>
-                  • You'll receive design proofs (for POD orders)<br>
-                  • We'll send shipping confirmation once your order is dispatched
+              <!-- Main Content -->
+              <div style="padding: 40px 20px;">
+                <p style="font-size: 18px; color: #000000; margin: 0 0 20px; font-weight: 600;">Hi {{customer_first_name}},</p>
+                
+                <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 30px;">
+                  Great news! Your order <strong style="color: #000000;">{{order_display_id}}</strong> has been confirmed and is now being processed.
                 </p>
+
+                <!-- Order Summary Box -->
+                <div style="background: #ffffff; border: 2px solid #000000; border-radius: 8px; padding: 30px; margin: 30px 0;">
+                  <h3 style="color: #000000; margin: 0 0 20px; font-size: 18px; font-weight: 700;">Order Summary</h3>
+                  <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px;">
+                    <p style="margin: 5px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Order ID:</span> {{order_display_id}}</p>
+                    <p style="margin: 5px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Customer Type:</span> {{customer_type}}</p>
+                    <p style="margin: 5px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Quantity:</span> {{total_quantity}} units</p>
+                  </div>
+                  <p style="margin: 0; font-size: 18px; font-weight: 700; color: #000000;">Total: {{order_total}}</p>
+                </div>
+
+                <!-- Next Steps Box -->
+                <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                  <h4 style="color: #000000; margin: 0 0 15px; font-size: 16px; font-weight: 600;">What happens next?</h4>
+                  <ul style="color: #4a5568; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;">Your order will be processed within 1-2 business days</li>
+                    <li style="margin-bottom: 8px;">You'll receive design proofs (for POD orders)</li>
+                    <li style="margin-bottom: 0;">We'll send shipping confirmation once your order is dispatched</li>
+                  </ul>
+                </div>
+
+                <!-- CTA Button -->
+                <div style="text-align: center; margin: 40px 0;">
+                  <a href="${baseUrl}/account/orders" style="background: #000000; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; transition: background-color 0.3s;">Track Your Order</a>
+                </div>
+              </div>
+              
+              <!-- Footer -->
+              <div style="background: #f8fafc; padding: 30px 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                <p style="color: #4a5568; margin: 0 0 10px; font-size: 14px;">Best regards,</p>
+                <p style="color: #000000; margin: 0; font-size: 16px; font-weight: 600;">The GhostMark Studio Team</p>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                  <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                    GhostMark Studio | Custom Print Solutions<br>
+                    <a href="${baseUrl}" style="color: #000000; text-decoration: none;">Visit our website</a> | 
+                    <a href="${baseUrl}/help-center" style="color: #000000; text-decoration: none;">Need help?</a>
+                  </p>
+                </div>
               </div>
             </div>
-            
-            <div style="background: #f9fafb; padding: 30px 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #6b7280; margin: 0; font-size: 14px;">Best regards,<br><strong style="color: #1f2937;">The GhostMark Studio Team</strong></p>
-            </div>
-          </div>
+          </body>
+          </html>
         `
       },
       'quote-request': {
         subject: 'Quote Request Received - {{quantity}} Units | GhostMark Studio',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-            <div style="background: #3b82f6; padding: 40px 20px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Quote Request Received</h1>
-              <p style="color: #dbeafe; margin: 10px 0 0; font-size: 16px;">We'll get back to you within 24 hours</p>
-            </div>
-            
-            <div style="padding: 40px 20px;">
-              <p style="font-size: 18px; color: #374151; margin: 0 0 20px;">Hi {{customer_first_name}},</p>
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Quote Request Received</title>
+          </head>
+          <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; background-color: #f5f5f5;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb;">
+              <!-- Header with Logo -->
+              <div style="background: #000000; padding: 40px 20px; text-align: center;">
+                <img src="${logoUrl}" alt="GhostMark Studio" width="80" height="80" style="display: block; margin: 0 auto 20px; border-radius: 8px;" />
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.025em;">Quote Request Received</h1>
+                <p style="color: #d1d5db; margin: 10px 0 0; font-size: 16px;">We'll prepare your custom proposal within 24 hours</p>
+              </div>
               
-              <p style="font-size: 16px; color: #6b7280; line-height: 1.6; margin: 0 0 30px;">
-                Thank you for your bulk order inquiry. We've received your quote request and our team is preparing a custom proposal for you.
-              </p>
+              <!-- Main Content -->
+              <div style="padding: 40px 20px;">
+                <p style="font-size: 18px; color: #000000; margin: 0 0 20px; font-weight: 600;">Hi {{customer_first_name}},</p>
+                
+                <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 30px;">
+                  Thank you for your bulk order inquiry! We've received your quote request and our team is preparing a custom proposal with competitive pricing for your order.
+                </p>
 
-              <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 30px; margin: 30px 0;">
-                <h3 style="color: #92400e; margin: 0 0 20px; font-size: 18px; font-weight: 600;">Quote Details</h3>
-                <p><strong>Product:</strong> {{product_title}}</p>
-                <p><strong>Quantity:</strong> {{quantity}} units</p>
-                <p><strong>Customer Type:</strong> {{customer_type}}</p>
-                <p><strong>Estimated Total:</strong> {{estimated_total}}</p>
+                <!-- Quote Details Box -->
+                <div style="background: #ffffff; border: 2px solid #000000; border-radius: 8px; padding: 30px; margin: 30px 0;">
+                  <h3 style="color: #000000; margin: 0 0 20px; font-size: 18px; font-weight: 700;">Quote Request Details</h3>
+                  <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px;">
+                    <p style="margin: 8px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Product:</span> {{product_title}}</p>
+                    <p style="margin: 8px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Requested Quantity:</span> {{quantity}} units</p>
+                    <p style="margin: 8px 0; color: #4a5568; font-size: 14px;"><span style="font-weight: 600; color: #000000;">Customer Type:</span> {{customer_type}}</p>
+                  </div>
+                  <p style="margin: 0; font-size: 18px; font-weight: 700; color: #000000;">Estimated Total: {{estimated_total}}</p>
+                </div>
+
+                <!-- Next Steps Box -->
+                <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                  <h4 style="color: #000000; margin: 0 0 15px; font-size: 16px; font-weight: 600;">What happens next?</h4>
+                  <ul style="color: #4a5568; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;">Our team will review your requirements and prepare a custom quote</li>
+                    <li style="margin-bottom: 8px;">You'll receive a detailed proposal with pricing within 24 hours</li>
+                    <li style="margin-bottom: 8px;">We'll include bulk discount pricing and shipping options</li>
+                    <li style="margin-bottom: 0;">Our team may contact you for any clarifications needed</li>
+                  </ul>
+                </div>
+
+                <!-- Contact Information -->
+                <div style="background: #ffffff; border: 1px solid #000000; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+                  <h4 style="color: #000000; margin: 0 0 15px; font-size: 16px; font-weight: 600;">Have Questions?</h4>
+                  <p style="color: #4a5568; margin: 0 0 15px; font-size: 14px;">Our bulk sales team is here to help with your order</p>
+                  <a href="mailto:quotes@ghostmarkstudio.com" style="color: #000000; text-decoration: underline; font-weight: 600;">quotes@ghostmarkstudio.com</a>
+                </div>
+              </div>
+              
+              <!-- Footer -->
+              <div style="background: #f8fafc; padding: 30px 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                <p style="color: #4a5568; margin: 0 0 10px; font-size: 14px;">Best regards,</p>
+                <p style="color: #000000; margin: 0; font-size: 16px; font-weight: 600;">The GhostMark Studio Sales Team</p>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                  <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                    GhostMark Studio | Custom Print Solutions<br>
+                    <a href="${baseUrl}" style="color: #000000; text-decoration: none;">Visit our website</a> | 
+                    <a href="${baseUrl}/help-center" style="color: #000000; text-decoration: none;">Need help?</a>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </body>
+          </html>
         `
       }
     }

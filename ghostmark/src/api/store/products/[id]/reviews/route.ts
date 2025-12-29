@@ -1,5 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { addReview, listReviews, getReviewStats } from "../../../../../services/reviews-db"
+import { verifyReviewToken } from "../../../../../services/review-token"
 
 /**
  * GET /store/products/:id/reviews
@@ -43,9 +44,27 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       }
     }
     const productId = (req.params as any).id as string
-    const body = (await req.json()) as { rating?: number; title?: string; body?: string; email?: string }
+    const body = (req.body || {}) as { rating?: number; title?: string; body?: string; email?: string; reviewToken?: string }
     if (!productId || typeof body?.rating !== 'number') {
       return res.status(400).json({ ok: false, message: "product id and numeric rating are required" })
+    }
+    // Optional token requirement
+    const requireToken = String(process.env.REQUIRE_REVIEW_TOKEN || "false").toLowerCase() === "true"
+    if (requireToken) {
+      const token = (body as any).reviewToken || (req.headers as any)["x-review-token"]
+      if (!token) {
+        return res.status(400).json({ ok: false, message: "review token required" })
+      }
+      const result = verifyReviewToken(String(token))
+      if (!result.valid || !result.payload) {
+        return res.status(400).json({ ok: false, message: result.message || "invalid review token" })
+      }
+      if (result.payload.productId !== productId) {
+        return res.status(400).json({ ok: false, message: "token does not match product" })
+      }
+      if (result.payload.email && body.email && result.payload.email.toLowerCase() !== String(body.email).toLowerCase()) {
+        return res.status(400).json({ ok: false, message: "email does not match token" })
+      }
     }
     const rating = Math.round(body.rating)
     if (rating < 1 || rating > 5) {
