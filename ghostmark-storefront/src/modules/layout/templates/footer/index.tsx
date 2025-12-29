@@ -36,14 +36,14 @@ export default async function Footer() {
           </div>
           
 
-          <div className="text-small-regular text-white gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
+          <div className="text-small-regular text-white gap-8 md:gap-x-16 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
                 <span className="txt-small-plus txt-ui-fg-base">
                   Categories
                 </span>
                 <ul
-                  className="grid grid-cols-1 gap-2"
+                  className="grid grid-cols-1 text-white gap-2"
                   data-testid="footer-categories"
                 >
                   {productCategories?.slice(0, 6).map((c) => {
@@ -60,7 +60,7 @@ export default async function Footer() {
 
                     return (
                       <li
-                        className="flex flex-col gap-2 text-ui-fg-subtle txt-small"
+                        className="flex flex-col gap-2 text-white text-ui-fg-subtle txt-small"
                         key={c.id}
                       >
                         <LocalizedClientLink
@@ -102,14 +102,14 @@ export default async function Footer() {
                 </span>
                 <ul
                   className={clx(
-                    "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
+                    "grid grid-cols-1 text-white gap-2 text-ui-fg-subtle txt-small",
                     {
                       "grid-cols-2": (collections?.length || 0) > 3,
                     }
                   )}
                 >
                   {collections?.slice(0, 6).map((c) => (
-                    <li key={c.id}>
+                    <li key={c.id} className="flex flex-col gap-2 text-white" >
                       <LocalizedClientLink
                         className="hover:text-ui-fg-base"
                         href={`/collections/${c.handle}`}
@@ -121,77 +121,43 @@ export default async function Footer() {
                 </ul>
               </div>
             )}
-             <div className="flex flex-col text-white gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Print on demand</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
-                <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    About GhostMark Studio
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    Leadership Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    Customer Stories
-                  </a>
-                </li>
-              </ul>
-            </div>
-             <div className="flex flex-col text-white gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Integration</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
-                <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    About GhostMark Studio
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    Leadership Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    Customer Stories
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div className="flex flex-col text-white gap-y-2">
+              <div className="flex flex-col text-white gap-y-2">
+                  <span className="txt-small-plus txt-ui-fg-base">Resources</span>
+                  <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+                      <li>
+                          <a
+                              href="/support"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-white hover:text-ui-fg-base"
+                          >
+                              Support
+                          </a>
+                      </li>
+                      <li>
+                          <a
+                              href="/help-center"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-white hover:text-ui-fg-base"
+                          >
+                              Help center
+                          </a>
+                      </li>
+                      <li>
+                          <a
+                              href="/customer-stories"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-white hover:text-ui-fg-base"
+                          >
+                              Customer Stories
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+
+              <div className="flex flex-col text-white gap-y-2">
               <span className="txt-small-plus txt-ui-fg-base">Company</span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
@@ -214,23 +180,13 @@ export default async function Footer() {
                     Leadership Team
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white hover:text-ui-fg-base"
-                  >
-                    Customer Stories
-                  </a>
-                </li>
               </ul>
             </div>
           </div>
         </div>
         <div className="flex w-full text-white mb-16 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} GhostMark Studio. All rights reserved.
+            © 2024 GhostMark Studio. All rights reserved.
           </Text>
           <MedusaCTA />
         </div>

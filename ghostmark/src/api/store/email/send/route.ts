@@ -3,8 +3,8 @@ import { sendEmail } from "../../../../services/email-service"
 
 /**
  * POST /store/email/send
- * Body: { to: string | string[], subject: string, text?: string, html?: string }
- * Sends an email using SMTP credentials from environment variables.
+ * Body: { to: string | string[], subject: string, text?: string, html?: string, cc?: string | string[], bcc?: string | string[], replyTo?: string, tags?: Array<{name: string, value: string}>, headers?: Record<string, string> }
+ * Sends an email using Resend API.
  */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   try {
@@ -14,6 +14,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       text?: string
       html?: string
       from?: string
+      cc?: string | string[]
+      bcc?: string | string[]
+      replyTo?: string
+      tags?: Array<{name: string, value: string}>
+      headers?: Record<string, string>
     }
 
     if (!body?.to || !body?.subject) {
@@ -33,6 +38,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       text: body.text,
       html: body.html,
       from: body.from,
+      cc: body.cc,
+      bcc: body.bcc,
+      replyTo: body.replyTo,
+      tags: body.tags,
+      headers: body.headers,
     })
 
     return res.json({ ok: true, result })

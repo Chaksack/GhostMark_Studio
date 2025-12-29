@@ -22,15 +22,16 @@
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@medusajs/admin-sdk": "2.11.3",
+    "@medusajs/auth": "2.11.3",
+    "@medusajs/auth-emailpass": "2.11.3",
+    "@medusajs/auth-google": "2.11.3",
     "@medusajs/cli": "2.11.3",
     "@medusajs/framework": "2.11.3",
     "@medusajs/medusa": "2.11.3",
-    "@medusajs/auth": "2.11.3",
-    "@medusajs/auth-google": "2.11.3",
-    "@medusajs/auth-emailpass": "2.11.3",
-    "nodemailer": "^6.9.15",
-    "@heroicons/react": "^2.2.0"
+    "pg": "^8.13.1",
+    "resend": "^6.6.0"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.11.3",

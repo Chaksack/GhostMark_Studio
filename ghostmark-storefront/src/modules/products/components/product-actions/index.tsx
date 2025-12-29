@@ -37,6 +37,9 @@ export default function ProductActions({
 
     const [options, setOptions] = useState<Record<string, string | undefined>>({})
     const [isAdding, setIsAdding] = useState(false)
+    // Quantity must be declared before any hooks that read it (e.g., inStock useMemo)
+    // to avoid temporal dead zone errors when React evaluates dependency arrays.
+    const [quantity, setQuantity] = useState(1)
     const countryCode = useParams().countryCode as string
 
     // Default selection strategy
@@ -152,29 +155,43 @@ export default function ProductActions({
         router.replace(pathname + "?" + params.toString())
     }, [selectedVariant, isValidVariant])
 
-    // check if the selected variant is in stock
+    // Enhanced stock check based on e-commerce inventory management patterns
     const inStock = useMemo(() => {
+        // Early return if no variant selected
+        if (!selectedVariant) {
+            return false
+        }
+
+        // Debug logging for inventory issues
+        if (process.env.NODE_ENV === 'development') {
+            console.log('📦 Inventory Check Debug:', {
+                variantId: selectedVariant.id,
+                manage_inventory: selectedVariant.manage_inventory,
+                allow_backorder: selectedVariant.allow_backorder,
+                inventory_quantity: selectedVariant.inventory_quantity,
+                quantity: quantity
+            })
+        }
+
         // If we don't manage inventory, we can always add to cart
-        if (selectedVariant && !selectedVariant.manage_inventory) {
+        if (!selectedVariant.manage_inventory) {
             return true
         }
 
         // If we allow back orders on the variant, we can add to cart
-        if (selectedVariant?.allow_backorder) {
+        if (selectedVariant.allow_backorder) {
             return true
         }
 
-        // If there is inventory available, we can add to cart
-        if (
-            selectedVariant?.manage_inventory &&
-            (selectedVariant?.inventory_quantity || 0) > 0
-        ) {
+        // Check if there's enough inventory for the requested quantity
+        const availableQty = selectedVariant.inventory_quantity || 0
+        if (selectedVariant.manage_inventory && availableQty >= quantity) {
             return true
         }
 
         // Otherwise, we can't add to cart
         return false
-    }, [selectedVariant])
+    }, [selectedVariant, quantity])
 
     // Determine if the selected variant has a calculable price for current region
     const hasPrice = useMemo(() => {
@@ -206,12 +223,234 @@ export default function ProductActions({
 
     // Explicit flag for POD products (print-on-demand)
     const isPOD = useMemo(() => {
-        return productType === "pod" || productType.includes("pod")
-    }, [productType])
+        const p: any = product as any
+        
+        // Always log the full product object to understand its structure
+        console.log('🔍 POD Detection - Full Product Debug:', {
+            productId: p?.id,
+            title: p?.title,
+            handle: p?.handle,
+            productType: p?.type,
+            metadata: p?.metadata,
+            tags: p?.tags,
+            options: p?.options,
+            variants: p?.variants?.map((v: any) => ({
+                id: v.id,
+                title: v.title,
+                options: v.options,
+                metadata: v.metadata
+            })),
+            fullProduct: p
+        })
+        
+        // Check product metadata for POD indicators (primary method now)
+        const productMetadata = p?.metadata || {}
+        const isPODProductMetadata = productMetadata?.is_pod === true ||
+                                   productMetadata?.print_method === 'print-on-demand' ||
+                                   productMetadata?.product_category === 'pod' ||
+                                   productMetadata?.type === 'pod' ||
+                                   productMetadata?.product_type === 'pod'
+        
+        // Check product type directly
+        const productTypeValue = p?.type?.value || p?.type?.title || p?.type?.name || p?.type || ''
+        const isProductTypePOD = (productTypeValue.toString().toLowerCase()).includes('pod')
+        
+        // Check product title and handle for POD keywords
+        const productTitle = (p?.title || '').toLowerCase()
+        const productHandle = (p?.handle || '').toLowerCase()
+        const podKeywords = ['pod', 'print-on-demand', 'custom', 'personalized', 'customizable', 'design']
+        const hasPODInTitle = podKeywords.some(keyword => 
+            productTitle.includes(keyword) || productHandle.includes(keyword)
+        )
+        
+        // Check if any variants have customization options
+        const hasCustomizationVariants = p?.variants?.some((variant: any) => {
+            const variantOptions = variant?.options || []
+            return variantOptions.some((option: any) => {
+                const optionValue = (option?.value || '').toLowerCase()
+                const optionTitle = (option?.title || '').toLowerCase()
+                return optionValue.includes('custom') || 
+                       optionValue.includes('design') ||
+                       optionTitle.includes('custom') || 
+                       optionTitle.includes('design')
+            })
+        })
+        
+        // Also check product options for customization
+        const hasCustomizationOptions = p?.options?.some((option: any) => {
+            const optionTitle = (option?.title || '').toLowerCase()
+            return optionTitle.includes('custom') || 
+                   optionTitle.includes('design') ||
+                   optionTitle.includes('personalization')
+        })
+        
+        // Check for specific tags that indicate POD
+        const hasPODTags = p?.tags?.some((tag: any) => {
+            const tagValue = (tag?.value || tag?.name || tag || '').toLowerCase()
+            return podKeywords.some(keyword => tagValue.includes(keyword))
+        })
+        
+        // TEMPORARY: Force POD for testing if product title contains specific keywords
+        const forceTestPOD = productTitle.includes('t-shirt') || 
+                            productTitle.includes('hoodie') || 
+                            productTitle.includes('shirt') ||
+                            productTitle.includes('mug') ||
+                            productTitle.includes('poster') ||
+                            productTitle.includes('print') ||
+                            productTitle.includes('custom')
+        
+        const result = isPODProductMetadata || 
+                      isProductTypePOD || 
+                      hasPODInTitle || 
+                      hasCustomizationVariants || 
+                      hasCustomizationOptions || 
+                      hasPODTags || 
+                      forceTestPOD
+        
+        // Enhanced debug logging
+        console.log('🎯 POD Detection Result for:', p?.title || p?.id, {
+            productTitle,
+            productHandle,
+            productType: productTypeValue,
+            productMetadata,
+            tags: p?.tags,
+            options: p?.options,
+            // Detection flags
+            isPODProductMetadata,
+            isProductTypePOD,
+            hasPODInTitle,
+            hasCustomizationVariants,
+            hasCustomizationOptions,
+            hasPODTags,
+            forceTestPOD,
+            // Final result
+            finalResult: result
+        })
+        
+        return result
+    }, [product])
 
-    // Route behavior by type:
-    // - POD: go to design/customize page
-    // - Others: add to cart and go straight to checkout
+    // Check if product is apparel type (clothes2order.com-style)
+    const isApparelProduct = useMemo(() => {
+        const p: any = product as any
+        const typeObj = p?.type ?? p?.product_type
+        
+        // Check metadata for apparel category
+        const hasApparelMetadata = typeObj?.metadata?.category === 'clothing' || 
+                                  typeObj?.metadata?.parent_type === 'apparel'
+        
+        // Check product type value
+        const apparelTypes = ['apparel', 'clothing', 'shirt', 'tshirt', 't-shirt', 'hoodie', 'jacket', 'pants', 'dress', 'polo', 'tank', 'sweater']
+        const hasApparelType = apparelTypes.some(type => productType.includes(type))
+        
+        return hasApparelMetadata || hasApparelType
+    }, [product, productType])
+
+    // Check if corporate features are available for this apparel product
+    const hasCorporateFeatures = useMemo(() => {
+        const p: any = product as any
+        const typeObj = p?.type ?? p?.product_type
+        
+        return isApparelProduct && (
+            typeObj?.metadata?.target_market === 'both' || 
+            typeObj?.metadata?.target_market === 'corporate' ||
+            typeObj?.metadata?.bulk_available === true
+        )
+    }, [product, isApparelProduct])
+
+    // Enhanced quantity selector state for bulk orders (moved above to prevent TDZ)
+    const [showBulkPricing, setShowBulkPricing] = useState(false)
+    const [bulkPricing, setBulkPricing] = useState<any>(null)
+    const [customerType, setCustomerType] = useState<'individual' | 'corporate'>('individual')
+
+    // Check if current variant is a "technology blank" variant (for Buy Now button)
+    const isTechnologyBlankVariant = useMemo(() => {
+        if (!selectedVariant) return false
+        
+        // Check variant metadata first (most explicit)
+        const variantMetadata = selectedVariant.metadata || {}
+        const hasTechnologyBlankMetadata = variantMetadata?.variant_type === 'technology_blank' ||
+                                           variantMetadata?.variant_type === 'blank' ||
+                                           variantMetadata?.is_blank === true ||
+                                           (variantMetadata?.is_technology === true && variantMetadata?.is_blank === true)
+        
+        // Check variant title for blank indicators
+        const variantTitle = (selectedVariant.title || '').toLowerCase()
+        const blankKeywords = ['blank', 'technology', 'unprinted', 'plain', 'no design', 'without design']
+        const hasBlankTitle = blankKeywords.some(keyword => variantTitle.includes(keyword))
+        
+        // Check if variant has options that indicate it's a blank product
+        const variantOptions = selectedVariant.options || []
+        const hasBlankOption = variantOptions.some((option: any) => {
+            const optionValue = (option?.value || '').toLowerCase()
+            const optionTitle = (option?.title || '').toLowerCase()
+            return blankKeywords.some(keyword => 
+                optionValue.includes(keyword) || optionTitle.includes(keyword)
+            )
+        })
+        
+        // For POD products, if no specific customization is selected, treat as blank
+        // This happens when the product type is POD but no design options are chosen
+        const isPODWithoutDesign = isPOD && !variantOptions.some((option: any) => {
+            const optionValue = (option?.value || '').toLowerCase()
+            const optionTitle = (option?.title || '').toLowerCase()
+            return optionValue.includes('custom') || 
+                   optionValue.includes('design') ||
+                   optionTitle.includes('custom') || 
+                   optionTitle.includes('design')
+        })
+        
+        const result = hasTechnologyBlankMetadata || hasBlankTitle || hasBlankOption || isPODWithoutDesign
+        
+        // Debug logging for technology blank detection
+        if (process.env.NODE_ENV === 'development' && selectedVariant) {
+            console.log('Technology Blank Detection Debug for variant:', selectedVariant?.title || selectedVariant?.id, {
+                variantTitle: selectedVariant.title,
+                variantMetadata: selectedVariant.metadata,
+                hasTechnologyBlankMetadata,
+                hasBlankTitle,
+                hasBlankOption,
+                isPODWithoutDesign,
+                isPOD,
+                finalResult: result
+            })
+        }
+        
+        return result
+    }, [selectedVariant, isPOD])
+
+    // Fetch bulk pricing when quantity changes
+    useEffect(() => {
+        if (selectedVariant?.id && quantity >= 1) {
+            fetchBulkPricing()
+        }
+    }, [selectedVariant?.id, quantity, customerType])
+
+    const fetchBulkPricing = async () => {
+        if (!selectedVariant?.id) return
+
+        try {
+            const params = new URLSearchParams({
+                productId: product.id,
+                variantId: selectedVariant.id,
+                quantity: quantity.toString(),
+                customerType
+            })
+            
+            const response = await fetch(`/store/products/bulk-pricing?${params}`)
+            if (response.ok) {
+                const result = await response.json()
+                setBulkPricing(result.data)
+                setShowBulkPricing(quantity >= 10 || customerType === 'corporate')
+            }
+        } catch (error) {
+            console.error('Failed to fetch bulk pricing:', error)
+        }
+    }
+
+    // Route behavior by type - enhanced for clothes2order.com style
+    // - POD: go to design/customize page with quantity
+    // - Others: show bulk pricing options then proceed to cart/checkout
     const handleAddToCart = async () => {
         if (!selectedVariant?.id) return null
 
@@ -221,37 +460,87 @@ export default function ProductActions({
             if (isPOD) {
                 const params = new URLSearchParams()
                 params.set("v_id", selectedVariant.id)
+                params.set("quantity", quantity.toString())
                 router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
                 return
             }
 
-            // Default (including apparel): add to cart then go to checkout
-            // We use a lightweight API route to perform server-side addToCart logic safely
+            // Enhanced cart logic with bulk pricing support
             const resp = await fetch("/api/cart/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     variantId: selectedVariant.id,
-                    quantity: 1,
+                    quantity,
+                    bulkPricing: bulkPricing,
                     countryCode,
                 }),
             })
+            
             if (!resp.ok) {
-                // If the API fails, stay on page and surface a console error
                 try {
                     const j = await resp.json()
-                    // eslint-disable-next-line no-console
                     console.error("Failed to add to cart:", j?.message || resp.statusText)
                 } catch {
-                    // eslint-disable-next-line no-console
                     console.error("Failed to add to cart:", resp.status)
                 }
                 return
             }
-            // Redirect to checkout
-            router.push(`/${countryCode}/checkout`)
+
+            // Trigger background page refresh to update cart
+            router.refresh()
+
+            // For bulk orders (25+), go to quote page, otherwise checkout
+            if (quantity >= 25) {
+                router.push(`/${countryCode}/quote`)
+            } else {
+                router.push(`/${countryCode}/checkout`)
+            }
         } finally {
-            // Reset loading state in case navigation is blocked
+            setIsAdding(false)
+        }
+    }
+
+    // Handle direct purchase for blank POD products (skip design dashboard)
+    const handleBuyNow = async () => {
+        if (!selectedVariant?.id) return null
+
+        setIsAdding(true)
+
+        try {
+            // Add blank product directly to cart without customization
+            const resp = await fetch("/api/cart/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    variantId: selectedVariant.id,
+                    quantity,
+                    bulkPricing: bulkPricing,
+                    countryCode,
+                    isBlankProduct: true, // Flag to indicate this is a blank product purchase
+                }),
+            })
+            
+            if (!resp.ok) {
+                try {
+                    const j = await resp.json()
+                    console.error("Failed to add to cart:", j?.message || resp.statusText)
+                } catch {
+                    console.error("Failed to add to cart:", resp.status)
+                }
+                return
+            }
+
+            // Trigger background page refresh to update cart
+            router.refresh()
+
+            // For bulk orders (25+), go to quote page, otherwise checkout
+            if (quantity >= 25) {
+                router.push(`/${countryCode}/quote`)
+            } else {
+                router.push(`/${countryCode}/checkout`)
+            }
+        } finally {
             setIsAdding(false)
         }
     }
@@ -281,33 +570,222 @@ export default function ProductActions({
                     )}
                 </div>
 
-                <ProductPrice product={product} variant={selectedVariant} />
 
-                <Button
-                    onClick={handleAddToCart}
-                    disabled={
-                        !inStock ||
-                        !selectedVariant ||
-                        !!disabled ||
-                        isAdding ||
-                        !isValidVariant ||
-                        !hasPrice
-                    }
-                    variant="primary"
-                    className="w-full h-10"
-                    isLoading={isAdding}
-                    data-testid="add-product-button"
-                >
-                    {!selectedVariant && !options
-                        ? "Select variant"
-                        : !hasPrice
-                            ? "Out of stock"
-                            : !inStock || !isValidVariant
+                {/* Quantity Selector */}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-mono-1000 mb-2">
+                        Quantity
+                    </label>
+                    <div className="flex items-center space-x-3">
+                        <button
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="w-8 h-8 rounded border border-mono-300 flex items-center justify-center hover:bg-mono-100 text-mono-1000 transition-colors"
+                            disabled={quantity <= 1}
+                        >
+                            -
+                        </button>
+                        <input
+                            type="number"
+                            min="1"
+                            value={quantity}
+                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-20 text-center border border-mono-300 rounded px-2 py-1 text-mono-1000 bg-mono-0 focus:border-mono-1000 focus:outline-none"
+                        />
+                        <button
+                            onClick={() => setQuantity(quantity + 1)}
+                            className="w-8 h-8 rounded border border-mono-300 flex items-center justify-center hover:bg-mono-100 text-mono-1000 transition-colors"
+                        >
+                            +
+                        </button>
+                        <div className="flex gap-2 ml-4">
+                            {[10, 25, 50, 100].map((qty) => (
+                                <button
+                                    key={qty}
+                                    onClick={() => setQuantity(qty)}
+                                    className="px-3 py-1 text-xs border border-mono-300 rounded hover:bg-mono-100 text-mono-1000 transition-colors"
+                                >
+                                    {qty}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Enhanced Price Display with Sale Information */}
+                <div className="mb-4">
+                    {selectedVariant && (() => {
+                        try {
+                            const priceInfo = getProductPrice({ product, variantId: selectedVariant.id })
+                            const variantPrice = priceInfo?.variantPrice
+                            
+                            // Debug logging
+                            if (process.env.NODE_ENV === 'development') {
+                                console.log('💰 Price Debug Info:', {
+                                    selectedVariantId: selectedVariant.id,
+                                    priceInfo,
+                                    variantPrice,
+                                    calculated_price_number: variantPrice?.calculated_price_number,
+                                    original_price_number: variantPrice?.original_price_number,
+                                    price_type: variantPrice?.price_type,
+                                    percentage_diff: variantPrice?.percentage_diff
+                                })
+                            }
+                            
+                            if (!variantPrice) {
+                                return <div className="block w-32 h-9 bg-mono-200 animate-pulse rounded" />
+                            }
+                            
+                            const isSale = variantPrice.price_type === "sale"
+                            
+                            return (
+                                <div className="flex flex-col">
+                                    {/* Product Price with Sale Display */}
+                                    <div className="">
+                                        <ProductPrice product={product} variant={selectedVariant} />
+                                    </div>
+                                </div>
+                            )
+                        } catch (error) {
+                            console.error('Error calculating price:', error)
+                            return (
+                                <div className="flex flex-col text-mono-1000">
+                                    <span className="text-2xl font-bold">Price Unavailable</span>
+                                </div>
+                            )
+                        }
+                    })()}
+                </div>
+
+                {/* Bulk Pricing Display */}
+                {showBulkPricing && bulkPricing && (
+                    <div className="bg-mono-50 border border-mono-300 rounded-lg p-4 mb-4">
+                        <h4 className="font-medium text-mono-1000 mb-2">
+                            Bulk Pricing Applied
+                        </h4>
+                        <div className="text-sm text-mono-700 space-y-1">
+                            <div className="flex justify-between">
+                                <span>Unit Price:</span>
+                                <span>${bulkPricing.pricing.unitPrice.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Setup Fee:</span>
+                                <span>${bulkPricing.pricing.setupFee.toFixed(2)}</span>
+                            </div>
+                            {bulkPricing.pricing.discounts.total > 0 && (
+                                <div className="flex justify-between font-medium">
+                                    <span>Total Discount:</span>
+                                    <span>-{bulkPricing.pricing.discounts.total}%</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between font-bold text-lg border-t border-mono-300 pt-2 text-mono-1000">
+                                <span>Total:</span>
+                                <span>${bulkPricing.pricing.total.toFixed(2)}</span>
+                            </div>
+                            {bulkPricing.pricing.savings > 0 && (
+                                <div className="text-center text-mono-800 font-medium">
+                                    You save ${bulkPricing.pricing.savings.toFixed(2)}!
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Next Tier Upsell */}
+                        {bulkPricing.nextTierDiscount && (
+                            <div className="mt-3 text-xs text-mono-600">
+                                Order {bulkPricing.nextTierDiscount.quantity} or more to save an additional 
+                                ${bulkPricing.nextTierDiscount.savings.toFixed(2)}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {isPOD ? (
+                    // For POD products, always show both Customise and Buy Now buttons
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={handleAddToCart}
+                            disabled={
+                                !inStock ||
+                                !selectedVariant ||
+                                !!disabled ||
+                                isAdding ||
+                                !isValidVariant ||
+                                !hasPrice ||
+                                quantity < 1
+                            }
+                            variant="primary"
+                            className="flex-1 h-10"
+                            isLoading={isAdding}
+                            data-testid="customize-product-button"
+                        >
+                            {!selectedVariant && !options
+                                ? "Select variant"
+                                : !hasPrice
+                                    ? "Out of stock"
+                                    : !inStock || !isValidVariant
+                                        ? "Out of stock"
+                                        : quantity >= 25
+                                            ? "Get Quote & Customise"
+                                            : "Customise & Checkout"}
+                        </Button>
+                        <Button
+                            onClick={handleBuyNow}
+                            disabled={
+                                !isTechnologyBlankVariant ||
+                                !inStock ||
+                                !selectedVariant ||
+                                !!disabled ||
+                                isAdding ||
+                                !isValidVariant ||
+                                !hasPrice ||
+                                quantity < 1
+                            }
+                            variant="secondary"
+                            className="flex-1 h-10"
+                            isLoading={isAdding}
+                            data-testid="buy-now-button"
+                        >
+                            {!selectedVariant && !options
+                                ? "Select variant"
+                                : !hasPrice
+                                    ? "Out of stock"
+                                    : !inStock || !isValidVariant
+                                        ? "Out of stock"
+                                        : !isTechnologyBlankVariant
+                                            ? "Select Blank Technology"
+                                            : quantity >= 25
+                                                ? "Get Quote (Blank)"
+                                                : "Buy Now (Blank)"}
+                        </Button>
+                    </div>
+                ) : (
+                    // For non-POD products, show single button
+                    <Button
+                        onClick={handleAddToCart}
+                        disabled={
+                            !inStock ||
+                            !selectedVariant ||
+                            !!disabled ||
+                            isAdding ||
+                            !isValidVariant ||
+                            !hasPrice ||
+                            quantity < 1
+                        }
+                        variant="primary"
+                        className="w-full h-10"
+                        isLoading={isAdding}
+                        data-testid="add-product-button"
+                    >
+                        {!selectedVariant && !options
+                            ? "Select variant"
+                            : !hasPrice
                                 ? "Out of stock"
-                                : isPOD
-                                    ? "customise & checkout"
-                                    : "Buy now"}
-                </Button>
+                                : !inStock || !isValidVariant
+                                    ? "Out of stock"
+                                    : quantity >= 25
+                                        ? "Get Quote"
+                                        : "Add to Cart"}
+                    </Button>
+                )}
                 {!hasPrice && selectedVariant && (
                     <p className="text-xs text-ui-fg-muted">
                         This variant is not available for purchase in your selected region.
@@ -320,6 +798,9 @@ export default function ProductActions({
                     updateOptions={setOptionValue}
                     inStock={inStock}
                     handleAddToCart={handleAddToCart}
+                    handleBuyNow={handleBuyNow}
+                    isPODProduct={isPOD}
+                    isTechnologyBlankVariant={isTechnologyBlankVariant}
                     isAdding={isAdding}
                     show={!inView}
                     optionsDisabled={!!disabled || isAdding}

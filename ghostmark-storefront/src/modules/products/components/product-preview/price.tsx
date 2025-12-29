@@ -20,30 +20,42 @@ export default async function PreviewPrice({
   }
 
   return (
-    <span className={containerClassName}>
-      {price.price_type === "sale" && (
+    <div className={clx("flex flex-col", containerClassName)}>
+      <div className="flex items-center gap-2">
         <Text
           className={clx(
-            "line-through text-ui-fg-muted mr-1",
-            originalClassName
+            {
+              "font-bold text-mono-1000": price.price_type === "sale",
+              "font-medium text-mono-1000": price.price_type !== "sale",
+            },
+            priceClassName
           )}
-          data-testid="original-price"
+          data-testid="price"
         >
-          {price.original_price}
+          {price.calculated_price}
         </Text>
-      )}
-      <Text
-        className={clx(
-          "text-ui-fg-muted",
-          {
-            "text-ui-fg-interactive": price.price_type === "sale",
-          },
-          priceClassName
+        {price.price_type === "sale" && (
+          <span className="bg-red-600 text-white px-1 py-0.5 text-xs font-bold rounded">
+            SALE
+          </span>
         )}
-        data-testid="price"
-      >
-        {price.calculated_price}
-      </Text>
-    </span>
+      </div>
+      {price.price_type === "sale" && (
+        <div className="flex items-center gap-1">
+          <Text
+            className={clx(
+              "line-through text-mono-500 text-sm",
+              originalClassName
+            )}
+            data-testid="original-price"
+          >
+            {price.original_price}
+          </Text>
+          <Text className="text-mono-700 text-xs font-medium">
+            Save {price.percentage_diff}%
+          </Text>
+        </div>
+      )}
+    </div>
   )
 }

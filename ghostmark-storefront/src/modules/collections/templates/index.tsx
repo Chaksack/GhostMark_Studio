@@ -39,37 +39,11 @@ export default async function CollectionTemplate({
 
   return (
     <div className="flex flex-col">
-      {/* Hero band for the category page, inspired by Gelato /custom/cards */}
-      <div className="border-b border-ui-border-base bg-ui-bg-subtle">
-        <div className="content-container py-10 md:py-14">
-          <div className="max-w-3xl">
-            <Heading
-              level="h1"
-              className="text-3xl sm:text-4xl md:text-5xl tracking-tight"
-            >
-              {collection.title}
-            </Heading>
-            {collection.metadata?.description || collection.description ? (
-              <Text className="mt-4 text-ui-fg-subtle">
-                {(collection.metadata as any)?.description || collection.description}
-              </Text>
-            ) : (
-              <Text className="mt-4 text-ui-fg-subtle">
-                Discover customizable {collection.title?.toLowerCase()} produced on demand
-                and delivered fast.
-              </Text>
-            )}
-            <div className="mt-6">
-              <Button size="large">Start creating</Button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Optional categories tiles to help exploration */}
-      <div className="content-container py-8 md:py-12">
-        <CollectionsTiles />
-      </div>
+      {/*<div className="content-container py-8 md:py-12">*/}
+      {/*  <CollectionsTiles />*/}
+      {/*</div>*/}
 
       {/* Product grid with refinements */}
       <div className="content-container flex flex-col small:flex-row small:items-start py-6">

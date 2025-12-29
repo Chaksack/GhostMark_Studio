@@ -6,6 +6,7 @@ import Refresh from "@modules/common/icons/refresh"
 
 import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
+import { useEffect, useMemo, useState } from "react"
 
 type ProductTabsProps = {
   product: HttpTypes.StoreProduct
@@ -21,6 +22,11 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
     {
       label: "Shipping & Returns", 
       component: <ShippingInfoTab />,
+      defaultOpen: false,
+    },
+    {
+      label: "Reviews",
+      component: <ReviewsTab product={product} />,
       defaultOpen: false,
     },
   ]
@@ -141,3 +147,180 @@ const ShippingInfoTab = () => {
 }
 
 export default ProductTabs
+
+// ---------- Reviews UI (client-side fetch) ----------
+
+type Review = {
+  id: number
+  product_id: string
+  rating: number
+  title?: string | null
+  body?: string | null
+  email?: string | null
+  created_at: string
+}
+
+function Stars({ value }: { value: number }) {
+  const full = Math.round(value)
+  return <span aria-hidden>{"★★★★★".slice(0, full).padEnd(5, "☆")}</span>
+}
+
+function ReviewsTab({ product }: { product: HttpTypes.StoreProduct }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [avg, setAvg] = useState<number>(0)
+  const [count, setCount] = useState<number>(0)
+
+  const [rating, setRating] = useState<number>(5)
+  const [title, setTitle] = useState("")
+  const [body, setBody] = useState("")
+  const [email, setEmail] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+
+  const isPOD = useMemo(() => {
+    const p: any = product as any
+    const t = p?.type ?? p?.product_type
+    let raw: string | undefined
+    if (!t) raw = undefined
+    else if (typeof t === "string") raw = t
+    else raw = t?.value || t?.title || t?.name || t?.handle
+    const s = (raw || "").toString().trim().toLowerCase()
+    return s.includes("pod") || s === "pod"
+  }, [product])
+
+  async function load() {
+    setLoading(true)
+    setError(null)
+    try {
+      const base = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+      const headers: HeadersInit = {}
+      const pub = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+      if (pub) {
+        ;(headers as any)["x-publishable-api-key"] = pub
+      }
+      const resp = await fetch(`${base}/store/products/${product.id}/reviews`, {
+        cache: "no-store",
+        headers,
+      })
+      const data = await resp.json()
+      if (!resp.ok || !data?.ok) throw new Error(data?.message || "Failed to load reviews")
+      setReviews(data.reviews || [])
+      setAvg(Number(data.stats?.average || 0))
+      setCount(Number(data.stats?.count || 0))
+    } catch (e: any) {
+      setError(e?.message || "Failed to load reviews")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id])
+
+  async function submitReview() {
+    if (rating < 1 || rating > 5) return
+    setSubmitting(true)
+    setError(null)
+    try {
+      const base = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+      const headers: HeadersInit = { "Content-Type": "application/json" }
+      const pub = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+      if (pub) {
+        ;(headers as any)["x-publishable-api-key"] = pub
+      }
+      const resp = await fetch(`${base}/store/products/${product.id}/reviews`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ rating, title, body, email }),
+      })
+      const data = await resp.json()
+      if (!resp.ok || !data?.ok) throw new Error(data?.message || "Failed to submit review")
+      // Clear and refresh
+      setTitle("")
+      setBody("")
+      // Keep email/rating as-is for convenience
+      await load()
+    } catch (e: any) {
+      setError(e?.message || "Failed to submit review")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="py-6 space-y-6">
+      {/* Summary */}
+      <div className="flex items-center gap-3 text-ui-fg-subtle">
+        <div className="text-emerald-600"><Stars value={avg} /></div>
+        <span className="text-sm">{avg.toFixed(1)} · {count} review{count === 1 ? '' : 's'}</span>
+      </div>
+
+      {/* List */}
+      {loading ? (
+        <div className="text-sm text-ui-fg-muted">Loading reviews…</div>
+      ) : reviews.length === 0 ? (
+        <div className="text-sm text-ui-fg-muted">No reviews yet.</div>
+      ) : (
+        <div className="space-y-4">
+          {reviews.map((r) => (
+            <div key={r.id} className="border rounded p-3">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-amber-600 text-sm"><Stars value={r.rating} /></div>
+                <div className="text-xs text-ui-fg-muted">{new Date(r.created_at).toLocaleDateString()}</div>
+              </div>
+              {r.title && <div className="font-medium mb-1">{r.title}</div>}
+              {r.body && <div className="text-sm whitespace-pre-wrap">{r.body}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Form (POD only) */}
+      {isPOD && (
+        <div className="mt-6 border rounded p-4">
+          <div className="font-semibold mb-2">Write a review</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm mb-1">Rating</label>
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={rating}
+                onChange={(e) => setRating(parseInt(e.target.value) || 5)}
+              >
+                {[5,4,3,2,1].map((n) => (
+                  <option key={n} value={n}>{n} star{n===1?'':'s'}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Email (optional)</label>
+              <input className="w-full border rounded px-3 py-2" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm mb-1">Title (optional)</label>
+              <input className="w-full border rounded px-3 py-2" value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="Great quality!" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm mb-1">Review</label>
+              <textarea className="w-full border rounded px-3 py-2 min-h-[100px]" value={body} onChange={(e)=>setBody(e.target.value)} placeholder="Share your experience…" />
+            </div>
+          </div>
+          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+          <button
+            onClick={submitReview}
+            disabled={submitting || rating < 1 || rating > 5 || !body.trim()}
+            className="mt-3 bg-black text-white rounded px-4 py-2 disabled:opacity-50"
+          >
+            {submitting ? 'Submitting…' : 'Submit review'}
+          </button>
+          {!isPOD && (
+            <p className="text-xs text-ui-fg-muted mt-2">Reviews available for POD products.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

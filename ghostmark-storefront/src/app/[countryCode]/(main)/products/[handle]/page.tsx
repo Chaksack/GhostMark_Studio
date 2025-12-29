@@ -21,7 +21,10 @@ async function getById(productId: string, regionId: string) {
       "+description,+metadata,+tags,*images,*variants,*variants.options,*variants.images,*options," +
       "+variants.calculated_price,+variants.calculated_price.calculated_amount," +
       "+variants.calculated_price.original_amount,+variants.calculated_price.currency_code," +
-      "*type,*collection"
+      "+variants.calculated_price.is_calculated_price_price_list," +
+      "+variants.calculated_price.calculated_price," +
+      "+variants.calculated_price.calculated_price.price_list_type," +
+      "+type_id,+collection_id"
     )
     const { product }: { product: HttpTypes.StoreProduct } = await sdk.client.fetch(
       `/store/products/${productId}`,
@@ -45,7 +48,10 @@ async function getProductByHandle(handle: string, regionId: string) {
     "+description,+metadata,+tags,*images,*variants,*variants.options,*variants.images,*options," +
     "+variants.calculated_price,+variants.calculated_price.calculated_amount," +
     "+variants.calculated_price.original_amount,+variants.calculated_price.currency_code," +
-    "*type,*collection"
+    "+variants.calculated_price.is_calculated_price_price_list," +
+    "+variants.calculated_price.calculated_price," +
+    "+variants.calculated_price.calculated_price.price_list_type," +
+    "+type_id,+collection_id"
 
   // Try via listProducts with handle filter (some Medusa backends support handle[])
   const tryStrict = await listProducts({

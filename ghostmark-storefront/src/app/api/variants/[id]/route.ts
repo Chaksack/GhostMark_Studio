@@ -296,7 +296,8 @@ export async function GET(
             `/store/products/${productId}`,
             {
               method: "GET",
-              query: { fields: "id,type_id,type" },
+              // Request only supported fields to avoid 'Unrecognized fields' errors
+              query: { fields: "id,type_id" },
               headers,
               cache: "no-store",
             }

@@ -125,9 +125,9 @@ export default async function ProductPreview({
     <LocalizedClientLink href={`/products/${product.handle}`} className="group block h-full">
       <div
         data-testid="product-wrapper"
-        className="h-full flex flex-col rounded-lg border border-ui-border-base hover:border-ui-fg-muted hover:shadow-md transition-all duration-200 bg-ui-bg-base overflow-hidden"
+        className="h-full flex flex-col rounded-lg border border-mono-200 hover:border-mono-400 hover:shadow-md transition-all duration-200 bg-mono-0 overflow-hidden card-mono"
       >
-        <div className="relative bg-ui-bg-subtle overflow-hidden group aspect-square">
+        <div className="relative bg-mono-50 overflow-hidden group aspect-square">
           <Thumbnail
             thumbnail={product.thumbnail}
             images={product.images}
@@ -140,6 +140,12 @@ export default async function ProductPreview({
               {badge}
             </span>
           )}
+          {/* Sale badge on thumbnail */}
+          {cheapestPrice?.price_type === "sale" && cheapestPrice.percentage_diff && (
+            <span className="pointer-events-none absolute right-0 top-0 rounded-bl text-black text-[10px] font-bold px-2 py-1 z-10">
+              SAVE {cheapestPrice.percentage_diff}%
+            </span>
+          )}
         </div>
         <div className="flex-1 flex flex-col p-3 text-center">
           {/* Product type + tags row - moved to top */}
@@ -147,7 +153,7 @@ export default async function ProductPreview({
             <div className="mb-2 flex flex-wrap gap-1 text-left" data-testid="product-preview-tags">
               {productTypeLabel && (
                 <span
-                  className="inline-flex items-center rounded border border-ui-border-base bg-ui-bg-subtle px-1.5 py-0.5 text-[10px] text-ui-fg-subtle"
+                  className="inline-flex items-center rounded bg-black text-white px-1.5 py-0.5 text-[10px] font-medium"
                   data-testid="product-type-chip"
                 >
                   {productTypeLabel}
@@ -164,7 +170,7 @@ export default async function ProductPreview({
                   return (
                     <span
                       key={(t as any)?.id || `${label}-${idx}`}
-                      className="inline-flex items-center rounded border border-ui-border-base bg-ui-bg-subtle px-1.5 py-0.5 text-[10px] text-ui-fg-subtle"
+                      className="inline-flex items-center rounded bg-black text-white px-1.5 py-0.5 text-[10px] font-medium"
                     >
                       {label}
                     </span>
@@ -174,34 +180,46 @@ export default async function ProductPreview({
           )}
           <div className="flex-1">
             <div className="mb-2">
-              <Text className="text-ui-fg-base text-sm font-medium leading-tight line-clamp-2 min-h-[2.5rem]" data-testid="product-title">
+              <Text className="text-mono-1000 text-sm font-medium leading-tight line-clamp-2 min-h-[2.5rem]" data-testid="product-title">
                 {product.title}
               </Text>
             </div>
-            {/* Price section */}
+            {/* Sale Badge - positioned beneath product tags */}
+            {/*{cheapestPrice?.price_type === "sale" && (*/}
+            {/*  <div className="mb-2 flex justify-center">*/}
+            {/*    <span className="text-black px-2 py-1 text-xs font-bold rounded uppercase tracking-wide">*/}
+            {/*      Sale {cheapestPrice.percentage_diff}%*/}
+            {/*    </span>*/}
+            {/*  </div>*/}
+            {/*)}*/}
+            
+            {/* Price section with sale pricing support */}
             {cheapestPrice && (
               <div className="mb-2">
-                <div className="flex items-center gap-1 text-sm justify-center">
-                  <span className="text-green-600 font-semibold">{cheapestPrice.calculated_price}</span>
-                  <span className="text-xs text-green-600">with GHOSTMARK+</span>
+                <div className="flex justify-center">
+                  <PreviewPrice 
+                    price={cheapestPrice}
+                    containerClassName="text-center"
+                    priceClassName={`text-sm ${cheapestPrice.price_type === "sale" ? "font-bold" : "font-semibold"} text-mono-1200`}
+                  />
                 </div>
                 <div className="mt-1 space-y-0.5">
-                  <p className="text-[10px] text-ui-fg-muted">Excl. shipping & taxes</p>
-                  <p className="text-[10px] text-ui-fg-muted">Produced in 24–72h</p>
+                  <p className="text-[10px] text-mono-500">Excl. shipping & taxes</p>
+                  <p className="text-[10px] text-mono-500">Produced in 24–72h</p>
                 </div>
               </div>
             )}
             {/* Capability line */}
             {embroideryAvailable && (
               <div className="mb-2">
-                <p className="text-xs text-ui-fg-base flex items-center gap-1 justify-center">
-                  <span className="inline-block h-3 w-3 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[8px] leading-3 text-center">i</span>
+                <p className="text-xs text-mono-1000 flex items-center gap-1 justify-center">
+                  <span className="inline-block h-3 w-3 rounded-full bg-mono-100 text-mono-700 border border-mono-300 text-[8px] leading-3 text-center">i</span>
                   Embroidery available
                 </p>
               </div>
             )}
             {/* Meta bullets row */}
-            <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-ui-fg-muted justify-center">
+            <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-mono-500 justify-center">
               {[
                 typeof locationsCount === "number" && locationsCount > 0
                   ? `${locationsCount} locations`
@@ -215,7 +233,7 @@ export default async function ProductPreview({
                   <span key={idx} className="flex items-center gap-2">
                     <span>{content as any}</span>
                     {idx < arr.length - 1 && (
-                      <span className="h-[2px] w-[2px] rounded-full bg-ui-fg-muted/60 inline-block" />
+                      <span className="h-[2px] w-[2px] rounded-full bg-mono-400 inline-block" />
                     )}
                   </span>
                 ))}

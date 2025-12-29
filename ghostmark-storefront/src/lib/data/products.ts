@@ -62,26 +62,22 @@ export const listProducts = async ({
       ? [
           // Try exactly what the caller requested
           customFields,
-          // Then try optimized essential fields
-          "*variants.calculated_price,+metadata,+options,+variants.options,+images,+type,+categories",
-          // Add inventory and variant images
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type,+categories",
-          // Add tags for better filtering support
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+type,+categories",
-          // Last resort with product_tags joins
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+product_tags,+product_tags.tag,+type,+categories",
+          // Essential fields without problematic type expansion
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id",
+          // Add variant images
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images",
+          // Basic fallback
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options",
           // Fallback to no explicit fields
           null,
         ]
       : [
-          // Start with optimized essential fields including type and categories
-          "*variants.calculated_price,+metadata,+options,+variants.options,+images,+type,+categories",
-          // Add inventory and variant images
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type,+categories",
-          // Add tags for better filtering support
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+type,+categories",
-          // Include product_tags joins if supported
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+tags,+product_tags,+product_tags.tag,+type,+categories",
+          // Essential fields without problematic type expansion
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id",
+          // Add variant images
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images",
+          // Basic fallback
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options",
           // Fallback to no explicit fields
           null,
         ]

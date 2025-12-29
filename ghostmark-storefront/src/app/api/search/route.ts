@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
       queryParams: {
         q: query, // Use the 'q' parameter for text search as per MedusaJS API
         limit,
-        fields: "id,title,handle,description,type,*images", // Include essential fields
+        // Avoid requesting unsupported fields like 'type' which causes backend validation errors
+        fields: "id,title,handle,description,*images", // Include essential fields only
       },
       countryCode,
     })
@@ -37,7 +38,8 @@ export async function GET(request: NextRequest) {
       title: product.title,
       handle: product.handle,
       description: product.description,
-      type: product.type?.value || null,
+      // Prefer product.product_type?.value if available; otherwise null
+      type: (product as any).product_type?.value || (product as any).type?.value || null,
       thumbnail: product.images?.[0]?.url || null,
     }))
 

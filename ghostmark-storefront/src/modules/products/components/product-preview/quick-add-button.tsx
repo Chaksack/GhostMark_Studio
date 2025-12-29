@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@medusajs/ui"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 
 type QuickAddButtonProps = {
@@ -18,6 +18,7 @@ type QuickAddButtonProps = {
 export default function QuickAddButton({ variantId, isApparel, className }: QuickAddButtonProps) {
   const params = useParams() as { countryCode?: string }
   const countryCode = params?.countryCode
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [added, setAdded] = useState(false)
@@ -46,6 +47,8 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
         throw new Error(message)
       }
       setAdded(true)
+      // Trigger background page refresh to update cart
+      router.refresh()
       // Reset the added state after a short delay to allow repeated adds
       setTimeout(() => setAdded(false), 1500)
     } catch (err: any) {

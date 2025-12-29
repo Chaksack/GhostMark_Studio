@@ -21,18 +21,57 @@ module.exports = {
         padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
+        // Enhanced black and white monochrome palette
+        brand: {
+          black: "#000000",
+          white: "#FFFFFF",
+          charcoal: "#1A1A1A",
+          "charcoal-light": "#2D2D2D",
+          "gray-dark": "#404040",
+          "gray-medium": "#666666",
+          "gray-light": "#B3B3B3",
+          "gray-lighter": "#D9D9D9",
+          "off-white": "#F8F8F8",
+          "pure-white": "#FFFFFF",
+        },
+        // Modern monochrome scale
+        mono: {
+          0: "#FFFFFF",    // Pure white
+          50: "#FAFAFA",   // Off-white
+          100: "#F5F5F5",  // Light gray
+          200: "#E5E5E5",  // Lighter gray
+          300: "#D4D4D4",  // Light medium gray
+          400: "#A3A3A3",  // Medium gray
+          500: "#737373",  // Mid gray
+          600: "#525252",  // Dark medium gray
+          700: "#404040",  // Dark gray
+          800: "#262626",  // Very dark gray
+          900: "#171717",  // Near black
+          950: "#0A0A0A",  // Almost black
+          1000: "#000000", // Pure black
+        },
+        // Accent color for interactive elements (minimal color usage)
+        accent: {
+          primary: "#000000",   // Black for primary actions
+          secondary: "#404040", // Dark gray for secondary actions
+          success: "#166534",   // Dark green for success states
+          warning: "#CA8A04",   // Dark amber for warnings
+          error: "#DC2626",     // Red for errors
+          info: "#1D4ED8",      // Blue for information
+        },
+        // Legacy grey scale (keeping for compatibility)
         grey: {
           0: "#FFFFFF",
-          5: "#F9FAFB",
-          10: "#F3F4F6",
-          20: "#E5E7EB",
-          30: "#D1D5DB",
-          40: "#9CA3AF",
-          50: "#6B7280",
-          60: "#4B5563",
-          70: "#374151",
-          80: "#1F2937",
-          90: "#111827",
+          5: "#FAFAFA",
+          10: "#F5F5F5",
+          20: "#E5E5E5",
+          30: "#D4D4D4",
+          40: "#A3A3A3",
+          50: "#737373",
+          60: "#525252",
+          70: "#404040",
+          80: "#262626",
+          90: "#171717",
         },
       },
       borderRadius: {

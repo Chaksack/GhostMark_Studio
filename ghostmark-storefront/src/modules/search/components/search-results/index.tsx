@@ -56,7 +56,8 @@ export default async function SearchResults({
         q: query,
         limit: PRODUCTS_PER_PAGE,
         order: getOrder(sortBy),
-        fields: "*variants.calculated_price,+metadata,+options,+variants.options,+images,+type",
+        // Avoid requesting unsupported 'type' field to prevent Medusa validation errors
+        fields: "*variants.calculated_price,+metadata,+options,+variants.options,+images",
       },
       countryCode,
     })

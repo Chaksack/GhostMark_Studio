@@ -19,6 +19,9 @@ type MobileActionsProps = {
   updateOptions: (title: string, value: string) => void
   inStock?: boolean
   handleAddToCart: () => void
+  handleBuyNow?: () => void
+  isPODProduct?: boolean
+  isTechnologyBlankVariant?: boolean
   isAdding?: boolean
   show: boolean
   optionsDisabled: boolean
@@ -31,6 +34,9 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   updateOptions,
   inStock,
   handleAddToCart,
+  handleBuyNow,
+  isPODProduct,
+  isTechnologyBlankVariant,
   isAdding,
   show,
   optionsDisabled,
@@ -141,32 +147,66 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <ChevronDown />
                 </div>
               </Button>}
-              <Button
-                onClick={() => {
-                  if (isCustomizable) {
-                    if (!product?.id) return
-                    const params = new URLSearchParams()
-                    if (variant?.id) params.set("v_id", variant.id)
-                    router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
-                  } else {
-                    handleAddToCart()
-                  }
-                }}
-                disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
-                data-testid="mobile-cart-button"
-              >
-                {!variant
-                  ? "Select variant"
-                  : !inStock
-                  ? "Out of stock"
-                  : isPOD
-                  ? "customise & checkout"
-                  : isCustomizable
-                  ? "Customize and Checkout"
-                  : "Buy now"}
-              </Button>
+              {(isPODProduct || isPOD) && handleBuyNow ? (
+                // For POD products, always show two buttons in a flex layout
+                <div className="flex gap-2 w-full">
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={!inStock || !variant}
+                    className="flex-1 text-sm"
+                    isLoading={isAdding}
+                    data-testid="mobile-customize-button"
+                  >
+                    {!variant
+                      ? "Select variant"
+                      : !inStock
+                      ? "Out of stock"
+                      : "Customise"}
+                  </Button>
+                  <Button
+                    onClick={handleBuyNow}
+                    disabled={!isTechnologyBlankVariant || !inStock || !variant}
+                    variant="secondary"
+                    className="flex-1 text-sm"
+                    isLoading={isAdding}
+                    data-testid="mobile-buy-now-button"
+                  >
+                    {!variant
+                      ? "Select variant"
+                      : !inStock
+                      ? "Out of stock"
+                      : !isTechnologyBlankVariant
+                      ? "Select Blank"
+                      : "Buy Now"}
+                  </Button>
+                </div>
+              ) : (
+                // For non-POD products, show single button
+                <Button
+                  onClick={() => {
+                    if (isCustomizable) {
+                      if (!product?.id) return
+                      const params = new URLSearchParams()
+                      if (variant?.id) params.set("v_id", variant.id)
+                      router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
+                    } else {
+                      handleAddToCart()
+                    }
+                  }}
+                  disabled={!inStock || !variant}
+                  className="w-full"
+                  isLoading={isAdding}
+                  data-testid="mobile-cart-button"
+                >
+                  {!variant
+                    ? "Select variant"
+                    : !inStock
+                    ? "Out of stock"
+                    : isCustomizable
+                    ? "Customize and Checkout"
+                    : "Buy now"}
+                </Button>
+              )}
             </div>
           </div>
         </Transition>

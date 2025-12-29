@@ -2,6 +2,7 @@ import React, { Suspense } from "react"
 
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
+import { sdk } from "@lib/config"
 import ProductOnboardingCta from "@modules/products/components/product-onboarding-cta"
 import ProductTabs from "@modules/products/components/product-tabs"
 import RelatedProducts from "@modules/products/components/related-products"
@@ -19,7 +20,7 @@ type ProductTemplateProps = {
   images: HttpTypes.StoreProductImage[]
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   product,
   region,
   countryCode,
@@ -32,32 +33,50 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       {/* Top section: two-column layout similar to Gelato PDP */}
-      <div className="content-container py-6">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="content-container py-4">
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
           {/* Left: image gallery (sticky on desktop) */}
           <div className="w-3/4 lg:sticky lg:top-32 col-span-2 self-start">
             <ImageGallery images={images} />
           </div>
 
           {/* Right: product info + actions */}
-          <div className="flex flex-col col-span-1 gap-y-6">
-            <ProductInfo product={product} />
+          <div className="flex flex-col col-span-1 gap-y-2">
+          <ProductInfo product={product} region={region} />
 
-            {/* Ratings + meta row (placeholder if no real data) */}
-            <div className="flex items-center gap-3 text-ui-fg-subtle">
-              <div className="flex items-center gap-1 text-emerald-600">
-                {/* simple 5-star static indicator to match reference style */}
-                <span aria-hidden>★★★★★</span>
-              </div>
-              <span className="text-sm">4.8 · 611 reviews</span>
-            </div>
+            {/* Ratings summary (dynamic from backend reviews) */}
+            {await (async () => {
+              try {
+                const headers: Record<string, string> = {}
+                const pub = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY as string | undefined
+                if (pub) headers["x-publishable-api-key"] = pub
+                const { ok, stats } = await sdk.client.fetch<any>(`/store/products/${product.id}/reviews`, {
+                  method: "GET",
+                  cache: "no-store",
+                  headers,
+                })
+                const count = ok ? Number(stats?.count || 0) : 0
+                const avg = ok ? Number(stats?.average || 0) : 0
+                const stars = "★★★★★".slice(0, Math.round(avg)).padEnd(5, "☆")
+                return (
+                  <div className="flex items-center gap-3 text-ui-fg-subtle">
+                    <div className="flex items-center gap-1 text-emerald-600">
+                      <span aria-hidden>{stars}</span>
+                    </div>
+                    <span className="text-sm">{avg.toFixed(1)} · {count} review{count === 1 ? '' : 's'}</span>
+                  </div>
+                )
+              } catch {
+                return null
+              }
+            })()}
 
             {/* Delivery/production note similar to Gelato banner */}
             <div className="rounded-lg border border-ui-border-base bg-ui-bg-subtle px-4 py-3 text-sm">
               Most orders are produced in 24–72 hours. Shipping is calculated at checkout.
             </div>
 
-            <div className="flex flex-col gap-y-8">
+            <div className="flex flex-col gap-y-4">
               <ProductOnboardingCta />
               <Suspense
                 fallback={

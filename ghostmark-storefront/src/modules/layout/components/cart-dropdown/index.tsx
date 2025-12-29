@@ -83,18 +83,28 @@ const CartDropdown = ({
       <Popover className="relative">
         <PopoverButton className="h-auto">
           <LocalizedClientLink
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-gray-50"
+            className="relative inline-flex items-center gap-2 h-9 px-3 rounded-md hover:bg-gray-50"
             href="/cart"
             data-testid="nav-cart-link"
             aria-label={`Cart (${totalItems})`}
           >
-            <ShoppingCart className="w-5 h-5" />
-            {totalItems > 0 && (
-              <span
-                className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-black text-white text-[10px] leading-none flex items-center justify-center shadow-sm"
-                aria-hidden="true"
-              >
-                {totalItems > 99 ? "99+" : totalItems}
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-black text-white text-[10px] leading-none flex items-center justify-center shadow-sm"
+                  aria-hidden="true"
+                >
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </div>
+            {subtotal > 0 && (
+              <span className="text-sm font-medium text-black">
+                {convertToLocale({
+                  amount: subtotal,
+                  currency_code: cartState?.currency_code || "USD",
+                })}
               </span>
             )}
           </LocalizedClientLink>
