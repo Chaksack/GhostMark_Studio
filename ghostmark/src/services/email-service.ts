@@ -60,19 +60,52 @@ export async function sendEmail(params: SendEmailParams) {
 
   const resend = getResend()
 
-  const { data, error } = await resend.emails.send({
+  // Sanitize and strictly construct payload for Resend API to avoid
+  // "Invalid request: Unrecognized fields: 'type'" errors if caller
+  // accidentally passes extra properties.
+  const safeTags = Array.isArray(tags)
+    ? tags
+        .filter((t) => t && typeof t.name === "string" && typeof t.value === "string")
+        .map(({ name, value }) => ({ name, value }))
+    : undefined
+
+  const safeHeaders = headers && typeof headers === "object" && !Array.isArray(headers)
+    ? Object.entries(headers).reduce<Record<string, string>>((acc, [k, v]) => {
+        if (k.toLowerCase() === "type") return acc // drop any rogue 'type' header
+        if (typeof v === "string") acc[k] = v
+        return acc
+      }, {})
+    : undefined
+
+  const safeAttachments = Array.isArray(attachments)
+    ? attachments.map((a) => {
+        const out: any = {}
+        if (typeof a.filename === "string") out.filename = a.filename
+        if (a.content instanceof Buffer) out.content = a.content
+        if (typeof a.path === "string") out.path = a.path
+        if (typeof a.contentType === "string") out.contentType = a.contentType
+        return out
+      })
+    : undefined
+
+  const payload: any = {
     from: from as string,
     to,
     subject,
     text,
     html,
-    cc,
-    bcc,
-    replyTo,
-    attachments,
-    tags,
-    headers,
-  })
+  }
+  if (cc) payload.cc = cc
+  if (bcc) payload.bcc = bcc
+  if (replyTo) payload.replyTo = replyTo
+  if (safeAttachments && safeAttachments.length) payload.attachments = safeAttachments
+  if (safeTags && safeTags.length) payload.tags = safeTags
+  if (safeHeaders && Object.keys(safeHeaders).length) payload.headers = safeHeaders
+
+  // Defensive: ensure no stray 'type' field slipped in
+  if ("type" in payload) delete payload.type
+
+  const { data, error } = await resend.emails.send(payload)
 
   if (error) {
     throw new Error(`Resend error: ${error.name} - ${error.message}`)
