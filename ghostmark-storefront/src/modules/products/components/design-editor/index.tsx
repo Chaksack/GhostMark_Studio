@@ -9,6 +9,7 @@ import type { HttpTypes } from '@medusajs/types'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import OptionSelect from '@modules/products/components/product-actions/option-select'
 import { isEqual } from 'lodash'
+import { extractImageDPI, type DPIExtractionResult, type ImageMetadata } from '@lib/util/image-dpi-extractor'
 
 // Toast notification utility (simplified)
 const toast = {
@@ -42,6 +43,8 @@ type Props = {
   }
   // Callback for design cost changes
   onDesignCostChange?: (cost: number) => void
+  // Callback for design submissions changes (for backend pricing)
+  onDesignChange?: (designs: any[]) => void
   // Register an export function that callers (wrapper) can use
   onRegisterExporter?: (fn: () => Promise<ExportResult>) => void
   // Variant selection support (provided by Wrapper)
@@ -134,7 +137,7 @@ function useHtmlImage(src?: string): { image: HTMLImageElement | null; tainted: 
 }
 
 export default function TShirtDesigner(props: Props) {
-    const { mockupUrl, mockupZones, designAreas, designCapabilities, onDesignCostChange, onRegisterExporter, variants = [], selectedVariantId, onSelectVariant, priceString, priceDetails, onFinalize, submitting, errorMessage, priceWarning, product } = props
+    const { mockupUrl, mockupZones, designAreas, designCapabilities, onDesignCostChange, onDesignChange, onRegisterExporter, variants = [], selectedVariantId, onSelectVariant, priceString, priceDetails, onFinalize, submitting, errorMessage, priceWarning, product } = props
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -166,6 +169,9 @@ export default function TShirtDesigner(props: Props) {
     const [textFontSize, setTextFontSize] = useState<number>(18)
     // uploaded image node state
     const [uploadedImg, setUploadedImg] = useState<HTMLImageElement | null>(null)
+    const [uploadedImageMetadata, setUploadedImageMetadata] = useState<DPIExtractionResult | null>(null)
+    const [imageQualityWarnings, setImageQualityWarnings] = useState<string[]>([])
+    const [currentFile, setCurrentFile] = useState<File | null>(null)
     const [uploadedPos, setUploadedPos] = useState({ x: 170, y: 190 })
     const [uploadedSize, setUploadedSize] = useState({ width: 160, height: 160 })
     // Enhanced upload states
@@ -607,41 +613,7 @@ export default function TShirtDesigner(props: Props) {
       setIsDragOver(false)
     }, [])
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      setIsDragOver(false)
 
-      const files = Array.from(e.dataTransfer.files)
-      const imageFiles = files.filter(file => file.type.startsWith('image/'))
-      
-      if (imageFiles.length > 0) {
-        const file = imageFiles[0] // Use first image
-        const reader = new FileReader()
-        reader.onload = () => {
-          const img = new window.Image()
-          img.crossOrigin = 'anonymous'
-          img.src = String(reader.result || '')
-          img.onload = () => {
-            let maxW = 240, maxH = 240, originX = 120, originY = 150
-            const container = activeZoneRect || mockupFit
-            if (container) {
-              maxW = Math.max(1, container.width)
-              maxH = Math.max(1, container.height)
-              originX = container.x
-              originY = container.y
-            }
-            const ratio = Math.min(maxW / img.width, maxH / img.height, 1)
-            setUploadedSize({ width: Math.round(img.width * ratio), height: Math.round(img.height * ratio) })
-            setUploadedPos({ x: Math.round(originX + (maxW - Math.round(img.width * ratio)) / 2), y: Math.round(originY + (maxH - Math.round(img.height * ratio)) / 2) })
-            setUploadedImg(img)
-            setImgSelected(true)
-            setTimeout(() => pushHistory(snapshotNow()), 0)
-          }
-        }
-        reader.readAsDataURL(file)
-      }
-    }, [activeZoneRect, mockupFit, pushHistory, snapshotNow])
 
     // Observe container size to make the Stage fill the entire center area
     useEffect(() => {
@@ -759,6 +731,115 @@ export default function TShirtDesigner(props: Props) {
       layerOrder: number
     }[]>>({}) // Images per design area
 
+    const handleImageUpload = useCallback(async (file: File) => {
+      try {
+        setCurrentFile(file)
+        setImageQualityWarnings([])
+        
+        // Extract DPI and quality information
+        const dpiResult = await extractImageDPI(file)
+        setUploadedImageMetadata(dpiResult)
+        
+        // Set quality warnings if any
+        if (dpiResult.metadata.warnings?.length) {
+          setImageQualityWarnings(dpiResult.metadata.warnings)
+        }
+        
+        // Add quality recommendations as warnings for user visibility
+        if (dpiResult.metadata.recommendations?.length) {
+          setImageQualityWarnings(prev => [...prev, ...dpiResult.metadata.recommendations!])
+        }
+        
+        // Show quality alert for poor quality images
+        if (dpiResult.qualityScore < 40) {
+          setImageQualityWarnings(prev => [...prev, 
+            `Image quality score: ${dpiResult.qualityScore}/100 - Consider using a higher quality image for better print results`
+          ])
+        }
+        
+        // Convert file to data URL for canvas use
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string
+          const stage = stageRef.current
+          if (dataUrl && stage && activePrintArea) {
+            const img = new window.Image()
+            img.crossOrigin = 'anonymous'
+            img.onload = () => {
+              const scaleX = 200 / img.width
+              const scaleY = 200 / img.height
+              const scale = Math.min(scaleX, scaleY)
+              
+              // Create new design submission with DPI metadata
+              const newDesign: DesignSubmission = {
+                areaId: activePrintArea,
+                areaType: activePrintArea,
+                layers: 1,
+                colors: 1,
+                printMethod: 'dtf',
+                imageMetadata: {
+                  dpi: dpiResult.metadata.dpi || 72,
+                  qualityScore: dpiResult.qualityScore,
+                  isPrintReady: dpiResult.isPrintReady,
+                  suggestedUse: dpiResult.suggestedUse,
+                  width: dpiResult.metadata.width,
+                  height: dpiResult.metadata.height
+                }
+              }
+              
+              // Call onDesignChange with updated design info
+              onDesignChange?.([newDesign])
+              
+              const konvaImage = new Konva.Image({
+                x: 100,
+                y: 100,
+                image: img,
+                width: img.width * scale,
+                height: img.height * scale,
+                draggable: true,
+                name: 'uploadedImage',
+              })
+              
+              const activeLayer = stage.findOne(`.area-${activePrintArea}`)
+              if (activeLayer) {
+                // Clear previous uploaded images in this area
+                const existingImages = activeLayer.find('.uploadedImage')
+                existingImages.forEach(node => node.destroy())
+                
+                activeLayer.add(konvaImage)
+                activeLayer.batchDraw()
+              }
+              
+              // notifyEditorChange was referenced but not defined anywhere.
+              // The editor already triggers updates via onDesignChange and history snapshots.
+              // Removing the stray call to avoid ReferenceError at runtime.
+            }
+            img.src = dataUrl
+          }
+        }
+        reader.readAsDataURL(file)
+        
+      } catch (error) {
+        console.error('Error processing uploaded image:', error)
+        setImageQualityWarnings(['Failed to process image. Please try a different file.'])
+      }
+    }, [activePrintArea, onDesignChange, extractImageDPI])
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(false)
+
+      const files = Array.from(e.dataTransfer.files)
+      const imageFiles = files.filter(file => file.type.startsWith('image/'))
+      
+      if (imageFiles.length > 0) {
+        const file = imageFiles[0] // Use first image
+        handleImageUpload(file)
+        setTimeout(() => pushHistory(snapshotNow()), 100) // Small delay for metadata processing
+      }
+    }, [handleImageUpload, pushHistory, snapshotNow])
+
     // Handle multiple print area selection
     const togglePrintAreaSelection = useCallback((areaId: string) => {
       setSelectedPrintAreas(prev => {
@@ -807,7 +888,72 @@ export default function TShirtDesigner(props: Props) {
       }))
     }, [])
 
-    // Calculate total pricing for selected areas and images
+    // Enhanced design submissions for backend pricing calculation (Gelato-inspired)
+    const currentDesignSubmissions = useMemo(() => {
+      const submissions: any[] = []
+      
+      Array.from(selectedPrintAreas).forEach(areaId => {
+        const area = printAreas.find(a => a.id === areaId)
+        const imagesInArea = designAreaImages[areaId] || []
+        
+        if (area && imagesInArea.length > 0) {
+          // Use extracted DPI and quality information for better pricing
+          const imageDPI = uploadedImageMetadata?.metadata.dpi || 150
+          const imageQuality = uploadedImageMetadata?.qualityScore || 50
+          const isPrintReady = uploadedImageMetadata?.isPrintReady || false
+          
+          submissions.push({
+            areaId: area.id,
+            areaType: area.area_type || area.type,
+            layers: Math.max(imagesInArea.length, 1),
+            colors: imagesInArea.length > 0 ? (imageDPI >= 200 ? 4 : 3) : 1, // More colors for high-DPI images
+            printMethod: area.printMethods?.[0] || area.print_methods?.[0] || 'dtg',
+            // Enhanced metadata for pricing calculations (aligned with Gelato approach)
+            fileUrl: imagesInArea[0]?.url, // Primary image URL
+            fileType: area.area_type === 'front' ? 'front' : 
+                      area.area_type === 'back' ? 'back' : 'default',
+            imageMetadata: {
+              dpi: imageDPI,
+              qualityScore: imageQuality,
+              isPrintReady: isPrintReady,
+              suggestedUse: uploadedImageMetadata?.suggestedUse || 'web-only',
+              width: uploadedImageMetadata?.metadata.width || 0,
+              height: uploadedImageMetadata?.metadata.height || 0,
+              fileSize: uploadedImageMetadata?.fileSize || 0,
+              format: uploadedImageMetadata?.format || 'UNKNOWN'
+            }
+          })
+        } else if (area) {
+          // Include empty areas that are selected
+          submissions.push({
+            areaId: area.id,
+            areaType: area.area_type || area.type,
+            layers: 1,
+            colors: 1,
+            printMethod: area.printMethods?.[0] || area.print_methods?.[0] || 'dtg',
+            imageMetadata: {
+              dpi: 72, // Default for no image
+              qualityScore: 0,
+              isPrintReady: false,
+              suggestedUse: 'text-only',
+              width: 0,
+              height: 0
+            }
+          })
+        }
+      })
+      
+      return submissions
+    }, [selectedPrintAreas, printAreas, designAreaImages])
+
+    // Notify parent of design submissions changes for backend pricing
+    useEffect(() => {
+      if (onDesignChange) {
+        onDesignChange(currentDesignSubmissions)
+      }
+    }, [onDesignChange, currentDesignSubmissions])
+
+    // Calculate total pricing for selected areas and images (fallback for when backend pricing fails)
     const calculateTotalDesignCost = useCallback(() => {
       let total = 0
       
@@ -828,6 +974,7 @@ export default function TShirtDesigner(props: Props) {
 
       return total
     }, [selectedPrintAreas, printAreas, designAreaImages])
+
 
     // Notify parent of design cost changes
     useEffect(() => {
@@ -1497,29 +1644,7 @@ export default function TShirtDesigner(props: Props) {
                                                 if (e.target.files) {
                                                     const files = Array.from(e.target.files)
                                                     files.forEach(file => {
-                                                        const reader = new FileReader()
-                                                        reader.onload = () => {
-                                                            const img = new window.Image()
-                                                            img.crossOrigin = 'anonymous'
-                                                            img.src = String(reader.result || '')
-                                                            img.onload = () => {
-                                                                let maxW = 240, maxH = 240, originX = 120, originY = 150
-                                                                const container = activeZoneRect || mockupFit
-                                                                if (container) {
-                                                                    maxW = Math.max(1, container.width)
-                                                                    maxH = Math.max(1, container.height)
-                                                                    originX = container.x
-                                                                    originY = container.y
-                                                                }
-                                                                const ratio = Math.min(maxW / img.width, maxH / img.height, 1)
-                                                                setUploadedSize({ width: Math.round(img.width * ratio), height: Math.round(img.height * ratio) })
-                                                                setUploadedPos({ x: Math.round(originX + (maxW - Math.round(img.width * ratio)) / 2), y: Math.round(originY + (maxH - Math.round(img.height * ratio)) / 2) })
-                                                                setUploadedImg(img)
-                                                                setImgSelected(true)
-                                                                setTimeout(() => pushHistory(snapshotNow()), 0)
-                                                            }
-                                                        }
-                                                        reader.readAsDataURL(file)
+                                                        handleImageUpload(file)
                                                     })
                                                 }
                                             }}
@@ -1532,6 +1657,89 @@ export default function TShirtDesigner(props: Props) {
                                             <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
                                         </div>
                                     </label>
+
+                                    {/* Image Quality Information */}
+                                    {uploadedImageMetadata && (
+                                        <div className="mt-4 p-4 bg-gray-50 rounded-xl border">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h4 className="font-medium text-sm text-gray-900">Image Quality Analysis</h4>
+                                                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                    uploadedImageMetadata.isPrintReady 
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : uploadedImageMetadata.isHighQuality
+                                                        ? 'bg-yellow-100 text-yellow-700'
+                                                        : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                    {uploadedImageMetadata.isPrintReady 
+                                                        ? 'Print Ready' 
+                                                        : uploadedImageMetadata.isHighQuality 
+                                                        ? 'Good Quality' 
+                                                        : 'Basic Quality'}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 text-xs">
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Resolution:</span>
+                                                    <div className="text-gray-600">
+                                                        {uploadedImageMetadata.metadata.width} × {uploadedImageMetadata.metadata.height}px
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-gray-700">DPI:</span>
+                                                    <div className={`${
+                                                        (uploadedImageMetadata.metadata.dpi || 0) >= 200 ? 'text-green-600' :
+                                                        (uploadedImageMetadata.metadata.dpi || 0) >= 150 ? 'text-yellow-600' : 'text-red-600'
+                                                    }`}>
+                                                        {uploadedImageMetadata.metadata.dpi || 'Unknown'} DPI
+                                                    </div>
+                                                </div>
+                                                {uploadedImageMetadata.metadata.physicalWidth && (
+                                                    <div>
+                                                        <span className="font-medium text-gray-700">Print Size:</span>
+                                                        <div className="text-gray-600">
+                                                            {uploadedImageMetadata.metadata.physicalWidth.toFixed(1)}" × {uploadedImageMetadata.metadata.physicalHeight?.toFixed(1)}"
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Quality Score:</span>
+                                                    <div className="text-gray-600">
+                                                        {uploadedImageMetadata.qualityScore}/100
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-3 text-xs">
+                                                <div className="font-medium text-gray-700 mb-1">Recommended for:</div>
+                                                <div className={`px-2 py-1 rounded text-xs ${
+                                                    uploadedImageMetadata.suggestedUse === 'commercial-print' ? 'bg-green-100 text-green-700' :
+                                                    uploadedImageMetadata.suggestedUse === 'large-print' ? 'bg-blue-100 text-blue-700' :
+                                                    uploadedImageMetadata.suggestedUse === 'medium-print' ? 'bg-yellow-100 text-yellow-700' :
+                                                    uploadedImageMetadata.suggestedUse === 'small-print' ? 'bg-orange-100 text-orange-700' :
+                                                    'bg-gray-100 text-gray-700'
+                                                }`}>
+                                                    {uploadedImageMetadata.suggestedUse.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                                </div>
+                                            </div>
+
+                                            {imageQualityWarnings.length > 0 && (
+                                                <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded">
+                                                    <div className="flex items-start gap-2">
+                                                        <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                                        <div className="text-xs">
+                                                            <div className="font-medium text-amber-700 mb-1">Quality Tips:</div>
+                                                            <ul className="text-amber-600 space-y-1">
+                                                                {imageQualityWarnings.slice(0, 3).map((warning, index) => (
+                                                                    <li key={index}>• {warning}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     
                                     {/* Upload Progress */}
                                     {Object.entries(uploadProgress).map(([filename, progress]) => (
@@ -1975,24 +2183,64 @@ export default function TShirtDesigner(props: Props) {
                                             <div className="text-green-800 text-sm">
                                                 <p className="font-medium mb-2">Design Cost Breakdown</p>
                                                 <div className="space-y-1 text-xs">
-                                                    {Array.from(selectedPrintAreas).map(areaId => {
-                                                        const area = printAreas.find(a => a.id === areaId)
-                                                        if (!area?.pricing) return null
-                                                        const images = designAreaImages[areaId] || []
-                                                        const areaCost = (area.pricing.basePrice || 0) + 
-                                                                        images.length * (area.pricing.layerPrice || 0) +
-                                                                        (area.pricing.setupFee || 0)
-                                                        return (
-                                                            <div key={areaId} className="flex justify-between">
-                                                                <span>{area.name} ({images.length} images):</span>
-                                                                <span className="font-medium">${areaCost.toFixed(2)}</span>
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    {/* Enhanced breakdown with group pricing support */}
+                                                    {priceDetails?.groupCharges?.length > 0 ? (
+                                                        // Show group charges if available
+                                                        <>
+                                                            {priceDetails.groupCharges.map((group: any, index: number) => (
+                                                                <div key={index} className="space-y-1">
+                                                                    <div className="flex justify-between">
+                                                                        <span>{group.groupName}:</span>
+                                                                        <span className="font-medium">${group.price.toFixed(2)}</span>
+                                                                    </div>
+                                                                    <div className="text-xs text-green-600 pl-2">
+                                                                        Areas: {group.areasIncluded.map((areaId: string) => {
+                                                                            const area = printAreas.find(a => a.id === areaId)
+                                                                            return area?.name
+                                                                        }).filter(Boolean).join(', ')}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            {/* Individual areas not in groups */}
+                                                            {priceDetails.designPricing?.areaBreakdown?.filter((area: any) => !area.isGroupCharge && area.subtotal > 0).map((area: any, index: number) => (
+                                                                <div key={`individual-${index}`} className="flex justify-between">
+                                                                    <span>{area.areaType}:</span>
+                                                                    <span className="font-medium">${area.subtotal.toFixed(2)}</span>
+                                                                </div>
+                                                            ))}
+                                                            {priceDetails.savings > 0 && (
+                                                                <div className="flex justify-between text-green-700">
+                                                                    <span>💰 Group Savings:</span>
+                                                                    <span className="font-medium">-${priceDetails.savings.toFixed(2)}</span>
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        // Fallback to individual area pricing
+                                                        Array.from(selectedPrintAreas).map(areaId => {
+                                                            const area = printAreas.find(a => a.id === areaId)
+                                                            if (!area?.pricing) return null
+                                                            const images = designAreaImages[areaId] || []
+                                                            const areaCost = (area.pricing.basePrice || 0) + 
+                                                                            images.length * (area.pricing.layerPrice || 0) +
+                                                                            (area.pricing.setupFee || 0)
+                                                            return (
+                                                                <div key={areaId} className="flex justify-between">
+                                                                    <span>{area.name} ({images.length} images):</span>
+                                                                    <span className="font-medium">${areaCost.toFixed(2)}</span>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    )}
                                                     <div className="pt-2 mt-2 border-t border-green-300 flex justify-between font-semibold">
                                                         <span>Total Design Cost:</span>
-                                                        <span>${calculateTotalDesignCost().toFixed(2)}</span>
+                                                        <span>${(priceDetails?.printAmountMinor ? priceDetails.printAmountMinor / 100 : calculateTotalDesignCost()).toFixed(2)}</span>
                                                     </div>
+                                                    {priceDetails?.groupCharges?.length > 0 && (
+                                                        <div className="text-xs text-green-600 mt-1">
+                                                            ✅ Group pricing applied • Single charge for combined areas
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

@@ -183,103 +183,59 @@ export default async function PaginatedProducts({
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
-  const matchesType = (p: any, needle: string): boolean => {
-    const fields: string[] = []
-    // Title/description/handle/subtitle
-    fields.push(normalize(p?.title))
-    fields.push(normalize(p?.description))
-    fields.push(normalize((p as any)?.handle))
-    fields.push(normalize((p as any)?.subtitle))
-
-    // Product type fields in different shapes across backends
+  // Strict product-type matcher: only match on the product's type fields
+  // Avoid fuzzy matching on title/description/tags to prevent mixing categories.
+  const strictMatchesType = (p: any, needle: string): boolean => {
+    const n = normalize(needle)
+    // Some backends return { type: { value } }, others { product_type: { value } }
     const t = (p as any)?.type ?? (p as any)?.product_type
     if (t && typeof t === "object") {
-      fields.push(normalize((t as any)?.value))
-      fields.push(normalize((t as any)?.name))
-      fields.push(normalize((t as any)?.title))
-      fields.push(normalize((t as any)?.handle))
+      const v = normalize((t as any)?.value)
+      const name = normalize((t as any)?.name)
+      const title = normalize((t as any)?.title)
+      const handle = normalize((t as any)?.handle)
+      if ([v, name, title, handle].some((x) => x === n || slugify(x) === slugify(n))) {
+        return true
+      }
     } else if (t) {
-      fields.push(normalize(t))
+      const tv = normalize(t)
+      if (tv === n || slugify(tv) === slugify(n)) return true
     }
 
-    // Variants: titles, SKU, option values
-    const variants = Array.isArray((p as any)?.variants) ? (p as any).variants : []
-    for (const v of variants) {
-      fields.push(normalize((v as any)?.title))
-      fields.push(normalize((v as any)?.sku))
-      const options = Array.isArray((v as any)?.options) ? (v as any).options : []
-      for (const opt of options) {
-        fields.push(normalize((opt as any)?.value))
-        fields.push(normalize((opt as any)?.title))
+    // Consider an explicit metadata key if present, but do not use free-form values
+    const meta = (p as any)?.metadata
+    if (meta && typeof meta === "object") {
+      const metaType = normalize((meta as any)["product_type"] ?? (meta as any)["type_value"]) 
+      if (metaType && (metaType === n || slugify(metaType) === slugify(n))) {
+        return true
       }
     }
 
-    // Tags (various shapes depending on backend)
-    const tags = Array.isArray(p?.tags) ? p.tags : []
-    for (const t of tags) {
-      fields.push(normalize((t as any)?.value))
-      fields.push(normalize((t as any)?.name))
-    }
-    const productTags = Array.isArray((p as any)?.product_tags)
-      ? (p as any).product_tags
-      : []
-    for (const pt of productTags) {
-      fields.push(normalize((pt as any)?.value))
-      fields.push(normalize((pt as any)?.name))
-      fields.push(normalize((pt as any)?.tag?.value))
-      fields.push(normalize((pt as any)?.tag?.name))
-    }
-
-    // Metadata keys and values
-    const metadata = (p as any)?.metadata || {}
-    if (metadata && typeof metadata === "object") {
-      for (const key of Object.keys(metadata)) {
-        fields.push(normalize(key))
-        fields.push(normalize((metadata as any)[key]))
-      }
-    }
-
-    // Build additional slugified variants for matching tolerant to punctuation
-    const fieldSlugs = fields.map((f) => slugify(f))
-    const needleSlug = slugify(needle)
-
-    // Try simple plural/singular variants to increase recall (e.g., apparel/clothes)
-    const variantsToTry = new Set<string>([needle])
-    if (needle.endsWith("s")) {
-      variantsToTry.add(needle.slice(0, -1))
-    } else {
-      variantsToTry.add(`${needle}s`)
-    }
-    const slugVariants = Array.from(variantsToTry).map((n) => slugify(n))
-
-    // Plain includes or slug includes
-    return (
-      fields.some((f) => f && Array.from(variantsToTry).some((n) => f.includes(n))) ||
-      fieldSlugs.some((fs) => fs && slugVariants.some((sn) => fs.includes(sn)))
-    )
+    return false
   }
 
-  // Apply client-side product type filtering only when backend filtering wasn't applied
-  // This is now a fallback for cases where backend type filtering is not supported
+  // Apply client-side product type filtering with STRICT matching to prevent mixing types
+  // Always enforce this when productType is specified to guarantee correctness, even if
+  // backend also attempted filtering. Double-filtering is idempotent for exact matches.
   if (productType && Array.isArray(products) && products.length > 0) {
-    // Check if we already have type-filtered results from backend
-    const hasBackendTypeFiltering = 
-      !collectionId && !categoryId && !(categoryIds && categoryIds.length > 0)
-    
-    // If we have collection/category context or backend filtering failed, apply client-side filtering
-    if (!hasBackendTypeFiltering) {
-      const needle = productType.toLowerCase()
-      const originalCount = products.length
-      products = products.filter((p) => matchesType(p, needle))
-      
-      // Adjust count proportionally if we filtered products
-      if (originalCount > 0 && products.length !== originalCount) {
-        count = Math.round(count * (products.length / originalCount))
+    const needle = productType.toLowerCase()
+
+    // Since backend already paginated the results, applying a filter here may reduce
+    // the number of visible products for this page. For correctness (no mixing), we
+    // strictly filter and keep the current page size; count is adjusted conservatively.
+    const before = products.length
+    products = products.filter((p) => strictMatchesType(p, needle))
+
+    // Best-effort count adjustment: if the page got filtered, lower the count accordingly.
+    if (before > 0 && products.length <= before) {
+      // At minimum, reflect the number of items we actually show on this page.
+      if (count < products.length) {
+        count = products.length
       }
-      
-      if (process.env.NODE_ENV !== "production") {
-        console.log(`[PaginatedProducts] Applied client-side type filter for "${productType}". Results: ${products.length}`)
-      }
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[PaginatedProducts] Strict type filter enforced for "${productType}". Results on page: ${products.length}`)
     }
   }
 

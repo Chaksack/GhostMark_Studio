@@ -1,0 +1,77 @@
+name: Build and Push Medusa Backend and Storefront to AWS ECR
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+  ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  ECR_REPO_BACKEND: ghostmark-backend
+  ECR_REPO_STOREFRONT: ghostmark-storefront
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-push:
+    name: Build and Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repositories exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for repo in "$ECR_REPO_BACKEND" "$ECR_REPO_STOREFRONT"; do
+            if ! aws ecr describe-repositories --repository-names "$repo" >/dev/null 2>&1; then
+              echo "Creating ECR repository: $repo"
+              aws ecr create-repository --repository-name "$repo" >/dev/null
+            else
+              echo "ECR repository exists: $repo"
+            fi
+          done
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ghostmark
+          file: ./ghostmark/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:latest
+          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache
+          cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache,mode=max
+
+      - name: Build and push storefront image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ghostmark-storefront
+          file: ./ghostmark-storefront/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:latest
+          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache
+          cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache,mode=max

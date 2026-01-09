@@ -6,6 +6,7 @@ import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
+import { getProductTypeByValue } from "./product-types"
 
 export const listProducts = async ({
   pageParam = 1,
@@ -192,34 +193,37 @@ export const listProductsWithSort = async ({
   }
 
   // Try to add type filtering at the backend level if productType is specified
-  // This reduces the need for client-side filtering
-  if (productType && !queryParams?.collection_id && !queryParams?.category_id) {
-    // For global product type searches, try backend filtering first
+  // Prefer exact filtering using type_id resolved from the type value
+  if (productType) {
     try {
-      const typeFilteredParams = {
-        ...enhancedQueryParams,
-        type: productType,
-      }
-      
-      const { response, nextPage: serverNextPage } = await listProducts({
-        pageParam: Math.max(page, 1),
-        queryParams: typeFilteredParams,
-        countryCode,
-      })
+      const type = await getProductTypeByValue(productType)
+      if (type?.id) {
+        const typeFilteredParams: any = {
+          ...enhancedQueryParams,
+          // Medusa store list accepts type_id to filter by product type
+          type_id: [type.id],
+        }
 
-      // If backend filtering worked (returned some products), use it
-      if (response.products.length > 0 || response.count > 0) {
-        return {
-          response,
-          nextPage: serverNextPage,
+        const { response, nextPage: serverNextPage } = await listProducts({
+          pageParam: Math.max(page, 1),
           queryParams: typeFilteredParams,
+          countryCode,
+        })
+
+        // If backend filtering returned successfully, prefer it
+        if (response.products.length > 0 || response.count > 0) {
+          return {
+            response,
+            nextPage: serverNextPage,
+            queryParams: typeFilteredParams,
+          }
         }
       }
     } catch (error) {
-      // Backend type filtering failed, fall back to standard approach
       if (process.env.NODE_ENV !== "production") {
-        console.warn("Backend type filtering failed, falling back to standard approach:", error)
+        console.warn("Type resolution or backend type_id filtering failed, continuing without backend type filter:", error)
       }
+      // continue without backend type filter
     }
   }
 

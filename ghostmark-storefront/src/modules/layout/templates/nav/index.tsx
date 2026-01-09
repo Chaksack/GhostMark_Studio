@@ -109,7 +109,7 @@ export default async function Nav() {
                 <CartButton />
               </Suspense>
             </div>
-              <div className="hidden small:flex items-center gap-x-2 h-full">
+              <div className="hidden small:flex items-center gap-x-1 h-full">
                   <LocalizedClientLink
                       className="bg-black text-white hover:bg-black/90 text-sm max-w-[180px] inline-flex items-center justify-center px-4 py-2 rounded"
                       href="/account"
@@ -139,7 +139,7 @@ export default async function Nav() {
         </nav>
       </header>
 
-      <nav className="content-container w-full flex items-center space-x-6 py-3 text-sm border-t border-mono-200 bg-white">
+      <nav className="content-container w-full flex items-center py-1 text-sm bg-white">
         {/* Products dropdown shows Types, Collections, and Categories with direct links */}
         <DropdownMenu label="Products" sections={productSections} />
 

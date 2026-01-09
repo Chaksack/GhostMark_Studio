@@ -57,7 +57,7 @@ export default async function CategoryTemplate({
 
   return (
     <div
-      className="flex flex-col small:flex-row small:items-start py-6 content-container"
+      className="flex flex-col small:flex-row small:items-start py-2 content-container"
       data-testid="category-container"
     >
       <RefinementList
@@ -70,7 +70,7 @@ export default async function CategoryTemplate({
         productTypes={productTypes}
       />
       <div className="w-full">
-        <div className="flex flex-row mb-8 text-2xl-semi gap-4">
+        <div className="flex flex-row text-2xl-semi gap-2">
           {parents &&
             parents.map((parent) => (
               <span key={parent.id} className="text-ui-fg-subtle">
@@ -90,12 +90,12 @@ export default async function CategoryTemplate({
           <h1 data-testid="category-page-title">{category.name}</h1>
         </div>
         {category.description && (
-          <div className="mb-8 text-base-regular">
+          <div className="mb-2 text-base-regular">
             <p>{category.description}</p>
           </div>
         )}
         {category.category_children && (
-          <div className="mb-8 text-base-large">
+          <div className="mb-2 text-base-large">
             <ul className="grid grid-cols-1 gap-2">
               {category.category_children?.map((c) => (
                 <li key={c.id}>

@@ -51,7 +51,7 @@ export default function DesignEditorWrapper(props: Props) {
     } catch {
       return null
     }
-  }, [product, variant?.id])
+  }, [product, variant?.id || ''])
 
   // If the selected variant has no calculated_price in the server-fetched product payload,
   // fetch a fresh price for the current region via a lightweight API route.
@@ -94,7 +94,7 @@ export default function DesignEditorWrapper(props: Props) {
       cancelled = true
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variantIdForPricing, countryCode, !!priceInfo?.calculated_price])
+  }, [variantIdForPricing || '', countryCode || '', !!priceInfo?.calculated_price])
 
   const mockupUrl = useMemo(() => {
     // Prefer explicitly provided mockupUrl, then currently selected variant image,
@@ -115,8 +115,11 @@ export default function DesignEditorWrapper(props: Props) {
     designCapabilities: any
   } | null>(null)
   
-  // State for design cost
+  // State for design cost and pricing details
   const [designCost, setDesignCost] = useState(0)
+  const [designPricing, setDesignPricing] = useState<any>(null)
+  const [currentDesigns, setCurrentDesigns] = useState<any[]>([])
+  const [quantity, setQuantity] = useState(1)
 
   // Fetch enhanced design areas when variant changes
   useEffect(() => {
@@ -124,17 +127,32 @@ export default function DesignEditorWrapper(props: Props) {
     
     const fetchDesignAreas = async () => {
       try {
-        // First try the variant API
-        const response = await fetch(`/api/variants/${variant.id}?countryCode=${countryCode}`)
-        if (response.ok) {
-          const data = await response.json()
+        // First try the new POD product design areas API
+        const podResponse = await fetch(`/api/store/products/${product.id}/design-areas`)
+        if (podResponse.ok) {
+          const podData = await podResponse.json()
+          console.log('Using POD product design areas:', podData)
           setDesignAreasData({
-            designAreas: data.designAreas || [],
-            productTypeDesignAreas: data.productTypeDesignAreas || [],
-            designCapabilities: data.designCapabilities || {}
+            designAreas: podData.designAreas || [],
+            productTypeDesignAreas: podData.productTypeDesignAreas || [],
+            designCapabilities: podData.designCapabilities || {}
+          })
+          return
+        } else {
+          console.log('POD API not available for this product, trying variant API')
+        }
+
+        // Fallback: try the variant API
+        const variantResponse = await fetch(`/api/variants/${variant.id}?countryCode=${countryCode}`)
+        if (variantResponse.ok) {
+          const variantData = await variantResponse.json()
+          setDesignAreasData({
+            designAreas: variantData.designAreas || [],
+            productTypeDesignAreas: variantData.productTypeDesignAreas || [],
+            designCapabilities: variantData.designCapabilities || {}
           })
         } else {
-          // Fallback: try to get design areas from product type if available
+          // Final fallback: try to get design areas from product type if available
           console.log('Variant API failed, falling back to product type detection')
           if (product?.type_id) {
             try {
@@ -158,7 +176,7 @@ export default function DesignEditorWrapper(props: Props) {
     }
     
     fetchDesignAreas()
-  }, [variant?.id, countryCode, product?.type_id])
+  }, [variant?.id || '', countryCode, product?.type_id || '', product?.id || ''])
 
   // Resolve mockup zones from variant or product metadata. Expect either an object or a JSON string.
   const mockupZones = useMemo(() => {
@@ -202,6 +220,100 @@ export default function DesignEditorWrapper(props: Props) {
     
     return undefined
   }, [mockupZones, designAreasData])
+
+  // Calculate design pricing when designs change (enhanced with quote API for better accuracy)
+  useEffect(() => {
+    if (!product?.type_id || !currentDesigns.length) {
+      setDesignPricing(null)
+      setDesignCost(0)
+      return
+    }
+
+    const calculatePricing = async () => {
+      try {
+        // Try the new quote API first (Gelato-inspired approach)
+        const quotePayload = {
+          quoteReferenceId: `quote_${product.id}_${Date.now()}`,
+          currency: 'USD',
+          products: [{
+            itemReferenceId: `item_${product.id}_${variant?.id}`,
+            productTypeId: product.type_id,
+            variantId: variant?.id,
+            files: currentDesigns.filter(d => d.fileUrl).map(design => ({
+              type: design.fileType || 'default',
+              url: design.fileUrl,
+              areaId: design.areaId,
+              metadata: design.imageMetadata
+            })),
+            quantity,
+            printMethod: currentDesigns[0]?.printMethod || 'digital'
+          }]
+        }
+
+        const quoteResponse = await fetch('/api/store/design-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(quotePayload)
+        })
+
+        if (quoteResponse.ok) {
+          const quoteResult = await quoteResponse.json()
+          if (quoteResult.quotes && quoteResult.quotes.length > 0) {
+            const quote = quoteResult.quotes[0]
+            const product = quote.products[0]
+            
+            setDesignPricing({
+              ...quote,
+              totals: quote.totals,
+              areaBreakdown: [{
+                areaId: product.itemReferenceId,
+                basePrice: product.breakdown.basePrice,
+                designPrice: product.breakdown.designPrice,
+                setupFee: product.breakdown.setupFees,
+                subtotal: product.price,
+                savings: product.breakdown.groupSavings
+              }]
+            })
+            setDesignCost(quote.totals.total)
+            return
+          }
+        }
+
+        // Fallback to existing pricing API
+        const response = await fetch('/api/store/design-pricing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productTypeId: product.type_id,
+            productId: product.id,
+            designs: currentDesigns,
+            quantity
+          })
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          setDesignPricing(result.pricing)
+          setDesignCost(result.pricing.totals.total)
+        } else {
+          console.warn('Design pricing calculation failed:', await response.text())
+          setDesignPricing(null)
+          setDesignCost(0)
+        }
+      } catch (error) {
+        console.warn('Failed to calculate design pricing:', error)
+        setDesignPricing(null)
+        setDesignCost(0)
+      }
+    }
+
+    calculatePricing()
+  }, [product?.type_id, product?.id || '', variant?.id || '', currentDesigns, quantity])
+
+  // Handle design submissions from the editor
+  const handleDesignChange = useCallback((designs: any[]) => {
+    setCurrentDesigns(designs)
+  }, [])
 
   const handleFinalizeAndAddToCart = useCallback(async () => {
     if (!variant?.id) return
@@ -285,45 +397,49 @@ export default function DesignEditorWrapper(props: Props) {
     ? '…'
     : (fetchedPriceString || priceInfo?.calculated_price || null)
 
-  // Price breakdown for dropdown: show product cost (variant price), print cost, and total
-  // Minimal implementation: use a flat print cost of 5.00 in the product's currency when available
+  // Enhanced price breakdown using design pricing service
   const priceBreakdown = useMemo(() => {
     const amountNumber = priceInfo?.calculated_price_number
-    const currency = priceInfo?.currency_code
-    // Default print cost flat value
-    const printCostNumber = typeof amountNumber === 'number' ? 5_00 / 100 : null // will correct scaling below
+    const currency = priceInfo?.currency_code || 'USD'
 
     if (typeof amountNumber === 'number' && currency) {
-      // amountNumber is already in minor units according to convertToLocale usage in get-product-price
       const productFormatted = convertToLocale({ amount: amountNumber, currency_code: currency })
-      // Set a flat print cost of 500 minor units (i.e., 5.00 in the currency)
-      const printMinor = 50
-      const printFormatted = convertToLocale({ amount: printMinor, currency_code: currency })
-      const totalFormatted = convertToLocale({ amount: amountNumber + printMinor, currency_code: currency })
+      
+      // Use calculated design cost from pricing service
+      const designCostMinor = Math.round(designCost * 100) // Convert to minor units
+      const designFormatted = convertToLocale({ amount: designCostMinor, currency_code: currency })
+      const totalFormatted = convertToLocale({ amount: amountNumber + designCostMinor, currency_code: currency })
+      
       return {
         currency,
         productAmountMinor: amountNumber,
-        printAmountMinor: printMinor,
-        totalAmountMinor: amountNumber + printMinor,
+        printAmountMinor: designCostMinor,
+        totalAmountMinor: amountNumber + designCostMinor,
         productFormatted,
-        printFormatted,
+        printFormatted: designFormatted,
         totalFormatted,
+        designPricing: designPricing, // Include full pricing breakdown for display
+        groupCharges: designPricing?.groupCharges || [],
+        savings: designPricing?.totals?.savings || 0
       }
     }
 
-    // Fallback when numbers are not available: keep strings where possible
+    // Fallback when numbers are not available
     return {
-      currency: priceInfo?.currency_code || null,
+      currency,
       productAmountMinor: null as unknown as number | null,
       printAmountMinor: null as unknown as number | null,
       totalAmountMinor: null as unknown as number | null,
       productFormatted: priceDisplay || null,
-      printFormatted: priceInfo?.currency_code
-        ? convertToLocale({ amount: 50, currency_code: priceInfo.currency_code })
-        : null,
+      printFormatted: designCost > 0 
+        ? convertToLocale({ amount: Math.round(designCost * 100), currency_code: currency })
+        : convertToLocale({ amount: 50, currency_code: currency }),
       totalFormatted: null,
+      designPricing: designPricing,
+      groupCharges: designPricing?.groupCharges || [],
+      savings: designPricing?.totals?.savings || 0
     }
-  }, [priceInfo, priceDisplay])
+  }, [priceInfo, priceDisplay, designCost, designPricing])
 
   // Show the TOTAL in the top price button if available; otherwise fall back to the base priceDisplay
   const topPriceDisplay = useMemo(() => {
@@ -339,6 +455,7 @@ export default function DesignEditorWrapper(props: Props) {
         designAreas={designAreasData?.designAreas}
         designCapabilities={designAreasData?.designCapabilities}
         onDesignCostChange={setDesignCost}
+        onDesignChange={handleDesignChange}
         onRegisterExporter={setExporter}
         variants={(product?.variants || []).map((v: any) => ({ id: v.id, title: v.title || v.sku || v.id }))}
         selectedVariantId={variant?.id}

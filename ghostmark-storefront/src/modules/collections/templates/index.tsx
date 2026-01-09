@@ -46,7 +46,7 @@ export default async function CollectionTemplate({
       {/*</div>*/}
 
       {/* Product grid with refinements */}
-      <div className="content-container flex flex-col small:flex-row small:items-start py-6">
+      <div className="content-container flex flex-col small:flex-row small:items-start py-2">
         <RefinementList
           sortBy={sort}
           collections={collections}
@@ -60,7 +60,7 @@ export default async function CollectionTemplate({
           productTypes={productTypes}
         />
         <div className="w-full">
-          <div className="mb-8">
+          <div className="mb-2">
             <h2 className="text-2xl-semi">All products</h2>
           </div>
           <Suspense

@@ -5,6 +5,7 @@ import FastDelivery from "@modules/common/icons/fast-delivery"
 import Refresh from "@modules/common/icons/refresh"
 
 import Accordion from "./accordion"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 import { useEffect, useMemo, useState } from "react"
 
@@ -36,7 +37,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
       <Accordion type="multiple" defaultValue={["Product Information"]}>
         {tabs.map((tab, i) => (
           <Accordion.Item
-            key={i}
+            key={`product-tab-${i}-${tab.label.replace(/\s+/g, '-').toLowerCase()}`}
             title={tab.label}
             headingSize="medium"
             value={tab.label}
@@ -172,12 +173,6 @@ function ReviewsTab({ product }: { product: HttpTypes.StoreProduct }) {
   const [avg, setAvg] = useState<number>(0)
   const [count, setCount] = useState<number>(0)
 
-  const [rating, setRating] = useState<number>(5)
-  const [title, setTitle] = useState("")
-  const [body, setBody] = useState("")
-  const [email, setEmail] = useState("")
-  const [submitting, setSubmitting] = useState(false)
-
   const isPOD = useMemo(() => {
     const p: any = product as any
     const t = p?.type ?? p?.product_type
@@ -220,35 +215,7 @@ function ReviewsTab({ product }: { product: HttpTypes.StoreProduct }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id])
 
-  async function submitReview() {
-    if (rating < 1 || rating > 5) return
-    setSubmitting(true)
-    setError(null)
-    try {
-      const base = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
-      const headers: HeadersInit = { "Content-Type": "application/json" }
-      const pub = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-      if (pub) {
-        ;(headers as any)["x-publishable-api-key"] = pub
-      }
-      const resp = await fetch(`${base}/store/products/${product.id}/reviews`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ rating, title, body, email }),
-      })
-      const data = await resp.json()
-      if (!resp.ok || !data?.ok) throw new Error(data?.message || "Failed to submit review")
-      // Clear and refresh
-      setTitle("")
-      setBody("")
-      // Keep email/rating as-is for convenience
-      await load()
-    } catch (e: any) {
-      setError(e?.message || "Failed to submit review")
-    } finally {
-      setSubmitting(false)
-    }
-  }
+  // Review submission has moved to a dedicated page: /reviews/submit
 
   return (
     <div className="py-6 space-y-6">
@@ -278,47 +245,13 @@ function ReviewsTab({ product }: { product: HttpTypes.StoreProduct }) {
         </div>
       )}
 
-      {/* Form (POD only) */}
+      {/* Review entry moved to a dedicated page. For POD products, show a link to the new page. */}
       {isPOD && (
         <div className="mt-6 border rounded p-4">
-          <div className="font-semibold mb-2">Write a review</div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-1">Rating</label>
-              <select
-                className="w-full border rounded px-3 py-2"
-                value={rating}
-                onChange={(e) => setRating(parseInt(e.target.value) || 5)}
-              >
-                {[5,4,3,2,1].map((n) => (
-                  <option key={n} value={n}>{n} star{n===1?'':'s'}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Email (optional)</label>
-              <input className="w-full border rounded px-3 py-2" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm mb-1">Title (optional)</label>
-              <input className="w-full border rounded px-3 py-2" value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="Great quality!" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm mb-1">Review</label>
-              <textarea className="w-full border rounded px-3 py-2 min-h-[100px]" value={body} onChange={(e)=>setBody(e.target.value)} placeholder="Share your experience…" />
-            </div>
-          </div>
-          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
-          <button
-            onClick={submitReview}
-            disabled={submitting || rating < 1 || rating > 5 || !body.trim()}
-            className="mt-3 bg-black text-white rounded px-4 py-2 disabled:opacity-50"
-          >
-            {submitting ? 'Submitting…' : 'Submit review'}
-          </button>
-          {!isPOD && (
-            <p className="text-xs text-ui-fg-muted mt-2">Reviews available for POD products.</p>
-          )}
+          <div className="font-semibold mb-2">Want to leave a review?</div>
+          <p className="text-sm text-ui-fg-muted mb-3">
+            After completing your Print-On-Demand purchase, you&apos;ll receive an email with a link to leave a review.
+          </p>
         </div>
       )}
     </div>

@@ -61,7 +61,20 @@ export default function ProductActions({
             if (!v) return false
             if (!v.manage_inventory) return true
             if (v.allow_backorder) return true
-            return (v.inventory_quantity || 0) > 0
+            
+            const availableQty = v.inventory_quantity
+            // If inventory_quantity is null or undefined, treat as unlimited stock
+            if (availableQty == null) {
+                return true
+            }
+            
+            // If inventory_quantity is 0, the item is out of stock
+            if (availableQty === 0) {
+                return false
+            }
+            
+            // For initial selection, just check if we have any stock (quantity = 1)
+            return availableQty >= 1
         }
 
         // Helper: price availability for region
@@ -184,13 +197,27 @@ export default function ProductActions({
         }
 
         // Check if there's enough inventory for the requested quantity
-        const availableQty = selectedVariant.inventory_quantity || 0
-        if (selectedVariant.manage_inventory && availableQty >= quantity) {
-            return true
+        const availableQty = selectedVariant.inventory_quantity
+        
+        // If inventory management is enabled, check availability
+        if (selectedVariant.manage_inventory) {
+            // If inventory_quantity is null or undefined, treat as unlimited stock
+            // This handles cases where inventory tracking is enabled but quantity is not properly set
+            if (availableQty == null) {
+                return true
+            }
+            
+            // If inventory_quantity is 0, the item is out of stock
+            if (availableQty === 0) {
+                return false
+            }
+            
+            // Check if we have enough stock for the requested quantity
+            return availableQty >= quantity
         }
 
-        // Otherwise, we can't add to cart
-        return false
+        // If we reach here, inventory management is disabled, so it should be available
+        return true
     }, [selectedVariant, quantity])
 
     // Determine if the selected variant has a calculable price for current region
@@ -549,8 +576,15 @@ export default function ProductActions({
         <>
             <div className="flex flex-col gap-y-2" ref={actionsRef}>
                 <div>
-                    {(product.variants?.length ?? 0) > 1 && (
+                    {/* Show options when they exist */}
+                    {(product.options?.length ?? 0) > 0 && (
                         <div className="flex flex-col gap-y-4">
+                            <div className="mb-2">
+                                <span className="text-sm font-medium text-mono-1000">Product Options</span>
+                                <p className="text-xs text-ui-fg-muted mt-1">
+                                    Select your preferred options for this {isPOD ? 'print-on-demand' : isApparelProduct ? 'apparel' : ''} product
+                                </p>
+                            </div>
                             {(product.options || []).map((option) => {
                                 return (
                                     <div key={option.id}>
@@ -565,6 +599,44 @@ export default function ProductActions({
                                     </div>
                                 )
                             })}
+                            <Divider />
+                        </div>
+                    )}
+                    
+                    {/* Fallback: Show variant selection when no options but multiple variants exist */}
+                    {(product.options?.length ?? 0) === 0 && (product.variants?.length ?? 0) > 1 && (
+                        <div className="flex flex-col gap-y-4">
+                            <div className="mb-2">
+                                <span className="text-sm font-medium text-mono-1000">Available Variants</span>
+                                <p className="text-xs text-ui-fg-muted mt-1">
+                                    Choose from available {isPOD ? 'print-on-demand' : isApparelProduct ? 'apparel' : 'product'} variants
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {product.variants?.map((variant) => {
+                                    const isSelected = selectedVariant?.id === variant.id
+                                    const variantTitle = variant.title || `Variant ${variant.sku || variant.id}`
+                                    return (
+                                        <button
+                                            key={variant.id}
+                                            onClick={() => {
+                                                const variantOptions = optionsAsKeymap(variant.options)
+                                                setOptions(variantOptions ?? {})
+                                            }}
+                                            className={clx(
+                                                "border rounded-md px-3 py-2 h-10 inline-flex items-center justify-center text-sm whitespace-nowrap",
+                                                isSelected 
+                                                    ? "bg-black text-white border-ui-border-interactive"
+                                                    : "border-ui-border-base bg-ui-bg-subtle hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150"
+                                            )}
+                                            disabled={!!disabled || isAdding}
+                                            data-testid="variant-button"
+                                        >
+                                            {variantTitle}
+                                        </button>
+                                    )
+                                })}
+                            </div>
                             <Divider />
                         </div>
                     )}
