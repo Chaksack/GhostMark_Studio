@@ -20,6 +20,27 @@ const toast = {
 
 type ExportResult = { designDataJson: string; previewDataUrl: string; designOnlyDataUrl: string }
 
+// Local type describing a design submission for pricing/preview
+interface DesignSubmission {
+  areaId: string
+  areaType?: string
+  layers: number
+  colors: number
+  printMethod?: string
+  fileUrl?: string
+  fileType?: string
+  imageMetadata: {
+    dpi: number
+    qualityScore: number
+    isPrintReady: boolean
+    suggestedUse?: string
+    width: number
+    height: number
+    fileSize?: number
+    format?: string
+  }
+}
+
 type Props = {
   // Optional mockup background image URL (product/variant image)
   mockupUrl?: string
@@ -377,6 +398,22 @@ export default function TShirtDesigner(props: Props) {
 
     const { image: mockupImage, tainted: mockupTainted } = useHtmlImage(mockupUrl)
 
+    // Print areas state (enhanced Gelato-style)
+    const [printAreas, setPrintAreas] = useState<any[]>([])
+    const [activePrintArea, setActivePrintArea] = useState<string | null>(null)
+    const [selectedPrintAreas, setSelectedPrintAreas] = useState<Set<string>>(new Set())
+    const [showPrintAreaBounds, setShowPrintAreaBounds] = useState(true)
+    const [designAreaImages, setDesignAreaImages] = useState<Record<string, {
+      id: string
+      url: string
+      position: { x: number; y: number }
+      scale: number
+      angle: number
+      layerOrder: number
+    }[]>>({}) // Images per design area
+    // Currently active area object for convenience
+    const activeArea = useMemo(() => printAreas.find((a) => a.id === activePrintArea), [printAreas, activePrintArea])
+
     // Compute fitted placement for the product mockup so it always shows fully on canvas
     const mockupFit = useMemo(() => {
       // Intended bounding box is responsive to the stage size with some padding
@@ -461,17 +498,39 @@ export default function TShirtDesigner(props: Props) {
       hasSetInitialViewRef.current = true
     }, [stageSize.width, stageSize.height, computeCenteredPos])
 
-    // Resolve active mockup zone (relative to mockup box) and convert to stage coordinates
+    // Resolve active mockup/print area (relative to mockup box) and convert to stage coordinates
     const activeZoneRect = useMemo(() => {
+      if (!mockupFit) return null as null | { x: number; y: number; width: number; height: number }
+      // Prefer dynamic printAreas if available and an activePrintArea is selected
+      if (printAreas?.length && activePrintArea) {
+        const area = printAreas.find((a) => a.id === activePrintArea)
+        const b = area?.boundaries || area?.position
+        const w = area?.dimensions?.width
+        const h = area?.dimensions?.height
+        if (b && (b.w != null && b.h != null)) {
+          const zx = mockupFit.x + (b.x || 0) * mockupFit.width
+          const zy = mockupFit.y + (b.y || 0) * mockupFit.height
+          const zw = (b.w || 0) * mockupFit.width
+          const zh = (b.h || 0) * mockupFit.height
+          return { x: Math.round(zx), y: Math.round(zy), width: Math.round(zw), height: Math.round(zh) }
+        }
+        if (b && w != null && h != null) {
+          // Support absolute pixel-like dimensions by normalizing against mockupFit
+          const zx = mockupFit.x + (b.x || 0)
+          const zy = mockupFit.y + (b.y || 0)
+          return { x: Math.round(zx), y: Math.round(zy), width: Math.round(w), height: Math.round(h) }
+        }
+      }
+      // Fallback to legacy mockupZones with selectedView
       const zones = mockupZones || {}
       const byView = zones[selectedView] || zones['default']
-      if (!byView || !mockupFit) return null as null | { x: number; y: number; width: number; height: number }
+      if (!byView) return null as null | { x: number; y: number; width: number; height: number }
       const zx = mockupFit.x + (byView.x || 0) * mockupFit.width
       const zy = mockupFit.y + (byView.y || 0) * mockupFit.height
       const zw = (byView.w || 0) * mockupFit.width
       const zh = (byView.h || 0) * mockupFit.height
       return { x: Math.round(zx), y: Math.round(zy), width: Math.round(zw), height: Math.round(zh) }
-    }, [mockupZones, selectedView, mockupFit])
+    }, [mockupFit, printAreas, activePrintArea, mockupZones, selectedView])
 
     // ---------- Print size (inches) resolution helpers ----------
     // Read potential print area physical dimensions from metadata (variant preferred, then product)
@@ -526,7 +585,8 @@ export default function TShirtDesigner(props: Props) {
           if (r) return r
         }
         // 5) Per-view mapping
-        const viewKey = selectedView
+        // Prefer the active print area's type as the logical view key if present
+        const viewKey = (activeArea && activeArea.type) ? activeArea.type : selectedView
         const map = meta.print_sizes || meta.print_size_in || meta.printAreas || meta.print_area_sizes
         if (map && viewKey && map[viewKey]) {
           const v = map[viewKey]
@@ -539,8 +599,8 @@ export default function TShirtDesigner(props: Props) {
           if (typeof raw === 'string') {
             try {
               const obj = JSON.parse(raw)
-              if (obj && obj[selectedView]) {
-                const v = obj[selectedView]
+              if (obj && obj[viewKey]) {
+                const v = obj[viewKey]
                 const r = toInches(v.width_in ?? v.w_in ?? v.width ?? v.w, v.height_in ?? v.h_in ?? v.height ?? v.h, 'in')
                 if (r) return r
               }
@@ -549,7 +609,7 @@ export default function TShirtDesigner(props: Props) {
         }
       }
       return undefined as undefined | { widthIn: number; heightIn: number }
-    }, [product, selectedVariantId, selectedView])
+    }, [product, selectedVariantId, selectedView, activeArea?.type])
 
     // Compute estimated DPI from current upload placement vs print area size (inches)
     const dpiInfo = useMemo(() => {
@@ -702,34 +762,13 @@ export default function TShirtDesigner(props: Props) {
       // re-register if stage ref changes
     }, [onRegisterExporter, mockupTainted])
 
-    const views = [
-        { id: 'front', label: 'Front' },
-        { id: 'back', label: 'Back' },
-        { id: 'inner', label: 'Inner neck' },
-        { id: 'outer', label: 'Outer neck' },
-        { id: 'left', label: 'Left sleeve' },
-        { id: 'right', label: 'Right sleeve' }
-    ];
-
     // Preview modal state
     const [previewOpen, setPreviewOpen] = useState(false)
     const [previewUrl, setPreviewUrl] = useState<string>("")
     const [previewLoading, setPreviewLoading] = useState(false)
     const [previewNote, setPreviewNote] = useState<string | null>(null)
     
-    // Print areas state (enhanced Gelato-style)
-    const [printAreas, setPrintAreas] = useState<any[]>([])
-    const [activePrintArea, setActivePrintArea] = useState<string | null>(null)
-    const [selectedPrintAreas, setSelectedPrintAreas] = useState<Set<string>>(new Set())
-    const [showPrintAreaBounds, setShowPrintAreaBounds] = useState(true)
-    const [designAreaImages, setDesignAreaImages] = useState<Record<string, {
-      id: string
-      url: string
-      position: { x: number; y: number }
-      scale: number
-      angle: number
-      layerOrder: number
-    }[]>>({}) // Images per design area
+    // Deprecated static views removed in favor of dynamic printAreas
 
     const handleImageUpload = useCallback(async (file: File) => {
       try {
@@ -2595,8 +2634,15 @@ export default function TShirtDesigner(props: Props) {
                                     />
                                   )}
                                 </Layer>
-                                {/* Design layer */}
-                                <Layer>
+                                {/* Design layer - clipped to active print area when available */}
+                                <Layer
+                                  clip={activeZoneRect ? {
+                                    x: activeZoneRect.x,
+                                    y: activeZoneRect.y,
+                                    width: Math.max(0, activeZoneRect.width),
+                                    height: Math.max(0, activeZoneRect.height)
+                                  } : undefined}
+                                >
                                     {/* Draggable sample design */}
                                     {textVisible && (
                                       <>
@@ -2754,33 +2800,28 @@ export default function TShirtDesigner(props: Props) {
                     </div>
                 </div>
 
-                {/* Modern Bottom Panel - View Selector */}
+                {/* Bottom Panel - Dynamic Print Area Selector */}
                 <div className="bg-white border-t border-gray-200 p-6">
                     <div className="max-w-4xl mx-auto">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4 text-center">Design Areas</h3>
-                        <div className="flex gap-4 justify-center">
-                            {views.map((view) => (
-                                <button
-                                    key={view.id}
-                                    onClick={() => setSelectedView(view.id)}
-                                    className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 ${
-                                        selectedView === view.id
-                                            ? 'bg-blue-50 border-2 border-blue-500 shadow-lg transform scale-105'
-                                            : 'bg-white border-2 border-gray-200 hover:border-blue-300 hover:shadow-md hover:scale-102'
-                                    }`}
-                                >
-                                    <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-colors ${
-                                        selectedView === view.id ? 'bg-blue-100' : 'bg-gray-50'
-                                    }`}>
-                                        <div className={`w-14 h-14 rounded-lg transition-colors ${
-                                            selectedView === view.id ? 'bg-white shadow-sm' : 'bg-white'
-                                        }`} />
-                                    </div>
-                                    <span className={`text-sm font-medium transition-colors ${
-                                        selectedView === view.id ? 'text-blue-700' : 'text-gray-700'
-                                    }`}>{view.label}</span>
-                                </button>
-                            ))}
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 text-center">Select a print area</h3>
+                        <div className="flex gap-3 flex-wrap justify-center">
+                          {printAreas.length > 0 ? (
+                            printAreas.map((area) => (
+                              <button
+                                key={area.id}
+                                onClick={() => setActivePrintArea(area.id)}
+                                className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                                  activePrintArea === area.id
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
+                                    : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                                }`}
+                              >
+                                {area.name}
+                              </button>
+                            ))
+                          ) : (
+                            <span className="text-xs text-gray-500">No print areas configured for this variant</span>
+                          )}
                         </div>
                     </div>
                 </div>
