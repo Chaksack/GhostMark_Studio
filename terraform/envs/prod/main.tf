@@ -52,6 +52,28 @@ module "ecs" {
   tags              = local.common_tags
 }
 
+module "rds" {
+  source                   = "../../modules/rds"
+  count                    = var.rds_enabled ? 1 : 0
+  name                     = "${var.project}-${var.env}-db"
+  vpc_id                   = module.vpc.vpc_id
+  public_subnet_ids        = module.vpc.public_subnet_ids
+  tasks_security_group_id  = module.ecs.tasks_security_group_id
+
+  engine                   = var.rds_engine
+  engine_version           = var.rds_engine_version
+  instance_class           = var.rds_instance_class
+  allocated_storage        = var.rds_allocated_storage
+  db_name                  = var.rds_db_name
+  master_username          = var.rds_master_username
+  master_password          = var.rds_master_password
+  multi_az                 = var.rds_multi_az
+  backup_retention         = var.rds_backup_retention
+  deletion_protection      = var.rds_deletion_protection
+  apply_immediately        = false
+  tags                     = local.common_tags
+}
+
 module "dns" {
   source          = "../../modules/route53"
   count           = var.route53_enabled ? 1 : 0
@@ -68,3 +90,5 @@ output "uploads_bucket" { value = module.uploads.bucket_name }
 output "cdn_domain" { value = module.cdn.distribution_domain }
 output "alb_dns" { value = module.ecs.alb_dns_name }
 output "dns_fqdn" { value = var.route53_enabled ? module.dns[0].fqdn : "" }
+output "rds_endpoint" { value = var.rds_enabled ? module.rds[0].db_endpoint : "" }
+output "rds_port" { value = var.rds_enabled ? module.rds[0].db_port : 0 }

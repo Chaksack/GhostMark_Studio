@@ -5,10 +5,7 @@ on:
     paths:
       - 'terraform/**'
       - '.github/workflows/terraform-*.yml'
-  push:
-    branches: [ "staging" ]
-    paths:
-      - 'terraform/**'
+  # Push validation is handled by the unified pipeline to show a single graph
 
 jobs:
   validate-plan-staging:

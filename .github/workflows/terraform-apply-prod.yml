@@ -1,10 +1,8 @@
 name: Terraform Apply (prod)
 
 on:
-  push:
-    branches: [ "main", "master" ]
-    paths:
-      - 'terraform/**'
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   apply-prod:
