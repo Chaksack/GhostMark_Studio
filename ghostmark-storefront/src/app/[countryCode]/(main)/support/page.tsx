@@ -14,9 +14,14 @@ export default function SupportPage() {
     setError(null)
     try {
       const base = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+      const headers: HeadersInit = { "Content-Type": "application/json" }
+      const pub = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY as string | undefined
+      if (pub) {
+        ;(headers as any)["x-publishable-api-key"] = pub
+      }
       const resp = await fetch(`${base}/store/support/tickets`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ email, subject, message }),
       })
       const data = await resp.json()

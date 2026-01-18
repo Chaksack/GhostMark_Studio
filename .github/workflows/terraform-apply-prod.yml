@@ -1,0 +1,95 @@
+name: Terraform Apply (prod)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  apply-prod:
+    name: Apply to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: terraform/envs/prod
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Notify (pre-plan)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":terraform: Production plan starting in *${{ github.repository }}* by *${{ github.actor }}* (@ ${{ github.ref_name }})"
+            }
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform plan (prod)
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Require manual confirmation
+        if: ${{ github.event_name == 'push' }}
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ secrets.PROD_APPROVERS }}
+          minimum-approvals: 1
+          issue-title: "Approve Terraform Apply to Production"
+          issue-body: "Please review the Terraform plan and approve to apply to production."
+
+      - name: Notify (awaiting approval)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":hourglass_flowing_sand: Awaiting manual approval to apply production plan for *${{ github.repository }}* (@ ${{ github.ref_name }})"
+            }
+
+      - name: Terraform apply (prod)
+        run: terraform apply -input=false -auto-approve tfplan || terraform apply -input=false -auto-approve
+
+      - name: Notify (apply success)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":white_check_mark: Production apply completed successfully for *${{ github.repository }}* (@ ${{ github.ref_name }})"
+            }
+
+      - name: Notify (apply failure)
+        if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":x: Production apply failed for *${{ github.repository }}* (@ ${{ github.ref_name }}) — run ${{ github.run_id }}"
+            }

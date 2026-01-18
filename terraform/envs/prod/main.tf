@@ -1,0 +1,70 @@
+locals {
+  common_tags = {
+    Environment = var.env
+    Project     = var.project
+    ManagedBy   = "Terraform"
+  }
+}
+
+module "vpc" {
+  source               = "../../modules/vpc"
+  name                 = "${var.project}-${var.env}"
+  cidr_block           = var.vpc_cidr
+  azs                  = var.azs
+  public_subnet_cidrs  = var.public_subnet_cidrs
+  region               = var.aws_region
+  tags                 = local.common_tags
+}
+
+module "ecr" {
+  source        = "../../modules/ecr"
+  name_prefix   = "${var.project}-${var.env}"
+  repositories  = ["backend", "storefront"]
+  tags          = local.common_tags
+}
+
+module "uploads" {
+  source = "../../modules/s3"
+  name   = var.upload_bucket_name
+  tags   = local.common_tags
+  cors_rules = [
+    {
+      allowed_methods = ["GET", "PUT", "POST", "HEAD"]
+      allowed_origins = ["*"]
+      allowed_headers = ["*"]
+    }
+  ]
+}
+
+module "cdn" {
+  source             = "../../modules/cloudfront"
+  name               = "${var.project}-${var.env}-uploads-cdn"
+  bucket_domain_name = "${module.uploads.bucket_name}.s3.amazonaws.com"
+  bucket_arn         = module.uploads.bucket_arn
+  tags               = local.common_tags
+}
+
+module "ecs" {
+  source            = "../../modules/ecs"
+  name              = "${var.project}-${var.env}"
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+  tags              = local.common_tags
+}
+
+module "dns" {
+  source          = "../../modules/route53"
+  count           = var.route53_enabled ? 1 : 0
+  hosted_zone_id  = var.route53_hosted_zone_id
+  record_name     = var.route53_domain_name
+  alb_dns_name    = module.ecs.alb_dns_name
+  alb_zone_id     = module.ecs.alb_zone_id
+}
+
+output "vpc_id" { value = module.vpc.vpc_id }
+output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
+output "ecr_repos" { value = module.ecr.repository_urls }
+output "uploads_bucket" { value = module.uploads.bucket_name }
+output "cdn_domain" { value = module.cdn.distribution_domain }
+output "alb_dns" { value = module.ecs.alb_dns_name }
+output "dns_fqdn" { value = var.route53_enabled ? module.dns[0].fqdn : "" }

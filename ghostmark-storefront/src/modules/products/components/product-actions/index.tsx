@@ -357,6 +357,15 @@ export default function ProductActions({
         return result
     }, [product])
 
+    // Ensure POD products have admin-defined print areas before allowing designer route
+    const hasPODPrintAreas = useMemo(() => {
+      const meta: any = (product as any)?.metadata || {}
+      const pod = meta?.pod
+      const areas = pod?.print_areas
+      if (!areas || typeof areas !== 'object') return false
+      return Object.keys(areas).length > 0
+    }, [product])
+
     // Check if product is apparel type (clothes2order.com-style)
     const isApparelProduct = useMemo(() => {
         const p: any = product as any
@@ -485,6 +494,14 @@ export default function ProductActions({
 
         try {
             if (isPOD) {
+                // Previously, navigation to the design dashboard was blocked if
+                // no print areas were detected in product.metadata.pod.print_areas.
+                // This caused the "Customise & Checkout" button to appear inert.
+                // Per requirement, always navigate to the design dashboard; if
+                // print areas are missing, the design page can handle it gracefully.
+                if (!hasPODPrintAreas) {
+                    console.warn('POD product has no configured print areas. Proceeding to designer anyway.')
+                }
                 const params = new URLSearchParams()
                 params.set("v_id", selectedVariant.id)
                 params.set("quantity", quantity.toString())

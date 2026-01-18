@@ -200,18 +200,33 @@ export default function DesignEditorWrapper(props: Props) {
     // Fall back to design areas from product type if available
     if (designAreasData?.designAreas?.length) {
       const zones: Record<string, { x: number; y: number; w: number; h: number }> = {}
-      
+      // Compute px from cm using DPI in validation.recommendedDPI (store API fills from product metadata pod.dpi)
+      const dpi = Number(designAreasData.designCapabilities?.qualityRequirements?.recommendedDPI || 300)
+      // Without access to actual mockup pixel size here, normalize against a virtual DPI canvas (inch reference)
+      // Use a large reference to maintain precision; UI layer will scale to actual image
+      const refWidthPx = 10 * dpi // 10 inches wide reference
+      const refHeightPx = 12 * dpi // 12 inches tall reference
+
       designAreasData.designAreas.forEach((area: any) => {
-        // Convert design area boundaries to mockup zone format (normalized 0-1 coordinates)
-        // Assuming mockup image dimensions for normalization - this should be adjusted based on actual mockup size
-        const mockupWidth = 500 // Default mockup width - should be dynamic
-        const mockupHeight = 600 // Default mockup height - should be dynamic
-        
+        // If boundaries are in cm, convert to px; else assume already px
+        const xVal = area.boundaries?.x ?? 0
+        const yVal = area.boundaries?.y ?? 0
+        const wVal = area.boundaries?.w ?? area.dimensions?.width ?? 200
+        const hVal = area.boundaries?.h ?? area.dimensions?.height ?? 200
+
+        const unitsAreCm = xVal <= 100 && yVal <= 100 && wVal <= 100 && hVal <= 100 // heuristic
+        const toPx = (cmOrPx: number) => unitsAreCm ? (cmOrPx / 2.54) * dpi : cmOrPx
+
+        const xPx = toPx(xVal)
+        const yPx = toPx(yVal)
+        const wPx = Math.max(1, toPx(wVal))
+        const hPx = Math.max(1, toPx(hVal))
+
         zones[area.type || 'default'] = {
-          x: (area.boundaries?.x || area.position?.x || 0) / mockupWidth,
-          y: (area.boundaries?.y || area.position?.y || 0) / mockupHeight,
-          w: (area.boundaries?.w || area.dimensions?.width || 200) / mockupWidth,
-          h: (area.boundaries?.h || area.dimensions?.height || 200) / mockupHeight
+          x: xPx / refWidthPx,
+          y: yPx / refHeightPx,
+          w: wPx / refWidthPx,
+          h: hPx / refHeightPx,
         }
       })
       
@@ -238,6 +253,7 @@ export default function DesignEditorWrapper(props: Props) {
           products: [{
             itemReferenceId: `item_${product.id}_${variant?.id}`,
             productTypeId: product.type_id,
+            productId: product.id,
             variantId: variant?.id,
             files: currentDesigns.filter(d => d.fileUrl).map(design => ({
               type: design.fileType || 'default',

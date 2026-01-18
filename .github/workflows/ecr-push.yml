@@ -2,15 +2,18 @@ name: Build and Push Medusa Backend and Storefront to AWS ECR
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "staging" ]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment (staging or prod)"
+        required: false
+        default: "staging"
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
   ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-  ECR_REPO_BACKEND: ghostmark-backend
-  ECR_REPO_STOREFRONT: ghostmark-storefront
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -24,6 +27,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Determine environment and set dynamic vars
+        id: set-env
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Determine environment: staging for staging branch; prod for main/master; allow override via workflow_dispatch input
+          ENVIRONMENT="prod"
+          if [ "${{ github.ref_name }}" = "staging" ]; then
+            ENVIRONMENT="staging"
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.environment }}" ]; then
+            case "${{ github.event.inputs.environment }}" in
+              prod|production) ENVIRONMENT="prod" ;;
+              staging) ENVIRONMENT="staging" ;;
+            esac
+          fi
+          echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_ENV"
+          echo "ECR_REPO_BACKEND=ghostmark-$ENVIRONMENT-backend" >> "$GITHUB_ENV"
+          echo "ECR_REPO_STOREFRONT=ghostmark-$ENVIRONMENT-storefront" >> "$GITHUB_ENV"
+          echo "LATEST_TAG=latest-$ENVIRONMENT" >> "$GITHUB_ENV"
+          # ECS identifiers (assumes cluster and services follow this naming)
+          echo "ECS_CLUSTER=ghostmark-$ENVIRONMENT" >> "$GITHUB_ENV"
+          echo "ECS_SERVICE_BACKEND=ghostmark-$ENVIRONMENT-backend" >> "$GITHUB_ENV"
+          echo "ECS_SERVICE_STOREFRONT=ghostmark-$ENVIRONMENT-storefront" >> "$GITHUB_ENV"
+
+      - name: Notify (build start)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":docker: Starting ECR build & push for environment *${{ env.ENVIRONMENT }}* in repo *${{ github.repository }}* (@ ${{ github.ref_name }}) by *${{ github.actor }}*"
+            }
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -60,7 +99,7 @@ jobs:
           push: true
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.IMAGE_TAG }}
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:latest
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.LATEST_TAG }}
           cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache
           cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache,mode=max
 
@@ -72,6 +111,62 @@ jobs:
           push: true
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.IMAGE_TAG }}
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:latest
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.LATEST_TAG }}
           cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache
           cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache,mode=max
+
+      - name: Notify (deploy start)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: Triggering ECS deploy for *${{ env.ENVIRONMENT }}* on cluster `${{ env.ECS_CLUSTER }}` services `${{ env.ECS_SERVICE_BACKEND }}`, `${{ env.ECS_SERVICE_STOREFRONT }}`"
+            }
+
+      - name: Force new deployment (backend)
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE_BACKEND" \
+            --force-new-deployment >/dev/null
+
+      - name: Force new deployment (storefront)
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE_STOREFRONT" \
+            --force-new-deployment >/dev/null
+
+      - name: Wait for services to stabilize
+        run: |
+          set -euo pipefail
+          aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE_BACKEND" "$ECS_SERVICE_STOREFRONT"
+
+      - name: Notify (success)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":white_check_mark: ECR push and ECS deploy completed for *${{ env.ENVIRONMENT }}*\nBackend image: `${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.IMAGE_TAG }}` and `${{ env.LATEST_TAG }}`\nStorefront image: `${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.IMAGE_TAG }}` and `${{ env.LATEST_TAG }}`\nECS services stabilized: `${{ env.ECS_SERVICE_BACKEND }}`, `${{ env.ECS_SERVICE_STOREFRONT }}` in cluster `${{ env.ECS_CLUSTER }}`"
+            }
+
+      - name: Notify (failure)
+        if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":x: ECR push or ECS deploy failed for *${{ env.ENVIRONMENT }}* in repo *${{ github.repository }}* (@ ${{ github.ref_name }}) — commit ${{ github.sha }}"
+            }

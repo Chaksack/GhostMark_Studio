@@ -56,13 +56,68 @@ export const listProducts = async ({
 
   try {
     // Respect caller-supplied `fields` (e.g., PDP needs options/variants.options)
-    const customFields = (queryParams as any)?.fields as string | undefined
+    // But sanitize to avoid deep nested dot-paths that crash MikroORM, such as
+    // "variants.calculated_price.calculated_price.price_list_type".
+    const customFieldsRaw = (queryParams as any)?.fields as string | undefined
+
+    const sanitizeFields = (fields: string): string => {
+      // Allowed exact calculated_price scalar paths
+      const allowedCalcPrice = new Set([
+        "variants.calculated_price",
+        "variants.calculated_price.calculated_amount",
+        "variants.calculated_price.original_amount",
+        "variants.calculated_price.currency_code",
+        "variants.calculated_price.is_calculated_price_price_list",
+      ])
+
+      const tokens = fields
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+
+      const cleaned: string[] = []
+      const seen = new Set<string>()
+
+      for (const tok of tokens) {
+        // Keep prefix sign (+, *, etc.) separate for comparison
+        const prefixMatch = tok.match(/^([+*])/)
+        const prefix = prefixMatch ? prefixMatch[1] : ""
+        const path = tok.replace(/^[+*]/, "")
+
+        let keep = true
+
+        if (path.startsWith("variants.calculated_price.")) {
+          // Only allow whitelisted scalar paths under variants.calculated_price
+          // Anything deeper (e.g., calculated_price.calculated_price.*) is removed.
+          if (!allowedCalcPrice.has(path)) {
+            keep = false
+          }
+        } else if (path === "variants.calculated_price") {
+          // Allow requesting the object itself
+          keep = true
+        }
+
+        if (keep) {
+          const out = `${prefix}${path}`
+          if (!seen.has(out)) {
+            seen.add(out)
+            cleaned.push(out)
+          }
+        }
+      }
+
+      return cleaned.join(",")
+    }
+
+    const customFields = customFieldsRaw && customFieldsRaw.trim().length
+      ? sanitizeFields(customFieldsRaw)
+      : undefined
     // Optimized field selection for better performance - start with essential fields
     // and gradually add more complex joins if needed
     const fieldAttempts: (string | null)[] = customFields && customFields.trim().length
       ? [
-          // Try exactly what the caller requested
-          customFields,
+          // Try exactly what the caller requested (sanitized)
+          customFields!,
           // Essential fields without problematic type expansion
           "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id",
           // Add variant images
