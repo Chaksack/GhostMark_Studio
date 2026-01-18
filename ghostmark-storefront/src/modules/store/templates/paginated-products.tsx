@@ -68,93 +68,98 @@ export default async function PaginatedProducts({
     return null
   }
 
-  // Some backends interpret category_id[]=A&category_id[]=B as an AND filter,
-  // which drastically under-returns results (only products that belong to ALL
-  // categories). To ensure Men/Women parent categories show ALL products across
-  // their descendant categories, aggregate per-category and union client-side
-  // when multiple categoryIds are provided.
+  // Improved category handling - try backend filtering first, fall back to union if needed
   let products: any[] = []
   let count = 0
 
   if (Array.isArray(queryParams.category_id) && queryParams.category_id.length > 1) {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        "[PaginatedProducts] Union path active. category_ids=",
-        queryParams.category_id,
-        "page=",
+    // Try backend filtering with multiple category IDs first (works with some backends)
+    try {
+      const res = await listProductsWithSort({
         page,
-        "sortBy=",
-        sortBy
-      )
-    }
-    const ids = queryParams.category_id
-    const AGG_LIMIT = 100
-    const AGG_MAX = 800 // cap total to prevent excessive load
-
-    const seen = new Map<string, any>()
-
-    for (const id of ids) {
-      let serverPage = 1
-      let nextPage: number | null = 1
-      while (nextPage) {
-        const { response, nextPage: np } = await listProductsWithSort({
-          page: serverPage,
-          // Fetch per-category to force an OR-like union across categories
-          queryParams: { ...queryParams, category_id: [id], limit: AGG_LIMIT },
-          sortBy,
-          countryCode,
-        })
-        const batch = Array.isArray(response.products) ? response.products : []
+        queryParams,
+        sortBy,
+        countryCode,
+        productType,
+      })
+      
+      // If backend returned products, use them
+      if (res.response.products.length > 0 || res.response.count > 0) {
+        products = res.response.products
+        count = res.response.count
+        
         if (process.env.NODE_ENV !== "production") {
-          console.log(
-            `[PaginatedProducts] Fetched ${batch.length} products for category ${id} (page ${serverPage}).`
-          )
+          console.log(`[PaginatedProducts] Backend multi-category filtering succeeded. Count: ${count}`)
         }
-        for (const p of batch) {
-          if (!seen.has(p.id)) {
-            seen.set(p.id, p)
+      } else {
+        throw new Error("Backend multi-category filtering returned no results")
+      }
+    } catch (error) {
+      // Fall back to client-side union for backends that don't support multi-category filtering
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[PaginatedProducts] Falling back to client-side union for categories:", queryParams.category_id)
+      }
+      
+      const ids = queryParams.category_id
+      const AGG_LIMIT = 100
+      const AGG_MAX = 600 // Reduced from 800 for better performance
+      const seen = new Map<string, any>()
+
+      for (const id of ids) {
+        let serverPage = 1
+        let nextPage: number | null = 1
+        while (nextPage && seen.size < AGG_MAX) {
+          const { response, nextPage: np } = await listProductsWithSort({
+            page: serverPage,
+            queryParams: { ...queryParams, category_id: [id], limit: AGG_LIMIT },
+            sortBy,
+            countryCode,
+            productType,
+          })
+          
+          const batch = Array.isArray(response.products) ? response.products : []
+          for (const p of batch) {
+            if (!seen.has(p.id)) {
+              seen.set(p.id, p)
+            }
+          }
+          nextPage = np
+          serverPage = np || 0
+          if (!nextPage || seen.size >= AGG_MAX) {
+            break
           }
         }
-        nextPage = np
-        serverPage = np || 0
-        if (!nextPage || seen.size >= AGG_MAX) {
+        if (seen.size >= AGG_MAX) {
           break
         }
       }
-      if (seen.size >= AGG_MAX) {
-        break
+
+      // Convert to array and sort
+      const union = Array.from(seen.values())
+      try {
+        union.sort((a: any, b: any) => {
+          const ad = new Date(a?.created_at || a?.createdAt || 0).getTime()
+          const bd = new Date(b?.created_at || b?.createdAt || 0).getTime()
+          return bd - ad
+        })
+      } catch (_) {
+        // no-op if dates are missing
       }
-    }
 
-    // Convert to array and sort by created_at desc (default storefront behavior)
-    const union = Array.from(seen.values())
-    try {
-      union.sort((a: any, b: any) => {
-        const ad = new Date(a?.created_at || a?.createdAt || 0).getTime()
-        const bd = new Date(b?.created_at || b?.createdAt || 0).getTime()
-        return bd - ad
-      })
-    } catch (_) {
-      // no-op if dates are missing
+      // Local pagination on the union
+      count = union.length
+      const start = (page - 1) * PRODUCT_LIMIT
+      const end = start + PRODUCT_LIMIT
+      products = union.slice(start, end)
     }
-
-    // Local pagination on the union
-    count = union.length
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        `[PaginatedProducts] Union size after de-duplication: ${count}. Performing local pagination for page ${page}.`
-      )
-    }
-    const start = (page - 1) * PRODUCT_LIMIT
-    const end = start + PRODUCT_LIMIT
-    products = union.slice(start, end)
   } else {
-    // Default path: rely on backend pagination
+    // Single category or collection - use standard backend pagination
     const res = await listProductsWithSort({
       page,
       queryParams,
       sortBy,
       countryCode,
+      productType,
     })
     products = res.response.products
     count = res.response.count
@@ -178,129 +183,60 @@ export default async function PaginatedProducts({
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
-  const matchesType = (p: any, needle: string): boolean => {
-    const fields: string[] = []
-    // Title/description/handle/subtitle
-    fields.push(normalize(p?.title))
-    fields.push(normalize(p?.description))
-    fields.push(normalize((p as any)?.handle))
-    fields.push(normalize((p as any)?.subtitle))
-
-    // Product type fields in different shapes across backends
+  // Strict product-type matcher: only match on the product's type fields
+  // Avoid fuzzy matching on title/description/tags to prevent mixing categories.
+  const strictMatchesType = (p: any, needle: string): boolean => {
+    const n = normalize(needle)
+    // Some backends return { type: { value } }, others { product_type: { value } }
     const t = (p as any)?.type ?? (p as any)?.product_type
     if (t && typeof t === "object") {
-      fields.push(normalize((t as any)?.value))
-      fields.push(normalize((t as any)?.name))
-      fields.push(normalize((t as any)?.title))
-      fields.push(normalize((t as any)?.handle))
+      const v = normalize((t as any)?.value)
+      const name = normalize((t as any)?.name)
+      const title = normalize((t as any)?.title)
+      const handle = normalize((t as any)?.handle)
+      if ([v, name, title, handle].some((x) => x === n || slugify(x) === slugify(n))) {
+        return true
+      }
     } else if (t) {
-      fields.push(normalize(t))
+      const tv = normalize(t)
+      if (tv === n || slugify(tv) === slugify(n)) return true
     }
 
-    // Variants: titles, SKU, option values
-    const variants = Array.isArray((p as any)?.variants) ? (p as any).variants : []
-    for (const v of variants) {
-      fields.push(normalize((v as any)?.title))
-      fields.push(normalize((v as any)?.sku))
-      const options = Array.isArray((v as any)?.options) ? (v as any).options : []
-      for (const opt of options) {
-        fields.push(normalize((opt as any)?.value))
-        fields.push(normalize((opt as any)?.title))
+    // Consider an explicit metadata key if present, but do not use free-form values
+    const meta = (p as any)?.metadata
+    if (meta && typeof meta === "object") {
+      const metaType = normalize((meta as any)["product_type"] ?? (meta as any)["type_value"]) 
+      if (metaType && (metaType === n || slugify(metaType) === slugify(n))) {
+        return true
       }
     }
 
-    // Tags (various shapes depending on backend)
-    const tags = Array.isArray(p?.tags) ? p.tags : []
-    for (const t of tags) {
-      fields.push(normalize((t as any)?.value))
-      fields.push(normalize((t as any)?.name))
-    }
-    const productTags = Array.isArray((p as any)?.product_tags)
-      ? (p as any).product_tags
-      : []
-    for (const pt of productTags) {
-      fields.push(normalize((pt as any)?.value))
-      fields.push(normalize((pt as any)?.name))
-      fields.push(normalize((pt as any)?.tag?.value))
-      fields.push(normalize((pt as any)?.tag?.name))
-    }
-
-    // Metadata keys and values
-    const metadata = (p as any)?.metadata || {}
-    if (metadata && typeof metadata === "object") {
-      for (const key of Object.keys(metadata)) {
-        fields.push(normalize(key))
-        fields.push(normalize((metadata as any)[key]))
-      }
-    }
-
-    // Build additional slugified variants for matching tolerant to punctuation
-    const fieldSlugs = fields.map((f) => slugify(f))
-    const needleSlug = slugify(needle)
-
-    // Try simple plural/singular variants to increase recall (e.g., apparel/clothes)
-    const variantsToTry = new Set<string>([needle])
-    if (needle.endsWith("s")) {
-      variantsToTry.add(needle.slice(0, -1))
-    } else {
-      variantsToTry.add(`${needle}s`)
-    }
-    const slugVariants = Array.from(variantsToTry).map((n) => slugify(n))
-
-    // Plain includes or slug includes
-    return (
-      fields.some((f) => f && Array.from(variantsToTry).some((n) => f.includes(n))) ||
-      fieldSlugs.some((fs) => fs && slugVariants.some((sn) => fs.includes(sn)))
-    )
+    return false
   }
 
-  // If we're on a category or collection page and have a productType context,
-  // apply a safe client-side refinement to approximate type-based filtering
-  // without sending unsupported fields to the backend.
-  if (productType && (collectionId || categoryId) && Array.isArray(products)) {
-    const needle = productType.toLowerCase()
-    products = products.filter((p) => matchesType(p, needle))
-  }
-
-  // For the generic All-products view with a selected productType, we need to
-  // show ALL products belonging to that type. Since backend type filters are
-  // unreliable in this setup, fetch a broader set and refine client-side, then
-  // paginate locally.
-  if (productType && !collectionId && !categoryId) {
+  // Apply client-side product type filtering with STRICT matching to prevent mixing types
+  // Always enforce this when productType is specified to guarantee correctness, even if
+  // backend also attempted filtering. Double-filtering is idempotent for exact matches.
+  if (productType && Array.isArray(products) && products.length > 0) {
     const needle = productType.toLowerCase()
 
-    // Aggregate multiple pages to approximate "all" without sending type filters
-    const AGG_LIMIT = 100 // per request
-    const AGG_MAX = 400   // safety cap
+    // Since backend already paginated the results, applying a filter here may reduce
+    // the number of visible products for this page. For correctness (no mixing), we
+    // strictly filter and keep the current page size; count is adjusted conservatively.
+    const before = products.length
+    products = products.filter((p) => strictMatchesType(p, needle))
 
-    // Start by fetching a larger page to reduce round-trips
-    let aggregated: any[] = []
-    let serverPage = 1
-    let nextPage: number | null = 1
-
-    while (nextPage) {
-      const { response, nextPage: np } = await listProductsWithSort({
-        page: serverPage,
-        queryParams: { ...queryParams, limit: AGG_LIMIT },
-        sortBy,
-        countryCode,
-      })
-      aggregated = aggregated.concat(response.products || [])
-      nextPage = np
-      serverPage = np || 0
-      if (!nextPage || aggregated.length >= AGG_MAX) {
-        break
+    // Best-effort count adjustment: if the page got filtered, lower the count accordingly.
+    if (before > 0 && products.length <= before) {
+      // At minimum, reflect the number of items we actually show on this page.
+      if (count < products.length) {
+        count = products.length
       }
     }
 
-    const filtered = aggregated.filter((p) => matchesType(p, needle))
-
-    // Local pagination on the filtered result set
-    const filteredCount = filtered.length
-    const start = (page - 1) * PRODUCT_LIMIT
-    const end = start + PRODUCT_LIMIT
-    products = filtered.slice(start, end)
-    count = filteredCount
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[PaginatedProducts] Strict type filter enforced for "${productType}". Results on page: ${products.length}`)
+    }
   }
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
@@ -308,7 +244,7 @@ export default async function PaginatedProducts({
   return (
     <>
       <ul
-        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
+        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 large:grid-cols-5 gap-4 small:gap-6"
         data-testid="products-list"
       >
         {products.map((p) => {

@@ -2,6 +2,67 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* Black and White Theme CSS Variables */
+:root {
+  /* Primary monochrome scale */
+  --color-mono-white: #ffffff;
+  --color-mono-50: #fafafa;
+  --color-mono-100: #f5f5f5;
+  --color-mono-200: #e5e5e5;
+  --color-mono-300: #d4d4d4;
+  --color-mono-400: #a3a3a3;
+  --color-mono-500: #737373;
+  --color-mono-600: #525252;
+  --color-mono-700: #404040;
+  --color-mono-800: #262626;
+  --color-mono-900: #171717;
+  --color-mono-950: #0a0a0a;
+  --color-mono-black: #000000;
+  
+  /* Brand colors */
+  --color-brand-primary: var(--color-mono-black);
+  --color-brand-secondary: var(--color-mono-700);
+  --color-brand-background: var(--color-mono-white);
+  --color-brand-surface: var(--color-mono-50);
+  
+  /* Text colors */
+  --color-text-primary: var(--color-mono-black);
+  --color-text-secondary: var(--color-mono-600);
+  --color-text-muted: var(--color-mono-500);
+  --color-text-inverse: var(--color-mono-white);
+  
+  /* Border colors */
+  --color-border-primary: var(--color-mono-200);
+  --color-border-secondary: var(--color-mono-300);
+  --color-border-strong: var(--color-mono-black);
+  
+  /* Interactive states */
+  --color-hover: var(--color-mono-100);
+  --color-active: var(--color-mono-200);
+  --color-focus: var(--color-mono-black);
+}
+
+/* Dark mode overrides for black and white theme */
+.dark {
+  --color-brand-primary: var(--color-mono-white);
+  --color-brand-secondary: var(--color-mono-300);
+  --color-brand-background: var(--color-mono-black);
+  --color-brand-surface: var(--color-mono-900);
+  
+  --color-text-primary: var(--color-mono-white);
+  --color-text-secondary: var(--color-mono-400);
+  --color-text-muted: var(--color-mono-500);
+  --color-text-inverse: var(--color-mono-black);
+  
+  --color-border-primary: var(--color-mono-800);
+  --color-border-secondary: var(--color-mono-700);
+  --color-border-strong: var(--color-mono-white);
+  
+  --color-hover: var(--color-mono-900);
+  --color-active: var(--color-mono-800);
+  --color-focus: var(--color-mono-white);
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -54,8 +115,57 @@
     @apply max-w-[1440px] w-full mx-auto px-6;
   }
 
+  /* Black and White Theme Components */
+  .btn-primary {
+    @apply px-6 py-3 bg-mono-1000 text-mono-0 border border-mono-1000 rounded hover:bg-mono-900 transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-mono-0 text-mono-1000 border border-mono-1000 rounded hover:bg-mono-100 transition-all duration-200;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 bg-transparent text-mono-1000 border border-mono-1000 rounded hover:bg-mono-1000 hover:text-mono-0 transition-all duration-200;
+  }
+
   .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+    @apply px-4 py-2 bg-mono-0 text-mono-1000 border border-mono-1000 rounded hover:bg-mono-1000 hover:text-mono-0 transition-all duration-200;
+  }
+  
+  .card-mono {
+    @apply bg-mono-0 border border-mono-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .input-mono {
+    @apply bg-mono-0 border border-mono-300 text-mono-1000 placeholder-mono-500 focus:border-mono-1000 focus:ring-1 focus:ring-mono-1000 rounded;
+  }
+  
+  .text-primary {
+    @apply text-mono-1000;
+  }
+  
+  .text-secondary {
+    @apply text-mono-600;
+  }
+  
+  .text-muted {
+    @apply text-mono-500;
+  }
+  
+  .bg-primary {
+    @apply bg-mono-0;
+  }
+  
+  .bg-secondary {
+    @apply bg-mono-50;
+  }
+  
+  .border-primary {
+    @apply border-mono-200;
+  }
+  
+  .border-strong {
+    @apply border-mono-1000;
   }
 
   .text-xsmall-regular {

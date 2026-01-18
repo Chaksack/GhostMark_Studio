@@ -1,15 +1,12 @@
-import nodemailer, { Transporter } from "nodemailer"
+import { Resend } from 'resend'
+import { renderEmailLayout, htmlToText } from './email-template'
 
 /**
- * Simple email service using SMTP credentials from environment variables.
+ * Email service using Resend API.
  *
  * Required env vars (defined in ghostmark/.env):
- * - SMTP_HOST
- * - SMTP_PORT
- * - SMTP_SECURE ("true" | "false")
- * - SMTP_USER
- * - SMTP_PASSWORD
- * - SMTP_FROM_EMAIL (optional, falls back to SMTP_USER)
+ * - RESEND_API_KEY
+ * - RESEND_FROM_EMAIL (optional, defaults to 'onboarding@resend.dev')
  */
 export type SendEmailParams = {
   to: string | string[]
@@ -17,73 +14,124 @@ export type SendEmailParams = {
   text?: string
   html?: string
   from?: string
+  cc?: string | string[]
+  bcc?: string | string[]
+  replyTo?: string
+  attachments?: Array<{
+    filename: string
+    path?: string
+    content?: Buffer
+    contentType?: string
+  }>
+  tags?: Array<{
+    name: string
+    value: string
+  }>
+  headers?: Record<string, string>
 }
 
-let cachedTransport: Transporter | null = null
+let cachedResend: Resend | null = null
 
-function parseBool(val: string | undefined): boolean | undefined {
-  if (val === undefined) return undefined
-  const v = String(val).trim().toLowerCase()
-  if (v === "true" || v === "1" || v === "yes") return true
-  if (v === "false" || v === "0" || v === "no") return false
-  return undefined
-}
+function getResend(): Resend {
+  if (cachedResend) return cachedResend
 
-function getTransport(): Transporter {
-  if (cachedTransport) return cachedTransport
+  const apiKey = process.env.RESEND_API_KEY?.replace(/^"|"$/g, "")
 
-  const host = process.env.SMTP_HOST?.replace(/^"|"$/g, "")
-  const portStr = process.env.SMTP_PORT?.replace(/^"|"$/g, "")
-  const secureEnv = process.env.SMTP_SECURE?.replace(/^"|"$/g, "")
-  const user = process.env.SMTP_USER?.replace(/^"|"$/g, "")
-  const pass = process.env.SMTP_PASSWORD?.replace(/^"|"$/g, "")
-
-  if (!host || !portStr || !user || !pass) {
+  if (!apiKey) {
     throw new Error(
-      "Missing SMTP configuration. Please set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD in environment."
+      "Missing Resend API key. Please set RESEND_API_KEY in environment."
     )
   }
 
-  const port = Number(portStr)
-  const secure = parseBool(secureEnv)
-
-  cachedTransport = nodemailer.createTransport({
-    host,
-    port: Number.isFinite(port) ? port : 587,
-    secure: secure ?? false,
-    auth: { user, pass },
-  })
-
-  return cachedTransport
+  cachedResend = new Resend(apiKey)
+  return cachedResend
 }
 
 export async function sendEmail(params: SendEmailParams) {
-  const { to, subject, text, html } = params
-  let from = params.from || process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER
+  const { to, subject } = params
+  let { text, html } = params
+  const { cc, bcc, replyTo, attachments, tags, headers } = params
+  let from = params.from || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 
   if (!to || !subject) {
     throw new Error("Missing required fields: to, subject")
   }
 
+  // If neither provided, throw
   if (!text && !html) {
     throw new Error("Provide at least one of text or html content")
   }
 
-  const transporter = getTransport()
+  // Ensure a unified HTML layout (black/white theme) for all emails.
+  // Only wrap if not already a full HTML document.
+  if (!html || !/^\s*<!DOCTYPE html>/i.test(html) && !/<html[\s>]/i.test(html)) {
+    const bodyHtml = html
+      ? html
+      : `<p style="margin:0 0 16px;">${(text || '').replace(/\n/g, '<br/>')}</p>`
+    html = renderEmailLayout({ title: subject, bodyHtml, cta: null })
+  }
 
-  const info = await transporter.sendMail({
+  // Ensure text fallback exists
+  if (!text && html) {
+    text = htmlToText(html)
+  }
+
+  const resend = getResend()
+
+  // Sanitize and strictly construct payload for Resend API to avoid
+  // "Invalid request: Unrecognized fields: 'type'" errors if caller
+  // accidentally passes extra properties.
+  const safeTags = Array.isArray(tags)
+    ? tags
+        .filter((t) => t && typeof t.name === "string" && typeof t.value === "string")
+        .map(({ name, value }) => ({ name, value }))
+    : undefined
+
+  const safeHeaders = headers && typeof headers === "object" && !Array.isArray(headers)
+    ? Object.entries(headers).reduce<Record<string, string>>((acc, [k, v]) => {
+        if (k.toLowerCase() === "type") return acc // drop any rogue 'type' header
+        if (typeof v === "string") acc[k] = v
+        return acc
+      }, {})
+    : undefined
+
+  const safeAttachments = Array.isArray(attachments)
+    ? attachments.map((a) => {
+        const out: any = {}
+        if (typeof a.filename === "string") out.filename = a.filename
+        if (a.content instanceof Buffer) out.content = a.content
+        if (typeof a.path === "string") out.path = a.path
+        if (typeof a.contentType === "string") out.contentType = a.contentType
+        return out
+      })
+    : undefined
+
+  const payload: any = {
     from: from as string,
     to,
     subject,
     text,
     html,
-  })
+  }
+  if (cc) payload.cc = cc
+  if (bcc) payload.bcc = bcc
+  if (replyTo) payload.replyTo = replyTo
+  if (safeAttachments && safeAttachments.length) payload.attachments = safeAttachments
+  if (safeTags && safeTags.length) payload.tags = safeTags
+  if (safeHeaders && Object.keys(safeHeaders).length) payload.headers = safeHeaders
+
+  // Defensive: ensure no stray 'type' field slipped in
+  if ("type" in payload) delete payload.type
+
+  const { data, error } = await resend.emails.send(payload)
+
+  if (error) {
+    throw new Error(`Resend error: ${error.name} - ${error.message}`)
+  }
 
   return {
-    messageId: info.messageId,
-    accepted: info.accepted,
-    rejected: info.rejected,
-    response: info.response,
+    messageId: data!.id,
+    id: data!.id,
   }
 }
 

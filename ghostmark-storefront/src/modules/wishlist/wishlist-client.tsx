@@ -100,7 +100,7 @@ export default function WishlistClient() {
   return (
     <div className="content-container py-8">
       <h1 className="text-2xl-semi mb-6">Your wishlist</h1>
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-6">
+      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 large:grid-cols-5 gap-4 small:gap-6">
         {products.map((p) => {
           const image = p.thumbnail || p.images?.[0]?.url || ""
           return (

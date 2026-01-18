@@ -27,31 +27,45 @@ export const listCollections = async (
     ...(await getCacheOptions("collections")),
   }
 
-  queryParams.limit = queryParams.limit || "100"
-  queryParams.offset = queryParams.offset || "0"
+  // Set defaults and ensure we get essential fields
+  const enhancedParams = {
+    limit: "100",
+    offset: "0",
+    fields: "id,handle,title,description,metadata",
+    ...queryParams,
+  }
 
   return sdk.client
     .fetch<{ collections: HttpTypes.StoreCollection[]; count: number }>(
       "/store/collections",
       {
-        query: queryParams,
+        query: enhancedParams,
         next,
         cache: "force-cache",
       }
     )
-    .then(({ collections }) => ({ collections, count: collections.length }))
+    .then(({ collections, count }) => ({ 
+      collections, 
+      count: count || collections.length 
+    }))
 }
 
 export const getCollectionByHandle = async (
-  handle: string
+  handle: string,
+  includeProducts = false
 ): Promise<HttpTypes.StoreCollection> => {
   const next = {
     ...(await getCacheOptions("collections")),
   }
 
+  // Optimize fields - only include products if specifically requested
+  const fields = includeProducts 
+    ? "id,handle,title,description,metadata,*products" 
+    : "id,handle,title,description,metadata"
+
   return sdk.client
     .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
-      query: { handle, fields: "*products" },
+      query: { handle, fields },
       next,
       cache: "force-cache",
     })

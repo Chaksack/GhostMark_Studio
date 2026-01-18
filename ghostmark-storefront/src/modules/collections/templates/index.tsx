@@ -9,6 +9,7 @@ import { Heading, Text, Button } from "@medusajs/ui"
 import CollectionsTiles from "@modules/store/templates/sections/collections-tiles"
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
+import { getProductTypesForFilter } from "@lib/data/product-types"
 
 export default async function CollectionTemplate({
   sortBy,
@@ -25,48 +26,27 @@ export default async function CollectionTemplate({
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const { collections } = await listCollections({
-    limit: "200",
-    fields: "id,handle,title",
-  })
-  const product_categories = await listCategories().catch(() => [])
+  
+  // Fetch data for sidebar filters
+  const [{ collections }, product_categories, productTypes] = await Promise.all([
+    listCollections({
+      limit: "200",
+      fields: "id,handle,title",
+    }).catch(() => ({ collections: [] })),
+    listCategories().catch(() => []),
+    getProductTypesForFilter().catch(() => []),
+  ])
 
   return (
     <div className="flex flex-col">
-      {/* Hero band for the category page, inspired by Gelato /custom/cards */}
-      <div className="border-b border-ui-border-base bg-ui-bg-subtle">
-        <div className="content-container py-10 md:py-14">
-          <div className="max-w-3xl">
-            <Heading
-              level="h1"
-              className="text-3xl sm:text-4xl md:text-5xl tracking-tight"
-            >
-              {collection.title}
-            </Heading>
-            {collection.metadata?.description || collection.description ? (
-              <Text className="mt-4 text-ui-fg-subtle">
-                {(collection.metadata as any)?.description || collection.description}
-              </Text>
-            ) : (
-              <Text className="mt-4 text-ui-fg-subtle">
-                Discover customizable {collection.title?.toLowerCase()} produced on demand
-                and delivered fast.
-              </Text>
-            )}
-            <div className="mt-6">
-              <Button size="large">Start creating</Button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Optional categories tiles to help exploration */}
-      <div className="content-container py-8 md:py-12">
-        <CollectionsTiles />
-      </div>
+      {/*<div className="content-container py-8 md:py-12">*/}
+      {/*  <CollectionsTiles />*/}
+      {/*</div>*/}
 
       {/* Product grid with refinements */}
-      <div className="content-container flex flex-col small:flex-row small:items-start py-6">
+      <div className="content-container flex flex-col small:flex-row small:items-start py-2">
         <RefinementList
           sortBy={sort}
           collections={collections}
@@ -77,9 +57,10 @@ export default async function CollectionTemplate({
             name: c.name,
           }))}
           productType={productType}
+          productTypes={productTypes}
         />
         <div className="w-full">
-          <div className="mb-8">
+          <div className="mb-2">
             <h2 className="text-2xl-semi">All products</h2>
           </div>
           <Suspense

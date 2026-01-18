@@ -154,7 +154,7 @@ export default async function TypeProductRail({
         limit: PAGE_LIMIT,
         // Request minimal but useful fields to keep cards rich without heavy joins
         fields:
-          "*variants.calculated_price,thumbnail,title,handle,*images,+metadata,+tags,*type",
+          "*variants.calculated_price,thumbnail,title,handle,*images,+metadata,+tags",
       } as any,
     }).catch(() => undefined)
 

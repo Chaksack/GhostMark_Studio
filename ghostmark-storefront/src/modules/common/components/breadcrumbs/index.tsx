@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
@@ -19,14 +19,22 @@ function titleCase(segment: string) {
 
 const Breadcrumbs: React.FC = () => {
   const pathname = usePathname()
+  const [clientPathname, setClientPathname] = useState('')
+  const [mounted, setMounted] = useState(false)
 
-  if (!pathname) return null
+  useEffect(() => {
+    setClientPathname(pathname)
+    setMounted(true)
+  }, [pathname])
+
+  // Prevent hydration mismatch by not rendering until client-side
+  if (!mounted || !clientPathname) return null
 
   // Example pathnames:
   // /us -> homepage for country (hide)
   // /us/products/awesome-shirt
   // /us/collections/summer
-  const parts = pathname.split("/").filter(Boolean)
+  const parts = clientPathname.split("/").filter(Boolean)
 
   if (parts.length <= 1) {
     // Only country code present => homepage. Hide breadcrumbs.
@@ -42,8 +50,8 @@ const Breadcrumbs: React.FC = () => {
   })
 
   return (
-    <nav aria-label="Breadcrumb" className="content-container py-3">
-      <ol className="flex flex-wrap items-center gap-2 text-sm text-ui-fg-muted">
+    <nav aria-label="Breadcrumb" className="content-container w-full flex items-center py-1 text-sm ">
+      <ol className="content-container flex flex-wrap items-center gap-1 text-sm text-ui-fg-muted">
         <li className="flex items-center gap-2">
           <LocalizedClientLink href={`/`} className="hover:text-ui-fg-subtle">
             Home

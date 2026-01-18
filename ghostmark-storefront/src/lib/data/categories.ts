@@ -24,14 +24,18 @@ export const listCategories = async (query?: Record<string, any>) => {
   }
 
   const limit = query?.limit || 100
+  
+  // Optimize fields - only include products if specifically requested
+  const defaultFields = "*category_children,*parent_category,*parent_category.parent_category"
+  const fieldsWithProducts = "*category_children,*products,*parent_category,*parent_category.parent_category"
+  const fields = query?.includeProducts ? fieldsWithProducts : defaultFields
 
   return sdk.client
     .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
       "/store/product-categories",
       {
         query: {
-          fields:
-            "*category_children, *products, *parent_category, *parent_category.parent_category",
+          fields,
           limit,
           ...query,
         },
@@ -42,19 +46,27 @@ export const listCategories = async (query?: Record<string, any>) => {
     .then(({ product_categories }) => product_categories)
 }
 
-export const getCategoryByHandle = async (categoryHandle: string[]) => {
+export const getCategoryByHandle = async (
+  categoryHandle: string[],
+  includeProducts = false
+) => {
   const handle = `${categoryHandle.join("/")}`
 
   const next = {
     ...(await safeGetCacheOptions("categories")),
   }
 
+  // Optimize fields - only include products if specifically requested
+  const fields = includeProducts 
+    ? "*category_children,*products,*parent_category" 
+    : "*category_children,*parent_category"
+
   return sdk.client
     .fetch<HttpTypes.StoreProductCategoryListResponse>(
       `/store/product-categories`,
       {
         query: {
-          fields: "*category_children, *products",
+          fields,
           handle,
         },
         next,

@@ -19,6 +19,9 @@ type MobileActionsProps = {
   updateOptions: (title: string, value: string) => void
   inStock?: boolean
   handleAddToCart: () => void
+  handleBuyNow?: () => void
+  isPODProduct?: boolean
+  isTechnologyBlankVariant?: boolean
   isAdding?: boolean
   show: boolean
   optionsDisabled: boolean
@@ -31,6 +34,9 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   updateOptions,
   inStock,
   handleAddToCart,
+  handleBuyNow,
+  isPODProduct,
+  isTechnologyBlankVariant,
   isAdding,
   show,
   optionsDisabled,
@@ -38,6 +44,28 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   const { state, open, close } = useToggleState()
   const router = useRouter()
   const countryCode = useParams().countryCode as string
+
+  // Helper to extract a normalized product type string
+  const productType = useMemo(() => {
+    const p: any = product as any
+    const t = p?.type ?? p?.product_type
+    let raw: string | undefined
+    if (!t) raw = undefined
+    else if (typeof t === "string") raw = t
+    else raw = t?.value || t?.title || t?.name || t?.handle
+    return (raw || "").toString().trim().toLowerCase()
+  }, [product])
+
+  // Helper to check if product is customizable (POD)
+  const isCustomizable = useMemo(() => {
+    const customizableTypes = ['t-shirt', 'tshirt', 'hoodie', 'mug', 'sticker', 'poster', 'canvas', 'pillow', 'phone case', 'pod']
+    return customizableTypes.some(type => productType.includes(type) || productType === type)
+  }, [productType])
+
+  // Explicit flag for POD products (print-on-demand)
+  const isPOD = useMemo(() => {
+    return productType === 'pod' || productType.includes('pod')
+  }, [productType])
 
   const price = getProductPrice({
     product: product,
@@ -119,24 +147,66 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <ChevronDown />
                 </div>
               </Button>}
-              <Button
-                onClick={() => {
-                  if (!product?.id) return
-                  const params = new URLSearchParams()
-                  if (variant?.id) params.set("v_id", variant.id)
-                  router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
-                }}
-                disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
-                data-testid="mobile-cart-button"
-              >
-                {!variant
-                  ? "Select variant"
-                  : !inStock
-                  ? "Out of stock"
-                  : "Customise & Purchase"}
-              </Button>
+              {(isPODProduct || isPOD) && handleBuyNow ? (
+                // For POD products, always show two buttons in a flex layout
+                <div className="flex gap-2 w-full">
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={!inStock || !variant}
+                    className="flex-1 text-sm"
+                    isLoading={isAdding}
+                    data-testid="mobile-customize-button"
+                  >
+                    {!variant
+                      ? "Select variant"
+                      : !inStock
+                      ? "Out of stock"
+                      : "Customise"}
+                  </Button>
+                  <Button
+                    onClick={handleBuyNow}
+                    disabled={!isTechnologyBlankVariant || !inStock || !variant}
+                    variant="secondary"
+                    className="flex-1 text-sm"
+                    isLoading={isAdding}
+                    data-testid="mobile-buy-now-button"
+                  >
+                    {!variant
+                      ? "Select variant"
+                      : !inStock
+                      ? "Out of stock"
+                      : !isTechnologyBlankVariant
+                      ? "Select Blank"
+                      : "Buy Now"}
+                  </Button>
+                </div>
+              ) : (
+                // For non-POD products, show single button
+                <Button
+                  onClick={() => {
+                    if (isCustomizable) {
+                      if (!product?.id) return
+                      const params = new URLSearchParams()
+                      if (variant?.id) params.set("v_id", variant.id)
+                      router.push(`/${countryCode}/design/${product.id}?${params.toString()}`)
+                    } else {
+                      handleAddToCart()
+                    }
+                  }}
+                  disabled={!inStock || !variant}
+                  className="w-full"
+                  isLoading={isAdding}
+                  data-testid="mobile-cart-button"
+                >
+                  {!variant
+                    ? "Select variant"
+                    : !inStock
+                    ? "Out of stock"
+                    : isCustomizable
+                    ? "Customize and Checkout"
+                    : "Buy now"}
+                </Button>
+              )}
             </div>
           </div>
         </Transition>

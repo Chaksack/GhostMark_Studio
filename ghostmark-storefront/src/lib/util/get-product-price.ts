@@ -10,6 +10,27 @@ export const getPricesForVariant = (variant: any) => {
     return null
   }
 
+  // Enhanced sale price detection based on e-commerce best practices
+  const hasPriceListType = calc.calculated_price?.price_list_type
+  const isPriceList = calc.is_calculated_price_price_list
+  const isDifferentPrice = calc.original_amount && amount && calc.original_amount !== amount && calc.original_amount > amount
+  
+  // Debug logging for sale price detection
+  if (process.env.NODE_ENV === 'development') {
+    console.log('💰 Sale Price Detection Debug:', {
+      calculated_amount: amount,
+      original_amount: calc.original_amount,
+      hasPriceListType,
+      isPriceList,
+      isDifferentPrice,
+      price_list_type: calc.calculated_price?.price_list_type
+    })
+  }
+  
+  const price_type = hasPriceListType || (isPriceList ? "sale" : undefined) || (
+    isDifferentPrice ? "sale" : "default"
+  )
+
   return {
     calculated_price_number: amount,
     calculated_price: convertToLocale({
@@ -22,7 +43,7 @@ export const getPricesForVariant = (variant: any) => {
       currency_code: calc.currency_code,
     }),
     currency_code: calc.currency_code,
-    price_type: calc.calculated_price?.price_list_type,
+    price_type,
     percentage_diff: getPercentageDiff(
       calc.original_amount,
       amount

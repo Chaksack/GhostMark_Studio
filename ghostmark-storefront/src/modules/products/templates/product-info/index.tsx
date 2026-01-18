@@ -1,14 +1,33 @@
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Text } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import ProductPrice from "@modules/products/components/product-price"
+import { listProducts } from "@lib/data/products"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
+  region: HttpTypes.StoreRegion
 }
 
-const ProductInfo = ({ product }: ProductInfoProps) => {
-  const meta: any = (product as any)?.metadata || {}
-  const subtitleFromMeta = (product as any)?.metadata?.subtitle as
+const ProductInfo = async ({ product, region }: ProductInfoProps) => {
+  // Ensure pricing reflects the active region (for correct sale price display)
+  // Add defensive check for region based on e-commerce best practices
+  const pricedProduct = region?.id ? await listProducts({
+    regionId: region.id,
+    queryParams: {
+      id: [product.id!],
+      limit: 1,
+      // Include calculated prices and minimal related fields
+      fields:
+        "*variants.calculated_price,+variants.inventory_quantity,*options,+metadata,+tags",
+    },
+  })
+    .then(({ response }) => response.products?.[0])
+    .catch(() => undefined) : undefined
+
+  const productForPricing = pricedProduct || product
+  const meta: any = (productForPricing as any)?.metadata || {}
+  const subtitleFromMeta = (productForPricing as any)?.metadata?.subtitle as
     | string
     | undefined
 
@@ -21,7 +40,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
     return first.length > 160 ? first.slice(0, 157).trim() + "…" : first
   })()
 
-  const typeLabel = product.type?.value
+  const typeLabel = productForPricing.type?.value
 
   // Resolve recommended/target DPI and print area size from metadata if present
   const recommendedDpi = (() => {
@@ -65,12 +84,12 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
     <div id="product-info">
       <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
-        {product.collection && (
+        {productForPricing.collection && (
           <LocalizedClientLink
-            href={`/collections/${product.collection.handle}`}
+            href={`/collections/${productForPricing.collection.handle}`}
             className="text-medium text-ui-fg-muted hover:text-ui-fg-subtle"
           >
-            {product.collection.title}
+            {productForPricing.collection.title}
           </LocalizedClientLink>
         )}
         <Heading
@@ -78,7 +97,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
           className="text-3xl leading-10 text-ui-fg-base"
           data-testid="product-title"
         >
-          {product.title}
+          {productForPricing.title}
         </Heading>
 
         {shortDescription && (
@@ -87,7 +106,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
 
         {/* Simple meta row to approximate brand/category presentation in the reference */}
         {(typeLabel || product.material) && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ui-fg-muted">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ui-fg-muted">
             {typeLabel && (
               <span>
                 <span className="text-ui-fg-subtle">Type:</span> {typeLabel}
@@ -103,7 +122,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
 
         {/* Print details (DPI and area) from metadata when available */}
         {(recommendedDpi || printAreaInches) && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ui-fg-muted">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ui-fg-muted">
             {printAreaInches && (
               <span>
                 <span className="text-ui-fg-subtle">Print area:</span> {printAreaInches.wIn}×{printAreaInches.hIn} in
@@ -118,9 +137,9 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         )}
 
         {/* Quick highlights list – configurable via metadata.highlights (string[]) if provided */}
-        {Array.isArray((product as any)?.metadata?.highlights) && (
+        {Array.isArray((productForPricing as any)?.metadata?.highlights) && (
           <ul className="mt-1 space-y-1 text-sm text-ui-fg-subtle list-disc pl-5">
-            {((product as any).metadata.highlights as string[])
+            {((productForPricing as any).metadata.highlights as string[])
               .filter(Boolean)
               .slice(0, 5)
               .map((h, i) => (
@@ -131,7 +150,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
 
         {/* Product tags */}
         {(() => {
-          const p: any = product as any
+          const p: any = productForPricing as any
           const tags = Array.isArray(p?.tags) && p.tags.length > 0
             ? p.tags
             : Array.isArray(p?.product_tags) && p.product_tags.length > 0
@@ -154,7 +173,10 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
             </div>
           )
         })()}
-
+          {/* Product Price with Sale Display */}
+          <div className="">
+              <ProductPrice product={productForPricing} />
+          </div>
         {/* Description remains in tabs below to better match reference PDP layout */}
       </div>
     </div>

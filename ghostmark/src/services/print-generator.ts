@@ -1,12 +1,9 @@
 // Scaffolded service outline for Medusa backend
 // This file follows the documentation in docs/medusa-customization-guide.md
 
-// Depending on your Medusa setup, you may extend from Medusa's base service
-// or use medusa-extender. Here we keep it framework-agnostic for illustration.
-import Konva from "konva"
-// node-canvas is used by Konva in Node environment
-// Install via your backend package.json: npm/yarn/pnpm add canvas konva
-import { createCanvas /*, loadImage*/ } from "canvas"
+// Depending on your Medusa setup, you may extend from Medusa's base service.
+// NOTE: `konva` and `canvas` are optional native deps in many environments.
+// Using runtime `require` keeps TypeScript builds green even when they're not installed.
 
 type LineItemCustomization = {
   designDataJson: string
@@ -18,6 +15,12 @@ export default class PrintGeneratorService /* extends Service */ {
   static identifier = "print-generator"
 
   async generatePrintFile(lineItemMetadata: any): Promise<{ url: string }> {
+    // Lazy-load optional dependencies.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const Konva = require("konva") as any
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { createCanvas } = require("canvas") as any
+
     const customization =
       (lineItemMetadata?.customization as LineItemCustomization | undefined) || undefined
     if (!customization?.designDataJson) {
