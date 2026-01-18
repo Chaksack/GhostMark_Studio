@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { renderEmailLayout, htmlToText } from './email-template'
 
 /**
  * Email service using Resend API.
@@ -47,15 +48,32 @@ function getResend(): Resend {
 }
 
 export async function sendEmail(params: SendEmailParams) {
-  const { to, subject, text, html, cc, bcc, replyTo, attachments, tags, headers } = params
+  const { to, subject } = params
+  let { text, html } = params
+  const { cc, bcc, replyTo, attachments, tags, headers } = params
   let from = params.from || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 
   if (!to || !subject) {
     throw new Error("Missing required fields: to, subject")
   }
 
+  // If neither provided, throw
   if (!text && !html) {
     throw new Error("Provide at least one of text or html content")
+  }
+
+  // Ensure a unified HTML layout (black/white theme) for all emails.
+  // Only wrap if not already a full HTML document.
+  if (!html || !/^\s*<!DOCTYPE html>/i.test(html) && !/<html[\s>]/i.test(html)) {
+    const bodyHtml = html
+      ? html
+      : `<p style="margin:0 0 16px;">${(text || '').replace(/\n/g, '<br/>')}</p>`
+    html = renderEmailLayout({ title: subject, bodyHtml, cta: null })
+  }
+
+  // Ensure text fallback exists
+  if (!text && html) {
+    text = htmlToText(html)
   }
 
   const resend = getResend()

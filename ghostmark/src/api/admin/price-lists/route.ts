@@ -42,8 +42,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         description,
         starts_at,
         ends_at,
-        status,
-        type
+        status: status as any,
+        type: type as any
       }
     ])
 

@@ -88,10 +88,17 @@ export class DesignPricingService {
       currency?: string
       urgent?: boolean
       shipmentMethod?: string
-    }
+    },
+    productId?: string
   ): Promise<PricingCalculation> {
     
-    // Fetch design areas and groups for this product type
+    // If productId provided, try POD metadata-based pricing with special grouping rules
+    if (productId) {
+      const metaPricing = await this.calculatePodMetadataPricing(productId, designs, quantity, options)
+      if (metaPricing) return metaPricing
+    }
+
+    // Fallback: Fetch design areas and groups for this product type
     const [designAreas, designAreaGroups] = await Promise.all([
       this.fetchDesignAreas(productTypeId),
       this.fetchDesignAreaGroups(productTypeId)
@@ -108,6 +115,134 @@ export class DesignPricingService {
     const calculation = this.calculateGroupedPricing(groupedAreas, designAreaGroups, areaMap, quantity)
     
     return calculation
+  }
+
+  private async calculatePodMetadataPricing(
+    productId: string,
+    designs: DesignSubmission[],
+    quantity: number,
+    options?: { currency?: string }
+  ): Promise<PricingCalculation | null> {
+    try {
+      // Load product metadata for POD pricing
+      const [products] = await this.query.graph({
+        entity: 'product',
+        filters: { id: productId },
+        fields: ['id', 'metadata']
+      })
+      if (!products || products.length === 0) return null
+
+      const product = products[0] as any
+      const pod = product?.metadata?.pod || null
+      const printAreas = pod?.print_areas || null
+      if (!pod || !printAreas) return null
+
+      // Prefer caller-provided currency (e.g., region currency), then product metadata, then USD
+      const currency = (options?.currency || pod.currency || 'USD') as string
+
+      // Helper to get per-side price in minor units, supporting per-currency overrides
+      const getMinor = (side: string): number => {
+        const area = (printAreas as any)[side] || {}
+        const byCurrency = area?.print_price_minor_by_currency
+        let minor: number | undefined
+        if (byCurrency && typeof byCurrency === 'object') {
+          const val = byCurrency[currency]
+          if (typeof val === 'number') minor = val
+        }
+        if (minor == null && typeof area?.print_price_minor === 'number') {
+          minor = area.print_price_minor
+        }
+        return Math.max(0, Number(minor || 0))
+      }
+
+      // Collect selected area types from designs
+      const selectedTypes = designs.map(d => (d.areaType || d.fileType || 'front') as string)
+
+      // Grouping rules:
+      // - Front/Back together: charge once at max(front, back) if any selected from the pair
+      // - Sleeves together: charge once at max(left_sleeve, right_sleeve) if any selected from the pair
+      // - All other area types: charge per selection using their own price
+      const frontMinor = getMinor('front')
+      const backMinor = getMinor('back')
+      const leftMinor = getMinor('left_sleeve')
+      const rightMinor = getMinor('right_sleeve')
+
+      const frontBackSelected = selectedTypes.some(t => t === 'front' || t === 'back')
+      const sleevesSelected = selectedTypes.some(t => t === 'left_sleeve' || t === 'right_sleeve')
+
+      const otherTypes = selectedTypes.filter(t => !['front', 'back', 'left_sleeve', 'right_sleeve'].includes(t))
+
+      // Compute charges in minor units
+      let subtotalMinor = 0
+      const areaBreakdown: PricingCalculation['areaBreakdown'] = []
+
+      if (frontBackSelected) {
+        const chargeMinor = Math.max(frontMinor, backMinor)
+        subtotalMinor += chargeMinor * quantity
+        areaBreakdown.push({
+          areaId: 'group_front_back',
+          areaType: 'front_back',
+          groupName: 'Front/Back',
+          basePrice: (chargeMinor / 100) * quantity,
+          colorPrice: 0,
+          layerPrice: 0,
+          setupFee: 0,
+          subtotal: (chargeMinor / 100) * quantity,
+          isGroupCharge: true,
+          groupId: 'front_back'
+        })
+      }
+
+      if (sleevesSelected) {
+        const chargeMinor = Math.max(leftMinor, rightMinor)
+        subtotalMinor += chargeMinor * quantity
+        areaBreakdown.push({
+          areaId: 'group_sleeves',
+          areaType: 'sleeves',
+          groupName: 'Sleeves',
+          basePrice: (chargeMinor / 100) * quantity,
+          colorPrice: 0,
+          layerPrice: 0,
+          setupFee: 0,
+          subtotal: (chargeMinor / 100) * quantity,
+          isGroupCharge: true,
+          groupId: 'sleeves'
+        })
+      }
+
+      // Charge others per selection
+      otherTypes.forEach((t, idx) => {
+        const minor = getMinor(t)
+        const subtotalThis = (minor / 100) * quantity
+        subtotalMinor += minor * quantity
+        areaBreakdown.push({
+          areaId: `${t}_${idx}`,
+          areaType: t,
+          basePrice: subtotalThis,
+          colorPrice: 0,
+          layerPrice: 0,
+          setupFee: 0,
+          subtotal: subtotalThis,
+          isGroupCharge: false
+        })
+      })
+
+      const totals = {
+        subtotal: subtotalMinor / 100,
+        setupFees: 0,
+        total: subtotalMinor / 100,
+        currency
+      }
+
+      return {
+        areaBreakdown,
+        groupCharges: [],
+        totals
+      }
+    } catch (e) {
+      // On any failure, fall back to default pricing
+      return null
+    }
   }
 
   private async fetchDesignAreas(productTypeId: string): Promise<DesignArea[]> {

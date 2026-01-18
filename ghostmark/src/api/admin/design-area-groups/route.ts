@@ -3,7 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 // GET /admin/design-area-groups - List all design area groups
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   
   const {
     product_type_id,
@@ -27,6 +27,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
     const { data: groups, metadata } = await query.graph({
       entity: "design_area_group",
+      fields: ["*"],
       filters,
       pagination: {
         skip: offset,
@@ -51,7 +52,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 // POST /admin/design-area-groups - Create a new design area group
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   
   const {
     name,
@@ -66,7 +67,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     is_active = true,
     sort_order = 0,
     metadata
-  } = req.body
+  } = (req.body as any) || {}
 
   try {
     // Validate required fields
@@ -87,6 +88,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     // Validate that design areas exist
     const existingAreas = await query.graph({
       entity: "design_area",
+      fields: ["id"],
       filters: { id: { $in: design_area_ids } }
     }).find()
 
@@ -98,6 +100,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
 
     const group = await query.graph({
       entity: "design_area_group",
+      fields: ["*"],
       data: {
         name,
         description,

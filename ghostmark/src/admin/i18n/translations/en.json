@@ -1,0 +1,20 @@
+{
+  "login": {
+    "title": "Welcome to GhostMark Studio",
+    "subtitle": "Sign in to your admin account"
+  },
+  "nav": {
+    "support": "Support"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Manage customer support tickets",
+    "no_tickets": "No tickets found.",
+    "case_id": "Case ID",
+    "subject": "Subject",
+    "status": "Status",
+    "customer": "Customer",
+    "created": "Created",
+    "updated": "Updated"
+  }
+}

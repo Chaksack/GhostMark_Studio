@@ -37,9 +37,11 @@ export default async function orderConfirmationHandler({
     const totalQuantity = order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0
     const customerType = order.metadata?.customer_type || 'individual'
 
+    const displayId = (order as any).display_id || order.id
+
     // Prepare email data
     const emailData = {
-      order_display_id: order.display_id || order.id,
+      order_display_id: displayId,
       customer_first_name: order.customer.first_name || 'Customer',
       customer_email: order.customer.email,
       order_total: formatCurrency(order.total),
@@ -74,7 +76,7 @@ export default async function orderConfirmationHandler({
       }
     }
 
-    console.log(`Order confirmation emails sent for order ${order.display_id}`)
+    console.log(`Order confirmation emails sent for order ${displayId}`)
 
   } catch (error) {
     console.error('Failed to send order confirmation email:', error)

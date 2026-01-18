@@ -10,7 +10,7 @@ import { sendEmail } from "../../../../services/email-service"
  */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   try {
-    const body = (await req.json()) as {
+    const body = ((req as any).body || {}) as {
       to?: string | string[]
       subject?: string
       text?: string

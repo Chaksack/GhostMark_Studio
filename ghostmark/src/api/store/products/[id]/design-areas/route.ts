@@ -1,5 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { DEFAULT_DPI } from "../../../../../utils/units"
 
 /**
  * Storefront API for fetching design areas assigned to POD products
@@ -73,7 +74,7 @@ export async function GET(
 ) {
   try {
     const { id: productId } = req.params
-    const query = req.container.resolve(ContainerRegistrationKeys.QUERY)
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
 
     if (!productId) {
       return res.status(400).json({ message: "Missing product ID" })
@@ -97,7 +98,7 @@ export async function GET(
 
     // Verify this is a POD product
     let isPODProduct = false
-    let productType = null
+    let productType: any = null
     if (product.type_id) {
       const [productTypes] = await query.graph({
         entity: "product_type",
@@ -122,7 +123,7 @@ export async function GET(
     // Get design areas assignments for this product
     const assignments = mockProductDesignAreas[productId] || []
 
-    // Fetch design areas from product type
+    // Prepare defaults
     let designAreas: StorefrontDesignArea[] = []
     let designCapabilities: DesignCapabilities = {
       maxDesignAreas: 4,
@@ -141,6 +142,90 @@ export async function GET(
       }
     }
 
+    // Prefer product.metadata.pod.print_areas if present
+    const metadata = (product as any)?.metadata || {}
+    const pod = metadata?.pod || {}
+    const printAreas = pod?.print_areas
+    const podVersion = Number(pod?.version || 0)
+    const dpi = Number(pod?.dpi || DEFAULT_DPI)
+
+    if (printAreas && typeof printAreas === 'object') {
+      const entries = Object.entries(printAreas) as [string, any][]
+      designAreas = entries.map(([side, area], index) => {
+        const x_cm = Number(area?.x_cm || 0)
+        const y_cm = Number(area?.y_cm || 0)
+        const w_cm = Number(area?.width_cm || 0)
+        const h_cm = Number(area?.height_cm || 0)
+        const areaVersion = Number(area?.version ?? podVersion)
+        const areaDpi = Number(area?.dpi || dpi || DEFAULT_DPI)
+
+        return {
+          id: `${productId}_${side}_${areaVersion}`,
+          name: `${side} area`,
+          description: `Print area (${side}) v${areaVersion}`,
+          type: side,
+          // We keep cm values in boundaries for downstream conversion
+          position: { x: 0, y: 0 },
+          dimensions: { width: Math.max(1, w_cm), height: Math.max(1, h_cm) },
+          boundaries: { x: x_cm, y: y_cm, w: Math.max(1, w_cm), h: Math.max(1, h_cm) },
+          constraints: {
+            minWidth: 1,
+            minHeight: 1,
+            maxWidth: 1000,
+            maxHeight: 1000,
+            margin: 0,
+            allowRotation: false,
+            allowResize: true,
+          },
+          printMethods: ['dtg'],
+          maxColors: 12,
+          pricing: {
+            // Admin may set per-area print price in minor units (e.g., cents) at metadata.pod.print_areas[side].print_price_minor
+            // Expose as major units for storefront display
+            basePrice: typeof area?.print_price_minor === 'number' ? (area.print_price_minor / 100) : 0,
+            colorPrice: 0,
+            layerPrice: 0,
+            setupFee: 0,
+            currency: (pod?.currency || 'USD') as string,
+          },
+          validation: {
+            minDPI: areaDpi,
+            recommendedDPI: areaDpi,
+            maxFileSize: '50MB',
+            supportedFormats: ['PNG', 'JPG', 'PDF'],
+            allowedFileTypes: ['image/png', 'image/jpeg', 'application/pdf'],
+          },
+          sortOrder: index,
+          isActive: true,
+        }
+      })
+
+      // Return early using metadata-defined areas
+      return res.json({
+        product: {
+          id: product.id,
+          title: product.title,
+          handle: product.handle,
+          type_id: product.type_id,
+          isPOD: isPODProduct,
+          variants: product.variants || [],
+        },
+        designAreas,
+        designCapabilities,
+        productTypeDesignAreas: designAreas,
+        assignments: assignments.length,
+        metadata: {
+          totalAreas: designAreas.length,
+          activeAreas: designAreas.filter(a => a.isActive).length,
+          availablePrintMethods: ['dtg'],
+          units: 'cm',
+          dpi,
+          version: podVersion,
+        },
+      })
+    }
+
+    // Fallback: fetch from product type
     if (product.type_id) {
       try {
         // Fetch from internal product type API

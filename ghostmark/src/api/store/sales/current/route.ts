@@ -17,16 +17,22 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     const now = new Date()
 
+    const productId = product_id ? String(Array.isArray(product_id) ? product_id[0] : product_id) : undefined
+    const variantId = variant_id ? String(Array.isArray(variant_id) ? variant_id[0] : variant_id) : undefined
+    const categoryId = category_id ? String(Array.isArray(category_id) ? category_id[0] : category_id) : undefined
+    const productTypeId = product_type ? String(Array.isArray(product_type) ? product_type[0] : product_type) : undefined
+
     // Get active sale price lists
     const salePriceLists = await pricingModuleService.listPriceLists({
-      type: "sale",
-      status: "active"
-    }, {
+      status: ["active"] as any
+    } as any, {
       relations: ["prices"]
     })
 
+    const salePriceListsOnly = (salePriceLists as any[]).filter((pl: any) => pl?.type === "sale")
+
     // Filter by date range
-    const activeSalePriceLists = salePriceLists.filter((priceList: any) => {
+    const activeSalePriceLists = salePriceListsOnly.filter((priceList: any) => {
       const startDate = priceList.starts_at ? new Date(priceList.starts_at) : null
       const endDate = priceList.ends_at ? new Date(priceList.ends_at) : null
       
@@ -63,19 +69,19 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     })
 
     // If specific product/variant requested, filter prices
-    if (product_id || variant_id) {
+    if (productId || variantId) {
       let filteredPrices = allSalePrices
 
-      if (variant_id) {
+      if (variantId) {
         // Get the variant's price set ID
-        const variants = await productModuleService.listProductVariants({ id: [variant_id] })
+        const variants = (await productModuleService.listProductVariants({ id: [variantId] } as any)) as any[]
         if (variants.length > 0) {
-          const priceSetId = variants[0].price_set_id
+          const priceSetId = (variants[0] as any).price_set_id
           filteredPrices = allSalePrices.filter(price => price.price_set_id === priceSetId)
         }
-      } else if (product_id) {
+      } else if (productId) {
         // Get all variants for the product
-        const products = await productModuleService.listProducts({ id: [product_id] }, {
+        const products = await productModuleService.listProducts({ id: [productId] } as any, {
           relations: ["variants"]
         })
         
@@ -94,13 +100,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     // Get products with sale pricing
     const productFilters: any = {}
-    if (category_id) productFilters.category_id = [category_id]
-    if (product_type) productFilters.type_id = product_type
+    if (categoryId) productFilters.category_id = [categoryId]
+    if (productTypeId) productFilters.type_id = productTypeId
 
     const products = await productModuleService.listProducts(productFilters, {
       relations: ["variants", "variants.calculated_price"],
       take: Number(limit)
-    })
+    } as any)
 
     // Match products with sale prices
     const discountedProducts: Array<{
@@ -127,13 +133,24 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     for (const product of products) {
       if (!product.variants) continue
 
-      const productDiscounts = []
+      const productDiscounts: Array<{
+        variant_id: string
+        variant_title: string
+        original_price: number
+        sale_price: number
+        savings: number
+        discount_percentage: number
+        currency_code: string
+        price_list_title: string
+        sale_ends_at: string | null
+      }> = []
       
       for (const variant of product.variants) {
-        if (!variant.price_set_id) continue
+        const priceSetId = (variant as any).price_set_id
+        if (!priceSetId) continue
 
         // Check if this variant has sale pricing
-        const salePrices = allSalePrices.filter(price => price.price_set_id === variant.price_set_id)
+        const salePrices = allSalePrices.filter(price => price.price_set_id === priceSetId)
         
         if (salePrices.length > 0) {
           const bestSalePrice = salePrices.reduce((best, current) => 
@@ -141,7 +158,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
           )
 
           // Get original price
-          const originalPrice = variant.calculated_price?.original_amount || variant.calculated_price?.calculated_amount
+          const calculated = (variant as any).calculated_price
+          const originalPrice = calculated?.original_amount || calculated?.calculated_amount
 
           if (originalPrice && originalPrice > bestSalePrice.amount) {
             const savings = originalPrice - bestSalePrice.amount
@@ -194,7 +212,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         ends_at: priceList.ends_at,
         total_discounted_items: priceList.prices?.length || 0
       })),
-      discounted_products,
+      discounted_products: discountedProducts,
       count: discountedProducts.length,
       summary: {
         total_active_sales: activeSalePriceLists.length,

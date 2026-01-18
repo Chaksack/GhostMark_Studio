@@ -1,5 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { DEFAULT_DPI } from "../../../../../utils/units"
 
 /**
  * Admin API for managing design areas assigned to POD products
@@ -86,7 +87,7 @@ export async function GET(
 ) {
   try {
     const { id: productId } = req.params
-    const query = req.container.resolve(ContainerRegistrationKeys.QUERY)
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
 
     if (!productId) {
       return res.status(400).json({ message: "Missing product ID" })
@@ -190,11 +191,52 @@ export async function POST(
 ) {
   try {
     const { id: productId } = req.params
-    const { designAreaIds, customOverrides } = req.body
-    const query = req.container.resolve(ContainerRegistrationKeys.QUERY)
+    const body = ((req as any).body ?? {}) as any
+    const { designAreaIds, customOverrides, pod } = body as any
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
 
     if (!productId) {
       return res.status(400).json({ message: "Missing product ID" })
+    }
+
+    // If admin submits a POD print_areas payload, persist it in product.metadata and bump version
+    if (pod && typeof pod === 'object') {
+      const nextVersion = Number(pod.version ?? 0) + 1
+      const dpi = Number(pod.dpi || DEFAULT_DPI)
+      const print_areas = pod.print_areas || {}
+
+      // Fetch product current metadata
+      const [productsBefore] = await query.graph({
+        entity: "product",
+        filters: { id: productId },
+        fields: ["id", "metadata"]
+      })
+      const current = productsBefore?.[0]
+      const currentMeta = (current?.metadata as any) || {}
+
+      const updatedMeta = {
+        ...currentMeta,
+        pod: {
+          ...(currentMeta.pod || {}),
+          dpi,
+          version: nextVersion,
+          print_areas,
+          updated_at: new Date().toISOString(),
+        },
+      }
+
+      // Update product metadata
+      await query.graph({
+        entity: "product",
+        data: { id: productId, metadata: updatedMeta },
+        fields: ["id", "metadata"]
+      }).update()
+
+      return res.status(200).json({
+        message: "POD print areas saved",
+        product: { id: productId },
+        pod: updatedMeta.pod,
+      })
     }
 
     if (!designAreaIds || !Array.isArray(designAreaIds) || designAreaIds.length === 0) {
@@ -335,7 +377,8 @@ export async function DELETE(
 ) {
   try {
     const { id: productId } = req.params
-    const { designAreaIds } = req.body
+    const body = ((req as any).body ?? {}) as any
+    const { designAreaIds } = body
 
     if (!productId) {
       return res.status(400).json({ message: "Missing product ID" })

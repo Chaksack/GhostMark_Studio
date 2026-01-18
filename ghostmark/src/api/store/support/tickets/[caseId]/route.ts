@@ -8,9 +8,9 @@ import { getTicketByCaseId } from "../../../../../services/support-db"
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   try {
     const { params, query } = req
-    const caseId = (params as any).caseId as string
-    const email = (query as any).email as string | undefined
-    const secret = (query as any).secret as string | undefined
+    const caseId = String((params as any).caseId || "").trim()
+    const email = ((query as any).email as string | undefined)?.toString().trim()
+    const secret = ((query as any).secret as string | undefined)?.toString().trim()
     if (!caseId || !email || !secret) {
       return res.status(400).json({ ok: false, message: "caseId, email and secret are required" })
     }

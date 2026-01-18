@@ -3,7 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 // GET /admin/design-areas - List all design areas with filtering
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   
   const {
     product_type_id,
@@ -36,6 +36,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
     const { data: designAreas, metadata } = await query.graph({
       entity: "design_area",
+      fields: ["*"],
       filters,
       pagination: {
         skip: offset,
@@ -60,7 +61,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 // POST /admin/design-areas - Create a new design area
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   
   const {
     name,
@@ -82,7 +83,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     validation,
     mockup,
     metadata
-  } = req.body
+  } = (req.body as any) || {}
 
   try {
     // Validate required fields
@@ -148,6 +149,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
 
     const designArea = await query.graph({
       entity: "design_area",
+      fields: ["*"],
       data: {
         name,
         product_type_id,

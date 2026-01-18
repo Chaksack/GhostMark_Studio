@@ -32,7 +32,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     
     // Get all price lists to see what's available
     const priceLists = await pricingModuleService.listPriceLists({
-      status: "active"
+      status: ["active"] as any
     }, {
       relations: ["prices"]
     })

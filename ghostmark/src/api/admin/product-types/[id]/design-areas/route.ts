@@ -312,12 +312,14 @@ export async function POST(
       mockup: areaData.mockup || {
         previewScale: 1.0
       },
-      validation: areaData.validation || {
+      validation: {
         minDPI: 150,
         recommendedDPI: 300,
         maxFileSize: '25MB',
         supportedFormats: ['PNG', 'JPG', 'SVG'],
-        colorModes: ['RGB']
+        colorModes: ['RGB'],
+        allowedFileTypes: ['image/png', 'image/jpeg', 'image/svg+xml'],
+        ...(areaData.validation || {}),
       },
       isActive: areaData.isActive !== false,
       sortOrder: areaData.sortOrder || mockDesignAreas[productTypeId].length,

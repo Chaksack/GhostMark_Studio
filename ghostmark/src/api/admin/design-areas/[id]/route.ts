@@ -3,12 +3,13 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 // GET /admin/design-areas/:id - Get a specific design area
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   const { id } = req.params
 
   try {
     const designArea = await query.graph({
       entity: "design_area",
+      fields: ["*"],
       filters: { id }
     }).findOne()
 
@@ -27,12 +28,13 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 // PUT /admin/design-areas/:id - Update a design area
 export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   const { id } = req.params
 
   try {
     const existingArea = await query.graph({
       entity: "design_area",
+      fields: ["id"],
       filters: { id }
     }).findOne()
 
@@ -40,7 +42,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
       return res.status(404).json({ message: "Design area not found" })
     }
 
-    const updateData = { ...req.body }
+    const updateData = { ...((req.body as any) || {}) }
     
     // Validate area_type if provided
     if (updateData.area_type) {
@@ -57,6 +59,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
 
     const updatedArea = await query.graph({
       entity: "design_area",
+      fields: ["*"],
       data: updateData,
       filters: { id }
     }).update()
@@ -72,12 +75,13 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
 
 // DELETE /admin/design-areas/:id - Delete a design area
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   const { id } = req.params
 
   try {
     const existingArea = await query.graph({
       entity: "design_area",
+      fields: ["id"],
       filters: { id }
     }).findOne()
 
@@ -87,6 +91,7 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
 
     await query.graph({
       entity: "design_area",
+      fields: ["id"],
       filters: { id }
     }).delete()
 

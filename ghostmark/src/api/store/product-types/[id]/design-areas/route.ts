@@ -3,7 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 // GET /store/product-types/:id/design-areas - Get design areas for a product type
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY) as any
   const { id: productTypeId } = req.params
   
   const {
@@ -27,13 +27,14 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     if (area_type) filters.area_type = area_type
 
     // Fetch design areas for this product type
-    const designAreas = await query.graph({
+    const { data: designAreas } = await query.graph({
       entity: "design_area",
+      fields: ["*"],
       filters,
       pagination: {
         order: { sort_order: "ASC" }
       }
-    }).find()
+    } as any)
 
     let result: any = {
       designAreas,
@@ -42,8 +43,9 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
     // Include groups if requested
     if (include_groups) {
-      const groups = await query.graph({
+      const { data: groups } = await query.graph({
         entity: "design_area_group",
+        fields: ["*"],
         filters: {
           product_type_id: productTypeId,
           is_active: true
@@ -51,15 +53,16 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         pagination: {
           order: { sort_order: "ASC" }
         }
-      }).find()
+      } as any)
       
       result.designAreaGroups = groups
     }
 
     // Include pricing rules if requested
     if (include_pricing) {
-      const pricingRules = await query.graph({
+      const { data: pricingRules } = await query.graph({
         entity: "design_pricing_rule",
+        fields: ["*"],
         filters: {
           product_type_id: productTypeId,
           is_active: true
@@ -67,7 +70,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         pagination: {
           order: { priority: "DESC" }
         }
-      }).find()
+      } as any)
       
       result.pricingRules = pricingRules
     }

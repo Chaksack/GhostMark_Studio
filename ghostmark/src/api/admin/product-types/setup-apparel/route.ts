@@ -100,7 +100,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       }
     ]
 
-    const createdTypes = []
+    const createdTypes: any[] = []
     
     for (const typeData of apparelProductTypes) {
       try {
@@ -115,7 +115,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
           createdTypes.push(newType)
         } else {
           // Update existing product type with enhanced metadata
-          const [updatedType] = await productModuleService.updateProductTypes(
+          const updatedType = await productModuleService.updateProductTypes(
             existingTypes[0].id,
             {
               metadata: {
@@ -159,11 +159,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     const productModuleService = req.scope.resolve(Modules.PRODUCT)
 
     // Get all apparel-related product types
-    const apparelTypes = await productModuleService.listProductTypes({
-      metadata: {
-        category: "clothing"
-      }
-    })
+    const allTypes = await productModuleService.listProductTypes({} as any)
+    const apparelTypes = allTypes.filter((type: any) => type?.metadata?.category === "clothing")
 
     // Get statistics
     const totalApparelTypes = apparelTypes.length

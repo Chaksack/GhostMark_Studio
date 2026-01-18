@@ -20,6 +20,7 @@ interface QuoteFile {
 interface QuoteProduct {
   itemReferenceId: string
   productTypeId: string
+  productId?: string
   variantId?: string
   files: QuoteFile[]
   quantity: number
@@ -123,6 +124,19 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
           // Map file type to area type and get area ID
           let areaType = file.type
           if (file.type === 'default') areaType = 'front'
+
+          const imageMetadata = file.metadata
+            ? {
+                dpi: file.metadata.dpi ?? 300,
+                qualityScore: file.metadata.qualityScore ?? 0,
+                isPrintReady: file.metadata.isPrintReady ?? false,
+                suggestedUse: file.metadata.suggestedUse ?? "unknown",
+                width: file.metadata.width ?? 0,
+                height: file.metadata.height ?? 0,
+                fileSize: file.metadata.fileSize,
+                format: file.metadata.format
+              }
+            : undefined
           
           return {
             areaId: file.areaId || `${areaType}_${index}`,
@@ -132,20 +146,21 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
             printMethod: product.printMethod || 'digital',
             fileUrl: file.url,
             fileType: file.type,
-            imageMetadata: file.metadata
+            imageMetadata
           }
         }))
 
         // Calculate pricing
         const pricing = await pricingService.calculatePricing(
-          product.productTypeId, 
-          designs, 
+          product.productTypeId,
+          designs,
           product.quantity,
           {
             currency,
             urgent,
             shipmentMethod
-          }
+          },
+          product.productId
         )
 
         // Create quote product
