@@ -15,6 +15,11 @@ env:
   ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
   IMAGE_TAG: ${{ github.sha }}
 
+# Avoid overlapping image builds/pushes for the same ref
+concurrency:
+  group: ecr-push-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     name: Build and Push Images
@@ -22,6 +27,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    environment: ${{ github.ref_name == 'staging' && 'staging' || 'production' }}
 
     steps:
       - name: Checkout
@@ -64,6 +70,14 @@ jobs:
             }
 
       - name: Configure AWS credentials
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

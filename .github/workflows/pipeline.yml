@@ -15,6 +15,11 @@ env:
   ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
   IMAGE_TAG: ${{ github.sha }}
 
+# Prevent overlapping runs per branch/environment (GitOps safety)
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   setup:
     name: Setup & Determine Environment
@@ -56,6 +61,9 @@ jobs:
     defaults:
       run:
         working-directory: ${{ needs.setup.outputs.tf_workdir }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,7 +71,22 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -81,6 +104,13 @@ jobs:
 
       - name: Terraform plan
         run: terraform plan -input=false -out=tfplan
+
+      - name: Upload tfplan artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ needs.setup.outputs.environment }}
+          path: ${{ needs.setup.outputs.tf_workdir }}/tfplan
 
       - name: Notify (plan failure)
         if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
@@ -126,6 +156,11 @@ jobs:
     defaults:
       run:
         working-directory: ${{ needs.setup.outputs.tf_workdir }}
+    environment:
+      name: ${{ needs.setup.outputs.environment == 'prod' && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -144,7 +179,22 @@ jobs:
               "text": ":terraform: ${{ needs.setup.outputs.environment }} apply starting in *${{ github.repository }}* by *${{ github.actor }}* (@ ${{ github.ref_name }})"
             }
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -153,6 +203,13 @@ jobs:
 
       - name: Terraform init
         run: terraform init -input=false
+
+      - name: Download tfplan artifact (if available)
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ needs.setup.outputs.environment }}
+          path: ${{ needs.setup.outputs.tf_workdir }}
+        continue-on-error: true
 
       - name: Terraform apply
         run: |
@@ -196,6 +253,11 @@ jobs:
       LATEST_TAG: ${{ needs.setup.outputs.latest_tag }}
       ECS_SERVICE_BACKEND: ${{ needs.setup.outputs.service_backend }}
       ECS_SERVICE_STOREFRONT: ${{ needs.setup.outputs.service_storefront }}
+    environment:
+      name: ${{ needs.setup.outputs.environment == 'prod' && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -211,7 +273,22 @@ jobs:
               "text": ":docker: Starting ECR build & push for environment *${{ env.ENVIRONMENT }}* in repo *${{ github.repository }}* (@ ${{ github.ref_name }}) by *${{ github.actor }}*"
             }
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
