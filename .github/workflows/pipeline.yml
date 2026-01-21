@@ -54,6 +54,47 @@ jobs:
           echo "service_backend=ghostmark-${ENVIRONMENT}-backend" >> "$GITHUB_OUTPUT"
           echo "service_storefront=ghostmark-${ENVIRONMENT}-storefront" >> "$GITHUB_OUTPUT"
 
+  sonar-scan:
+    name: SonarQube Code Analysis
+    runs-on: ubuntu-latest
+    needs: setup
+    if: ${{ secrets.SONAR_HOST_URL != '' && secrets.SONAR_TOKEN != '' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java (for scanner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: SonarQube Scan (backend)
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ghostmark
+          args: >-
+            -Dsonar.projectKey=ghostmark-backend
+            -Dsonar.projectName=ghostmark-backend
+            -Dsonar.branch.name=${{ needs.setup.outputs.environment }}
+
+      - name: SonarQube Scan (storefront)
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ghostmark-storefront
+          args: >-
+            -Dsonar.projectKey=ghostmark-storefront
+            -Dsonar.projectName=ghostmark-storefront
+            -Dsonar.branch.name=${{ needs.setup.outputs.environment }}
+
   tf-validate-plan:
     name: Terraform fmt/validate/plan
     runs-on: ubuntu-latest

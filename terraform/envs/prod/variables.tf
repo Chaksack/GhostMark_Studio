@@ -55,3 +55,13 @@ variable "monitoring_thresholds" {
 variable "alertmanager_slack_webhook_url" { type = string default = "" description = "Slack webhook URL for Alertmanager (note: will be stored in state)" }
 variable "alertmanager_channel" { type = string default = "#alerts" description = "Slack channel for alerts" }
 variable "alertmanager_username" { type = string default = "Alertmanager" description = "Slack username for alerts" }
+
+# SonarQube on ECS (prod defaults to disabled until external DB and domain are ready)
+variable "sonarqube_enabled" { type = bool default = false description = "Deploy SonarQube on ECS (prod default: false)" }
+variable "sonarqube_desired_count" { type = number default = 1 description = "Number of SonarQube task replicas" }
+variable "sonarqube_acm_certificate_arn" { type = string default = null description = "ACM cert ARN for SonarQube ALB HTTPS (optional)" }
+variable "sonarqube_health_check_path" { type = string default = "/" description = "Health check path for SonarQube ALB" }
+variable "sonarqube_health_check_matcher" { type = string default = "200-399" description = "Health check matcher for SonarQube ALB" }
+variable "sonarqube_jdbc_url" { type = string default = "" description = "Optional JDBC URL for SonarQube (recommended for prod)" }
+variable "sonarqube_jdbc_username" { type = string default = "" description = "Optional JDBC username for SonarQube" }
+variable "sonarqube_jdbc_password" { type = string default = "" description = "Optional JDBC password for SonarQube (stored in state)" }

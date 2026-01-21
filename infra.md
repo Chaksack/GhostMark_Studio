@@ -132,3 +132,13 @@ Operator Notes / Next Steps
 - Replace placeholders in terraform/envs/prod/backend.tf and prod tfvars (ACM ARN, domain list) before apply.
 - Consider implementing WAF, private subnets + NAT, ECS services with autoscaling, CloudWatch alarms, and Secrets Manager resources in subsequent iterations.
 - Remove terraform/modules/alb if confirmed unused to reduce maintenance burden.
+
+SonarQube Deployment & CI (2026-01-21)
+- Deployed SonarQube on ECS Fargate in the same cluster as the application, behind a dedicated ALB with optional HTTPS.
+  - Module: terraform/modules/sonarqube-ecs (ALB, target group, listeners, ECS task/service, IAM execution role, CloudWatch Logs)
+  - Staging: Enabled by default (embedded DB/H2). See terraform/envs/staging/{variables.tf, main.tf}. Output: sonarqube_url.
+  - Production: Disabled by default; enable after providing external JDBC database and (optionally) ACM certificate. See terraform/envs/prod/{variables.tf, main.tf}. Output: sonarqube_url.
+- CI integration: .github/workflows/pipeline.yml includes a "SonarQube Code Analysis" job which runs scans for both ghostmark (backend) and ghostmark-storefront when SONAR_HOST_URL and SONAR_TOKEN secrets are configured in GitHub.
+- Notes:
+  - H2 is not recommended for production; configure sonarqube_jdbc_url/username/password for a managed PostgreSQL instance when enabling in prod.
+  - Consider moving JDBC credentials to Secrets Manager/SSM Parameter Store and injecting at runtime to avoid storing in Terraform state.

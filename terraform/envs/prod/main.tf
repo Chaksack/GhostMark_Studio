@@ -116,6 +116,28 @@ module "dns" {
   alb_zone_id     = module.ecs.alb_zone_id
 }
 
+## Optional SonarQube on ECS (disabled by default in prod)
+module "sonarqube" {
+  count  = var.sonarqube_enabled ? 1 : 0
+  source = "../../modules/sonarqube-ecs"
+
+  name        = "${var.project}-${var.env}"
+  cluster_arn = module.ecs.cluster_arn
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.public_subnet_ids
+  tags        = local.common_tags
+
+  aws_region = var.aws_region
+
+  desired_count          = var.sonarqube_desired_count
+  acm_certificate_arn    = var.sonarqube_acm_certificate_arn
+  health_check_path      = var.sonarqube_health_check_path
+  health_check_matcher   = var.sonarqube_health_check_matcher
+  sonar_jdbc_url         = var.sonarqube_jdbc_url
+  sonar_jdbc_username    = var.sonarqube_jdbc_username
+  sonar_jdbc_password    = var.sonarqube_jdbc_password
+}
+
 output "vpc_id" { value = module.vpc.vpc_id }
 output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
 output "ecr_repos" { value = module.ecr.repository_urls }
@@ -126,3 +148,4 @@ output "alb_dns" { value = module.ecs.alb_dns_name }
 output "dns_fqdn" { value = var.route53_enabled ? module.dns[0].fqdn : "" }
 output "rds_endpoint" { value = var.rds_enabled ? module.rds[0].db_endpoint : "" }
 output "rds_port" { value = var.rds_enabled ? module.rds[0].db_port : 0 }
+output "sonarqube_url" { value = var.sonarqube_enabled ? module.sonarqube[0].url : "" }
