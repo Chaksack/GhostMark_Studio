@@ -12,6 +12,7 @@ module "vpc" {
   cidr_block           = var.vpc_cidr
   azs                  = var.azs
   public_subnet_cidrs  = var.public_subnet_cidrs
+  private_subnet_cidrs = var.private_subnet_cidrs
   region               = var.aws_region
   tags                 = local.common_tags
 }
@@ -62,7 +63,7 @@ module "monitoring" {
   name   = "${var.project}-${var.env}"
 
   cluster_arn        = module.ecs.cluster_arn
-  subnet_ids         = module.vpc.public_subnet_ids
+  subnet_ids         = module.vpc.private_subnet_ids
   security_group_ids = [module.ecs.tasks_security_group_id]
   tags               = local.common_tags
 
@@ -72,8 +73,10 @@ module "monitoring" {
   thresholds        = var.monitoring_thresholds
 
   alertmanager_slack_webhook_url = var.alertmanager_slack_webhook_url
+  alertmanager_slack_webhook_secret_arn = var.alertmanager_slack_webhook_secret_arn
   alertmanager_channel           = var.alertmanager_channel
   alertmanager_username          = var.alertmanager_username
+  assign_public_ip               = false
 }
 
 module "rds" {
@@ -81,7 +84,7 @@ module "rds" {
   count                    = var.rds_enabled ? 1 : 0
   name                     = "${var.project}-${var.env}-db"
   vpc_id                   = module.vpc.vpc_id
-  public_subnet_ids        = module.vpc.public_subnet_ids
+  private_subnet_ids        = module.vpc.private_subnet_ids
   tasks_security_group_id  = module.ecs.tasks_security_group_id
 
   engine                   = var.rds_engine
@@ -90,12 +93,21 @@ module "rds" {
   allocated_storage        = var.rds_allocated_storage
   db_name                  = var.rds_db_name
   master_username          = var.rds_master_username
-  master_password          = var.rds_master_password
+  master_password          = local.rds_master_password_effective
   multi_az                 = var.rds_multi_az
   backup_retention         = var.rds_backup_retention
   deletion_protection      = var.rds_deletion_protection
   apply_immediately        = false
   tags                     = local.common_tags
+}
+
+data "aws_secretsmanager_secret_version" "rds_password" {
+  count     = var.rds_master_password_secret_arn != "" ? 1 : 0
+  secret_id = var.rds_master_password_secret_arn
+}
+
+locals {
+  rds_master_password_effective = var.rds_master_password_secret_arn != "" ? data.aws_secretsmanager_secret_version.rds_password[0].secret_string : var.rds_master_password
 }
 
 module "dns" {
@@ -115,7 +127,8 @@ module "sonarqube" {
   name        = "${var.project}-${var.env}"
   cluster_arn = module.ecs.cluster_arn
   vpc_id      = module.vpc.vpc_id
-  subnet_ids  = module.vpc.public_subnet_ids
+  subnet_ids  = module.vpc.private_subnet_ids
+  alb_subnet_ids = module.vpc.public_subnet_ids
   tags        = local.common_tags
 
   aws_region = var.aws_region
@@ -127,10 +140,14 @@ module "sonarqube" {
   sonar_jdbc_url         = var.sonarqube_jdbc_url
   sonar_jdbc_username    = var.sonarqube_jdbc_username
   sonar_jdbc_password    = var.sonarqube_jdbc_password
+  sonar_jdbc_username_secret_arn = var.sonarqube_jdbc_username_secret_arn
+  sonar_jdbc_password_secret_arn = var.sonarqube_jdbc_password_secret_arn
+  assign_public_ip        = false
 }
 
 output "vpc_id" { value = module.vpc.vpc_id }
 output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
+output "private_subnet_ids" { value = module.vpc.private_subnet_ids }
 output "ecr_repos" { value = module.ecr.repository_urls }
 output "uploads_bucket" { value = module.uploads.bucket_name }
 output "cdn_domain" { value = module.cdn.distribution_domain }

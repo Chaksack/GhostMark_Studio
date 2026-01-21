@@ -1,6 +1,19 @@
-variable "name" { type = string description = "Bucket name" }
-variable "cors_rules" { type = any default = null description = "List of CORS rule objects, or null to disable" }
-variable "tags" { type = map(string) default = {} description = "Common tags to apply" }
+variable "name" {
+  type        = string
+  description = "Bucket name"
+}
+
+variable "cors_rules" {
+  type        = any
+  default     = null
+  description = "List of CORS rule objects, or null to disable"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Common tags to apply"
+}
 
 variable "logging_enabled" {
   type        = bool
