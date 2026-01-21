@@ -1,21 +1,28 @@
 name: Terraform Apply (staging)
 
 on:
+  workflow_call:
+  workflow_dispatch:
   push:
-    branches: [ "staging" ]
+    branches: [ main ]
     paths:
       - 'terraform/**'
+      - '.github/workflows/terraform-apply-staging.yml'
 
 jobs:
   apply-staging:
     name: Apply to Staging
     runs-on: ubuntu-latest
     environment: staging
+    concurrency:
+      group: terraform-staging-${{ github.ref }}
+      cancel-in-progress: true
     defaults:
       run:
         working-directory: terraform/envs/staging
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,15 +41,20 @@ jobs:
               "text": ":terraform: Staging apply starting in *${{ github.repository }}* by *${{ github.actor }}* (@ ${{ github.ref_name }})"
             }
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
           aws-region: ${{ secrets.AWS_REGION || 'eu-west-2' }}
+
+      - name: Terraform fmt
+        run: terraform fmt -check
 
       - name: Terraform init
         run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate
 
       - name: Terraform apply (staging)
         run: terraform apply -auto-approve -input=false

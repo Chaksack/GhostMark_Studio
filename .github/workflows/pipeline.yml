@@ -1,0 +1,437 @@
+name: Unified CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "staging", "main", "master" ]
+    paths:
+      - 'terraform/**'
+      - 'ghostmark/**'
+      - 'ghostmark-storefront/**'
+      - '.github/workflows/**'
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+  ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  IMAGE_TAG: ${{ github.sha }}
+
+# Prevent overlapping runs per branch/environment (GitOps safety)
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup & Determine Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      tf_workdir: ${{ steps.set-env.outputs.tf_workdir }}
+      ecs_cluster: ${{ steps.set-env.outputs.ecs_cluster }}
+      backend_repo: ${{ steps.set-env.outputs.backend_repo }}
+      storefront_repo: ${{ steps.set-env.outputs.storefront_repo }}
+      latest_tag: ${{ steps.set-env.outputs.latest_tag }}
+      service_backend: ${{ steps.set-env.outputs.service_backend }}
+      service_storefront: ${{ steps.set-env.outputs.service_storefront }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine environment and paths
+        id: set-env
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENVIRONMENT="prod"
+          if [ "${{ github.ref_name }}" = "staging" ]; then ENVIRONMENT="staging"; fi
+          TF_WORKDIR="terraform/envs/${ENVIRONMENT}"
+          echo "environment=${ENVIRONMENT}" >> "$GITHUB_OUTPUT"
+          echo "tf_workdir=${TF_WORKDIR}" >> "$GITHUB_OUTPUT"
+          echo "ecs_cluster=ghostmark-${ENVIRONMENT}" >> "$GITHUB_OUTPUT"
+          echo "backend_repo=ghostmark-${ENVIRONMENT}-backend" >> "$GITHUB_OUTPUT"
+          echo "storefront_repo=ghostmark-${ENVIRONMENT}-storefront" >> "$GITHUB_OUTPUT"
+          echo "latest_tag=latest-${ENVIRONMENT}" >> "$GITHUB_OUTPUT"
+          echo "service_backend=ghostmark-${ENVIRONMENT}-backend" >> "$GITHUB_OUTPUT"
+          echo "service_storefront=ghostmark-${ENVIRONMENT}-storefront" >> "$GITHUB_OUTPUT"
+
+  sonar-scan:
+    name: SonarQube Code Analysis
+    runs-on: ubuntu-latest
+    needs: setup
+    if: ${{ secrets.SONAR_HOST_URL != '' && secrets.SONAR_TOKEN != '' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java (for scanner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: SonarQube Scan (backend)
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ghostmark
+          args: >-
+            -Dsonar.projectKey=ghostmark-backend
+            -Dsonar.projectName=ghostmark-backend
+            -Dsonar.branch.name=${{ needs.setup.outputs.environment }}
+
+      - name: SonarQube Scan (storefront)
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ghostmark-storefront
+          args: >-
+            -Dsonar.projectKey=ghostmark-storefront
+            -Dsonar.projectName=ghostmark-storefront
+            -Dsonar.branch.name=${{ needs.setup.outputs.environment }}
+
+  tf-validate-plan:
+    name: Terraform fmt/validate/plan
+    runs-on: ubuntu-latest
+    needs: setup
+    defaults:
+      run:
+        working-directory: ${{ needs.setup.outputs.tf_workdir }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Upload tfplan artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ needs.setup.outputs.environment }}
+          path: ${{ needs.setup.outputs.tf_workdir }}/tfplan
+
+      - name: Notify (plan failure)
+        if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":x: Terraform validate/plan failed for ${{ needs.setup.outputs.environment }} in ${{ github.repository }} on ${{ github.ref }} — run ${{ github.run_id }}"
+            }
+
+  approval-prod:
+    name: Manual approval (prod only)
+    if: ${{ needs.setup.outputs.environment == 'prod' }}
+    runs-on: ubuntu-latest
+    needs: tf-validate-plan
+    steps:
+      - name: Require manual confirmation
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ secrets.PROD_APPROVERS }}
+          minimum-approvals: 1
+          issue-title: "Approve Terraform Apply to Production"
+          issue-body: "Please review the Terraform plan and approve to apply to production."
+
+      - name: Notify (awaiting approval)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":hourglass_flowing_sand: Awaiting manual approval to apply production plan for *${{ github.repository }}* (@ ${{ github.ref_name }})"
+            }
+
+  tf-apply:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    needs: [tf-validate-plan, approval-prod]
+    defaults:
+      run:
+        working-directory: ${{ needs.setup.outputs.tf_workdir }}
+    environment:
+      name: ${{ needs.setup.outputs.environment == 'prod' && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Notify (pre-apply)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":terraform: ${{ needs.setup.outputs.environment }} apply starting in *${{ github.repository }}* by *${{ github.actor }}* (@ ${{ github.ref_name }})"
+            }
+
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Download tfplan artifact (if available)
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ needs.setup.outputs.environment }}
+          path: ${{ needs.setup.outputs.tf_workdir }}
+        continue-on-error: true
+
+      - name: Terraform apply
+        run: |
+          if [ -f tfplan ]; then
+            terraform apply -input=false -auto-approve tfplan;
+          else
+            terraform apply -input=false -auto-approve;
+          fi
+
+      - name: Notify (apply success)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":white_check_mark: ${{ needs.setup.outputs.environment }} apply completed successfully for *${{ github.repository }}* (@ ${{ github.ref_name }})"
+            }
+
+      - name: Notify (apply failure)
+        if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":x: ${{ needs.setup.outputs.environment }} apply failed for *${{ github.repository }}* (@ ${{ github.ref_name }}) — run ${{ github.run_id }}"
+            }
+
+  build-push-deploy:
+    name: Build, Push Images & Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: tf-apply
+    env:
+      ENVIRONMENT: ${{ needs.setup.outputs.environment }}
+      ECS_CLUSTER: ${{ needs.setup.outputs.ecs_cluster }}
+      ECR_REPO_BACKEND: ${{ needs.setup.outputs.backend_repo }}
+      ECR_REPO_STOREFRONT: ${{ needs.setup.outputs.storefront_repo }}
+      LATEST_TAG: ${{ needs.setup.outputs.latest_tag }}
+      ECS_SERVICE_BACKEND: ${{ needs.setup.outputs.service_backend }}
+      ECS_SERVICE_STOREFRONT: ${{ needs.setup.outputs.service_storefront }}
+    environment:
+      name: ${{ needs.setup.outputs.environment == 'prod' && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Notify (build start)
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":docker: Starting ECR build & push for environment *${{ env.ENVIRONMENT }}* in repo *${{ github.repository }}* (@ ${{ github.ref_name }}) by *${{ github.actor }}*"
+            }
+
+      - name: Configure AWS credentials (OIDC prod)
+        if: ${{ needs.setup.outputs.environment == 'prod' && secrets.AWS_ROLE_ARN_PROD != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (OIDC staging)
+        if: ${{ needs.setup.outputs.environment != 'prod' && secrets.AWS_ROLE_ARN_STAGING != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repositories exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for repo in "$ECR_REPO_BACKEND" "$ECR_REPO_STOREFRONT"; do
+            if ! aws ecr describe-repositories --repository-names "$repo" >/dev/null 2>&1; then
+              echo "Creating ECR repository: $repo"
+              aws ecr create-repository --repository-name "$repo" >/dev/null
+            else
+              echo "ECR repository exists: $repo"
+            fi
+          done
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ghostmark
+          file: ./ghostmark/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.LATEST_TAG }}
+          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache
+          cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:buildcache,mode=max
+
+      - name: Build and push storefront image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ghostmark-storefront
+          file: ./ghostmark-storefront/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.LATEST_TAG }}
+          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache
+          cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:buildcache,mode=max
+
+      - name: Notify (deploy start)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: Triggering ECS deploy for *${{ env.ENVIRONMENT }}* on cluster `${{ env.ECS_CLUSTER }}` services `${{ env.ECS_SERVICE_BACKEND }}`, `${{ env.ECS_SERVICE_STOREFRONT }}`"
+            }
+
+      - name: Force new deployment (backend)
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE_BACKEND" \
+            --force-new-deployment >/dev/null
+
+      - name: Force new deployment (storefront)
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE_STOREFRONT" \
+            --force-new-deployment >/dev/null
+
+      - name: Wait for services to stabilize
+        run: |
+          set -euo pipefail
+          aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE_BACKEND" "$ECS_SERVICE_STOREFRONT"
+
+      - name: Notify (success)
+        if: ${{ success() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":white_check_mark: ECR push and ECS deploy completed for *${{ env.ENVIRONMENT }}*\nBackend image: `${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_BACKEND }}:${{ env.IMAGE_TAG }}` and `${{ env.LATEST_TAG }}`\nStorefront image: `${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_STOREFRONT }}:${{ env.IMAGE_TAG }}` and `${{ env.LATEST_TAG }}`\nECS services stabilized: `${{ env.ECS_SERVICE_BACKEND }}`, `${{ env.ECS_SERVICE_STOREFRONT }}` in cluster `${{ env.ECS_CLUSTER }}`"
+            }
+
+      - name: Notify (failure)
+        if: ${{ failure() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": ":x: ECR push or ECS deploy failed for *${{ env.ENVIRONMENT }}* in repo *${{ github.repository }}* (@ ${{ github.ref_name }}) — commit ${{ github.sha }}"
+            }

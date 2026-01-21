@@ -1,20 +1,24 @@
 name: Build and Push Medusa Backend and Storefront to AWS ECR
 
 on:
-  push:
-    branches: [ "main", "master", "staging" ]
   workflow_dispatch:
     inputs:
       environment:
         description: "Target environment (staging or prod)"
         required: false
         default: "staging"
+  workflow_call:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
   ECR_REGISTRY: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
   IMAGE_TAG: ${{ github.sha }}
+
+# Avoid overlapping image builds/pushes for the same ref
+concurrency:
+  group: ecr-push-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push:
@@ -23,6 +27,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    environment: ${{ github.ref_name == 'staging' && 'staging' || 'production' }}
 
     steps:
       - name: Checkout
@@ -65,6 +70,14 @@ jobs:
             }
 
       - name: Configure AWS credentials
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
