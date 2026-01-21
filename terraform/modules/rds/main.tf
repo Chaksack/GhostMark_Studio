@@ -1,6 +1,6 @@
 resource "aws_db_subnet_group" "this" {
   name       = "${var.name}-subnets"
-  subnet_ids = var.public_subnet_ids
+  subnet_ids = var.private_subnet_ids
   tags       = merge(var.tags, { Name = "${var.name}-subnets" })
 }
 
@@ -43,8 +43,8 @@ resource "aws_db_instance" "this" {
   deletion_protection        = var.deletion_protection
   apply_immediately          = var.apply_immediately
   backup_retention_period    = var.backup_retention
-  preferred_backup_window    = var.backup_window
-  preferred_maintenance_window = var.maintenance_window
+  backup_window              = var.backup_window
+  maintenance_window         = var.maintenance_window
 
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.this.name

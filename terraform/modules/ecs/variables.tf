@@ -1,7 +1,23 @@
-variable "name" { type = string description = "Base name/prefix for ECS/ALB resources" }
-variable "vpc_id" { type = string description = "VPC ID where resources will be created" }
-variable "public_subnet_ids" { type = list(string) description = "Public subnet IDs for ALB" }
-variable "tags" { type = map(string) default = {} description = "Common tags to apply" }
+variable "name" {
+  type        = string
+  description = "Base name/prefix for ECS/ALB resources"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID where resources will be created"
+}
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "Public subnet IDs for ALB"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Common tags to apply"
+}
 
 variable "acm_certificate_arn" {
   type        = string

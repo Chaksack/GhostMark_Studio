@@ -78,9 +78,10 @@ Summary of what has been addressed in the repo versus the items listed above. Fi
   - Evidence: terraform/modules/s3/main.tf (aws_s3_bucket_logging); terraform/envs/prod/main.tf (module "upload_logs" and uploads logging_enabled=true).
   - Staging does not enable logging by default.
 
-- 6. No private subnets — Not addressed
-  - VPC module only creates public subnets; ECS runs in public subnets.
-  - Evidence: terraform/modules/vpc/main.tf (aws_subnet.public only).
+- 6. No private subnets — Fixed
+  - VPC module now creates both public and private subnets across the specified AZs, with a managed NAT Gateway for egress from private subnets.
+  - ECS tasks (monitoring stack and RDS) are placed in private subnets by default; ALBs remain in public subnets.
+  - Evidence: terraform/modules/vpc/main.tf (aws_subnet.private, aws_nat_gateway, private route table and associations; interface endpoints use private subnets when present). Envs wiring: terraform/envs/*/main.tf (monitoring and RDS use module.vpc.private_subnet_ids).
 
 - 7. No Auto Scaling — Not addressed
   - No ECS service/task definitions or scaling policies present.
@@ -119,8 +120,13 @@ Summary of what has been addressed in the repo versus the items listed above. Fi
   - Important: The monitoring ECS service runs in the same ECS cluster as the application. The env modules pass module.ecs.cluster_arn into the monitoring module, and aws_ecs_service.cluster uses that ARN (no separate cluster is created). Evidence: terraform/envs/*/main.tf (cluster_arn = module.ecs.cluster_arn) and terraform/modules/monitoring-ecs/main.tf (aws_ecs_service.this.cluster = var.cluster_arn).
   - Note: Alert delivery uses Slack webhook stored in TF state; consider migrating to SSM Parameter Store/Secrets Manager and passing at runtime in a future iteration.
 
-- 17. No secrets management integration — Not addressed
-  - VPC endpoint exists for Secrets Manager, but no secrets resources or usage wiring.
+- 17. No secrets management integration — Partially fixed
+  - Environments can now source sensitive values from AWS Secrets Manager when ARNs are provided:
+    - RDS master password via rds_master_password_secret_arn (envs/*/variables.tf and main.tf).
+    - Alertmanager Slack webhook via alertmanager_slack_webhook_secret_arn (monitoring module wiring) to avoid storing in Terraform state.
+    - SonarQube JDBC username/password may be sourced from Secrets Manager in staging (variables and module wiring).
+  - We did not add Terraform-managed secret resources themselves; operators should create/manage secrets out-of-band or in a follow-up module.
+  - Evidence: terraform/envs/*/{variables.tf, main.tf}; terraform/modules/monitoring-ecs/*; terraform/modules/sonarqube-ecs/*.
 
 - 18. CloudFront missing custom domain — Not addressed
   - CDN module usage does not configure custom domain or ACM cert/Route53 for CloudFront.
@@ -130,7 +136,8 @@ Summary of what has been addressed in the repo versus the items listed above. Fi
 
 Operator Notes / Next Steps
 - Replace placeholders in terraform/envs/prod/backend.tf and prod tfvars (ACM ARN, domain list) before apply.
-- Consider implementing WAF, private subnets + NAT, ECS services with autoscaling, CloudWatch alarms, and Secrets Manager resources in subsequent iterations.
+- Consider implementing WAF, ECS application services with autoscaling, CloudFront custom domain with ACM/Route53, and formal Secrets Manager resources in subsequent iterations.
+- Note: Terraform HCL formatting has been normalized to pass `terraform validate` in both envs; keep this style for future additions.
 - Remove terraform/modules/alb if confirmed unused to reduce maintenance burden.
 
 SonarQube Deployment & CI (2026-01-21)
