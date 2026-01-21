@@ -96,6 +96,10 @@ function PodPrintAreasPageInner() {
           setPodCurrency(pod.currency || 'USD')
           setPodDpi(Number(pod.dpi || 300))
           setPodVersion(Number(pod.version || 1))
+          // Ensure mockup-to-real scale reflects backend so canvas matches saved areas
+          if (typeof pod.mockup_width_cm !== 'undefined' && pod.mockup_width_cm !== null) {
+            setMockupWidthCm(Number(pod.mockup_width_cm) || 50)
+          }
           const pa = pod.print_areas || {}
           setAreas((prev) => {
             const next = { ...prev }
@@ -155,6 +159,8 @@ function PodPrintAreasPageInner() {
             version: Number(podVersion || 1),
             dpi: Number(podDpi || 300),
             currency: podCurrency || 'USD',
+            // Persist the mockup width used for converting cm->px so preview stays consistent
+            mockup_width_cm: Number(mockupWidthCm || 0),
             print_areas: Object.fromEntries(
               SIDES.map(({ key }) => [
                 key,
@@ -358,6 +364,29 @@ function PodPrintAreasPageInner() {
               <Label>DPI (override)</Label>
               <Input type="number" value={area.dpi || podDpi} onChange={(e) => setAreas({ ...areas, [activeSide]: { ...area, dpi: Number(e.target.value || 0) } })} />
             </div>
+            {/* DPI helper: show resulting pixel dimensions at the effective DPI */}
+            {(() => {
+              const effectiveDpi = Number(area.dpi || podDpi || 0)
+              const widthInches = (Number(area.width_cm || 0) / 2.54) || 0
+              const heightInches = (Number(area.height_cm || 0) / 2.54) || 0
+              const pxW = Math.max(0, Math.round(widthInches * effectiveDpi))
+              const pxH = Math.max(0, Math.round(heightInches * effectiveDpi))
+              const lowDpi = effectiveDpi > 0 && effectiveDpi < 150
+              const tinyPixels = (pxW > 0 && pxW < 500) || (pxH > 0 && pxH < 500)
+              return (
+                <div className="col-span-2 text-xs text-ui-fg-subtle -mt-2">
+                  <div className="mt-1">
+                    Output at {effectiveDpi || 0} DPI: {pxW} × {pxH} px
+                  </div>
+                  {(lowDpi || tinyPixels) && (
+                    <div className="mt-1 text-ui-fg-warning">
+                      {lowDpi && 'Warning: Effective DPI below 150 may look blurry. '}
+                      {tinyPixels && 'Warning: Resulting pixel dimensions are quite small.'}
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
             <div>
               <Label>Version (override)</Label>
               <Input type="number" value={area.version || podVersion} onChange={(e) => setAreas({ ...areas, [activeSide]: { ...area, version: Number(e.target.value || 0) } })} />

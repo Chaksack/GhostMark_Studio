@@ -27,13 +27,22 @@ module "uploads" {
   source = "../../modules/s3"
   name   = var.upload_bucket_name
   tags   = local.common_tags
-  cors_rules = [
+  logging_enabled       = true
+  logging_target_bucket = module.upload_logs.bucket_id
+  cors_rules = var.allowed_origins == null ? null : [
     {
       allowed_methods = ["GET", "PUT", "POST", "HEAD"]
-      allowed_origins = ["*"]
+      allowed_origins = var.allowed_origins
       allowed_headers = ["*"]
     }
   ]
+}
+
+# Access logs bucket for uploads
+module "upload_logs" {
+  source = "../../modules/s3"
+  name   = var.upload_logs_bucket_name
+  tags   = merge(local.common_tags, { Purpose = "access-logs" })
 }
 
 module "cdn" {
@@ -50,6 +59,30 @@ module "ecs" {
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
   tags              = local.common_tags
+  acm_certificate_arn = var.acm_certificate_arn
+  health_check_path   = var.health_check_path
+  health_check_matcher = var.health_check_matcher
+}
+
+# Optional Monitoring stack (Prometheus + Alertmanager + CloudWatch Exporter)
+module "monitoring" {
+  count  = var.monitoring_enabled ? 1 : 0
+  source = "../../modules/monitoring-ecs"
+  name   = "${var.project}-${var.env}"
+
+  cluster_arn        = module.ecs.cluster_arn
+  subnet_ids         = module.vpc.public_subnet_ids
+  security_group_ids = [module.ecs.tasks_security_group_id]
+  tags               = local.common_tags
+
+  aws_region      = var.aws_region
+  desired_count   = var.monitoring_desired_count
+  scrape_interval = var.monitoring_scrape_interval
+  thresholds      = var.monitoring_thresholds
+
+  alertmanager_slack_webhook_url = var.alertmanager_slack_webhook_url
+  alertmanager_channel           = var.alertmanager_channel
+  alertmanager_username          = var.alertmanager_username
 }
 
 module "rds" {
@@ -87,6 +120,7 @@ output "vpc_id" { value = module.vpc.vpc_id }
 output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
 output "ecr_repos" { value = module.ecr.repository_urls }
 output "uploads_bucket" { value = module.uploads.bucket_name }
+output "uploads_logs_bucket" { value = module.upload_logs.bucket_name }
 output "cdn_domain" { value = module.cdn.distribution_domain }
 output "alb_dns" { value = module.ecs.alb_dns_name }
 output "dns_fqdn" { value = var.route53_enabled ? module.dns[0].fqdn : "" }

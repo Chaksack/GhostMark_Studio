@@ -27,10 +27,10 @@ module "uploads" {
   source = "../../modules/s3"
   name   = var.upload_bucket_name
   tags   = local.common_tags
-  cors_rules = [
+  cors_rules = var.allowed_origins == null ? null : [
     {
       allowed_methods = ["GET", "PUT", "POST", "HEAD"]
-      allowed_origins = ["*"]
+      allowed_origins = var.allowed_origins
       allowed_headers = ["*"]
     }
   ]
@@ -50,6 +50,30 @@ module "ecs" {
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
   tags              = local.common_tags
+  acm_certificate_arn = var.acm_certificate_arn
+  health_check_path   = var.health_check_path
+  health_check_matcher = var.health_check_matcher
+}
+
+# Optional Monitoring stack (Prometheus + Alertmanager + CloudWatch Exporter)
+module "monitoring" {
+  count  = var.monitoring_enabled ? 1 : 0
+  source = "../../modules/monitoring-ecs"
+  name   = "${var.project}-${var.env}"
+
+  cluster_arn        = module.ecs.cluster_arn
+  subnet_ids         = module.vpc.public_subnet_ids
+  security_group_ids = [module.ecs.tasks_security_group_id]
+  tags               = local.common_tags
+
+  aws_region        = var.aws_region
+  desired_count     = var.monitoring_desired_count
+  scrape_interval   = var.monitoring_scrape_interval
+  thresholds        = var.monitoring_thresholds
+
+  alertmanager_slack_webhook_url = var.alertmanager_slack_webhook_url
+  alertmanager_channel           = var.alertmanager_channel
+  alertmanager_username          = var.alertmanager_username
 }
 
 module "rds" {
