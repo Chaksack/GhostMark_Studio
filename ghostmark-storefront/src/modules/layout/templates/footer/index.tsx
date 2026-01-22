@@ -186,7 +186,7 @@ export default async function Footer() {
         </div>
         <div className="flex w-full text-white mb-16 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © 2024 GhostMark Studio. All rights reserved.
+            © 2026 GhostMark Studio. All rights reserved.
           </Text>
           <MedusaCTA />
         </div>

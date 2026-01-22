@@ -33,16 +33,16 @@ const Hero = () => {
             </Button>
           </div>
 
-          <div className="mt-2 flex items-center gap-3">
-            <div className="text-2xl font-semibold">shopify</div>
-            <div className="flex items-center gap-1 text-green-600">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-current" />
-              ))}
-            </div>
-            <span className="text-ui-fg-subtle">4.8 / 5</span>
-            <span className="text-ui-fg-muted text-sm">based on 611 reviews</span>
-          </div>
+          {/*<div className="mt-2 flex items-center gap-3">*/}
+          {/*  <div className="text-2xl font-semibold">shopify</div>*/}
+          {/*  <div className="flex items-center gap-1 text-green-600">*/}
+          {/*    {Array.from({ length: 5 }).map((_, i) => (*/}
+          {/*      <Star key={i} className="h-5 w-5 fill-current" />*/}
+          {/*    ))}*/}
+          {/*  </div>*/}
+          {/*  <span className="text-ui-fg-subtle">4.8 / 5</span>*/}
+          {/*  <span className="text-ui-fg-muted text-sm">based on 611 reviews</span>*/}
+          {/*</div>*/}
         </div>
 
         {/* Right column visual */}

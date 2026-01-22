@@ -4,6 +4,7 @@ import CookieConsent from "@modules/common/components/cookie-consent"
 import NewsletterPopup from "@modules/common/components/newsletter-popup"
 import { Metadata } from "next"
 import "styles/globals.css"
+import CampaignBanners from "@modules/layout/components/campaign-banners"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -23,6 +24,8 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en" data-mode="light">
       <body className="bg-mono-0 text-mono-1000 font-sans antialiased">
         <main className="relative min-h-screen">
+          {/* Site-wide campaign/promotion banners */}
+          <CampaignBanners />
           {/* Global page transition animations */}
           {/* Client-only wrapper to animate route changes */}
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}
