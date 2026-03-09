@@ -108,6 +108,31 @@ export default function DesignEditorWrapper(props: Props) {
     )
   }, [productMockupUrl, images, product, variant])
 
+  // Try to infer distinct front/back mockups from available images.
+  // Heuristic: look for "front"/"back" in URL; otherwise use the first two unique images.
+  const mockupUrls = useMemo(() => {
+    const sources =
+      (variant?.images && variant.images.length ? variant.images : null) ||
+      (images && images.length ? images : null) ||
+      (product?.images && product.images.length ? product.images : null) ||
+      []
+
+    const urls = sources
+      .map((img: any) => img?.url)
+      .filter((u: any): u is string => typeof u === 'string' && u.length > 0)
+
+    const uniqueUrls = Array.from(new Set(urls))
+    const findByHint = (hint: RegExp) => uniqueUrls.find((u) => hint.test(u))
+
+    const front = findByHint(/(^|[\/_-])front([\/_-]|\.|$)/i) || uniqueUrls[0]
+    const back =
+      findByHint(/(^|[\/_-])back([\/_-]|\.|$)/i) ||
+      uniqueUrls.find((u) => u !== front) ||
+      undefined
+
+    return { front, back }
+  }, [variant?.images, images, product?.images])
+
   // State for enhanced design areas from variant API
   const [designAreasData, setDesignAreasData] = useState<{
     designAreas: any[]
@@ -467,6 +492,7 @@ export default function DesignEditorWrapper(props: Props) {
       {/* Render the base editor UI */}
       <BaseDesignEditor
         mockupUrl={mockupUrl}
+        mockupUrls={mockupUrls}
         mockupZones={enhancedMockupZones}
         designAreas={designAreasData?.designAreas}
         designCapabilities={designAreasData?.designCapabilities}

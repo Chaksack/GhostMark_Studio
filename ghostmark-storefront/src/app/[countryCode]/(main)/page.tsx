@@ -1,13 +1,12 @@
 import { Metadata } from "next"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 import FeatureSection from "@modules/home/components/feature-section";
 import Section from "@modules/home/components/section";
-import {Heading} from "@medusajs/ui";
 import Cta from "@modules/home/components/cta";
+import { isStrapiEnabled, strapiFetch, StrapiHomepage } from "@lib/strapi";
 
 
 
@@ -34,9 +33,27 @@ export default async function Home(props: {
     return null
   }
 
+  // Fetch homepage content from Strapi (optional)
+  let homepage: StrapiHomepage | null = null
+  if (isStrapiEnabled()) {
+    const res = await strapiFetch<StrapiHomepage>(
+      "api/homepage?populate=heroImage"
+    )
+    if (!res.error && res.data) {
+      homepage = res.data as unknown as StrapiHomepage
+    }
+  }
+
   return (
     <>
-      <Hero />
+      <Hero
+        title={homepage?.attributes?.title || undefined}
+        subtitle={homepage?.attributes?.subtitle || undefined}
+        description={homepage?.attributes?.description || undefined}
+        primaryCtaLabel={homepage?.attributes?.primaryCtaLabel || undefined}
+        secondaryCtaLabel={homepage?.attributes?.secondaryCtaLabel || undefined}
+        imageUrl={homepage?.attributes?.heroImage?.data?.attributes?.url || undefined}
+      />
         <div className="py-8 ">
         <FeatureSection />
         </div>

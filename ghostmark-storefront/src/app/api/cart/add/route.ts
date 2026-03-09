@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
     const variantId: string | undefined = body?.variantId
     const quantity: number = Number(body?.quantity ?? 1)
     const countryCode: string | undefined = body?.countryCode
+    const metadata: Record<string, unknown> | undefined = body?.metadata
 
     if (!variantId) {
       return NextResponse.json({ message: "variantId is required" }, { status: 400 })
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "quantity must be a positive number" }, { status: 400 })
     }
 
-    await addToCart({ variantId, quantity, countryCode })
+    await addToCart({ variantId, quantity, countryCode, metadata })
 
     return NextResponse.json({ ok: true })
   } catch (e: any) {

@@ -5,6 +5,7 @@ import { Button, Heading } from "@medusajs/ui"
 import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
 import DiscountCode from "@modules/checkout/components/discount-code"
+import GiftCardCode from "@modules/checkout/components/gift-card-code"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 import { loadStripe } from "@stripe/stripe-js"
@@ -52,6 +53,7 @@ const Summary = ({ cart }: SummaryProps) => {
         Summary
       </Heading>
       <DiscountCode cart={cart} />
+      <GiftCardCode cart={cart} />
       <Divider />
       <CartTotals totals={cart} />
       {/* Primary action: go to on-site checkout form (Stripe card entry happens there). */}

@@ -81,7 +81,7 @@ export async function GET(
     }
 
     // Fetch the product to verify it exists and is POD
-    const [products] = await query.graph({
+    const { data: products } = await query.graph({
       entity: "product",
       filters: { 
         id: productId,
@@ -100,7 +100,7 @@ export async function GET(
     let isPODProduct = false
     let productType: any = null
     if (product.type_id) {
-      const [productTypes] = await query.graph({
+      const { data: productTypes } = await query.graph({
         entity: "product_type",
         filters: { id: product.type_id },
         fields: ["id", "value", "metadata"]
@@ -223,6 +223,85 @@ export async function GET(
           version: podVersion,
         },
       })
+    }
+
+    // Next preference: product-specific design areas stored in DB (design_area with product_id)
+    try {
+      const { data: productSpecificAreas } = await query.graph({
+        entity: "design_area",
+        fields: [
+          "id",
+          "name",
+          "description",
+          "area_type",
+          "position",
+          "dimensions",
+          "boundaries",
+          "constraints",
+          "print_methods",
+          "max_colors",
+          "pricing",
+          "validation",
+          "is_active",
+          "sort_order",
+        ],
+        filters: { product_id: product.id, is_active: true },
+        pagination: { order: { sort_order: "ASC" } },
+      })
+
+      const mappedAreas: StorefrontDesignArea[] = (productSpecificAreas || []).map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        type: a.area_type,
+        position: a.position,
+        dimensions: a.dimensions,
+        boundaries: a.boundaries,
+        constraints: a.constraints,
+        printMethods: a.print_methods || [],
+        maxColors: a.max_colors,
+        pricing: {
+          basePrice: a.pricing?.basePrice || 0,
+          colorPrice: a.pricing?.colorPrice || 0,
+          layerPrice: a.pricing?.layerPrice || 0,
+          setupFee: a.pricing?.setupFee || 0,
+          currency: a.pricing?.currency || 'USD',
+        },
+        validation: {
+          minDPI: a.validation?.minDPI || 150,
+          recommendedDPI: a.validation?.recommendedDPI || 300,
+          maxFileSize: a.validation?.maxFileSize || '25MB',
+          supportedFormats: a.validation?.supportedFormats || ['PNG', 'JPG'],
+          allowedFileTypes: a.validation?.allowedFileTypes || ['image/png', 'image/jpeg'],
+        },
+        sortOrder: a.sort_order || 0,
+        isActive: a.is_active,
+      }))
+
+      if (mappedAreas.length > 0) {
+        return res.json({
+          product: {
+            id: product.id,
+            title: product.title,
+            handle: product.handle,
+            type_id: product.type_id,
+            isPOD: isPODProduct,
+            variants: product.variants || [],
+          },
+          designAreas: mappedAreas,
+          designCapabilities,
+          productTypeDesignAreas: mappedAreas,
+          assignments: assignments.length,
+          metadata: {
+            totalAreas: mappedAreas.length,
+            activeAreas: mappedAreas.filter(a => a.isActive).length,
+            availablePrintMethods: [...new Set(mappedAreas.flatMap(a => a.printMethods))],
+            units: 'cm',
+          },
+        })
+      }
+    } catch (err) {
+      console.warn('Failed to load product-specific design areas for storefront:', err)
     }
 
     // Fallback: fetch from product type

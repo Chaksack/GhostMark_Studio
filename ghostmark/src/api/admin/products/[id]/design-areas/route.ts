@@ -1,5 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { DEFAULT_DPI } from "../../../../../utils/units"
 
 /**
@@ -94,7 +94,7 @@ export async function GET(
     }
 
     // Fetch the product to verify it exists and get product type
-    const [products] = await query.graph({
+    const { data: products } = await query.graph({
       entity: "product",
       filters: { id: productId },
       fields: ["id", "title", "type_id", "metadata", "handle"]
@@ -109,7 +109,7 @@ export async function GET(
     // Check if product type is POD (Print on Demand)
     let isPODProduct = false
     if (product.type_id) {
-      const [productTypes] = await query.graph({
+      const { data: productTypes } = await query.graph({
         entity: "product_type",
         filters: { id: product.type_id },
         fields: ["id", "value", "metadata"]
@@ -129,30 +129,164 @@ export async function GET(
       })
     }
 
-    // Get design area assignments for this product
+    // Get design area assignments for this product (in-memory mock for now)
     const assignments = mockProductDesignAreas[productId] || []
 
-    // For now, fetch design areas from the product type route as fallback
-    // In a real implementation, this would query the database
+    // First, prefer print areas saved in product.metadata.pod.print_areas
+    // so saving via PATCH /admin/products/:id (or POST to this endpoint with { pod })
+    // is immediately reflected here in Admin, same as Storefront behavior.
     let availableDesignAreas: ProductDesignAreaConfig[] = []
-    
+
+    const metadata = (product as any)?.metadata || {}
+    const pod = (metadata?.pod || {}) as any
+    const printAreas = pod?.print_areas
+    const podVersion = Number(pod?.version || 0)
+    const dpi = Number(pod?.dpi || DEFAULT_DPI)
+
+    if (printAreas && typeof printAreas === 'object') {
+      const entries = Object.entries(printAreas) as [string, any][]
+      const mappedFromMeta = entries.map(([side, area], index) => {
+        const x_cm = Number(area?.x_cm || 0)
+        const y_cm = Number(area?.y_cm || 0)
+        const w_cm = Number(area?.width_cm || 0)
+        const h_cm = Number(area?.height_cm || 0)
+        const areaVersion = Number(area?.version ?? podVersion)
+        const areaDpi = Number(area?.dpi || dpi || DEFAULT_DPI)
+
+        const config: ProductDesignAreaConfig = {
+          id: `${productId}_${side}_${areaVersion}`,
+          name: `${side} area`,
+          description: `Print area (${side}) v${areaVersion}`,
+          type: side as any,
+          position: { x: 0, y: 0 },
+          dimensions: { width: Math.max(1, w_cm), height: Math.max(1, h_cm) },
+          boundaries: { x: x_cm, y: y_cm, w: Math.max(1, w_cm), h: Math.max(1, h_cm) },
+          constraints: {
+            minWidth: 1,
+            minHeight: 1,
+            maxWidth: 1000,
+            maxHeight: 1000,
+            margin: 0,
+            allowRotation: false,
+            allowResize: true,
+          },
+          printMethods: ['dtg'],
+          maxColors: 12,
+          pricing: {
+            basePrice: typeof area?.print_price_minor === 'number' ? (area.print_price_minor / 100) : 0,
+            colorPrice: 0,
+            layerPrice: 0,
+            setupFee: 0,
+            currency: (pod?.currency || 'USD') as string,
+          },
+          validation: {
+            minDPI: areaDpi,
+            recommendedDPI: areaDpi,
+            maxFileSize: '50MB',
+            supportedFormats: ['PNG', 'JPG', 'PDF'],
+            allowedFileTypes: ['image/png', 'image/jpeg', 'application/pdf'],
+          },
+          isActive: true,
+          sortOrder: index,
+        }
+        return config
+      })
+
+      availableDesignAreas = mappedFromMeta
+    }
+
+    try {
+      const { data: productSpecificAreas } = await query.graph({
+        entity: "design_area",
+        fields: [
+          "id",
+          "name",
+          "description",
+          "area_type",
+          "position",
+          "dimensions",
+          "boundaries",
+          "constraints",
+          "print_methods",
+          "max_colors",
+          "pricing",
+          "validation",
+          "is_active",
+          "sort_order",
+        ],
+        filters: { product_id: product.id },
+        pagination: { order: { sort_order: "ASC" } },
+      })
+
+      const dbAreas: ProductDesignAreaConfig[] = (productSpecificAreas || []).map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        type: a.area_type,
+        position: a.position,
+        dimensions: a.dimensions,
+        boundaries: a.boundaries,
+        constraints: a.constraints,
+        printMethods: a.print_methods,
+        maxColors: a.max_colors,
+        pricing: a.pricing,
+        validation: a.validation,
+        isActive: a.is_active,
+        sortOrder: a.sort_order,
+      }))
+
+      // Merge DB-backed areas with metadata-derived areas, preferring metadata ones by id
+      if (availableDesignAreas.length === 0) {
+        availableDesignAreas = dbAreas
+      } else {
+        const seen = new Set(availableDesignAreas.map((a) => a.id))
+        for (const area of dbAreas) {
+          if (!seen.has(area.id)) {
+            availableDesignAreas.push(area)
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to load product-specific design areas:", err)
+    }
+
+    // Also load product type default design areas as a fallback/merge source
     if (product.type_id) {
       try {
-        // Mock fetching design areas from product type
         const response = await fetch(`${req.protocol}://${req.get('host')}/admin/product-types/${product.type_id}/design-areas`)
         if (response.ok) {
           const data = await response.json()
-          availableDesignAreas = data.designAreas || []
+          const typeAreas: ProductDesignAreaConfig[] = (data.designAreas || [])
+
+          // Merge, preferring product-specific areas when ids collide
+          const seen = new Set(availableDesignAreas.map((a) => a.id))
+          for (const ta of typeAreas) {
+            if (!seen.has(ta.id)) {
+              availableDesignAreas.push(ta)
+            }
+          }
         }
       } catch (error) {
         console.warn('Could not fetch product type design areas:', error)
       }
     }
 
-    // Merge assignments with design area configs
+    // Merge assignments with design area configs. If there is a DB-backed product-specific
+    // design area but no explicit assignment exists, treat it as assigned by default.
     const productDesignAreas = availableDesignAreas.map(area => ({
       ...area,
-      assignment: assignments.find(a => a.designAreaId === area.id)
+      assignment:
+        assignments.find(a => a.designAreaId === area.id) ||
+        (area && {
+          id: `${productId}_${area.id}`,
+          productId,
+          designAreaId: area.id,
+          productTypeId: product.type_id,
+          isActive: (area as any).isActive ?? true,
+          sortOrder: (area as any).sortOrder ?? 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
     }))
 
     return res.json({
@@ -206,7 +340,7 @@ export async function POST(
       const print_areas = pod.print_areas || {}
 
       // Fetch product current metadata
-      const [productsBefore] = await query.graph({
+      const { data: productsBefore } = await query.graph({
         entity: "product",
         filters: { id: productId },
         fields: ["id", "metadata"]
@@ -225,12 +359,14 @@ export async function POST(
         },
       }
 
-      // Update product metadata
-      await query.graph({
-        entity: "product",
-        data: { id: productId, metadata: updatedMeta },
-        fields: ["id", "metadata"]
-      }).update()
+      // Update product metadata using Product module service (graph builder has no update())
+      // Pass a single DTO object (not an array) to avoid MikroORM criteria errors like
+      // "Trying to query by not existing property Product.0" in some versions.
+      const productModuleService = req.scope.resolve(Modules.PRODUCT) as any
+      await productModuleService.updateProducts({
+        id: productId,
+        metadata: updatedMeta,
+      })
 
       return res.status(200).json({
         message: "POD print areas saved",
@@ -244,7 +380,7 @@ export async function POST(
     }
 
     // Verify product exists and is POD type
-    const [products] = await query.graph({
+    const { data: products } = await query.graph({
       entity: "product",
       filters: { id: productId },
       fields: ["id", "type_id"]
@@ -258,7 +394,7 @@ export async function POST(
 
     // Verify POD product type
     if (product.type_id) {
-      const [productTypes] = await query.graph({
+      const { data: productTypes } = await query.graph({
         entity: "product_type",
         filters: { id: product.type_id },
         fields: ["value", "metadata"]

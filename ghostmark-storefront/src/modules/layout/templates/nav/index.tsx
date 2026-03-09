@@ -178,6 +178,7 @@ export default async function Nav() {
             {
               title: "Resources",
               items: [
+                { label: "About us", href: "/about" },
                 { label: "Support", href: "/support" },
                 { label: "Help center", href: "/help-center" },
                 { label: "Customer stories", href: "/customer-stories" },

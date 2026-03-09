@@ -10,6 +10,7 @@ import { listCategories } from "@lib/data/categories"
 import { getProductTypesForFilter } from "@lib/data/product-types"
 
 import PaginatedProducts from "./paginated-products"
+import { isStrapiEnabled, strapiFetch, StrapiBanner } from "@lib/strapi"
 
 const StoreTemplate = async ({
   sortBy,
@@ -46,6 +47,21 @@ const StoreTemplate = async ({
     .filter((c: any) => !c.parent_category)
     .map((c: any) => ({ id: c.id, handle: c.handle, name: c.name }))
 
+  // Optionally fetch a banner for the all products page from Strapi
+  let banner: StrapiBanner | null = null
+  if (isStrapiEnabled()) {
+    try {
+      const res = await strapiFetch<{ data: StrapiBanner[] }>(
+        "api/banners?filters[placement][$eq]=all-products&populate=image"
+      )
+      const list = (res?.data as unknown as any)?.data || (res?.data as unknown as any[])
+      const item = Array.isArray(list) ? list[0] : null
+      banner = (item || res?.data) as unknown as StrapiBanner
+    } catch (e) {
+      // ignore
+    }
+  }
+
   return (
     <div className="flex flex-col">
       {/* Collections tiles */}
@@ -66,6 +82,28 @@ const StoreTemplate = async ({
           productTypes={productTypes}
         />
         <div className="w-full">
+          {/* Optional CMS banner */}
+          {banner?.attributes?.text && (
+            <div
+              className="mb-6 rounded p-4 text-white"
+              style={{
+                backgroundColor: banner.attributes.backgroundColor || "#111827",
+              }}
+            >
+              <div className="text-sm uppercase opacity-80">
+                {banner.attributes.title || "Promotion"}
+              </div>
+              <div className="text-base">
+                {banner.attributes.link ? (
+                  <a href={banner.attributes.link} className="underline">
+                    {banner.attributes.text}
+                  </a>
+                ) : (
+                  banner.attributes.text
+                )}
+              </div>
+            </div>
+          )}
           <div className="mb-8">
             <h2 className="text-2xl-semi" data-testid="store-page-title">
               {titleOverride

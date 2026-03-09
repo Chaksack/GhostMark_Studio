@@ -10,6 +10,7 @@ import CollectionsTiles from "@modules/store/templates/sections/collections-tile
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
 import { getProductTypesForFilter } from "@lib/data/product-types"
+import { isStrapiEnabled, strapiFetch, StrapiBanner } from "@lib/strapi"
 
 export default async function CollectionTemplate({
   sortBy,
@@ -37,6 +38,21 @@ export default async function CollectionTemplate({
     getProductTypesForFilter().catch(() => []),
   ])
 
+  // Optional: fetch a banner configured for this collection from Strapi
+  let banner: StrapiBanner | null = null
+  if (isStrapiEnabled()) {
+    try {
+      const res = await strapiFetch<{ data: StrapiBanner[] }>(
+        `api/banners?filters[placement][$eq]=collection:${collection.handle}&populate=image`
+      )
+      const list = (res?.data as unknown as any)?.data || (res?.data as unknown as any[])
+      const item = Array.isArray(list) ? list[0] : null
+      banner = (item || res?.data) as unknown as StrapiBanner
+    } catch (e) {
+      // ignore errors to keep page resilient
+    }
+  }
+
   return (
     <div className="flex flex-col">
 
@@ -60,6 +76,28 @@ export default async function CollectionTemplate({
           productTypes={productTypes}
         />
         <div className="w-full">
+          {/* Optional CMS banner per collection */}
+          {banner?.attributes?.text && (
+            <div
+              className="mb-6 rounded p-4 text-white"
+              style={{
+                backgroundColor: banner.attributes.backgroundColor || "#111827",
+              }}
+            >
+              <div className="text-sm uppercase opacity-80">
+                {banner.attributes.title || collection.title}
+              </div>
+              <div className="text-base">
+                {banner.attributes.link ? (
+                  <a href={banner.attributes.link} className="underline">
+                    {banner.attributes.text}
+                  </a>
+                ) : (
+                  banner.attributes.text
+                )}
+              </div>
+            </div>
+          )}
           <div className="mb-2">
             <h2 className="text-2xl-semi">All products</h2>
           </div>

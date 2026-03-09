@@ -1,29 +1,3 @@
-"use client"
-
-import { convertToLocale } from "@lib/util/money"
-import React from "react"
-
-type CartTotalsProps = {
-  totals: {
-    total?: number | null
-    subtotal?: number | null
-    tax_total?: number | null
-    currency_code: string
-    item_subtotal?: number | null
-    shipping_subtotal?: number | null
-    discount_subtotal?: number | null
-  }
-}
-
-const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
-  const {
-    currency_code,
-    total,
-    tax_total,
-    item_subtotal,
-    shipping_subtotal,
-    discount_subtotal,
-  } = totals
 
   return (
     <div>
@@ -51,6 +25,22 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
               -{" "}
               {convertToLocale({
                 amount: discount_subtotal ?? 0,
+                currency_code,
+              })}
+            </span>
+          </div>
+        )}
+        {!!gift_card_subtotal && (
+          <div className="flex items-center justify-between">
+            <span>Gift card</span>
+            <span
+              className="text-ui-fg-interactive"
+              data-testid="cart-giftcard"
+              data-value={gift_card_subtotal || 0}
+            >
+              -{" "}
+              {convertToLocale({
+                amount: gift_card_subtotal ?? 0,
                 currency_code,
               })}
             </span>

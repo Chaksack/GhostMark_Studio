@@ -72,10 +72,11 @@ export const DesignAreaManager: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
+      const fetchOpts: RequestInit = { credentials: 'include' }
       const [areasRes, groupsRes, productsRes] = await Promise.all([
-        fetch('/admin/design-areas'),
-        fetch('/admin/design-area-groups'),
-        fetch('/admin/products?type=POD&limit=50') // Fetch POD products
+        fetch('/admin/design-areas', fetchOpts),
+        fetch('/admin/design-area-groups', fetchOpts),
+        fetch('/admin/products?type=POD&limit=50', fetchOpts) // Fetch POD products
       ])
 
       if (areasRes.ok) {
@@ -108,7 +109,7 @@ export const DesignAreaManager: React.FC = () => {
     if (!confirm('Are you sure you want to delete this design area?')) return
 
     try {
-      const res = await fetch(`/admin/design-areas/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/admin/design-areas/${id}`, { method: 'DELETE', credentials: 'include' })
       if (res.ok) {
         setDesignAreas(prev => prev.filter(area => area.id !== id))
       } else {
@@ -123,7 +124,7 @@ export const DesignAreaManager: React.FC = () => {
     if (!confirm('Are you sure you want to delete this design area group?')) return
 
     try {
-      const res = await fetch(`/admin/design-area-groups/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/admin/design-area-groups/${id}`, { method: 'DELETE', credentials: 'include' })
       if (res.ok) {
         setDesignAreaGroups(prev => prev.filter(group => group.id !== id))
       } else {
@@ -137,7 +138,7 @@ export const DesignAreaManager: React.FC = () => {
   // POD product functions
   const fetchProductDesignAreas = async (productId: string) => {
     try {
-      const res = await fetch(`/admin/products/${productId}/design-areas`)
+      const res = await fetch(`/admin/products/${productId}/design-areas`, { credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
         setProductDesignAreas(data.designAreas || [])
@@ -156,6 +157,7 @@ export const DesignAreaManager: React.FC = () => {
       const res = await fetch(`/admin/products/${productId}/design-areas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ designAreaIds })
       })
       if (res.ok) {

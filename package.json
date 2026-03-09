@@ -1,5 +1,10 @@
 {
 	"dependencies": {
 		"lucide-react": "^0.554.0"
+	},
+	"scripts": {
+		"cms:dev": "pnpm --filter ./cms dev || (cd cms && npm run dev)",
+		"cms:build": "pnpm --filter ./cms build || (cd cms && npm run build)",
+		"cms:start": "pnpm --filter ./cms start || (cd cms && npm start)"
 	}
 }

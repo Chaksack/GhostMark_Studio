@@ -140,6 +140,46 @@ Operator Notes / Next Steps
 - Note: Terraform HCL formatting has been normalized to pass `terraform validate` in both envs; keep this style for future additions.
 - Remove terraform/modules/alb if confirmed unused to reduce maintenance burden.
 
+Strapi CMS Integration (Medusa v2 Storefront) — 2026-03-08
+- A minimal Strapi integration is added to the Next.js storefront to consume CMS content without breaking existing flows.
+  - File: ghostmark-storefront/src/lib/strapi.ts — tiny server-safe client that reads STRAPI_URL and STRAPI_API_TOKEN, with graceful fallback when not set.
+  - Page example: ghostmark-storefront/src/app/[countryCode]/(main)/customer-stories/page.tsx — fetches `api/customer-stories?populate=cover` and renders a basic grid of stories. If Strapi is not configured, shows a helpful message.
+- Environment variables (added to ghostmark-storefront/.env.template):
+  - STRAPI_URL — Base URL of the Strapi instance (e.g., http://localhost:1337)
+  - STRAPI_API_TOKEN — API Token if the collection type is not public (Settings → API Tokens in Strapi)
+- Expected content type in Strapi (example):
+  - Collection Type: Customer Story (collectionName: customer-stories)
+    - title (Text)
+    - excerpt (Text, optional)
+    - slug (UID, optional)
+    - cover (Media, Single)
+    - publishedAt (DateTime)
+- Permissions:
+  - If using a public API, enable find/findOne for the collection type in Settings → Users & Permissions Plugin → Roles → Public.
+  - For secured APIs, create an API Token in Settings → API Tokens and set STRAPI_API_TOKEN in the storefront.
+- CDN/Image domains:
+  - If Strapi serves media from a different domain, add that host to next.config.js images.remotePatterns.
+- Backend (Medusa v2) coupling:
+  - No backend plugin was added to avoid dependency drift; storefront-only read access was implemented per minimal-change policy. Future work could wire @medusajs CMS workflows or webhooks to sync entities. Document desired coupling before implementation.
+
+ShipStation Fulfillment Provider (2026-01-23)
+- The backend registers a custom ShipStation fulfillment provider and reads credentials from environment variables.
+  - Code: ghostmark/src/modules/shipstation (provider implementation), wired in ghostmark/medusa-config.ts under the fulfillment module providers with id "shipstation".
+  - Env vars used:
+    - SHIPSTATION_API_KEY
+    - SHIPSTATION_API_SECRET
+    - SHIPSTATION_STORE_ID (optional)
+    - SHIPSTATION_BASE_URL (optional; defaults to https://ssapi.shipstation.com)
+- Local development templates updated:
+  - ghostmark/.env.template contains the variables with comments.
+  - ghostmark/.env now includes empty placeholders for the same variables; set real values to enable live API calls.
+- Behavior:
+  - On startup, if API key/secret are missing, the provider logs a warning and remains registered; API calls are effectively disabled to avoid runtime failures.
+  - The current implementation includes a minimal client stub; replace with real HTTP calls to ShipStation endpoints for production use if desired.
+  - Labels in Admin: When credentials are present, the provider now returns a stub label object in the fulfillment response so the Medusa Admin dashboard displays a label entry (tracking number, tracking URL, label URL). In production, replace the stub with the actual label URL returned by ShipStation's label purchase endpoint.
+- Deployment:
+  - Ensure these variables are provided to your ECS task/container at runtime (e.g., via task definition env vars, SSM parameters, or Secrets Manager). CI/CD wiring is environment-specific and should map these variables from your secret store.
+
 SonarQube Deployment & CI (2026-01-21)
 - Deployed SonarQube on ECS Fargate in the same cluster as the application, behind a dedicated ALB with optional HTTPS.
   - Module: terraform/modules/sonarqube-ecs (ALB, target group, listeners, ECS task/service, IAM execution role, CloudWatch Logs)

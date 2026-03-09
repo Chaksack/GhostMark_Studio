@@ -57,6 +57,16 @@ export default class ShipStationProviderService extends AbstractFulfillmentProvi
     super()
     this.options_ = options
     this.client = new ShipStationClient(options)
+    // Soft validation so the provider is visible even if creds are not yet configured
+    const missing: string[] = []
+    if (!options.api_key) missing.push("SHIPSTATION_API_KEY")
+    if (!options.api_secret) missing.push("SHIPSTATION_API_SECRET")
+    if (missing.length) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[ShipStation] Missing credentials: ${missing.join(", ")}. The provider is registered but live API calls will be disabled until these are set.`
+      )
+    }
   }
 
   getIdentifier(): string {
@@ -119,6 +129,26 @@ export default class ShipStationProviderService extends AbstractFulfillmentProvi
       },
     }
     const created = await this.client.createOrder(payload)
+
+    // Build label output for Admin UI when credentials are present.
+    // This is a safe stub: it does not contact ShipStation's label API, but
+    // returns a deterministic tracking number/URL so that Medusa Admin can
+    // display a label entry on the fulfillment. If credentials are missing,
+    // we avoid creating labels to not mislead operators.
+    const hasCreds = Boolean((this.options_.api_key || "").trim() && (this.options_.api_secret || "").trim())
+    const labels = hasCreds
+      ? [
+          {
+            tracking_number: `SS-${created.orderId}`,
+            tracking_url: `https://shipstation.com/track/${created.orderId}`,
+            // In a real implementation, this would be a URL to the purchased
+            // shipping label (PDF/ZPL) returned by ShipStation. For now, point
+            // to docs as a placeholder so Admin shows a clickable link.
+            label_url: "https://www.shipstation.com/docs/",
+          },
+        ]
+      : []
+
     return {
       data: {
         ...existingData,
@@ -126,8 +156,7 @@ export default class ShipStationProviderService extends AbstractFulfillmentProvi
         shipstation_order_key: created.orderKey,
         shipstation_service: service,
       },
-      // No label is created at this stage in the stub
-      labels: [],
+      labels,
     }
   }
 

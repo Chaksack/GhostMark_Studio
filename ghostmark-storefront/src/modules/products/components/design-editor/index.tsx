@@ -2,14 +2,13 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Stage, Layer, Rect, Text, Image as KonvaImage, Transformer } from 'react-konva'
-import { Upload, Info, Undo, Redo, Circle, Plus, Minus, RotateCcw, Type, Image, Palette, Layers } from 'lucide-react';
-import { ChevronDown, ChevronLeft } from "lucide-react"
+import { Upload, Info, Undo, Redo, Plus, Minus, RotateCcw, Type, Image, Layers, ChevronDown, ChevronLeft } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { HttpTypes } from '@medusajs/types'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import OptionSelect from '@modules/products/components/product-actions/option-select'
 import { isEqual } from 'lodash'
-import { extractImageDPI, type DPIExtractionResult, type ImageMetadata } from '@lib/util/image-dpi-extractor'
+import { extractImageDPI, type DPIExtractionResult } from '@lib/util/image-dpi-extractor'
 
 // Toast notification utility (simplified)
 const toast = {
@@ -498,28 +497,37 @@ export default function TShirtDesigner(props: Props) {
       hasSetInitialViewRef.current = true
     }, [stageSize.width, stageSize.height, computeCenteredPos])
 
+    // Helper: convert an area definition into absolute stage coordinates inside the fitted mockup box
+    const resolveAreaBounds = useCallback((area: any, fit: { x: number; y: number; width: number; height: number } | null) => {
+      if (!area || !fit) return null as null | { x: number; y: number; width: number; height: number }
+      const b = area.boundaries || area.position || {}
+      const w = area.dimensions?.width
+      const h = area.dimensions?.height
+      // Case A: normalized (0..1) bounds with w/h available on boundaries
+      if (b && (b.w != null && b.h != null)) {
+        const zx = fit.x + (b.x || 0) * fit.width
+        const zy = fit.y + (b.y || 0) * fit.height
+        const zw = (b.w || 0) * fit.width
+        const zh = (b.h || 0) * fit.height
+        return { x: Math.round(zx), y: Math.round(zy), width: Math.round(zw), height: Math.round(zh) }
+      }
+      // Case B: absolute pixel-like dimensions supplied separately
+      if (b && w != null && h != null) {
+        const zx = fit.x + (b.x || 0)
+        const zy = fit.y + (b.y || 0)
+        return { x: Math.round(zx), y: Math.round(zy), width: Math.round(w), height: Math.round(h) }
+      }
+      return null as null | { x: number; y: number; width: number; height: number }
+    }, [])
+
     // Resolve active mockup/print area (relative to mockup box) and convert to stage coordinates
     const activeZoneRect = useMemo(() => {
       if (!mockupFit) return null as null | { x: number; y: number; width: number; height: number }
       // Prefer dynamic printAreas if available and an activePrintArea is selected
       if (printAreas?.length && activePrintArea) {
         const area = printAreas.find((a) => a.id === activePrintArea)
-        const b = area?.boundaries || area?.position
-        const w = area?.dimensions?.width
-        const h = area?.dimensions?.height
-        if (b && (b.w != null && b.h != null)) {
-          const zx = mockupFit.x + (b.x || 0) * mockupFit.width
-          const zy = mockupFit.y + (b.y || 0) * mockupFit.height
-          const zw = (b.w || 0) * mockupFit.width
-          const zh = (b.h || 0) * mockupFit.height
-          return { x: Math.round(zx), y: Math.round(zy), width: Math.round(zw), height: Math.round(zh) }
-        }
-        if (b && w != null && h != null) {
-          // Support absolute pixel-like dimensions by normalizing against mockupFit
-          const zx = mockupFit.x + (b.x || 0)
-          const zy = mockupFit.y + (b.y || 0)
-          return { x: Math.round(zx), y: Math.round(zy), width: Math.round(w), height: Math.round(h) }
-        }
+        const r = resolveAreaBounds(area, mockupFit)
+        if (r) return r
       }
       // Fallback to legacy mockupZones with selectedView
       const zones = mockupZones || {}
@@ -530,7 +538,7 @@ export default function TShirtDesigner(props: Props) {
       const zw = (byView.w || 0) * mockupFit.width
       const zh = (byView.h || 0) * mockupFit.height
       return { x: Math.round(zx), y: Math.round(zy), width: Math.round(zw), height: Math.round(zh) }
-    }, [mockupFit, printAreas, activePrintArea, mockupZones, selectedView])
+    }, [mockupFit, printAreas, activePrintArea, mockupZones, selectedView, resolveAreaBounds])
 
     // ---------- Print size (inches) resolution helpers ----------
     // Read potential print area physical dimensions from metadata (variant preferred, then product)
@@ -765,8 +773,36 @@ export default function TShirtDesigner(props: Props) {
     // Preview modal state
     const [previewOpen, setPreviewOpen] = useState(false)
     const [previewUrl, setPreviewUrl] = useState<string>("")
+    const [previewDesignOnlyUrl, setPreviewDesignOnlyUrl] = useState<string>("")
     const [previewLoading, setPreviewLoading] = useState(false)
     const [previewNote, setPreviewNote] = useState<string | null>(null)
+    const [zoomScale, setZoomScale] = useState<number>(1)
+
+    // Preview variations (mockup vs design-only) for the preview modal UI
+    const previewVariants = useMemo(() => {
+      const variants: Array<{ id: 'mockup' | 'design'; label: string; url: string }> = []
+      if (previewUrl) variants.push({ id: 'mockup', label: 'Mockup style 1', url: previewUrl })
+      // If design-only export is unavailable, keep the second option but point to the same image
+      // so the UI still matches the intended layout.
+      if (previewUrl) {
+        variants.push({ id: 'design', label: 'Mockup style 2', url: previewDesignOnlyUrl || previewUrl })
+      }
+      return variants
+    }, [previewUrl, previewDesignOnlyUrl])
+
+    const [activePreviewVariantIdx, setActivePreviewVariantIdx] = useState<number>(0)
+
+    useEffect(() => {
+      // Reset selection whenever a new preview is generated
+      setActivePreviewVariantIdx(0)
+    }, [previewOpen, previewUrl, previewDesignOnlyUrl])
+
+    const resetPreviewView = useCallback(() => {
+      setPreviewOpen(false)
+      setPreviewDesignOnlyUrl("")
+      setZoomScale(1)
+      setActivePreviewVariantIdx(0)
+    }, [])
     
     // Deprecated static views removed in favor of dynamic printAreas
 
@@ -1066,12 +1102,12 @@ export default function TShirtDesigner(props: Props) {
       if (!previewOpen) return
       const onKey = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
-          setPreviewOpen(false)
+          resetPreviewView()
         }
       }
       document.addEventListener('keydown', onKey)
       return () => document.removeEventListener('keydown', onKey)
-    }, [previewOpen])
+    }, [previewOpen, resetPreviewView])
 
     // Enhanced preview with CORS-safe fallback system
     const handlePreview = useCallback(async () => {
@@ -1079,6 +1115,7 @@ export default function TShirtDesigner(props: Props) {
       if (!stage) return
       setPreviewLoading(true)
       setPreviewNote(null)
+      setPreviewDesignOnlyUrl("")
       
       try {
         // Safe stage export function that handles CORS errors gracefully
@@ -1098,8 +1135,26 @@ export default function TShirtDesigner(props: Props) {
         // First try: Use Konva stage directly (best quality with full product image)
         // Only attempt if we think the canvas isn't tainted
         if (!mockupTainted) {
-          const dataUrl = attemptStageExport()
+          const pr = Math.min(3, Math.max(2, (typeof window !== 'undefined' ? window.devicePixelRatio : 2) || 2))
+          const dataUrl = attemptStageExport({ pixelRatio: pr })
           if (dataUrl && dataUrl !== "data:," && dataUrl.length > 100) {
+            // Try to also export a design-only preview by temporarily hiding background layer
+            try {
+              const bgLayer = bgLayerRef.current as any
+              const prevVisible = bgLayer?.visible?.() ?? true
+              if (bgLayer && typeof bgLayer.visible === 'function') {
+                bgLayer.visible(false)
+                stage.draw()
+              }
+              const designOnly = attemptStageExport({ pixelRatio: pr })
+              if (designOnly) setPreviewDesignOnlyUrl(designOnly)
+              if (bgLayer && typeof bgLayer.visible === 'function') {
+                bgLayer.visible(prevVisible)
+                stage.draw()
+              }
+            } catch {
+              setPreviewDesignOnlyUrl("")
+            }
             setPreviewUrl(dataUrl)
             setPreviewOpen(true)
             setPreviewNote(null) // Clear any previous notes
@@ -1113,7 +1168,7 @@ export default function TShirtDesigner(props: Props) {
         if (!tempCtx) throw new Error('Could not create canvas context')
         
         // Set dimensions based on mockup fit
-        const scale = 2
+        const scale = Math.min(3, Math.max(2, (typeof window !== 'undefined' ? window.devicePixelRatio : 2) || 2))
         const baseWidth = mockupFit?.width || 400
         const baseHeight = mockupFit?.height || 400
         tempCanvas.width = baseWidth * scale
@@ -1198,23 +1253,21 @@ export default function TShirtDesigner(props: Props) {
           tempCtx.fillText('Product Preview', baseWidth / 2, baseHeight / 2)
         }
         
-        // Draw print area boundaries for context
+        // Draw print area boundaries for context (aligned to mockup fit)
         if (showPrintAreaBounds && printAreas.length > 0) {
           printAreas.forEach((area) => {
-            const bounds = area.boundaries || area.position
-            if (!bounds) return
-            
+            const rb = resolveAreaBounds(area, mockupFit)
+            if (!rb) return
+            const x = (rb.x - (mockupFit?.x || 0))
+            const y = (rb.y - (mockupFit?.y || 0))
+            const w = rb.width
+            const h = rb.height
             const isActive = area.id === activePrintArea
             tempCtx.strokeStyle = isActive ? '#3b82f6' : '#94a3b8'
             tempCtx.lineWidth = isActive ? 3 : 2
             tempCtx.setLineDash(isActive ? [8, 4] : [4, 4])
-            tempCtx.strokeRect(
-              bounds.x || 0,
-              bounds.y || 0,
-              bounds.w || bounds.width || 100,
-              bounds.h || bounds.height || 100
-            )
-            tempCtx.setLineDash([]) // Reset dash pattern
+            tempCtx.strokeRect(x, y, w, h)
+            tempCtx.setLineDash([])
           })
         }
 
@@ -2566,19 +2619,22 @@ export default function TShirtDesigner(props: Props) {
                                 </Layer>
                                 {/* Enhanced Print Areas Layer - Gelato Style */}
                                 <Layer listening={false}>
-                                  {showPrintAreaBounds && printAreas.map((area, index) => {
+                                  {showPrintAreaBounds && printAreas.map((area) => {
                                     const isActive = area.id === activePrintArea
-                                    const bounds = area.boundaries || area.position
-                                    if (!bounds) return null
-                                    
+                                    const b = resolveAreaBounds(area, mockupFit)
+                                    if (!b) return null
+                                    const labelX = b.x
+                                    const labelY = b.y - 24
+                                    const cornerRight = b.x + b.width
+                                    const cornerBottom = b.y + b.height
                                     return (
                                       <React.Fragment key={area.id}>
                                         {/* Print area boundary */}
                                         <Rect
-                                          x={bounds.x || 0}
-                                          y={bounds.y || 0}
-                                          width={bounds.w || bounds.width || 100}
-                                          height={bounds.h || bounds.height || 100}
+                                          x={b.x}
+                                          y={b.y}
+                                          width={b.width}
+                                          height={b.height}
                                           stroke={isActive ? "#3b82f6" : "#94a3b8"}
                                           strokeWidth={isActive ? 3 : 2}
                                           dash={isActive ? [8, 4] : [4, 4]}
@@ -2586,8 +2642,8 @@ export default function TShirtDesigner(props: Props) {
                                         />
                                         {/* Print area label */}
                                         <Rect
-                                          x={(bounds.x || 0) - 2}
-                                          y={(bounds.y || 0) - 24}
+                                          x={labelX - 2}
+                                          y={labelY}
                                           width={Math.max(60, area.name.length * 8)}
                                           height={20}
                                           fill={isActive ? "#3b82f6" : "#64748b"}
@@ -2595,8 +2651,8 @@ export default function TShirtDesigner(props: Props) {
                                           opacity={0.9}
                                         />
                                         <Text
-                                          x={(bounds.x || 0) + 6}
-                                          y={(bounds.y || 0) - 20}
+                                          x={labelX + 6}
+                                          y={labelY + 4}
                                           text={area.name}
                                           fontSize={12}
                                           fontFamily="Inter, sans-serif"
@@ -2606,14 +2662,10 @@ export default function TShirtDesigner(props: Props) {
                                         {/* Corner markers for active area */}
                                         {isActive && (
                                           <>
-                                            {/* Top-left */}
-                                            <Rect x={bounds.x - 3} y={bounds.y - 3} width={10} height={10} fill="#3b82f6" />
-                                            {/* Top-right */}
-                                            <Rect x={bounds.x + (bounds.w || bounds.width) - 7} y={bounds.y - 3} width={10} height={10} fill="#3b82f6" />
-                                            {/* Bottom-left */}
-                                            <Rect x={bounds.x - 3} y={bounds.y + (bounds.h || bounds.height) - 7} width={10} height={10} fill="#3b82f6" />
-                                            {/* Bottom-right */}
-                                            <Rect x={bounds.x + (bounds.w || bounds.width) - 7} y={bounds.y + (bounds.h || bounds.height) - 7} width={10} height={10} fill="#3b82f6" />
+                                            <Rect x={b.x - 3} y={b.y - 3} width={10} height={10} fill="#3b82f6" />
+                                            <Rect x={cornerRight - 7} y={b.y - 3} width={10} height={10} fill="#3b82f6" />
+                                            <Rect x={b.x - 3} y={cornerBottom - 7} width={10} height={10} fill="#3b82f6" />
+                                            <Rect x={cornerRight - 7} y={cornerBottom - 7} width={10} height={10} fill="#3b82f6" />
                                           </>
                                         )}
                                       </React.Fragment>
@@ -2827,140 +2879,147 @@ export default function TShirtDesigner(props: Props) {
                 </div>
             </div>
         </div>
-        {/* Enhanced Preview Modal */}
+        {/* Enhanced Preview Modal (updated to match reference layout) */}
         {previewOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
             role="dialog"
             aria-modal="true"
-            onMouseDown={() => setPreviewOpen(false)}
+            onMouseDown={() => resetPreviewView()}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl w-[min(95vw,1200px)] max-h-[90vh] overflow-hidden"
+              className="relative bg-white rounded-xl shadow-2xl w-[min(95vw,1200px)] max-h-[90vh] overflow-hidden"
               onMouseDown={(e) => e.stopPropagation()}
             >
-              {/* Enhanced Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Design Preview</h3>
-                    <p className="text-sm text-gray-600">Your customized {product?.title || 'product'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {/* DPI Quality Indicator */}
-                  {dpiInfo.dpi && (
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${dpiInfo.tone === 'good' ? 'bg-emerald-100 text-emerald-700' : dpiInfo.tone === 'fair' ? 'bg-amber-100 text-amber-700' : dpiInfo.tone === 'poor' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {dpiInfo.dpi} DPI - {dpiInfo.label}
-                    </div>
-                  )}
-                  {/* Price Display */}
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">Total Price</div>
-                    <div className="text-xl font-bold text-gray-900">{priceString || '—'}</div>
-                  </div>
-                  {/* Close Button */}
-                  <button
-                    type="button"
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    aria-label="Close preview"
-                    onClick={() => setPreviewOpen(false)}
-                  >
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              {/* Preview Content */}
-              <div className="p-8 overflow-auto bg-gradient-to-br from-gray-50 to-gray-100" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+              {/* Close button (top-right, floating like reference) */}
+              <button
+                type="button"
+                className="absolute right-4 top-4 h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white hover:bg-gray-50"
+                aria-label="Close preview"
+                onClick={() => resetPreviewView()}
+              >
+                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Preview Content aligned with reference: header + left mockup + right options/actions */}
+              <div className="p-6" style={{ maxHeight: '90vh' }}>
                 {previewUrl ? (
-                  <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="relative">
-                      {/* Drop shadow container */}
-                      <div className="absolute inset-0 translate-x-2 translate-y-2 bg-black/20 rounded-2xl blur-xl"></div>
-                      {/* Preview image */}
-                      <img 
-                        src={previewUrl} 
-                        alt="Design preview" 
-                        className="relative bg-white rounded-2xl shadow-2xl max-w-full h-auto border-8 border-white"
-                        style={{ maxHeight: '600px', objectFit: 'contain' }}
-                      />
+                  <div className="flex flex-col h-full">
+                    {/* Modal title (top-left) */}
+                    <div className="mb-4 flex items-center gap-2 text-gray-800">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      <span className="text-sm font-medium">Preview</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-0 rounded-md border border-gray-200 overflow-hidden">
+                      {/* Left: Large mockup canvas with side arrows */}
+                      <div className="relative bg-white h-[62vh] min-h-[420px] flex items-center justify-center">
+                        <img
+                          src={previewVariants[Math.min(activePreviewVariantIdx, Math.max(0, previewVariants.length - 1))]?.url || previewUrl}
+                          alt="Design preview"
+                          className="max-h-full max-w-full object-contain"
+                        />
+
+                        {previewVariants.length > 1 && (
+                          <>
+                            <button
+                              type="button"
+                              className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center rounded bg-gray-300/80 text-gray-800 hover:bg-gray-300"
+                              aria-label="Previous mockup"
+                              onClick={() => setActivePreviewVariantIdx((i) => (i - 1 + previewVariants.length) % previewVariants.length)}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                            </button>
+                            <button
+                              type="button"
+                              className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center rounded bg-gray-300/80 text-gray-800 hover:bg-gray-300"
+                              aria-label="Next mockup"
+                              onClick={() => setActivePreviewVariantIdx((i) => (i + 1) % previewVariants.length)}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Right: Options panel */}
+                      <div className="bg-white border-t lg:border-t-0 lg:border-l border-gray-200 p-6 flex flex-col">
+                        <div className="text-sm text-gray-700 mb-3">Select how to preview your product:</div>
+
+                        <div>
+                          <div className="text-xs text-gray-500 mb-2">Mockup style</div>
+                          <div className="flex gap-2 mb-6">
+                            {previewVariants.slice(0, 2).map((v, idx) => {
+                              const active = idx === activePreviewVariantIdx
+                              return (
+                                <button
+                                  key={v.id}
+                                  type="button"
+                                  onClick={() => setActivePreviewVariantIdx(idx)}
+                                  className={
+                                    active
+                                      ? "w-20 h-20 rounded-md border-2 border-gray-900 overflow-hidden"
+                                      : "w-20 h-20 rounded-md border border-gray-300 overflow-hidden"
+                                  }
+                                  aria-pressed={active}
+                                  aria-label={v.label}
+                                >
+                                  <img
+                                    src={v.url}
+                                    alt={v.label}
+                                    className={active ? "w-full h-full object-cover" : "w-full h-full object-cover opacity-60"}
+                                  />
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewOpen(false)}
+                            className="px-4 py-2 text-gray-900 border border-gray-300 rounded-full hover:bg-gray-50"
+                          >
+                            Keep editing
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { if (onFinalize) onFinalize() }}
+                            disabled={!!submitting}
+                            className="px-5 py-2 bg-gray-900 text-white rounded-full hover:bg-black disabled:opacity-50 inline-flex items-center gap-2"
+                          >
+                            {submitting ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                Adding to order...
+                              </div>
+                            ) : (
+                              <>
+                                <span>Add to order</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-600 font-medium">No preview available</p>
-                      <p className="text-gray-500 text-sm mt-1">Add some design elements to see a preview</p>
-                    </div>
+                  <div className="flex items-center justify-center min-h-[300px]">
+                    <p className="text-gray-600">No preview available</p>
                   </div>
                 )}
-                
-                {/* Preview Notes */}
+
+                {/* Keep any preview note below content */}
                 {previewNote && (
-                  <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                    <div className="flex items-start gap-3">
-                      <svg className="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                      </svg>
-                      <p className="text-amber-800 text-sm">{previewNote}</p>
-                    </div>
-                  </div>
+                  <div className="mt-6 p-3 bg-amber-50 border border-amber-200 rounded-md text-sm text-amber-800">{previewNote}</div>
                 )}
-              </div>
-              
-              {/* Enhanced Footer */}
-              <div className="flex items-center justify-between p-6 border-t border-gray-100 bg-white">
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={handlePreview}
-                    disabled={previewLoading}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    Refresh Preview
-                  </button>
-                  <div className="text-sm text-gray-500">
-                    High-resolution preview ready for production
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewOpen(false)}
-                    className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    Continue Editing
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { if (onFinalize) onFinalize() }}
-                    disabled={!!submitting}
-                    className="px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold shadow-lg"
-                  >
-                    {submitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Adding to Cart...
-                      </div>
-                    ) : (
-                      'Add to Cart'
-                    )}
-                  </button>
-                </div>
               </div>
             </div>
           </div>

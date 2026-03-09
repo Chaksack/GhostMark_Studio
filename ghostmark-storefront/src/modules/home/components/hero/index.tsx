@@ -1,9 +1,31 @@
 import { Button, Heading } from "@medusajs/ui"
-import { Star } from "lucide-react"
 import React from "react"
 
+type HeroProps = {
+  title?: string
+  subtitle?: string
+  description?: string
+  primaryCtaLabel?: string
+  secondaryCtaLabel?: string
+  imageUrl?: string
+}
 
-const Hero = () => {
+const Hero = ({
+  title,
+  subtitle,
+  description,
+  primaryCtaLabel,
+  secondaryCtaLabel,
+  imageUrl,
+}: HeroProps) => {
+  const defaultTitle = (
+    <>
+      <span className="block">Grow your print on</span>
+      <span className="block">demand business</span>
+      <span className="block">with GhostMart Studio</span>
+    </>
+  )
+
   return (
     <div className="h-[55vh] max-w-7xl mx-auto relative ">
       <div className="absolute inset-0 z-10 grid lg:grid-cols-2 items-center px-6 md:px-10">
@@ -13,23 +35,29 @@ const Hero = () => {
             level="h1"
             className="text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight"
           >
-            <span className="block">Grow your print on</span>
-            <span className="block">demand business</span>
-            <span className="block">with GhostMart Studio</span>
+            {title ? (
+              <span className="block whitespace-pre-line">{title}</span>
+            ) : (
+              defaultTitle
+            )}
           </Heading>
 
           <div className="space-y-3 text-left">
-            <p className="text-ui-fg-subtle text-xl">Peak season is here</p>
+            <p className="text-ui-fg-subtle text-xl">{subtitle || "Peak season is here"}</p>
             <p className="text-ui-fg-subtle">
-              Let&apos;s make this your most profitable quarter yet with the world&apos;s
-              largest <a className="underline hover:text-ui-fg-base">print on demand</a> network
+              {description || (
+                <>
+                  Let&apos;s make this your most profitable quarter yet with the world&apos;s
+                  largest <a className="underline hover:text-ui-fg-base">print on demand</a> network
+                </>
+              )}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button size="large">Create for free</Button>
+            <Button size="large">{primaryCtaLabel || "Create for free"}</Button>
             <Button size="large" variant="secondary">
-              See our products
+              {secondaryCtaLabel || "See our products"}
             </Button>
           </div>
 
@@ -48,7 +76,7 @@ const Hero = () => {
         {/* Right column visual */}
         <div className="relative hidden lg:block h-full">
             <img
-                src="/hero1.webp"
+                src={imageUrl || "/hero1.webp"}
                 alt="Hero"
                 className="absolute inset-0 h-full w-full object-cover rounded-3xl"
             />
