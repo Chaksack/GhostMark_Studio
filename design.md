@@ -154,8 +154,23 @@ CMS (Strapi) Integration Notes — 2026-03-08
 - Image hosting: If Strapi media comes from another host, add it to Next.js images.remotePatterns in ghostmark-storefront/next.config.js.
 - Future work: If desired, wire Medusa workflows/webhooks to sync products or content with Strapi. For now, the CMS is read-only from the storefront.
 
-Gift Card System — 2026-03-08
-- Backend: Medusa cart supports applying gift cards using the cart update API with a gift_cards payload. Admin issuance/management can be done via Medusa Admin or API as per your setup.
+Gift Card System — 2026-03-08 / 2026-03-09
+- Backend:
+  - Cart supports applying gift cards using the cart update API with a gift_cards payload (already wired in storefront data layer).
+  - Seed now includes a purchasable digital product “GhostMark Gift Card” with denominations 25/50/100, flagged as is_giftcard so it’s treated as store credit and appears in the storefront catalog.
+  - Purchase flow: When a gift card product is purchased and captured, Medusa’s gift card logic handles redemption during checkout via code. For development, you can also issue codes via Admin/API.
+- Endpoints (Admin/Store):
+  - We rely on Medusa’s built-in Admin Gift Card endpoints for issuing, listing, and disabling gift cards. No custom backend endpoints are required at this time.
+  - Storefront redemption is handled via the existing Cart update endpoint (apply/remove gift card codes on a cart). We did not add a public balance-check endpoint to avoid leaking sensitive information. If you need one later, add a thin GET /store/gift-cards/:code that returns only a masked code and remaining balance.
+  - Example (Admin SDK) — issue a gift card code:
+    - import { MedusaAdminClient } from "@medusajs/admin-sdk"
+    - const admin = new MedusaAdminClient({ baseUrl: process.env.MEDUSA_BACKEND_URL!, apiKey: process.env.MEDUSA_ADMIN_API_KEY! })
+    - await admin.giftCards.create({ value: 5000, region_id: "<region_id>", balance: 5000, disabled: false }) // amounts in minor units
+  - Example (Admin SDK) — disable a gift card:
+    - await admin.giftCards.update("<gift_card_id>", { disabled: true })
+  - Example (Storefront) — apply/remove codes (already wired in storefront lib):
+    - apply: sdk.store.cart.update(cartId, { gift_cards: [{ code: "XXXX-XXXX" }] })
+    - remove: sdk.store.cart.update(cartId, { gift_cards: [] })
 - Storefront: Added a Gift Card redemption UI that lets shoppers enter a gift card code and remove applied gift cards.
   - Component: ghostmark-storefront/src/modules/checkout/components/gift-card-code
   - Rendered in:
@@ -163,10 +178,11 @@ Gift Card System — 2026-03-08
     - Checkout summary: ghostmark-storefront/src/modules/checkout/templates/checkout-summary/index.tsx
   - Totals: Gift-card deductions appear automatically in CartTotals if present on the cart (gift_card_subtotal).
 - Usage steps (dev):
-  1) Issue a gift card in Medusa Admin (or via API) to obtain a code.
+  1) Purchase a “GhostMark Gift Card” from the catalog (denominations 25/50/100) OR issue a gift card in Medusa Admin/API to obtain a code.
   2) In the Cart or Checkout summary, click “Add Gift Card”, enter the code, and click Apply.
   3) The cart totals update to reflect the gift card deduction; if total becomes 0, checkout can complete without card entry.
   4) Remove an applied gift card via the trash icon next to the code.
 - Notes:
   - Storefront calls applyGiftCard/removeGiftCard in src/lib/data/cart.ts, which update the cart via sdk.store.cart.update.
   - If your backend doesn’t accept gift_cards in cart.update, ensure the gift card functionality/module is enabled in your Medusa backend version.
+  - Seeding: run pnpm --filter ghostmark seed (or npm run seed inside ghostmark) to create the Gift Card product alongside demo products.

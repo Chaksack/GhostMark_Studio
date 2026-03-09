@@ -572,6 +572,88 @@ export default async function seedDemoData({ container }: ExecArgs) {
             },
           ],
         },
+        // Digital Gift Card product so shoppers can purchase and receive a code
+        {
+          title: "GhostMark Gift Card",
+          description:
+            "Send the perfect gift. Digital gift card delivered by email after purchase.",
+          handle: "gift-card",
+          // Mark as gift card so backend treats this product as non-shippable credit
+          is_giftcard: true as unknown as boolean,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/gift-card.png",
+            },
+          ],
+          // Denomination selector
+          options: [
+            {
+              title: "Denomination",
+              values: ["25", "50", "100"],
+            },
+          ],
+          variants: [
+            {
+              title: "$25",
+              sku: "GIFT-25",
+              options: {
+                Denomination: "25",
+              },
+              // Note: amounts are demo values consistent with other seed data
+              prices: [
+                {
+                  amount: 25,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 25,
+                  currency_code: "usd",
+                },
+              ],
+            },
+            {
+              title: "$50",
+              sku: "GIFT-50",
+              options: {
+                Denomination: "50",
+              },
+              prices: [
+                {
+                  amount: 50,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 50,
+                  currency_code: "usd",
+                },
+              ],
+            },
+            {
+              title: "$100",
+              sku: "GIFT-100",
+              options: {
+                Denomination: "100",
+              },
+              prices: [
+                {
+                  amount: 100,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 100,
+                  currency_code: "usd",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
         {
           title: "GhostMark Sweatshirt",
           category_ids: [

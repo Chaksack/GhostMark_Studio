@@ -186,6 +186,20 @@ export default async function Nav() {
             },
           ]}
         />
+
+        {/* Gifts menu with Gift Cards and GMS Box */}
+        <DropdownMenu
+          label="Gifts"
+          sections={[
+            {
+              title: "Gifts",
+              items: [
+                { label: "Gift Cards", href: "/products/gift-card" },
+                { label: "GMS Box", href: "/gms-box" },
+              ],
+            },
+          ]}
+        />
       </nav>
     </div>
   )
