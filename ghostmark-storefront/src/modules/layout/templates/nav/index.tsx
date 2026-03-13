@@ -10,6 +10,7 @@ import CartButton from "@modules/layout/components/cart-button"
 import WishlistButton from "@modules/layout/components/wishlist-button"
 import { DropdownMenu } from "./dropdown-menu"
 import { Ghost } from 'lucide-react';
+import dynamic from 'next/dynamic'
 import { retrieveCustomer } from "@lib/data/customer"
 import SearchBox from "@modules/layout/components/search"
 
@@ -56,6 +57,9 @@ export default async function Nav() {
     categories: ['Design', 'Print', 'Shipping'],
       collections: ['Custom products', 'Custom designs', 'Custom prints']
   }
+
+  // Dynamically import Novu bell as client-only, without SSR
+  const NovuBell = dynamic(() => import('@modules/notifications/NovuBell'), { ssr: false })
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
@@ -108,6 +112,9 @@ export default async function Nav() {
               >
                 <CartButton />
               </Suspense>
+              {/* Novu notifications bell (renders only if env is configured). Pass stable subscriber id when logged in. */}
+              {/* @ts-expect-error Async Server Component context; rendered client-side via dynamic import */}
+              <NovuBell initialSubscriberId={customer?.id} />
             </div>
               <div className="hidden small:flex items-center gap-x-1 h-full">
                   <LocalizedClientLink

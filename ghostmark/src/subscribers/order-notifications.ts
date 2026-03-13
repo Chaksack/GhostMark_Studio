@@ -10,6 +10,8 @@ export default async function orderConfirmationHandler({
 }>) {
   const notificationModuleService = container.resolve(Modules.NOTIFICATION)
   const query = container.resolve("query")
+  // Novu utilities (backend-driven in-app notifications)
+  const { isNovuEnabled, upsertSubscriber, triggerInAppEvent } = await import("../utils/novu")
 
   try {
     // Fetch order details with customer information
@@ -62,6 +64,35 @@ export default async function orderConfirmationHandler({
       data: emailData,
     })
 
+    // Optionally, send an in-app notification via Novu from the backend
+    // This ensures notifications originate from the server and not only client-side UI
+    if (isNovuEnabled()) {
+      const subscriberId = order.customer?.id || order.customer?.email
+      if (subscriberId) {
+        // Upsert subscriber with basic profile
+        await upsertSubscriber({
+          subscriberId,
+          email: order.customer.email,
+          firstName: (order.customer as any)?.first_name,
+          lastName: (order.customer as any)?.last_name,
+        })
+
+        // Trigger an in-app event (configure template/routing in Novu)
+        await triggerInAppEvent({
+          eventName: "order_placed",
+          subscriberId,
+          payload: {
+            order_id: order.id,
+            order_display_id: displayId,
+            total: order.total,
+            currency_code: (order as any)?.currency_code,
+            total_quantity: totalQuantity,
+            created_at: (order as any)?.created_at,
+          },
+        })
+      }
+    }
+
     // Send bulk order alert for large orders (25+ units or corporate)
     if (totalQuantity >= 25 || customerType === 'corporate') {
       // Send to admin/sales team
@@ -79,7 +110,7 @@ export default async function orderConfirmationHandler({
     console.log(`Order confirmation emails sent for order ${displayId}`)
 
   } catch (error) {
-    console.error('Failed to send order confirmation email:', error)
+    console.error('Failed to send order confirmation/in-app notification:', error)
   }
 }
 

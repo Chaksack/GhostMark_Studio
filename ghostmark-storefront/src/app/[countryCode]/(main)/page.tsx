@@ -36,11 +36,17 @@ export default async function Home(props: {
   // Fetch homepage content from Strapi (optional)
   let homepage: StrapiHomepage | null = null
   if (isStrapiEnabled()) {
-    const res = await strapiFetch<StrapiHomepage>(
-      "api/homepage?populate=heroImage"
-    )
-    if (!res.error && res.data) {
-      homepage = res.data as unknown as StrapiHomepage
+    try {
+      const res = await strapiFetch<StrapiHomepage | { data: StrapiHomepage }>(
+        "api/homepage?populate=heroImage"
+      )
+      // Strapi single types commonly return { data: { id, attributes } }
+      const data: any = (res as any)?.data
+      if (!res.error && data) {
+        homepage = (data?.data ? data.data : data) as StrapiHomepage
+      }
+    } catch {
+      // noop – render with fallbacks
     }
   }
 

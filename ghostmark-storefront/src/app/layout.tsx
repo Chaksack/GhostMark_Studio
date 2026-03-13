@@ -5,12 +5,16 @@ import NewsletterPopup from "@modules/common/components/newsletter-popup"
 import { Metadata } from "next"
 import "styles/globals.css"
 import CampaignBanners from "@modules/layout/components/campaign-banners"
+import dynamic from "next/dynamic"
+
+const RegisterSW = dynamic(() => import("@modules/pwa/RegisterSW"), { ssr: false })
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
     title: "GhostMark Studio",
     description: "Print on demand business",
     keywords: "GhostMark Studio",
+        manifest: "/manifest.webmanifest",
         icons: {
             icon: "/favicon.ico",
             shortcut: "/favicon.ico",
@@ -35,6 +39,8 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           <NewsletterPopup />
           {/* Cookie consent banner */}
           <CookieConsent />
+          {/* PWA: register service worker on client */}
+          <RegisterSW />
         </main>
       </body>
     </html>
