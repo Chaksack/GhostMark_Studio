@@ -17,8 +17,16 @@ type ResendOptions = {
   from_name?: string
 }
 
+type ResendAttachment = {
+  filename: string
+  content: string | Buffer
+  contentType?: string
+  content_type?: string
+  type?: string
+}
+
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
-  static identifier = "resend"
+  static readonly identifier = "resend"
   
   static validateOptions(options: ResendOptions) {
     if (!options.api_key) {
@@ -90,6 +98,10 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
       emailContent.subject = this.interpolateTemplate(emailContent.subject, data)
       emailContent.html = this.interpolateTemplate(emailContent.html, data)
 
+      const attachments: ResendAttachment[] = Array.isArray(content?.attachments)
+        ? content.attachments
+        : []
+
       // Ensure layout: if html is not a full document, wrap it using the unified
       // black/white email layout with the site logo. This guarantees consistent UI
       // for all emails, including ad-hoc content without a named template.
@@ -115,6 +127,17 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
         subject: emailContent.subject,
         html: emailContent.html,
         text: emailContent.text,
+        ...(attachments.length
+          ? {
+              attachments: attachments
+                .filter((a) => a && typeof a.filename === "string" && a.filename && (a as any).content)
+                .map((a) => ({
+                  filename: a.filename,
+                  content: a.content,
+                  contentType: a.contentType || a.content_type || a.type,
+                })),
+            }
+          : {}),
         tags: [
           { name: 'provider', value: 'resend' },
           { name: 'template', value: template || 'custom' },
@@ -133,7 +156,12 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
         `Resend notification sent successfully to ${to} (messageId=${result?.id}, template=${template || "custom"})`
       )
 
-      return { id: result!.id }
+      const messageId = result?.id
+      if (!messageId) {
+        throw new Error("Resend error: missing message id")
+      }
+
+      return { id: messageId }
     } catch (error) {
       this.logger_.error('Failed to send Resend notification', error)
       throw error

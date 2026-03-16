@@ -8,6 +8,8 @@ export const sdk = new Medusa({
   },
 })
 
+type ApiFetchInit = Omit<RequestInit, "body"> & { body?: any }
+
 // Small helper to ensure we always get parsed JSON in the Admin UI pages.
 // sdk.client.fetch may return a native Response depending on usage; this
 // wrapper will parse the response. IMPORTANT: Do NOT JSON.stringify here,
@@ -15,9 +17,9 @@ export const sdk = new Medusa({
 // too would double-encode and cause body-parser to fail on the backend.
 export async function apiFetch<T = any>(
   input: string,
-  init?: RequestInit
+  init?: ApiFetchInit
 ): Promise<T> {
-  const nextInit: RequestInit = { ...(init || {}) }
+  const nextInit: ApiFetchInit | undefined = init
 
   // Leave body as-is. Medusa SDK will handle JSON stringification of plain objects.
   // This prevents double-encoding like '"{\"message\":\"...\"}"'.

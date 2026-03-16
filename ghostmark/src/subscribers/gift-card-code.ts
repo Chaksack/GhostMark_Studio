@@ -60,7 +60,9 @@ export default async function giftCardCodeGenerator({
 
   if (!order) return
 
-  const items: OrderItem[] = order.items || []
+  const items: OrderItem[] = Array.isArray((order as any).items)
+    ? (((order as any).items as any[]).filter(Boolean) as OrderItem[])
+    : []
   const hasGiftCard = items.some((it) => {
     const p = it?.variant?.product
     const byFlag = (p as any)?.is_giftcard === true
@@ -172,9 +174,8 @@ export default async function giftCardCodeGenerator({
     const orderModule = container.resolve(Modules.ORDER)
     const existing = (order as any)?.metadata?.gift_card_codes || []
     const updatedCodes = Array.isArray(existing) ? [...existing, code] : [code]
-    await orderModule.updateOrders({
-      selector: { id: order.id },
-      update: { metadata: { ...(order as any).metadata, gift_card_codes: updatedCodes } },
+    await orderModule.updateOrders(order.id, {
+      metadata: { ...(order as any).metadata, gift_card_codes: updatedCodes },
     })
   } catch (e) {
     console.warn("Failed to persist gift card code on order metadata:", e)
