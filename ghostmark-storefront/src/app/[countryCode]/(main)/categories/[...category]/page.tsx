@@ -52,6 +52,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
   try {
     const productCategory = await getCategoryByHandle(params.category)
+    // If the category doesn't exist, return 404 metadata instead of throwing a 500
+    if (!productCategory) {
+      notFound()
+    }
 
     const title = productCategory.name + " | GhostMark Studio"
 

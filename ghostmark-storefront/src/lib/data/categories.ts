@@ -30,20 +30,29 @@ export const listCategories = async (query?: Record<string, any>) => {
   const fieldsWithProducts = "*category_children,*products,*parent_category,*parent_category.parent_category"
   const fields = query?.includeProducts ? fieldsWithProducts : defaultFields
 
-  return sdk.client
-    .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
-      "/store/product-categories",
-      {
-        query: {
-          fields,
-          limit,
-          ...query,
-        },
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ product_categories }) => product_categories)
+  try {
+    const { product_categories } = await sdk.client
+      .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
+        "/store/product-categories",
+        {
+          query: {
+            fields,
+            limit,
+            ...query,
+          },
+          next,
+          // Avoid stale or mismatched SSG/edge cache on live; let backend/source of truth answer fresh
+          cache: "no-store",
+        }
+      )
+    return product_categories
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error("listCategories failed, returning []:", e)
+    }
+    return [] as HttpTypes.StoreProductCategory[]
+  }
 }
 
 export const getCategoryByHandle = async (
@@ -61,17 +70,25 @@ export const getCategoryByHandle = async (
     ? "*category_children,*products,*parent_category" 
     : "*category_children,*parent_category"
 
-  return sdk.client
-    .fetch<HttpTypes.StoreProductCategoryListResponse>(
-      `/store/product-categories`,
-      {
-        query: {
-          fields,
-          handle,
-        },
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ product_categories }) => product_categories[0])
+  try {
+    const { product_categories } = await sdk.client
+      .fetch<HttpTypes.StoreProductCategoryListResponse>(
+        `/store/product-categories`,
+        {
+          query: {
+            fields,
+            handle,
+          },
+          next,
+          cache: "no-store",
+        }
+      )
+    return product_categories?.[0]
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error("getCategoryByHandle failed, returning undefined:", e)
+    }
+    return undefined
+  }
 }
