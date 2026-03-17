@@ -41,18 +41,22 @@ Important:
 
 ## 2) Storefront service (Next.js)
 
-**Root Directory**: `ghostmark-storefront`
+Preferred setup: run from the repo root so pnpm can use the root lockfile.
+
+**Root Directory**: `.` (repo root)
 
 **Build Command**:
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare yarn@4.6.0 --activate && yarn install --immutable && yarn build`
+- `npm run build:storefront`
 
 **Start Command**:
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare yarn@4.6.0 --activate && yarn start`
+- `npm run start:storefront`
 
 Notes:
 - Storefront `start/dev` scripts use Railway’s `PORT` (fallback `8000` locally).
+- The repository now uses pnpm for both backend and storefront builds/starts (no Corepack/Yarn required).
+- If you must set the Storefront service Root Directory to `ghostmark-storefront/`, run `pnpm install && pnpm build` (omit `--frozen-lockfile` since the lockfile lives at repo root).
 - `next.config.js` enforces required env vars at build time.
 
 **Required env (minimum)**

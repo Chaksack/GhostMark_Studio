@@ -15,7 +15,7 @@ COPY package.json yarn.lock ./
 # immutable install for deterministic dependencies.
 RUN corepack enable \
     && corepack prepare yarn@4.6.0 --activate \
-    && yarn install --immutable
+    && yarn install
 
 # Copy source and build
 COPY . .
