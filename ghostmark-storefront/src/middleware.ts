@@ -19,29 +19,63 @@ async function getRegionMap(cacheId: string) {
     )
   }
 
+  if (!PUBLISHABLE_API_KEY) {
+    throw new Error(
+      "Middleware.ts: Missing NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY. Please configure your storefront publishable API key so the middleware can call /store/regions on the Medusa backend."
+    )
+  }
+
   if (
     !regionMap.keys().next().value ||
     regionMapUpdated < Date.now() - 3600 * 1000
   ) {
     // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-    const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
+    const response = await fetch(`${BACKEND_URL}/store/regions`, {
       headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+        "x-publishable-api-key": PUBLISHABLE_API_KEY || "",
       },
       next: {
         revalidate: 3600,
         tags: [`regions-${cacheId}`],
       },
       cache: "force-cache",
-    }).then(async (response) => {
-      const json = await response.json()
-
-      if (!response.ok) {
-        throw new Error(json.message)
-      }
-
-      return json
     })
+
+    // Safely parse JSON only when the response is JSON. Avoids "Unexpected token '<'" when HTML is returned.
+    const contentType = response.headers.get("content-type") || ""
+    let data: any = undefined
+
+    if (contentType.includes("application/json")) {
+      try {
+        data = await response.json()
+      } catch (e) {
+        // fall through – we'll handle below
+      }
+    } else {
+      // Non-JSON response (often an HTML error page). Read a small preview for diagnostics.
+      const text = await response.text().catch(() => "")
+      const preview = text?.slice(0, 200) || ""
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch regions from MEDUSA_BACKEND_URL. Status ${response.status} ${response.statusText}. Received non-JSON response: ${preview}`
+        )
+      } else {
+        throw new Error(
+          `Unexpected non-JSON response from MEDUSA_BACKEND_URL when fetching /store/regions.`
+        )
+      }
+    }
+
+    if (!response.ok) {
+      const message =
+        data?.message || data?.error || JSON.stringify(data || {}) ||
+        `${response.status} ${response.statusText}`
+      throw new Error(
+        `Failed to fetch regions from MEDUSA_BACKEND_URL. ${message}`
+      )
+    }
+
+    const { regions } = (data || {}) as { regions?: HttpTypes.StoreRegion[] }
 
     if (!regions?.length) {
       throw new Error(
