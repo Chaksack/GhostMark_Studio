@@ -13,8 +13,9 @@ RUN apk add --no-cache libc6-compat
 COPY package.json yarn.lock ./
 # Disable strict peer dependency enforcement to avoid build failures in Docker
 # due to upstream packages declaring incompatible peer ranges (warnings instead of errors).
+# Use a prebuilt Yarn binary to avoid requiring git in the image
 RUN corepack enable \
-    && yarn set version from sources \
+    && corepack prepare yarn@4.6.0 --activate \
     && yarn config set enableStrictPeerDependencies false \
     && yarn install --immutable
 

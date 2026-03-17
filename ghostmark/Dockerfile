@@ -39,11 +39,13 @@ WORKDIR /app
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/dist ./dist
+## Copy Medusa build artifacts (includes admin static files)
+COPY --from=base /app/.medusa ./.medusa
 
 # Copy any necessary runtime files (e.g., medusa config, etc.)
 COPY --from=base /app/medusa-config.* ./
 
 EXPOSE 9000
 
-# Use medusa start to run the compiled server
-CMD ["node", "node_modules/.bin/medusa", "start"]
+# Use medusa start and bind to the provided PORT (e.g., Railway), default to 9000
+CMD ["sh", "-c", "node node_modules/.bin/medusa start --port ${PORT:-9000}"]
