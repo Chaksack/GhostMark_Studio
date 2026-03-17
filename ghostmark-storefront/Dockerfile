@@ -22,7 +22,8 @@ RUN pnpm run build
 FROM node:20-alpine AS runner
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    PORT=8000
+    PORT=8000 \
+    COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 WORKDIR /app
 
 # Copy minimal runtime assets
@@ -34,5 +35,8 @@ COPY --from=base /app/node_modules ./node_modules
 
 EXPOSE 8000
 
-# Ensure Corepack is enabled in the runtime container so pnpm is available even if the base image didn't persist shims
-CMD ["sh", "-c", "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm start"]
+# Pre-activate pnpm in the runner image so `pnpm` is on PATH even if the platform overrides the Docker CMD
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+
+# Default start (some platforms override CMD; having pnpm pre-activated avoids "pnpm not found")
+CMD ["pnpm", "start"]

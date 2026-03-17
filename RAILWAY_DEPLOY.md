@@ -64,6 +64,10 @@ Notes:
 If you see Railway logs mentioning Yarn 1.x and Corepack:
 - Ensure the Storefront service uses the build/start commands above (they do not call `yarn`).
 - Ensure `ghostmark-storefront/` does not include `yarn.lock` / `package-lock.json` (Railway/Nixpacks can auto-select Yarn/npm based on those).
+- If deploying the Storefront service with its Root Directory set to `ghostmark-storefront/`, a `nixpacks.toml` is provided in that folder to force pnpm via Corepack. Nixpacks will honor it and avoid Yarn entirely.
+
+Alternative: Docker
+- The `ghostmark-storefront/Dockerfile` is Railway-friendly and also uses pnpm via Corepack. If you prefer Docker builds on Railway, enable “Use Dockerfile” for the storefront service and Railway will build and run using that Dockerfile.
 
 **Required env (minimum)**
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`
