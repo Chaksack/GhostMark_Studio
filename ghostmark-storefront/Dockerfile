@@ -1,4 +1,4 @@
-# Next.js storefront Dockerfile
+# Next.js storefront Dockerfile (Medusa v2 + Railway friendly)
 FROM node:20-alpine AS base
 
 ENV NODE_ENV=production \
@@ -9,17 +9,15 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
-# Install dependencies using Yarn Berry (via Corepack)
-COPY package.json yarn.lock ./
-# Use a prebuilt Yarn binary to avoid requiring git in the image, then perform an
-# immutable install for deterministic dependencies.
+# Install dependencies using pnpm via Corepack (project is configured with packageManager=pnpm)
+COPY package.json pnpm-lock.yaml* ./
 RUN corepack enable \
-    && corepack prepare yarn@4.6.0 --activate \
-    && yarn install
+    && corepack prepare pnpm@9.15.4 --activate \
+    && if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
 
 # Copy source and build
 COPY . .
-RUN yarn build
+RUN pnpm run build
 
 # Runtime image
 FROM node:20-alpine AS runner
@@ -32,10 +30,10 @@ WORKDIR /app
 COPY --from=base /app/.next ./.next
 COPY --from=base /app/public ./public
 COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/yarn.lock ./yarn.lock
+COPY --from=base /app/pnpm-lock.yaml* ./
 COPY --from=base /app/node_modules ./node_modules
 
 EXPOSE 8000
 
 # Use the PORT env if provided by the platform (e.g., Railway), default to 8000
-CMD ["sh", "-c", "yarn start -p ${PORT:-8000}"]
+CMD ["sh", "-c", "pnpm start -p ${PORT:-8000}"]
