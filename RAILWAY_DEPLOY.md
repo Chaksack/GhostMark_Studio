@@ -22,6 +22,12 @@ Railway works best when you create **two services** (one per app) and set each s
 Notes:
 - Root `build/start` scripts are wired to run the backend in `ghostmark/`.
 - The backend binds to Railway’s `PORT` via the Medusa CLI (`--port` defaults to `env.PORT`).
+- The backend `start` script runs Medusa with `--directory .medusa/server` so it serves the compiled output (including `public/admin/index.html`).
+
+Important:
+- `medusa build` must run before `medusa start` so the Admin assets exist (it generates `ghostmark/.medusa/client/index.html`).
+- `medusa build` needs build-time tooling (`ts-node`, `typescript`, Vite/React for the admin bundle). If your Railway service is set up to install **production-only** dependencies, the build can be skipped or incomplete and you'll see: "Could not find index.html in the admin build directory".
+- Use the `npm run build` command above (repo root) — it forces pnpm to install devDependencies for the build.
 
 **Required env (minimum)**
 - `DATABASE_URL`
