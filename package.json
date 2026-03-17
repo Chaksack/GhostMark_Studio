@@ -2,9 +2,11 @@
 	"dependencies": {
 		"lucide-react": "^0.554.0"
 	},
-	"scripts": {
-		"cms:dev": "pnpm --filter ./cms dev || (cd cms && npm run dev)",
-		"cms:build": "pnpm --filter ./cms build || (cd cms && npm run build)",
-		"cms:start": "pnpm --filter ./cms start || (cd cms && npm start)"
-	}
+  "scripts": {
+    "build": "npm --prefix ghostmark-storefront install --no-audit --no-fund && npm --prefix ghostmark-storefront run build",
+    "start": "npm --prefix ghostmark-storefront start",
+    "cms:dev": "pnpm --filter ./cms dev || (cd cms && npm run dev)",
+    "cms:build": "pnpm --filter ./cms build || (cd cms && npm run build)",
+    "cms:start": "pnpm --filter ./cms start || (cd cms && npm start)"
+  }
 }

@@ -35,6 +35,39 @@ type RetrieveDraftOrderResponse = {
 
 const __draftOrderQueryClient = new QueryClient()
 
+async function downloadDraftInvoicePdf(draftOrder: DraftOrder) {
+  const displayId = String(draftOrder.display_id || draftOrder.id)
+  const res = await fetch(
+    `/admin/invoices/draft-orders/${encodeURIComponent(draftOrder.id)}/pdf`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  )
+
+  if (!res.ok) {
+    let msg = "Failed to download invoice"
+    try {
+      msg = (await res.text()) || msg
+    } catch {}
+    throw new Error(msg)
+  }
+
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+
+  try {
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `invoice-${displayId}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
+
 function formatMoney(amountMinor: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
@@ -49,8 +82,8 @@ function formatMoney(amountMinor: number, currencyCode?: string): string {
 
 const DraftOrderPageInner = () => {
   const id = useMemo(() => {
-    if (typeof window === "undefined") return ""
-    const parts = (window.location.pathname || "").split("/").filter(Boolean)
+    if (typeof globalThis.window === "undefined") return ""
+    const parts = (globalThis.location.pathname || "").split("/").filter(Boolean)
     const idx = parts.findIndex((p) => p.toLowerCase() === "draft-orders")
     if (idx !== -1 && parts[idx + 1]) {
       return decodeURIComponent(parts[idx + 1])
@@ -91,7 +124,7 @@ const DraftOrderPageInner = () => {
     },
     onSuccess: () => {
       toast.success("Draft order deleted")
-      window.location.href = "/app/draft-orders"
+      globalThis.location.href = "/app/draft-orders"
     },
     onError: (err) => {
       toast.error((err as any)?.message || "Failed to delete")
@@ -116,13 +149,55 @@ const DraftOrderPageInner = () => {
           <Button
             variant="secondary"
             size="small"
+            disabled={!draft || isLoading}
+            onClick={async () => {
+              if (!draft) return
+              try {
+                await downloadDraftInvoicePdf(draft)
+                toast.success("Invoice downloaded")
+              } catch (e: any) {
+                toast.error(e?.message || "Failed to download invoice")
+              }
+            }}
+          >
+            Download PDF
+          </Button>
+
+          <Button
+            variant="primary"
+            size="small"
+            disabled={!draft || isLoading}
+            onClick={async () => {
+              if (!draft) return
+              const to = draft.customer?.email || draft.email
+              if (!to) {
+                toast.error("Draft order has no customer email")
+                return
+              }
+              try {
+                await apiFetch(
+                  `/admin/invoices/draft-orders/${encodeURIComponent(draft.id)}/send`,
+                  { method: "POST" }
+                )
+                toast.success(`Invoice sent to ${to}`)
+              } catch (e: any) {
+                toast.error(e?.message || "Failed to send invoice")
+              }
+            }}
+          >
+            Send invoice
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="small"
             onClick={() => deleteDraft.mutate()}
             disabled={deleteDraft.isPending || !id}
           >
             Delete
           </Button>
           <Button
-            variant="primary"
+            variant="secondary"
             size="small"
             onClick={() => convertToOrder.mutate()}
             disabled={convertToOrder.isPending || !id}

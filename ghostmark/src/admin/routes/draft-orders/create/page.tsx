@@ -17,6 +17,60 @@ import {
 import React, { useEffect, useMemo, useState } from "react"
 import { apiFetch } from "../../../lib/sdk"
 
+type InvoiceItemInput = {
+  key: string
+  description: string
+  quantity: number
+  unitPriceMajor: string
+}
+
+function currencyFractionDigits(currencyCode?: string): number {
+  const currency = (currencyCode || "USD").toUpperCase()
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).resolvedOptions().maximumFractionDigits
+  } catch {
+    return 2
+  }
+}
+
+function minorUnitFactor(currencyCode?: string): number {
+  return Math.pow(10, currencyFractionDigits(currencyCode))
+}
+
+function parseMajorToMinor(value: string, currencyCode?: string): number {
+  const raw = String(value || "").trim()
+  if (!raw) return 0
+
+  // Allow "1,234.56" or "1234,56". Keep it simple and predictable.
+  const normalized = raw
+    .replaceAll(/\s/g, "")
+    .replaceAll(/,(?=\d{3}(\D|$))/g, "")
+    .replaceAll(",", ".")
+
+  const n = Number(normalized)
+  if (!Number.isFinite(n)) return 0
+
+  const factor = minorUnitFactor(currencyCode)
+  return Math.round(n * factor)
+}
+
+function formatMoney(amountMinor: number, currencyCode?: string): string {
+  const currency = (currencyCode || "USD").toUpperCase()
+  const factor = minorUnitFactor(currency)
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).format((amountMinor || 0) / factor)
+  } catch {
+    const digits = currencyFractionDigits(currency)
+    return `${((amountMinor || 0) / factor).toFixed(digits)} ${currency}`
+  }
+}
+
 type Region = {
   id: string
   name?: string
@@ -48,9 +102,35 @@ const DraftOrderCreatePageInner = () => {
   const [regionId, setRegionId] = useState<string>("")
   const [salesChannelId, setSalesChannelId] = useState<string>("")
 
-  const [itemTitle, setItemTitle] = useState("")
-  const [itemQuantity, setItemQuantity] = useState<number>(1)
-  const [itemUnitPrice, setItemUnitPrice] = useState<number>(0)
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [company, setCompany] = useState("")
+  const [phone, setPhone] = useState("")
+  const [address1, setAddress1] = useState("")
+  const [address2, setAddress2] = useState("")
+  const [city, setCity] = useState("")
+  const [province, setProvince] = useState("")
+  const [postalCode, setPostalCode] = useState("")
+  const [countryCode, setCountryCode] = useState("US")
+
+  const [paymentMethod, setPaymentMethod] = useState("")
+
+  const [items, setItems] = useState<InvoiceItemInput[]>([
+    {
+      key: "item-1",
+      description: "",
+      quantity: 1,
+      unitPriceMajor: "",
+    },
+  ])
+
+  const updateItem = (key: string, update: Partial<InvoiceItemInput>) => {
+    setItems((prev) => prev.map((p) => (p.key === key ? { ...p, ...update } : p)))
+  }
+
+  const removeItem = (key: string) => {
+    setItems((prev) => prev.filter((p) => p.key !== key))
+  }
 
   const {
     data: regionsData,
@@ -75,6 +155,12 @@ const DraftOrderCreatePageInner = () => {
   const regions = (regionsData as any)?.regions || []
   const salesChannels = (salesChannelsData as any)?.sales_channels || []
 
+  const selectedRegion: Region | undefined = useMemo(() => {
+    return regions.find((r: Region) => String(r.id) === String(regionId))
+  }, [regions, regionId])
+
+  const currencyCode = selectedRegion?.currency_code || "USD"
+
   useEffect(() => {
     if (!regionId && regions.length) {
       setRegionId(String(regions[0].id))
@@ -88,28 +174,59 @@ const DraftOrderCreatePageInner = () => {
   }, [salesChannelId, salesChannels])
 
   const canSubmit = useMemo(() => {
+    const lineItemsCount = items.filter((i) => i.description.trim() && i.quantity > 0).length
     return (
       email.trim().length > 0 &&
       regionId.trim().length > 0 &&
       salesChannelId.trim().length > 0 &&
-      itemTitle.trim().length > 0 &&
-      itemQuantity > 0
+      lineItemsCount > 0
     )
-  }, [email, regionId, salesChannelId, itemTitle, itemQuantity])
+  }, [email, regionId, salesChannelId, items])
+
+  const subtotalMinor = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const lineMinor = parseMajorToMinor(item.unitPriceMajor, currencyCode) * Number(item.quantity || 0)
+      return sum + Math.max(0, Number(lineMinor || 0))
+    }, 0)
+  }, [items, currencyCode])
 
   const createDraftOrder = useMutation({
     mutationFn: async () => {
+      const draftItems = items
+        .filter((i) => i.description.trim() && i.quantity > 0)
+        .map((i) => {
+          return {
+            title: i.description.trim(),
+            quantity: Number(i.quantity || 0),
+            unit_price: Math.max(0, parseMajorToMinor(i.unitPriceMajor, currencyCode)),
+          }
+        })
+
+      const billingAddress: any = {
+        first_name: firstName.trim() || undefined,
+        last_name: lastName.trim() || undefined,
+        company: company.trim() || undefined,
+        phone: phone.trim() || undefined,
+        address_1: address1.trim() || undefined,
+        address_2: address2.trim() || undefined,
+        city: city.trim() || undefined,
+        province: province.trim() || undefined,
+        postal_code: postalCode.trim() || undefined,
+        country_code: countryCode.trim().toLowerCase() || undefined,
+      }
+
       const body: any = {
         email: email.trim(),
         region_id: regionId,
         sales_channel_id: salesChannelId,
-        items: [
-          {
-            title: itemTitle.trim(),
-            quantity: itemQuantity,
-            unit_price: itemUnitPrice,
-          },
-        ],
+        billing_address: billingAddress,
+        // Invoices typically don't need separate shipping info.
+        shipping_address: billingAddress,
+        items: draftItems,
+        no_notification_order: true,
+        metadata: {
+          ...(paymentMethod.trim() ? { invoice_payment_method: paymentMethod.trim() } : {}),
+        },
       }
 
       return apiFetch<CreateDraftOrderResponse>("/admin/draft-orders", {
@@ -193,6 +310,58 @@ const DraftOrderCreatePageInner = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <Label>First name</Label>
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              </div>
+              <div>
+                <Label>Last name</Label>
+                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              </div>
+              <div>
+                <Label>Company</Label>
+                <Input value={company} onChange={(e) => setCompany(e.target.value)} />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label>Address line 1</Label>
+                <Input value={address1} onChange={(e) => setAddress1(e.target.value)} />
+              </div>
+              <div>
+                <Label>Address line 2</Label>
+                <Input value={address2} onChange={(e) => setAddress2(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>City</Label>
+                  <Input value={city} onChange={(e) => setCity(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Province / State</Label>
+                  <Input value={province} onChange={(e) => setProvince(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Postal code</Label>
+                  <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Country code</Label>
+                  <Input
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
+                    placeholder="US"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <Label>Region</Label>
                 <Select
                   value={regionId}
@@ -204,7 +373,7 @@ const DraftOrderCreatePageInner = () => {
                   <Select.Content>
                     {regions.map((r: Region) => (
                       <Select.Item key={r.id} value={r.id}>
-                        {r.name || r.id}
+                        {r.name || r.id} {r.currency_code ? `(${String(r.currency_code).toUpperCase()})` : ""}
                       </Select.Item>
                     ))}
                   </Select.Content>
@@ -232,40 +401,103 @@ const DraftOrderCreatePageInner = () => {
             </div>
 
             <div className="pt-2">
-              <Heading level="h3">Line item</Heading>
+              <Heading level="h3">Payment</Heading>
               <Text size="small" className="text-ui-fg-subtle">
-                Add one custom item (price is in minor units, e.g. cents)
+                Payment method is shown on the invoice PDF
               </Text>
             </div>
 
             <div>
-              <Label>Title</Label>
+              <Label>Payment method</Label>
               <Input
-                value={itemTitle}
-                onChange={(e) => setItemTitle(e.target.value)}
-                placeholder="Design services"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                placeholder="Bank transfer"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>Quantity</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={itemQuantity}
-                  onChange={(e) => setItemQuantity(Number(e.target.value || 1))}
-                />
-              </div>
-              <div>
-                <Label>Unit price (minor units)</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  value={itemUnitPrice}
-                  onChange={(e) => setItemUnitPrice(Number(e.target.value || 0))}
-                  placeholder="10000"
-                />
+            <div className="pt-2">
+              <Heading level="h3">Items</Heading>
+              <Text size="small" className="text-ui-fg-subtle">
+                Description, quantity, and unit price ({String(currencyCode).toUpperCase()})
+              </Text>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {items.map((item, idx) => (
+                <div
+                  key={item.key}
+                  className="grid grid-cols-1 md:grid-cols-[1fr_120px_160px_40px] gap-2 items-end"
+                >
+                  <div>
+                    <Label>Item description</Label>
+                    <Input
+                      value={item.description}
+                      onChange={(e) => updateItem(item.key, { description: e.target.value })}
+                      placeholder="Design services"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Qty</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const q = Math.max(1, Number(e.target.value || 1))
+                        updateItem(item.key, { quantity: q })
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Unit price</Label>
+                    <Input
+                      value={item.unitPriceMajor}
+                      onChange={(e) => updateItem(item.key, { unitPriceMajor: e.target.value })}
+                      placeholder="100.00"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      disabled={items.length <= 1}
+                      onClick={() => removeItem(item.key)}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => {
+                    setItems((prev) => {
+                      const nextIdx = prev.length + 1
+                      return [
+                        ...prev,
+                        {
+                          key: `item-${nextIdx}`,
+                          description: "",
+                          quantity: 1,
+                          unitPriceMajor: "",
+                        },
+                      ]
+                    })
+                  }}
+                >
+                  Add item
+                </Button>
+
+                <Text size="small" className="text-ui-fg-subtle">
+                  Subtotal: {formatMoney(subtotalMinor, currencyCode)}
+                </Text>
               </div>
             </div>
           </div>

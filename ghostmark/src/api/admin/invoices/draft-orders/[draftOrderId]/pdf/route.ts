@@ -1,11 +1,11 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { generateInvoicePdf } from "../../../../../services/invoice-pdf"
+import { generateInvoicePdf } from "../../../../../../services/invoice-pdf"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
-  const orderId = (req.params as any)?.orderId
+  const draftOrderId = (req.params as any)?.draftOrderId
 
-  if (!orderId) {
-    return res.status(400).json({ message: "Missing orderId" })
+  if (!draftOrderId) {
+    return res.status(400).json({ message: "Missing draftOrderId" })
   }
 
   const query = req.scope.resolve("query") as any
@@ -20,13 +20,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       "items.*",
       "items.variant.product.title",
     ],
-    filters: { id: orderId },
+    filters: { id: draftOrderId },
   })
 
   const order = Array.isArray(data) ? data[0] : null
 
   if (!order) {
-    return res.status(404).json({ message: "Order not found" })
+    return res.status(404).json({ message: "Draft order not found" })
   }
 
   const pdf = await generateInvoicePdf(order, {

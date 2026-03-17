@@ -1,6 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
-import { generateInvoicePdf } from "../../../../../services/invoice-pdf"
+import { generateInvoicePdf } from "../../../../../../services/invoice-pdf"
 
 type SendInvoiceBody = {
   to?: string
@@ -8,14 +8,13 @@ type SendInvoiceBody = {
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   try {
-    const orderId = (req.params as any)?.orderId
+    const draftOrderId = (req.params as any)?.draftOrderId
 
-    if (!orderId) {
-      return res.status(400).json({ message: "Missing orderId" })
+    if (!draftOrderId) {
+      return res.status(400).json({ message: "Missing draftOrderId" })
     }
 
     const body = (req.body || {}) as SendInvoiceBody
-
     const query = req.scope.resolve("query") as any
 
     const { data } = await query.graph({
@@ -28,19 +27,18 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         "items.*",
         "items.variant.product.title",
       ],
-      filters: { id: orderId },
+      filters: { id: draftOrderId },
     })
 
     const order = Array.isArray(data) ? data[0] : null
 
     if (!order) {
-      return res.status(404).json({ message: "Order not found" })
+      return res.status(404).json({ message: "Draft order not found" })
     }
 
     const customerEmail = body.to || order?.customer?.email || order?.email
-
     if (!customerEmail) {
-      return res.status(400).json({ message: "Order has no customer email" })
+      return res.status(400).json({ message: "Draft order has no customer email" })
     }
 
     const pdf = await generateInvoicePdf(order, {
@@ -54,10 +52,10 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
     const notificationModuleService = req.scope.resolve(Modules.NOTIFICATION) as any
 
-    const subject = `Invoice ${displayId} | GhostMark Studio`
+    const subject = `Invoice ${displayId} | ${process.env.INVOICE_ISSUER_NAME || "GhostMark Studio"}`
     const html = `
       <p style="margin:0 0 12px;">Hi,</p>
-      <p style="margin:0 0 12px;">Attached is your invoice for order <strong>${displayId}</strong>.</p>
+      <p style="margin:0 0 12px;">Attached is your invoice <strong>${displayId}</strong>.</p>
       <p style="margin:0;">Thank you for your business.</p>
     `
 
@@ -66,7 +64,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       channel: "email",
       template: undefined,
       data: {
-        order_display_id: displayId,
+        invoice_display_id: displayId,
       },
       content: {
         subject,
@@ -84,11 +82,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.json({
       success: true,
       to: customerEmail,
-      order_id: order.id,
+      draft_order_id: order.id,
       invoice_display_id: displayId,
     })
   } catch (error: any) {
-    console.error("Error sending invoice:", error)
+    console.error("Error sending draft invoice:", error)
     return res.status(500).json({
       success: false,
       message: error?.message || "Failed to send invoice",
