@@ -12,7 +12,7 @@ RUN apk add --no-cache libc6-compat
 # Install dependencies using pnpm via Corepack (project is configured with packageManager=pnpm)
 COPY package.json pnpm-lock.yaml* ./
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate && \
-    if [ -f pnpm-lock.yaml ]; then pnpm install --no-frozen-lockfile --prod=false; else pnpm install --prod=false; fi
+    if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --prod=false; else pnpm install --prod=false; fi
 
 # Copy source and build
 COPY . .
@@ -34,6 +34,5 @@ COPY --from=base /app/node_modules ./node_modules
 
 EXPOSE 8000
 
-# Use the PORT env if provided by the platform (e.g., Railway), default to 8000
 # Ensure Corepack is enabled in the runtime container so pnpm is available even if the base image didn't persist shims
-CMD ["sh", "-c", "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm start -p ${PORT:-8000}"]
+CMD ["sh", "-c", "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm start"]

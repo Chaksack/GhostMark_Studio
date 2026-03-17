@@ -55,11 +55,15 @@ Preferred setup: run from the repo root so pnpm can use the root lockfile.
 
 Notes:
 - Storefront `start/dev` scripts use Railway’s `PORT` (fallback `8000` locally).
-- The repository now uses pnpm for both backend and storefront builds/starts (no Corepack/Yarn required).
+- The repository uses pnpm for both backend and storefront. On Railway, Corepack is enabled inside the repo-root scripts to ensure pnpm is available.
 - If you must set the Storefront service Root Directory to `ghostmark-storefront/`, run `pnpm install && pnpm build` (omit `--frozen-lockfile` since the lockfile lives at repo root).
 - Storefront env validation runs at runtime by default (production server / dev). Build-time validation is optional:
 	- Set `REQUIRE_ENV_AT_BUILD=1` to fail the build if required env vars are missing.
 	- Set `SKIP_ENV_VALIDATION=1` to disable validation entirely.
+
+If you see Railway logs mentioning Yarn 1.x and Corepack:
+- Ensure the Storefront service uses the build/start commands above (they do not call `yarn`).
+- Ensure `ghostmark-storefront/` does not include `yarn.lock` / `package-lock.json` (Railway/Nixpacks can auto-select Yarn/npm based on those).
 
 **Required env (minimum)**
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`

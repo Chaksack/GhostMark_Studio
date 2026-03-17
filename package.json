@@ -4,11 +4,11 @@
 		"lucide-react": "^0.554.0"
 	},
   "scripts": {
-    "build": "pnpm --dir ghostmark install --frozen-lockfile --prefer-offline --prod=false && pnpm --dir ghostmark build",
-    "start": "pnpm --dir ghostmark start",
-    "dev": "pnpm --dir ghostmark dev",
-    "build:storefront": "pnpm --dir ghostmark-storefront install --no-frozen-lockfile && pnpm --dir ghostmark-storefront build",
-    "start:storefront": "pnpm --dir ghostmark-storefront start",
+    "build": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --dir ghostmark install --frozen-lockfile --prefer-offline --prod=false && pnpm --dir ghostmark build",
+    "start": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --dir ghostmark start",
+    "dev": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --dir ghostmark dev",
+    "build:storefront": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --dir ghostmark-storefront install --frozen-lockfile --prefer-offline && pnpm --dir ghostmark-storefront build",
+    "start:storefront": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --dir ghostmark-storefront start",
     "cms:dev": "pnpm --filter ./cms dev || (cd cms && npm run dev)",
     "cms:build": "pnpm --filter ./cms build || (cd cms && npm run build)",
     "cms:start": "pnpm --filter ./cms start || (cd cms && npm start)"
