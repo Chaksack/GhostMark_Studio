@@ -7,7 +7,7 @@
     "build": "pnpm --dir ghostmark install --frozen-lockfile --prefer-offline --prod=false && pnpm --dir ghostmark build",
     "start": "pnpm --dir ghostmark start",
     "dev": "pnpm --dir ghostmark dev",
-    "build:storefront": "pnpm --dir ghostmark-storefront install --frozen-lockfile && pnpm --dir ghostmark-storefront build",
+    "build:storefront": "pnpm --dir ghostmark-storefront install --no-frozen-lockfile && pnpm --dir ghostmark-storefront build",
     "start:storefront": "pnpm --dir ghostmark-storefront start",
     "cms:dev": "pnpm --filter ./cms dev || (cd cms && npm run dev)",
     "cms:build": "pnpm --filter ./cms build || (cd cms && npm run build)",

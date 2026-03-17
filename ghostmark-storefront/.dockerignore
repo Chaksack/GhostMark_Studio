@@ -1,9 +1,5 @@
+.yarn
+yarn.lock
 node_modules
-npm-debug.log
-yarn-error.log
-.git
-.gitignore
-.DS_Store
-.next
-.env
-.env.*
+.next/cache
+*.log

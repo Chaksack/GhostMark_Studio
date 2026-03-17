@@ -35,4 +35,5 @@ COPY --from=base /app/node_modules ./node_modules
 EXPOSE 8000
 
 # Use the PORT env if provided by the platform (e.g., Railway), default to 8000
-CMD ["sh", "-c", "pnpm start -p ${PORT:-8000}"]
+# Ensure Corepack is enabled in the runtime container so pnpm is available even if the base image didn't persist shims
+CMD ["sh", "-c", "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm start -p ${PORT:-8000}"]
