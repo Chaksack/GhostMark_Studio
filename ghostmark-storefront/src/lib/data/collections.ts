@@ -9,15 +9,24 @@ export const retrieveCollection = async (id: string) => {
     ...(await getCacheOptions("collections")),
   }
 
-  return sdk.client
-    .fetch<{ collection: HttpTypes.StoreCollection }>(
-      `/store/collections/${id}`,
-      {
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ collection }) => collection)
+  try {
+    const { collection } = await sdk.client
+      .fetch<{ collection: HttpTypes.StoreCollection }>(
+        `/store/collections/${id}`,
+        {
+          next,
+          // Avoid stale/mismatched cache in production
+          cache: "no-store",
+        }
+      )
+    return collection
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error("retrieveCollection failed, returning fallback {}:", e)
+    }
+    return {} as unknown as HttpTypes.StoreCollection
+  }
 }
 
 export const listCollections = async (
@@ -35,19 +44,27 @@ export const listCollections = async (
     ...queryParams,
   }
 
-  return sdk.client
-    .fetch<{ collections: HttpTypes.StoreCollection[]; count: number }>(
-      "/store/collections",
-      {
-        query: enhancedParams,
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ collections, count }) => ({ 
-      collections, 
-      count: count || collections.length 
-    }))
+  try {
+    const { collections, count } = await sdk.client
+      .fetch<{ collections: HttpTypes.StoreCollection[]; count: number }>(
+        "/store/collections",
+        {
+          query: enhancedParams,
+          next,
+          cache: "no-store",
+        }
+      )
+    return {
+      collections: collections || [],
+      count: count || (collections ? collections.length : 0),
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error("listCollections failed, returning []:", e)
+    }
+    return { collections: [], count: 0 }
+  }
 }
 
 export const getCollectionByHandle = async (
@@ -63,11 +80,19 @@ export const getCollectionByHandle = async (
     ? "id,handle,title,description,metadata,*products" 
     : "id,handle,title,description,metadata"
 
-  return sdk.client
-    .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
-      query: { handle, fields },
-      next,
-      cache: "force-cache",
-    })
-    .then(({ collections }) => collections[0])
+  try {
+    const { collections } = await sdk.client
+      .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
+        query: { handle, fields },
+        next,
+        cache: "no-store",
+      })
+    return (collections && collections[0]) as HttpTypes.StoreCollection
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error("getCollectionByHandle failed, returning undefined:", e)
+    }
+    return undefined as unknown as HttpTypes.StoreCollection
+  }
 }

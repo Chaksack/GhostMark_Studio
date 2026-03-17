@@ -18,6 +18,10 @@ type Props = {
 
 export const PRODUCT_LIMIT = 12
 
+// Ensure this route is always rendered dynamically in production to avoid
+// build-time data dependency issues causing 404s when params weren't prebuilt.
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   try {
     const { collections } = await listCollections({
@@ -58,11 +62,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
-  const collection = await getCollectionByHandle(params.handle)
-
-  if (!collection) {
-    notFound()
-  }
+  let collection = undefined
+  try {
+    collection = await getCollectionByHandle(params.handle)
+  } catch {}
+  if (!collection) notFound()
 
   const metadata = {
     title: `${collection.title} | GhostMark Studio`,

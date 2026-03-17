@@ -16,6 +16,10 @@ type Props = {
   }>
 }
 
+// Ensure this route renders dynamically to prevent build-time param gaps from
+// causing unexpected 404s in production when categories change frequently.
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   try {
     const product_categories = await listCategories()

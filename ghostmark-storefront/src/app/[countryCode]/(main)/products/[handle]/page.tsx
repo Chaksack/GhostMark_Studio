@@ -13,6 +13,10 @@ type Props = {
   searchParams: Promise<{ v_id?: string }>
 }
 
+// Render dynamically to ensure products added after build are routable and avoid
+// relying on generateStaticParams for completeness in production.
+export const dynamic = "force-dynamic"
+
 async function getById(productId: string, regionId: string) {
   try {
     const headers = { ...(await getAuthHeaders()) }
@@ -34,7 +38,8 @@ async function getById(productId: string, regionId: string) {
         query: { fields, region_id: regionId },
         headers,
         next,
-        cache: "force-cache",
+        // Avoid stale cache causing 404-like behavior in prod when prices/options change
+        cache: "no-store",
       }
     )
     return product
