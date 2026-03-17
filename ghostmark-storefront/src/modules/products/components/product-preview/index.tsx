@@ -84,6 +84,15 @@ export default async function ProductPreview({
     return typeStr === "apparel"
   })()
 
+  // Detect gift card products either by explicit flag or product type value "gift-card"
+  const isGiftCard: boolean = (() => {
+    const p: any = productWithFreshData as any
+    const byFlag = p?.is_giftcard === true
+    const t = p?.type ?? p?.product_type
+    const byType = typeof t === "object" && (t?.value || t?.title || t?.name || t?.handle)?.toString?.().toLowerCase?.() === "gift-card"
+    return Boolean(byFlag || byType)
+  })()
+
   // Pick a reasonable default variant for quick add on cards
   const pickVariantId = (): string | undefined => {
     const variants = productWithFreshData.variants || []
@@ -120,9 +129,11 @@ export default async function ProductPreview({
   }
 
   const quickVariantId = pickVariantId()
+  // We want direct add-to-cart for gift cards; reuse QuickAdd for apparel or gift cards
+  const showQuickAdd = isApparel || isGiftCard
 
-  return (
-    <LocalizedClientLink href={`/products/${product.handle}`} className="group block h-full">
+  // Shared card content
+  const CardInner = (
       <div
         data-testid="product-wrapper"
         className="h-full flex flex-col rounded-lg border border-mono-200 hover:border-mono-400 hover:shadow-md transition-all duration-200 bg-mono-0 overflow-hidden card-mono"
@@ -244,7 +255,7 @@ export default async function ProductPreview({
             <div className="flex items-center gap-2">
               <QuickWishlistButton isApparel={isApparel} productId={product.id} />
               <QuickAddButton
-                isApparel={isApparel}
+                isApparel={showQuickAdd}
                 variantId={quickVariantId}
                 className="flex-1"
               />
@@ -252,6 +263,21 @@ export default async function ProductPreview({
           </div>
         </div>
       </div>
+  )
+
+  // Render without navigation for gift cards to enforce direct add-to-cart UX
+  if (isGiftCard) {
+    return (
+      <div className="group block h-full" role="group" aria-label={`${product.title} (Gift Card)`}>
+        {CardInner}
+      </div>
+    )
+  }
+
+  // Default: link to PDP for non-gift-card products
+  return (
+    <LocalizedClientLink href={`/products/${product.handle}`} className="group block h-full">
+      {CardInner}
     </LocalizedClientLink>
   )
 }

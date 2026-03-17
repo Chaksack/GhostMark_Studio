@@ -30,6 +30,11 @@ export default async function CategoryTemplate({
 
   if (!category || !countryCode) notFound()
 
+  // Smart default: If the user visits the Gifts category without an explicit
+  // type filter, default to showing Gift Card products.
+  const effectiveProductType =
+    productType || (category?.handle?.toLowerCase() === "gifts" ? "gift-card" : undefined)
+
   const parents = [] as HttpTypes.StoreProductCategory[]
 
   const getParents = (category: HttpTypes.StoreProductCategory) => {
@@ -66,7 +71,7 @@ export default async function CategoryTemplate({
         collections={collectionsRes.collections}
         categories={allCategories?.map((c: any) => ({ id: c.id, handle: c.handle, name: c.name }))}
         activeCategoryHandle={category.handle}
-        productType={productType}
+        productType={effectiveProductType}
         productTypes={productTypes}
       />
       <div className="w-full">
@@ -78,7 +83,7 @@ export default async function CategoryTemplate({
                   className="mr-4 hover:text-black"
                   href={`${(() => {
                     const base = `/categories/${parent.handle}`
-                    return productType ? `${base}?type=${encodeURIComponent(productType)}` : base
+                    return effectiveProductType ? `${base}?type=${encodeURIComponent(effectiveProductType)}` : base
                   })()}`}
                   data-testid="sort-by-link"
                 >
@@ -102,7 +107,7 @@ export default async function CategoryTemplate({
                   <InteractiveLink
                     href={`${(() => {
                       const base = `/categories/${c.handle}`
-                      return productType ? `${base}?type=${encodeURIComponent(productType)}` : base
+                      return effectiveProductType ? `${base}?type=${encodeURIComponent(effectiveProductType)}` : base
                     })()}`}
                   >
                     {c.name}
@@ -189,7 +194,7 @@ export default async function CategoryTemplate({
               const ids = Array.from(setCombined)
               return { categoryIds: ids }
             })()}
-            productType={productType}
+            productType={effectiveProductType}
             countryCode={countryCode}
           />
         </Suspense>

@@ -1,3 +1,30 @@
+import { convertToLocale } from "@lib/util/money"
+import type { HttpTypes } from "@medusajs/types"
+
+type TotalsLike = {
+  currency_code: string
+  item_subtotal?: number | null
+  shipping_subtotal?: number | null
+  discount_subtotal?: number | null
+  gift_card_subtotal?: number | null
+  tax_total?: number | null
+  total?: number | null
+}
+
+type Props = {
+  totals: TotalsLike | HttpTypes.StoreCart | HttpTypes.StoreOrder
+}
+
+const CartTotals = ({ totals }: Props) => {
+  const {
+    currency_code,
+    item_subtotal,
+    shipping_subtotal,
+    discount_subtotal,
+    gift_card_subtotal,
+    tax_total,
+    total,
+  } = totals as TotalsLike
 
   return (
     <div>

@@ -116,24 +116,24 @@ export const listProducts = async ({
     // and gradually add more complex joins if needed
     const fieldAttempts: (string | null)[] = customFields && customFields.trim().length
       ? [
-          // Try exactly what the caller requested (sanitized)
-          customFields!,
+          // Try exactly what the caller requested (sanitized) plus minimal type flags for strict filtering
+          `${customFields!},+type.value,+is_giftcard`,
           // Essential fields without problematic type expansion
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id",
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id,+type.value,+is_giftcard",
           // Add variant images
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images",
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type.value,+is_giftcard",
           // Basic fallback
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options",
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+type.value,+is_giftcard",
           // Fallback to no explicit fields
           null,
         ]
       : [
           // Essential fields without problematic type expansion
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id",
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+images,+type_id,+type.value,+is_giftcard",
           // Add variant images
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images",
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+options,+variants.options,+images,+type.value,+is_giftcard",
           // Basic fallback
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options",
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+options,+variants.options,+type.value,+is_giftcard",
           // Fallback to no explicit fields
           null,
         ]
@@ -240,11 +240,30 @@ export const listProductsWithSort = async ({
   const limit = queryParams?.limit || 12
 
   // Build enhanced query params with optional type filtering
-  let enhancedQueryParams = {
+  let enhancedQueryParams: any = {
     ...queryParams,
     limit,
     // Prefer backend ordering when available; fallback to created_at
     order: (queryParams as any)?.order || (sortBy as string) || "created_at",
+  }
+
+  // Ensure we always request the minimal fields necessary for strict client-side
+  // type detection when a productType filter is active. Without these fields,
+  // downstream components may filter everything out.
+  const appendTypeFields = (fields: string | undefined) => {
+    const needed = ["+type.value", "+is_giftcard"]
+    if (!fields || !fields.trim().length) {
+      return needed.join(",")
+    }
+    const parts = fields.split(",").map((s) => s.trim()).filter(Boolean)
+    for (const n of needed) {
+      if (!parts.includes(n)) parts.push(n)
+    }
+    return parts.join(",")
+  }
+
+  if (productType) {
+    enhancedQueryParams.fields = appendTypeFields((queryParams as any)?.fields)
   }
 
   // Try to add type filtering at the backend level if productType is specified
@@ -258,6 +277,9 @@ export const listProductsWithSort = async ({
           // Medusa store list accepts type_id to filter by product type
           type_id: [type.id],
         }
+
+        // Also guarantee type fields are present in this branch
+        typeFilteredParams.fields = appendTypeFields(typeFilteredParams.fields)
 
         const { response, nextPage: serverNextPage } = await listProducts({
           pageParam: Math.max(page, 1),

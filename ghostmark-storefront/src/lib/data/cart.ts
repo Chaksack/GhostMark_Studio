@@ -465,16 +465,32 @@ export async function applyGiftCard(code: string) {
     ...(await getAuthHeaders()),
   }
 
-  return sdk.store.cart
-    .update(cartId, { gift_cards: [{ code }] }, {}, headers)
-    .then(async () => {
+  // Many backends (including this repo's gift card subscriber) emit codes as Promotions.
+  // Prefer applying via promo_codes first, and fall back to legacy gift_cards if unsupported.
+  try {
+    await sdk.store.cart.update(cartId, { promo_codes: [code] as any }, {}, headers)
+
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+
+    const fulfillmentCacheTag = await getCacheTag("fulfillment")
+    revalidateTag(fulfillmentCacheTag)
+    return
+  } catch (e) {
+    // Fall back to classic gift_cards array API
+    try {
+      await sdk.store.cart.update(cartId, { gift_cards: [{ code }] }, {}, headers)
+
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
-    })
-    .catch(medusaError)
+      return
+    } catch (err) {
+      throw medusaError(err)
+    }
+  }
 }
 
 export async function removeDiscount(code: string) {

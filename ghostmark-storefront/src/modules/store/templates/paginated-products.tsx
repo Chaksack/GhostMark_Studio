@@ -239,6 +239,37 @@ export default async function PaginatedProducts({
     }
   }
 
+  // Special fallback: If the page is for a type filter (e.g., gift-card) but
+  // no products are found under the selected category/categories, try again
+  // WITHOUT category constraints to surface the type globally. This helps in
+  // cases where Gift Card products are not assigned to the "Gifts" category
+  // but we still want /categories/gifts to show gift-card items.
+  if (productType && (Array.isArray(products) ? products.length === 0 : !products)) {
+    try {
+      const res = await listProductsWithSort({
+        page,
+        queryParams: {
+          limit: 12,
+          order: queryParams.order,
+        },
+        sortBy,
+        countryCode,
+        productType,
+      })
+      const global = res.response.products || []
+      // Re-apply strict client-side filter to be safe
+      const needle = productType.toLowerCase()
+      const filtered = global.filter((p) => strictMatchesType(p, needle))
+      products = filtered
+      count = filtered.length
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`[PaginatedProducts] Fallback without category for type "${productType}" -> ${filtered.length} items`)
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
   return (

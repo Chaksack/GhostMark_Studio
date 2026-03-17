@@ -65,44 +65,6 @@ Features include:
   - Streaming
   - Static Pre-Rendering
 
-  ## PWA and Push Notifications (Novu)
-
-  This storefront includes minimal Progressive Web App (PWA) support and an in-app notifications bell powered by Novu.
-  Notifications are triggered from the backend (Medusa server) and rendered in the client bell.
-
-  ### What was added
-  - Web App Manifest exposed at `/manifest.webmanifest` (via `app/manifest.ts`).
-  - Basic Service Worker at `public/sw.js` and automatic client-side registration.
-  - Novu Notification Center bell (renders only when env is configured).
-
-  ### How to enable
-  1. Ensure the app is served over HTTPS and a valid domain (required by PWA and Push APIs).
-  2. Set the following environment variable(s) in `.env.local` for the storefront:
-
-  ```
-  NEXT_PUBLIC_NOVU_APP_ID=your_novu_application_identifier
-  # Optional: Use a stable subscriber id if you have one; otherwise a UUID will be generated and stored in localStorage
-  # NEXT_PUBLIC_NOVU_SUBSCRIBER_ID=customer-or-user-id
-  ```
-
-  3. In the Novu dashboard, configure your Notification Center and the Web Push provider(s) you plan to use. Follow Novu’s docs to set allowed origins to your domain.
-  4. Deploy the site. On first load, the service worker will be registered automatically and the app will request Notification permission when appropriate.
-  5. Backend-driven notifications (recommended): In the Medusa server (ghostmark), set these environment variables in `ghostmark/.env` and restart the server:
-
-  ```
-  NOVU_API_KEY=your_novu_api_key
-  NOVU_APP_ID=your_novu_application_identifier
-  # Optional: NOVU_API_URL=https://api.novu.co/v1
-  ```
-
-  With these set, the server will upsert Novu subscribers and trigger an in-app event (e.g., `order_placed`) when an order is created/updated. The storefront bell uses a stable subscriber id (customer.id when logged in; otherwise a generated UUID) to display the inbox.
-
-  Notes:
-  - The bell will only render when `NEXT_PUBLIC_NOVU_APP_ID` is available at runtime.
-  - The current service worker is a minimal pass-through with notification click handling. You can extend it with caching strategies if needed.
-  - Icons referenced in the manifest are already present under `public/`.
-  - When backend Novu keys are configured, notifications are emitted from the server; the bell is only a UI widget to read them.
-
 # Quickstart
 
 ### Setting up the environment variables
