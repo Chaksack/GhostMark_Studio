@@ -57,7 +57,9 @@ Notes:
 - Storefront `start/dev` scripts use Railway’s `PORT` (fallback `8000` locally).
 - The repository now uses pnpm for both backend and storefront builds/starts (no Corepack/Yarn required).
 - If you must set the Storefront service Root Directory to `ghostmark-storefront/`, run `pnpm install && pnpm build` (omit `--frozen-lockfile` since the lockfile lives at repo root).
-- `next.config.js` enforces required env vars at build time.
+- Storefront env validation runs at runtime by default (production server / dev). Build-time validation is optional:
+	- Set `REQUIRE_ENV_AT_BUILD=1` to fail the build if required env vars are missing.
+	- Set `SKIP_ENV_VALIDATION=1` to disable validation entirely.
 
 **Required env (minimum)**
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`
@@ -72,4 +74,4 @@ Backend:
 - Service logs show the app listening on `$PORT`.
 
 Storefront:
-- Build fails fast if required `NEXT_PUBLIC_*` env vars are missing (intentional).
+- Runtime will fail fast if required `NEXT_PUBLIC_*` env vars are missing.
