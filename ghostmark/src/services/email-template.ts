@@ -1,7 +1,7 @@
 // Centralized HTML email layout for GhostMark Studio
 // Theme: Black & White, with site logo as title mark.
 
-function resolveBaseUrl(): string {
+export function resolveBaseUrl(): string {
   const cand =
     process.env.EMAIL_PUBLIC_BASE_URL ||
     process.env.ADMIN_PUBLIC_URL ||
@@ -11,7 +11,12 @@ function resolveBaseUrl(): string {
     process.env.MEDUSA_ADMIN_URL ||
     process.env.MEDUSA_BACKEND_URL ||
     ""
-  return String(cand).replace(/\/$/, "") || "http://localhost:9000"
+  const normalized = String(cand).replace(/\/$/, "")
+  if (normalized) return normalized
+  // Production-safe default: use the live admin domain so /static assets resolve correctly
+  return process.env.NODE_ENV === "production"
+    ? "https://admin.ghostmarkstudio.com"
+    : "http://localhost:9000"
 }
 
 export function resolveLogoUrl(): string {

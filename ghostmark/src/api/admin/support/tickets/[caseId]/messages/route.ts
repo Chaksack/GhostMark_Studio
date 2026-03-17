@@ -1,7 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { addMessage, getTicketByCaseId } from "../../../../../../services/support-db"
 import { sendEmail } from "../../../../../../services/email-service"
-import { renderEmailLayout } from "../../../../../../services/email-template"
+import { renderEmailLayout, resolveBaseUrl } from "../../../../../../services/email-template"
 
 /**
  * POST /admin/support/tickets/:caseId/messages
@@ -25,17 +25,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
     // Notify customer with a quick link/CTA to open their case
     try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL ||
-        process.env.STORE_URL ||
-        process.env.EMAIL_PUBLIC_BASE_URL ||
-        process.env.ADMIN_PUBLIC_URL ||
-        process.env.BACKEND_URL ||
-        process.env.MEDUSA_ADMIN_URL ||
-        process.env.MEDUSA_BACKEND_URL ||
-        "http://localhost:9000"
-
-      const normalizedBase = String(baseUrl).replace(/\/$/, "")
+      const normalizedBase = resolveBaseUrl()
       const caseUrl = `${normalizedBase}/support/${encodeURIComponent(caseId)}`
 
       const bodyHtml = `

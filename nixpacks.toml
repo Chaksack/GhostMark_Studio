@@ -1,0 +1,24 @@
+# Railway/Nixpacks configuration for the backend (ghostmark) service
+
+# Ensure Node.js is available in the build image
+[phases.setup]
+  nixPkgs = ["nodejs", "python3", "gcc", "gnumake"]
+
+# Install dependencies inside the ghostmark subdirectory. We support pnpm, npm, or yarn.
+[phases.install]
+  cmds = [
+    "export COREPACK_ENABLE_DOWNLOAD_PROMPT=0",
+    "corepack enable",
+    "if [ -f ghostmark/pnpm-lock.yaml ]; then corepack prepare pnpm@9.15.4 --activate; fi",
+    "sh -lc 'cd ghostmark && if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --prefer-offline; elif [ -f package-lock.json ]; then npm ci --omit=dev; elif [ -f yarn.lock ]; then yarn install --immutable --mode=skip-build; else echo \"No lockfile found in ghostmark.\" && exit 1; fi'"
+  ]
+
+# Build the backend from the ghostmark subdirectory
+[phases.build]
+  cmds = [
+    "sh -lc 'cd ghostmark && (pnpm run build || npm run build || yarn build)'"
+  ]
+
+# Explicit start command so Railpack/Nixpacks doesn't look for start.sh
+[start]
+  cmd = "bash -lc 'cd ghostmark && (pnpm start || npm run start || yarn start)'"

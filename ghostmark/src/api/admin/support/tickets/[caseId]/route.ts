@@ -1,7 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { getTicketByCaseId, updateTicketStatus } from "../../../../../services/support-db"
 import { sendEmail } from "../../../../../services/email-service"
-import { renderEmailLayout } from "../../../../../services/email-template"
+import { renderEmailLayout, resolveBaseUrl } from "../../../../../services/email-template"
 
 /**
  * GET /admin/support/tickets/:caseId
@@ -47,17 +47,7 @@ export async function PATCH(req: MedusaRequest, res: MedusaResponse) {
       if (before?.ticket && before.ticket.status !== 'closed' && status === 'closed') {
         const transcriptHtml = buildTranscriptHtml(before.messages || [])
 
-        const baseUrl =
-          process.env.NEXT_PUBLIC_BASE_URL ||
-          process.env.STORE_URL ||
-          process.env.EMAIL_PUBLIC_BASE_URL ||
-          process.env.ADMIN_PUBLIC_URL ||
-          process.env.BACKEND_URL ||
-          process.env.MEDUSA_ADMIN_URL ||
-          process.env.MEDUSA_BACKEND_URL ||
-          "http://localhost:9000"
-
-        const normalizedBase = String(baseUrl).replace(/\/$/, "")
+        const normalizedBase = resolveBaseUrl()
         const caseUrl = `${normalizedBase}/support/${encodeURIComponent(caseId)}`
 
         const html = renderEmailLayout({

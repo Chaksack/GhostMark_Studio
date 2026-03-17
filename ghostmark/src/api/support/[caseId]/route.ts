@@ -1,4 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { resolveBaseUrl } from "../../../services/email-template"
 
 /**
  * Public endpoint for customers to open a support case link from emails.
@@ -12,17 +13,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   try {
     const caseId = String((req.params as any)?.caseId || "").trim()
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.STORE_URL ||
-      process.env.EMAIL_PUBLIC_BASE_URL ||
-      process.env.ADMIN_PUBLIC_URL ||
-      process.env.BACKEND_URL ||
-      process.env.MEDUSA_ADMIN_URL ||
-      process.env.MEDUSA_BACKEND_URL ||
-      "http://localhost:9000"
-
-    const normalizedBase = String(baseUrl).replace(/\/$/, "")
+    const normalizedBase = resolveBaseUrl()
     const logoUrl = `${normalizedBase}/static/admin/icon.png`
 
     const safeCaseId = caseId.replace(/[<>"']/g, "")
@@ -64,7 +55,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
                 <p style="margin:0 0 8px">How to reply or add more details:</p>
                 <ul style="margin:0; padding-left:18px; color:#111">
                   <li>Reply directly to the email you received about this case, or</li>
-                  <li>Email us at <a href="mailto:support@ghostmarkstudio.com">support@ghostmarkstudio.com</a> and include your Case ID.</li>
+                  <li>Email us at <a href="mailto:info@ghostmarkstudio.com">info@ghostmarkstudio.com</a> and include your Case ID.</li>
                 </ul>
               </div>
               <div style="height:16px"></div>
