@@ -38,5 +38,13 @@ EXPOSE 8000
 # Pre-activate pnpm in the runner image so `pnpm` is on PATH even if the platform overrides the Docker CMD
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
-# Default start (some platforms override CMD; having pnpm pre-activated avoids "pnpm not found")
-CMD ["pnpm", "start"]
+# Default start
+# Important: We intentionally bypass the package.json "start" script to avoid triggering
+# the npm lifecycle "prestart" (which runs `next build`). In this runtime image we only
+# ship the compiled .next output, not the full source tree. Running `next build` here
+# would fail with "Couldn't find any `pages` or `app` directory". We therefore start
+# Next.js directly from the prebuilt output.
+#
+# Using `pnpm exec` ensures `node_modules/.bin` is on PATH without relying on shell env.
+# We use `sh -c` so the `${PORT:-8000}` expansion works at runtime on platforms like Railway.
+CMD ["sh", "-c", "pnpm exec next start -p ${PORT:-8000}"]
