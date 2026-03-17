@@ -1,4 +1,5 @@
 const checkEnvVariables = require("./check-env-variables")
+const path = require("node:path")
 
 checkEnvVariables()
 
@@ -24,6 +25,7 @@ try {
  */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: path.join(__dirname),
   logging: {
     fetches: {
       fullUrl: true,
