@@ -13,11 +13,14 @@ RUN apk add --no-cache libc6-compat
 COPY package.json pnpm-lock.yaml* ./
 RUN corepack enable \
     && corepack prepare pnpm@9.15.4 --activate \
-    && if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
+    && if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --prod=false; else pnpm install --prod=false; fi
 
 # Copy source and build
 COPY . .
 RUN pnpm run build
+
+# Reduce runtime size (keep only production dependencies)
+RUN pnpm prune --prod
 
 # Runtime image
 FROM node:20-alpine AS runner
