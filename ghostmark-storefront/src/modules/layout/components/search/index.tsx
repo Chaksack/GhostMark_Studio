@@ -147,24 +147,32 @@ const SearchBox = () => {
   }
 
   return (
-    <div className="relative w-full max-w-md" ref={searchRef}>
+    <div className="relative w-full" ref={searchRef}>
       <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search products..."
-          className="w-full border border-ui-border-base rounded-md py-2 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-ui-fg-base focus:border-ui-fg-base"
+          placeholder="Search for a product"
+          className="w-full h-11 border border-mono-200 rounded-full bg-mono-0 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-mono-1000 focus:border-mono-1000"
           data-testid="search-input"
         />
+
+        <button
+          type="submit"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-mono-600 hover:text-mono-1000 transition-colors"
+          aria-label="Search"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+
         {query && (
           <button
             type="button"
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-11 top-1/2 -translate-y-1/2 text-mono-500 hover:text-mono-900 transition-colors"
             aria-label="Clear search"
           >
             <X className="w-4 h-4" />
@@ -174,18 +182,18 @@ const SearchBox = () => {
 
       {/* Search Results Dropdown */}
       {isOpen && (debouncedQuery.length >= 0 || isLoading || suggestions.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-ui-border-base rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-mono-0 border border-mono-200 rounded-large shadow-sm max-h-96 overflow-y-auto z-50">
           {isLoading ? (
-            <div className="p-4 text-center text-ui-fg-subtle">
+            <div className="p-4 text-center text-mono-600">
               Searching...
             </div>
           ) : (
             <>
               {/* Search Suggestions */}
               {suggestions.length > 0 && (
-                <div className="border-b border-ui-border-base">
+                <div className="border-b border-mono-200">
                   <div className="p-2">
-                    <p className="text-xs text-ui-fg-subtle font-medium">
+                    <p className="text-xs text-mono-500 font-medium">
                       {debouncedQuery.length === 0 ? "Popular searches" : "Suggestions"}
                     </p>
                   </div>
@@ -194,12 +202,12 @@ const SearchBox = () => {
                       <li key={`${suggestion.text}-${index}`}>
                         <button
                           onClick={() => handleSuggestionClick(suggestion.text)}
-                          className="w-full text-left px-4 py-2 hover:bg-ui-bg-subtle transition-colors text-sm text-ui-fg-base"
+                          className="w-full text-left px-4 py-2 hover:bg-mono-50 transition-colors text-sm text-mono-900"
                         >
-                          <Search className="w-3 h-3 inline mr-2 text-ui-fg-muted" />
+                          <Search className="w-3 h-3 inline mr-2 text-mono-500" />
                           {suggestion.text}
                           {suggestion.type === 'popular' && (
-                            <span className="ml-2 text-xs text-ui-fg-muted">Popular</span>
+                            <span className="ml-2 text-xs text-mono-500">Popular</span>
                           )}
                         </button>
                       </li>
@@ -212,7 +220,7 @@ const SearchBox = () => {
               {results.length > 0 && (
                 <>
                   <div className="p-2">
-                    <p className="text-xs text-ui-fg-subtle">
+                    <p className="text-xs text-mono-500">
                       Products ({results.length} found)
                     </p>
                   </div>
@@ -222,7 +230,7 @@ const SearchBox = () => {
                         <LocalizedClientLink
                           href={`/products/${product.handle}`}
                           onClick={handleResultClick}
-                          className="block px-4 py-3 hover:bg-ui-bg-subtle transition-colors"
+                          className="block px-4 py-3 hover:bg-mono-50 transition-colors"
                           data-testid={`search-result-${product.id}`}
                         >
                           <div className="flex items-center gap-3">
@@ -235,16 +243,16 @@ const SearchBox = () => {
                               />
                             )}
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-medium text-ui-fg-base truncate">
+                              <h4 className="text-sm font-medium text-mono-900 truncate">
                                 {product.title}
                               </h4>
                               {product.type && (
-                                <p className="text-xs text-ui-fg-subtle">
+                                <p className="text-xs text-mono-600">
                                   {product.type}
                                 </p>
                               )}
                               {product.description && (
-                                <p className="text-xs text-ui-fg-muted truncate mt-1">
+                                <p className="text-xs text-mono-600 truncate mt-1">
                                   {product.description.slice(0, 100)}...
                                 </p>
                               )}
@@ -255,11 +263,11 @@ const SearchBox = () => {
                     ))}
                   </ul>
                   {results.length >= 6 && (
-                    <div className="p-3 border-t border-ui-border-base">
+                    <div className="p-3 border-t border-mono-200">
                       <LocalizedClientLink
                         href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
                         onClick={handleResultClick}
-                        className="block text-center text-sm text-ui-fg-base hover:text-ui-fg-subtle font-medium"
+                        className="block text-center text-sm text-mono-900 hover:text-mono-700 font-medium"
                       >
                         View all results →
                       </LocalizedClientLink>
@@ -271,13 +279,13 @@ const SearchBox = () => {
               {/* No results for search query */}
               {debouncedQuery.length >= 2 && results.length === 0 && suggestions.length === 0 && (
                 <div className="p-4 text-center">
-                  <p className="text-sm text-ui-fg-subtle">
-                    No products found for "{debouncedQuery}"
+                  <p className="text-sm text-mono-600">
+                    No products found for &ldquo;{debouncedQuery}&rdquo;
                   </p>
                   <LocalizedClientLink
                     href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
                     onClick={handleResultClick}
-                    className="text-sm text-ui-fg-base hover:text-ui-fg-subtle font-medium mt-2 inline-block"
+                    className="text-sm text-mono-900 hover:text-mono-700 font-medium mt-2 inline-block"
                   >
                     Search all products →
                   </LocalizedClientLink>

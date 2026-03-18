@@ -1790,7 +1790,7 @@ export default function TShirtDesigner(props: Props) {
                                                     <div>
                                                         <span className="font-medium text-gray-700">Print Size:</span>
                                                         <div className="text-gray-600">
-                                                            {uploadedImageMetadata.metadata.physicalWidth.toFixed(1)}" × {uploadedImageMetadata.metadata.physicalHeight?.toFixed(1)}"
+                                                          {uploadedImageMetadata.metadata.physicalWidth.toFixed(1)}″ × {uploadedImageMetadata.metadata.physicalHeight?.toFixed(1)}″
                                                         </div>
                                                     </div>
                                                 )}

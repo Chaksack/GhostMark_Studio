@@ -153,7 +153,7 @@ export const listProducts = async ({
             // Never forward `expand` as the backend rejects it in this setup
             ...((() => {
               const qp: any = queryParams || {}
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              // eslint-disable-next-line no-unused-vars
               const { expand: _omitExpand, fields: _omitFields, ...rest } = qp
               return rest
             })()),

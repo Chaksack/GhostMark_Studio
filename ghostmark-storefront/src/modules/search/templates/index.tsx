@@ -28,7 +28,7 @@ const SearchTemplate = ({
         {searchQuery ? (
           <>
             <Heading level="h1" className="text-2xl mb-2">
-              Search results for "{searchQuery}"
+              Search results for “{searchQuery}”
             </Heading>
             <Text className="text-ui-fg-subtle">
               Showing products that match your search

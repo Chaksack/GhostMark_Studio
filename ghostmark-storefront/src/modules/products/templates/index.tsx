@@ -36,7 +36,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
       <div className="content-container py-4">
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
           {/* Left: image gallery (sticky on desktop) */}
-          <div className="w-3/4 lg:sticky lg:top-32 col-span-2 self-start">
+          <div className="w-full lg:sticky lg:top-24 col-span-2 self-start">
             <ImageGallery images={images} />
           </div>
 
@@ -60,7 +60,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
                 const stars = "★★★★★".slice(0, Math.round(avg)).padEnd(5, "☆")
                 return (
                   <div className="flex items-center gap-3 text-ui-fg-subtle">
-                    <div className="flex items-center gap-1 text-emerald-600">
+                    <div className="flex items-center gap-1 text-mono-1000">
                       <span aria-hidden>{stars}</span>
                     </div>
                     <span className="text-sm">{avg.toFixed(1)} · {count} review{count === 1 ? '' : 's'}</span>
@@ -72,7 +72,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
             })()}
 
             {/* Delivery/production note similar to Gelato banner */}
-            <div className="rounded-lg border border-ui-border-base bg-ui-bg-subtle px-4 py-3 text-sm">
+            <div className="rounded-large border border-mono-200 bg-mono-50 px-4 py-3 text-sm text-mono-700">
               Most orders are produced in 24–72 hours. Shipping is calculated at checkout.
             </div>
 

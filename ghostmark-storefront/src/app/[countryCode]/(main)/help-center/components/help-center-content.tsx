@@ -316,7 +316,7 @@ export default function HelpCenterContent() {
       <div className="mt-12 bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
         <h3 className="text-xl font-semibold mb-4 text-ui-fg-base">Still Need Help?</h3>
         <p className="text-ui-fg-subtle mb-6 max-w-2xl mx-auto">
-          Can't find the answer you're looking for? Our support team is here to help you with any questions about orders, customization, or technical issues.
+          Can&apos;t find the answer you&apos;re looking for? Our support team is here to help you with any questions about orders, customization, or technical issues.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a

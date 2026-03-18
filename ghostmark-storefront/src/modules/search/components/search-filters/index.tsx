@@ -54,9 +54,9 @@ const SearchFilters = ({ query, sortBy }: SearchFiltersProps) => {
         <Text className="font-semibold mb-3 block">Search Tips</Text>
         <div className="space-y-2 text-sm text-ui-fg-muted">
           <p>• Use specific product names</p>
-          <p>• Try category names like "shirts" or "mugs"</p>
-          <p>• Search by material like "cotton" or "ceramic"</p>
-          <p>• Use colors like "black", "white", "red"</p>
+          <p>• Try category names like “shirts” or “mugs”</p>
+          <p>• Search by material like “cotton” or “ceramic”</p>
+          <p>• Use colors like “black”, “white”, “red”</p>
         </div>
       </div>
     </div>

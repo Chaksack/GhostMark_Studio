@@ -70,7 +70,7 @@ export default async function SearchResults({
     if (products.length === 0) {
       return (
         <div className="text-center py-12">
-          <Text className="text-lg mb-4">No products found for "{query}"</Text>
+          <Text className="text-lg mb-4">No products found for “{query}”</Text>
           <div className="space-y-2">
             <Text className="text-ui-fg-muted text-sm">Try:</Text>
             <ul className="text-ui-fg-muted text-sm space-y-1">

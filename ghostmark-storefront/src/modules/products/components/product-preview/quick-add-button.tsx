@@ -4,11 +4,11 @@ import { Button } from "@medusajs/ui"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 
-type QuickAddButtonProps = {
+type QuickAddButtonProps = Readonly<{
   variantId?: string
   isApparel?: boolean
   className?: string
-}
+}>
 
 /**
  * Client-side quick add-to-cart button intended to be rendered inside a product card.
@@ -16,8 +16,9 @@ type QuickAddButtonProps = {
  * - Prevents parent link navigation; performs a lightweight POST to /api/cart/add.
  */
 export default function QuickAddButton({ variantId, isApparel, className }: QuickAddButtonProps) {
-  const params = useParams() as { countryCode?: string }
-  const countryCode = params?.countryCode
+  const params = useParams()
+  const rawCountryCode = params?.countryCode
+  const countryCode = typeof rawCountryCode === "string" ? rawCountryCode : undefined
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -26,10 +27,9 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
   if (!isApparel) return null
   if (!variantId || !countryCode) return null
 
-  const onClick: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const addToCart = async () => {
     if (loading) return
+
     setLoading(true)
     setError(null)
     try {
@@ -38,6 +38,7 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ variantId, quantity: 1, countryCode }),
       })
+
       if (!res.ok) {
         let message = `Failed to add to cart (${res.status})`
         try {
@@ -46,11 +47,10 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
         } catch {}
         throw new Error(message)
       }
+
       setAdded(true)
-      // Trigger background page refresh to update cart
       router.refresh()
-      // Reset the added state after a short delay to allow repeated adds
-      setTimeout(() => setAdded(false), 1500)
+      globalThis.setTimeout(() => setAdded(false), 1500)
     } catch (err: any) {
       setError(err?.message || "Failed to add to cart")
     } finally {
@@ -58,12 +58,18 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
     }
   }
 
+  const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    void addToCart()
+  }
+
   return (
-    <div className={className} onClick={(e) => { e.stopPropagation() }}>
+    <div className={className}>
       <Button
         size="small"
         variant="secondary"
-        className="h-8 px-3 w-full bg-black text-white hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black border-transparent transition-colors"
+        className="h-9 px-4 w-full bg-mono-1000 text-mono-0 hover:bg-mono-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mono-1000 border border-mono-1000 transition-colors"
         onClick={onClick}
         isLoading={loading}
         aria-label={added ? "Added to cart" : "Add to cart"}
@@ -71,7 +77,7 @@ export default function QuickAddButton({ variantId, isApparel, className }: Quic
         {added ? "Added" : "Add to cart"}
       </Button>
       {error && (
-        <span className="ml-2 text-[11px] text-red-600">{error}</span>
+        <span className="ml-2 text-[11px] text-accent-error">{error}</span>
       )}
     </div>
   )

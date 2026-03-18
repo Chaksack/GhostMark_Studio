@@ -44,14 +44,14 @@ export default function WishlistButton() {
   return (
     <LocalizedClientLink
       href="/wishlist"
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-gray-50"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-mono-50"
       data-testid="nav-wishlist-link"
       aria-label={`Wishlist (${count})`}
     >
       <Heart className="w-5 h-5" />
       {count > 0 && (
         <span
-          className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-black text-white text-[10px] leading-none flex items-center justify-center shadow-sm"
+          className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-mono-1000 text-mono-0 text-[10px] leading-none flex items-center justify-center shadow-sm"
           aria-hidden="true"
         >
           {count > 99 ? "99+" : count}

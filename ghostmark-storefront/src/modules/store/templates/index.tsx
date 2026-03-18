@@ -3,8 +3,6 @@ import { Suspense } from "react"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import { Heading, Text, Button } from "@medusajs/ui"
-import CollectionsTiles from "@modules/store/templates/sections/collections-tiles"
 import { listCollections } from "@lib/data/collections"
 import { listCategories } from "@lib/data/categories"
 import { getProductTypesForFilter } from "@lib/data/product-types"
@@ -25,7 +23,7 @@ const StoreTemplate = async ({
   productType?: string
   titleOverride?: string
 }) => {
-  const pageNumber = page ? parseInt(page) : 1
+  const pageNumber = page ? Number.parseInt(page) : 1
   const sort = sortBy || "created_at"
   
   // Fetch data for sidebar filters
@@ -57,8 +55,8 @@ const StoreTemplate = async ({
       const list = (res?.data as unknown as any)?.data || (res?.data as unknown as any[])
       const item = Array.isArray(list) ? list[0] : null
       banner = (item || res?.data) as unknown as StrapiBanner
-    } catch (e) {
-      // ignore
+    } catch {
+      // Render without a banner if CMS is unavailable
     }
   }
 
@@ -85,12 +83,16 @@ const StoreTemplate = async ({
           {/* Optional CMS banner */}
           {banner?.attributes?.text && (
             <div
-              className="mb-6 rounded p-4 text-white"
-              style={{
-                backgroundColor: banner.attributes.backgroundColor || "#111827",
-              }}
+              className={`mb-6 rounded-large p-5 border border-mono-200 text-mono-0 ${
+                banner.attributes.backgroundColor ? "" : "bg-mono-1000"
+              }`}
+              style={
+                banner.attributes.backgroundColor
+                  ? { backgroundColor: banner.attributes.backgroundColor }
+                  : undefined
+              }
             >
-              <div className="text-sm uppercase opacity-80">
+              <div className="text-xs uppercase tracking-wide opacity-80">
                 {banner.attributes.title || "Promotion"}
               </div>
               <div className="text-base">
@@ -106,11 +108,7 @@ const StoreTemplate = async ({
           )}
           <div className="mb-8">
             <h2 className="text-2xl-semi" data-testid="store-page-title">
-              {titleOverride
-                ? titleOverride
-                : productType
-                ? `All ${productType}`
-                : "All products"}
+              {titleOverride || (productType ? `All ${productType}` : "All products")}
             </h2>
           </div>
           <Suspense fallback={<SkeletonProductGrid />}>

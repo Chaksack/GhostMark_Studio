@@ -1,13 +1,14 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState, type MouseEvent } from "react"
 import { Heart } from "lucide-react"
 
-type QuickWishlistButtonProps = {
+type QuickWishlistButtonProps = Readonly<{
   productId?: string
-  isApparel?: boolean
   className?: string
-}
+}>
+
+const STORAGE_KEY = "wishlist" as const
 
 /**
  * Lightweight client-only wishlist toggle for product cards.
@@ -15,17 +16,20 @@ type QuickWishlistButtonProps = {
  * - Persists a list of product IDs in localStorage under `wishlist`.
  * - Stops event propagation so clicking does not navigate the product card link.
  */
-export default function QuickWishlistButton({ productId, isApparel, className }: QuickWishlistButtonProps) {
+export default function QuickWishlistButton({ productId, className }: QuickWishlistButtonProps) {
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const storageKey = "wishlist"
-
-  // Only render for apparel and when we have an id
-  if (!isApparel || !productId) return null
 
   // Initialize state from localStorage on mount
   useEffect(() => {
+    if (!productId) {
+      setIsWishlisted(false)
+      return
+    }
+
     try {
-      const raw = localStorage.getItem(storageKey)
+      if (!("localStorage" in globalThis)) return
+
+      const raw = globalThis.localStorage.getItem(STORAGE_KEY)
       const arr = raw ? (JSON.parse(raw) as string[]) : []
       setIsWishlisted(Array.isArray(arr) && arr.includes(productId))
     } catch {
@@ -34,12 +38,16 @@ export default function QuickWishlistButton({ productId, isApparel, className }:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId])
 
-  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  if (!productId) return null
+
+  const toggle = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
 
     try {
-      const raw = localStorage.getItem(storageKey)
+      if (!("localStorage" in globalThis)) return
+
+      const raw = globalThis.localStorage.getItem(STORAGE_KEY)
       const arr = raw ? (JSON.parse(raw) as string[]) : []
       let next: string[]
       if (Array.isArray(arr) && arr.includes(productId)) {
@@ -49,10 +57,10 @@ export default function QuickWishlistButton({ productId, isApparel, className }:
         next = Array.isArray(arr) ? [...arr, productId] : [productId]
         setIsWishlisted(true)
       }
-      localStorage.setItem(storageKey, JSON.stringify(next))
+      globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
       // notify other UI (navbar counter, other tabs) that wishlist changed
       try {
-        window.dispatchEvent(new Event("wishlist:updated"))
+        globalThis.dispatchEvent(new Event("wishlist:updated"))
       } catch {}
     } catch {
       // ignore storage errors to avoid breaking UX
@@ -63,11 +71,11 @@ export default function QuickWishlistButton({ productId, isApparel, className }:
     <button
       onClick={toggle}
       className={[
-        "inline-flex items-center justify-center h-8 w-8 rounded-md border transition-colors",
+        "inline-flex items-center justify-center h-9 w-9 rounded-md border transition-colors",
         isWishlisted
-          ? "bg-black text-white border-transparent hover:bg-black/90"
-          : "bg-white text-gray-700 border-ui-border-base hover:bg-gray-50",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black",
+          ? "bg-mono-1000 text-mono-0 border-mono-1000 hover:bg-mono-900"
+          : "bg-mono-0 text-mono-700 border-mono-200 hover:bg-mono-50",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mono-1000",
         className || "",
       ].join(" ")}
       aria-pressed={isWishlisted}
@@ -77,7 +85,7 @@ export default function QuickWishlistButton({ productId, isApparel, className }:
       <Heart
         className={[
           "h-4 w-4",
-          isWishlisted ? "fill-white stroke-white" : "stroke-current",
+          isWishlisted ? "fill-mono-0 stroke-mono-0" : "stroke-current",
         ].join(" ")}
       />
     </button>

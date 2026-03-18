@@ -1,206 +1,171 @@
 import { Suspense } from "react"
 
-import { listRegions } from "@lib/data/regions"
 import { listCollections } from "@lib/data/collections"
-import { listCategories } from "@lib/data/categories"
 import { listTypes } from "@lib/data/types"
-import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import WishlistButton from "@modules/layout/components/wishlist-button"
 import { DropdownMenu } from "./dropdown-menu"
-import { Ghost } from 'lucide-react';
 import { retrieveCustomer } from "@lib/data/customer"
 import SearchBox from "@modules/layout/components/search"
+import { User } from "lucide-react"
 
 
 export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
   const customer = await retrieveCustomer().catch(() => null)
 
-  // Fetch collections and categories to populate the Products dropdown
-  const [{ collections }, { types }, categories] = await Promise.all([
+  // Fetch collections/types to populate navbar links/menus
+  const [{ collections }, { types }] = await Promise.all([
     listCollections({ limit: "200", fields: "id,handle,title" }).catch(() => ({ collections: [] })),
       listTypes({ limit: 200 }).catch(() => ({ types: [] })),
-      listCategories({ limit: 200 }).catch(() => []),
   ])
 
-  // Map to menu sections with direct hrefs
-  const productSections = [
+  const findTypeHref = (label: string) => {
+    const normalized = label.toLowerCase().trim()
+    const type = (types || []).find((t) => {
+      const title = (t?.title || "").toLowerCase().trim()
+      const handle = (t?.handle || "").toLowerCase().trim()
+      return title === normalized || handle === normalized
+    })
 
-      {
-          title: "Types",
-          items: (types || []).map((c) => ({
-              label: c.title || c.handle || "Types",
-              href: `/store/${c.handle}`,
-          })),
-      },
+    return type?.handle ? `/store/${type.handle}` : "/store"
+  }
+
+  const primaryLinks: { label: string; href: string }[] = [
+    { label: "Apparel", href: findTypeHref("Apparel") },
+    { label: "Bags", href: findTypeHref("Bags") },
+    { label: "Headwear", href: findTypeHref("Headwear") },
+    { label: "Office", href: findTypeHref("Office") },
+    { label: "Drinkware", href: findTypeHref("Drinkware") },
+    { label: "Home", href: findTypeHref("Home") },
+    { label: "Wellness", href: findTypeHref("Wellness") },
+    { label: "Others", href: "/store" },
+  ]
+
+  const brandSections = [
     {
-      title: "Collections",
-      items: (collections || []).map((c) => ({
-        label: c.title || c.handle || "Collection",
-        href: `/collections/${c.handle}`,
-      })),
-    },
-    {
-      title: "Categories",
-      items: (categories || []).map((cat: any) => ({
-        label: cat.name || cat.handle || "Category",
-        href: `/categories/${cat.handle}`,
-      })),
+      title: "Brands",
+      items: (collections || [])
+        .filter((c) => Boolean(c?.handle))
+        .map((c) => ({
+          label: c.title || c.handle || "Brand",
+          href: `/collections/${c.handle}`,
+        })),
     },
   ]
 
-  const menuItems = {
-    resources: ['Customer stories', 'Help center'],
-    categories: ['Design', 'Print', 'Shipping'],
-      collections: ['Custom products', 'Custom designs', 'Custom prints']
-  }
+  const discoverSections = [
+    {
+      title: "Discover",
+      items: [
+        { label: "Customer stories", href: "/customer-stories" },
+        { label: "Help center", href: "/help-center" },
+        { label: "Support", href: "/support" },
+      ],
+    },
+  ]
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      {/* Top banner */}
-      {/*<div className="bg-black text-white py-1 px-4 text-center text-sm">*/}
-      {/*  <span className="font-medium"> Industry-leading Print on Demand Platform </span>*/}
-      {/*</div>*/}
-
-      <header className="relative h-14 mx-auto duration-200 py-2 bg-white border-b border-mono-200">
-        <nav className="content-container flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex items-center h-full">
-              <img src={"/ghostmark-logo-icon.png"} alt="GhostMark Logo" className="h-12" />
-              <LocalizedClientLink
+    <div className="sticky top-0 inset-x-0 z-50 bg-mono-0 border-b border-mono-200">
+      <header className="mx-auto duration-200">
+        <div className="content-container py-4">
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
+            <LocalizedClientLink
               href="/"
-              className="text-mono-1000 hover:text-mono-800 font-bold uppercase transition-colors"
+              className="flex items-center gap-3"
               data-testid="nav-store-link"
             >
-            GhostMark <span className="font-medium text-sm">Studio </span>
+              <img
+                src={"/ghostmark-logo-icon.png"}
+                alt="GhostMark"
+                className="h-10 w-auto"
+              />
+              <span className="text-2xl font-semibold tracking-tight text-mono-1000">
+                GhostMark
+              </span>
             </LocalizedClientLink>
-          </div>
 
-          <div className="flex items-center gap-x-3 h-full flex-1 basis-0 justify-end">
-            <div className="w-1/2">
-              <SearchBox />
+            <div className="hidden medium:flex justify-center">
+              <div className="w-full max-w-[640px]">
+                <SearchBox />
+              </div>
             </div>
-            <div className="flex items-center gap-x-1">
+
+            <div className="flex items-center justify-end gap-1">
+              <LocalizedClientLink
+                href="/account"
+                data-testid="nav-account-link"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-mono-50"
+                aria-label={
+                  customer
+                    ? `Account (${[
+                        (customer as any)?.first_name,
+                        (customer as any)?.last_name,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || (customer as any)?.email || "Account"})`
+                    : "Account"
+                }
+                title="Account"
+              >
+                <User className="h-5 w-5" />
+              </LocalizedClientLink>
+
               <Suspense
                 fallback={
                   <LocalizedClientLink
-                    className="hover:text-ui-fg-base flex gap-2"
+                    className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-mono-50"
                     href="/wishlist"
                     data-testid="nav-wishlist-link"
+                    aria-label="Wishlist"
                   >
-                    Wishlist (0)
+                    Wishlist
                   </LocalizedClientLink>
                 }
               >
                 <WishlistButton />
               </Suspense>
+
               <Suspense
                 fallback={
                   <LocalizedClientLink
-                    className="hover:text-ui-fg-base flex gap-2"
+                    className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-mono-50"
                     href="/cart"
                     data-testid="nav-cart-link"
+                    aria-label="Cart"
                   >
-                    Cart (0)
+                    Cart
                   </LocalizedClientLink>
                 }
               >
                 <CartButton />
               </Suspense>
             </div>
-              <div className="hidden small:flex items-center gap-x-1 h-full">
-                  <LocalizedClientLink
-                      className="bg-black text-white hover:bg-black/90 text-sm max-w-[180px] inline-flex items-center justify-center px-4 py-2 rounded"
-                      href="/account"
-                      data-testid="nav-account-link"
-                      aria-label={customer ? `Account (${[
-                        (customer as any)?.first_name,
-                        (customer as any)?.last_name,
-                      ]
-                        .filter(Boolean)
-                        .join(" ") || (customer as any)?.email || "Account"})` : "Account"}
-                  >
-                      <span className="truncate">
-                        {(() => {
-                          if (!customer) return "Account"
-                          const first = (customer as any)?.first_name as string | undefined
-                          const last = (customer as any)?.last_name as string | undefined
-                          const email = (customer as any)?.email as string | undefined
-                          const full = [first, last].filter(Boolean).join(" ").trim()
-                          if (full) return full
-                          if (email) return email.split("@")[0] || "Account"
-                          return "Account"
-                        })()}
-                      </span>
-                  </LocalizedClientLink>
-              </div>
           </div>
-        </nav>
+
+          <nav className="mt-3 hidden medium:flex items-center justify-center gap-7 text-sm">
+            {primaryLinks.map((l) => (
+              <LocalizedClientLink
+                key={l.label}
+                href={l.href}
+                className="font-medium text-mono-900 hover:text-mono-700 transition-colors"
+              >
+                {l.label}
+              </LocalizedClientLink>
+            ))}
+
+            <DropdownMenu label="Discover" sections={discoverSections} />
+
+            <span className="h-4 w-px bg-mono-200" aria-hidden="true" />
+
+            <DropdownMenu label="Brands" sections={brandSections} />
+          </nav>
+
+          <div className="mt-3 medium:hidden">
+            <SearchBox />
+          </div>
+        </div>
       </header>
-
-      <nav className="content-container w-full flex items-center py-1 text-sm bg-white">
-        {/* Products dropdown shows Types, Collections, and Categories with direct links */}
-        <DropdownMenu label="Products" sections={productSections} />
-
-        {/* Dedicated Categories menu linking to category pages */}
-        <DropdownMenu
-          label="Categories"
-          sections={[
-            {
-              title: "Categories",
-              items: (categories || []).map((cat: any) => ({
-                label: cat.name || cat.handle || "Category",
-                href: `/categories/${cat.handle}`,
-              })),
-            },
-          ]}
-        />
-
-        {/* Dedicated Collections menu linking to collection pages */}
-        <DropdownMenu
-          label="Collections"
-          sections={[
-            {
-              title: "Collections",
-              items: (collections || []).map((c) => ({
-                label: c.title || c.handle || "Collection",
-                href: `/collections/${c.handle}`,
-              })),
-            },
-          ]}
-        />
-
-        {/* Resources menu now links to Help Center and Customer Stories */}
-        <DropdownMenu
-          label="Resources"
-          sections={[
-            {
-              title: "Resources",
-              items: [
-                { label: "About us", href: "/about" },
-                { label: "Support", href: "/support" },
-                { label: "Help center", href: "/help-center" },
-                { label: "Customer stories", href: "/customer-stories" },
-              ],
-            },
-          ]}
-        />
-
-        {/* Gifts menu with Gift Cards and GMS Box */}
-        <DropdownMenu
-          label="Gifts"
-          sections={[
-            {
-              title: "Gifts",
-              items: [
-                { label: "Gift Cards", href: "/gift-cards" },
-                { label: "GMS Box", href: "/gms-box" },
-              ],
-            },
-          ]}
-        />
-      </nav>
     </div>
   )
 }
