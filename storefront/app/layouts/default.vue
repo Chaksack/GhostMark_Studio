@@ -6,6 +6,16 @@
       <slot />
     </main>
     <AppFooter />
+
+    <!--
+      Utility widgets: both depend on localStorage and on the live region
+      catalogue, so we keep them out of the SSR pass to avoid hydration
+      mismatches and to keep first-paint payload lean.
+    -->
+    <ClientOnly>
+      <GeoModal />
+      <CookieBanner />
+    </ClientOnly>
   </div>
 </template>
 

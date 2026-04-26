@@ -1,52 +1,66 @@
 <template>
-  <section class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
-    <div class="rounded-2xl bg-[#f5f1ec] px-6 py-10 sm:px-10 sm:py-14 lg:px-14">
-      <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
-        <!-- Left: heading + description -->
+  <aside
+    aria-labelledby="footer-faq-heading"
+    class="rounded-[0.5rem] bg-offWhite lg:flex p-6 md:p-10 lg:p-12 gap-12 lg:gap-24"
+  >
+      <!-- Left: heading + intro + CTA -->
+      <div class="flex flex-col flex-1 lg:sticky lg:top-[140px] lg:self-start lg:h-fit">
+        <h2 id="footer-faq-heading" class="text-[2.4rem] leading-[2.8rem] md:text-[3.2rem] md:leading-[3.8rem] lg:text-[4rem] lg:leading-[4.6rem] mb-[1.8rem]">
+          Frequently asked questions
+        </h2>
+        <p class="mb-[3rem] text-[1.4rem] leading-[2rem] md:text-[1.6rem] md:leading-[2.3rem]">
+          Need some help? Browse through our summary of the most frequently asked
+          questions about shipping, returns, samples, sourcing, pricing, and many more!
+        </p>
         <div>
-          <h2 class="font-serif text-[32px] leading-[1.15] text-zinc-950 sm:text-[42px]">
-            Frequently asked questions
-          </h2>
-          <p class="mt-5 max-w-[460px] text-[15px] leading-relaxed text-zinc-700">
-            Need some help? Browse through our summary of the most frequently asked
-            questions about shipping, returns, samples, sourcing, pricing, and many more!
-          </p>
           <NuxtLink
             to="/faq"
-            class="mt-7 inline-flex h-[46px] items-center justify-center bg-zinc-950 px-6 text-[14px] font-medium text-white hover:bg-zinc-800"
+            class="bg-black text-white hover:bg-transparent hover:text-black border border-black border-solid px-[1.6rem] py-[1.2rem] inline-block"
           >
             View more
           </NuxtLink>
         </div>
+      </div>
 
-        <!-- Right: accordion -->
-        <div>
-          <div
-            v-for="(item, i) in faqs"
-            :key="i"
-            class="border-t border-zinc-300 last:border-b"
-          >
+      <!-- Right: accordion -->
+      <div class="flex-1 my-[2rem] max-lg:mt-[5.5rem]">
+        <div
+          v-for="(item, i) in faqs"
+          :key="i"
+          class="border-b border-black first:border-t pt-[1.8rem] pb-[2rem] pr-[0.7rem]"
+        >
+          <h3 class="flex">
             <button
-              class="flex w-full items-center justify-between py-4 text-left text-[15px] font-normal text-zinc-950 sm:text-[16px]"
+              class="flex flex-1 items-center justify-between transition-all text-left group font-sans m-0 p-0"
+              type="button"
               @click="toggle(i)"
             >
               <span>{{ item.question }}</span>
-              <span
-                class="ml-4 flex h-6 w-6 shrink-0 items-center justify-center text-[20px] font-light text-zinc-950 transition-transform duration-200"
-                :class="{ 'rotate-45': openIndex === i }"
-              >+</span>
+              <!--
+                +/- icon built from two pure divs, exactly per the merchery
+                reference: a horizontal bar that always shows, plus a vertical
+                bar that rotates and scales away when the row is open.
+              -->
+              <div class="relative h-4 w-4 shrink-0">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="absolute w-3 h-0.5 bg-current"></div>
+                  <div
+                    class="absolute w-0.5 h-3 bg-current transition-all duration-300"
+                    :class="{ 'rotate-90 scale-x-0': openIndex === i }"
+                  ></div>
+                </div>
+              </div>
             </button>
-            <div
-              v-show="openIndex === i"
-              class="pb-4 pr-10 text-[14px] leading-relaxed text-zinc-600"
-            >
-              {{ item.answer }}
-            </div>
+          </h3>
+          <div
+            v-show="openIndex === i"
+            class="overflow-hidden text-sm pt-[1rem] pr-[2rem] leading-relaxed"
+          >
+            {{ item.answer }}
           </div>
         </div>
       </div>
-    </div>
-  </section>
+  </aside>
 </template>
 
 <script setup lang="ts">

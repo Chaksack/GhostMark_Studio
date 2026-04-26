@@ -1,0 +1,153 @@
+/**
+ * tokens.css — Phase 1 design-token runtime layer.
+ *
+ * Loaded via nuxt.config.ts `css:` array, after tailwind.css.
+ * Keep this file lean: declare base color-scheme + a single accessibility
+ * override for users that prefer reduced motion. Component-level styles
+ * belong in their own files.
+ *
+ * Note: this file is loaded as a standalone stylesheet (not processed by
+ * Tailwind's `@tailwind base` directive), so we use a plain `:root` selector
+ * rather than `@layer base { :root { … } }`. Wrapping these declarations in
+ * an undefined cascade layer crashes Vite's SSR worker in this Nuxt 4 +
+ * Vite 7 setup. The functional result (color-scheme on the document root)
+ * is identical.
+ */
+
+:root {
+  color-scheme: light;
+  /*
+   * Body inherits Inter Tight without needing a `font-sans` / `font-body`
+   * class on every element. The Tailwind config aliases both `font-sans`
+   * and `font-body` to the same Inter Tight stack, but Nuxt's preflight
+   * resets html/body to the platform `ui-sans-serif` cascade — without
+   * this rule, `getComputedStyle(document.body).fontFamily` reports
+   * `ui-sans-serif` and the variable woff2 we requested in
+   * nuxt.config.ts is downloaded but never painted.
+   */
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+/*
+ * Dial Fraunces' optical size axis down so headlines render with the
+ * low-contrast wedge-serif silhouette merchery.co reaches for with
+ * Reckless. `font-optical-sizing: auto` would otherwise hand off to the
+ * browser's size-based heuristic and we'd get the high-contrast Didone
+ * cut at large display sizes — exactly what we're moving away from.
+ *
+ * `font-variation-settings` is the only way to pin the opsz axis on a
+ * variable font; the size-keyword shortcut doesn't expose it.
+ */
+h1, h2, h3, h4, h5, h6,
+.font-display,
+.font-serif {
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 14, 'SOFT' 50, 'WONK' 0;
+}
+
+/**
+ * Phase 4 — page + layout transitions.
+ *
+ * Wired via nuxt.config.ts `app.pageTransition` / `app.layoutTransition`,
+ * which Vue resolves to these `.page-*` / `.layout-*` CSS class hooks on the
+ * <Transition> component wrapping <NuxtPage> / <NuxtLayout>.
+ *
+ * Reference: a soft fade with a small vertical micro-shift (8px in / -4px out).
+ * Total perceived navigation time is held under ~300ms with a `mode: 'out-in'`
+ * sequence (200ms leave, then 280ms enter). Easing is the standard
+ * "ease-out-quint"-ish cubic-bezier(0.22, 1, 0.36, 1) for a subtle decelerate.
+ *
+ * The reduced-motion guard below already neutralises these transitions for
+ * users who request it (the universal selector matches `.page-enter-active`
+ * et al), so no separate `@media (prefers-reduced-motion)` block is needed.
+ */
+.page-enter-active,
+.layout-enter-active {
+  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-leave-active,
+.layout-leave-active {
+  transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-enter-from,
+.layout-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to,
+.layout-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/**
+ * Respect prefers-reduced-motion (WCAG 2.3.3 Animation from Interactions).
+ * Uses !important to defeat utility-class transitions/animations and keep
+ * scrolling instantaneous for vestibular-sensitive users.
+ *
+ * The universal selector here also covers the .page-* / .layout-* transition
+ * classes above, so reduced-motion users get an effectively instant nav with
+ * no vertical shift required (transform stays at its default `none`).
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * Scroll-reveal animation primitives.
+ *
+ * Used by:
+ *   - the `v-reveal` global directive (app/plugins/v-reveal.client.ts)
+ *   - the `useScrollReveal` composable (app/composables/useScrollReveal.ts)
+ *
+ * The transition curve is the same emphasized ease used by section-level
+ * micro-interactions elsewhere (see tailwind.config.ts → `ease-emphasis`),
+ * tuned slightly slower (600ms) because reveals span a larger Y delta than
+ * a button hover.
+ *
+ * `will-change` is declared on the init state only — once the element has
+ * settled into `reveal-visible` we want the browser to release the
+ * compositor layer it created for the transition.
+ */
+.reveal-init {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/**
+ * Belt-and-braces reduced-motion guard. The directive's mount-time check
+ * already short-circuits the IntersectionObserver, but if any element ever
+ * lands in `.reveal-init` (e.g. from a stale class on a route transition)
+ * we still want it to render fully visible immediately.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-init {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

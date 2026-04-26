@@ -143,12 +143,12 @@
 
             <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-6">
               <div v-if="providersLoading" class="text-zinc-500">Loading payment providers&hellip;</div>
-              <div v-else-if="!providers.length" class="text-zinc-500">No payment providers available. Please contact support.</div>
+              <div v-else-if="!visibleProviders.length" class="text-zinc-500">No payment providers available. Please contact support.</div>
               <div v-else>
                 <h3 class="text-[14px] font-semibold text-zinc-950">Payment method</h3>
                 <div class="mt-3 grid gap-2">
                   <label
-                    v-for="p in providers"
+                    v-for="p in visibleProviders"
                     :key="p.id"
                     class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition"
                     :class="selectedProviderId === p.id ? 'border-zinc-950 bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'"
@@ -160,8 +160,34 @@
                       v-model="selectedProviderId"
                       class="accent-zinc-950"
                     />
-                    <span class="text-[14px] text-zinc-950">{{ p.id }}</span>
+                    <span class="text-[14px] text-zinc-950">{{ providerLabel(p.id) }}</span>
                   </label>
+                </div>
+
+                <!-- Stripe Card Element mount target -->
+                <div v-show="isStripeSelected" class="mt-5">
+                  <label class="text-[13px] font-medium text-ink-800">Card details</label>
+                  <div
+                    v-show="stripeReady"
+                    ref="stripeMountEl"
+                    class="mt-1.5 border border-zinc-200 bg-white px-4 py-3 rounded-md"
+                  />
+                  <div v-if="stripeInitError" class="mt-2 text-[13px] text-red-700">
+                    {{ stripeInitError }}
+                  </div>
+                  <div v-else-if="!stripeConfigured" class="mt-2 text-[13px] text-amber-700">
+                    Card payments are not configured. Set <code>NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> in the environment.
+                  </div>
+                  <div v-else-if="!stripeReady" class="mt-2 flex items-center gap-2 text-[13px] text-zinc-500">
+                    <UiSpinner :size="14" /> Initializing secure card form&hellip;
+                  </div>
+                  <p
+                    v-if="cardError"
+                    role="alert"
+                    class="mt-2 text-[12px] text-red-600"
+                  >
+                    {{ cardError }}
+                  </p>
                 </div>
               </div>
 
@@ -170,11 +196,12 @@
 
               <div class="mt-5 flex flex-wrap gap-3">
                 <button
-                  class="inline-flex h-[48px] items-center justify-center bg-zinc-950 px-7 text-[14px] font-medium tracking-wide text-white hover:bg-zinc-800 disabled:opacity-50"
+                  class="inline-flex h-[48px] items-center justify-center gap-2 bg-zinc-950 px-7 text-[14px] font-medium tracking-wide text-white hover:bg-zinc-800 disabled:opacity-50"
                   type="button"
-                  :disabled="placing || !selectedProviderId"
+                  :disabled="placeDisabled"
                   @click="onPlaceOrder"
                 >
+                  <UiSpinner v-if="placing" :size="16" />
                   {{ placing ? 'Placing order...' : 'Place order' }}
                 </button>
                 <button
@@ -248,11 +275,40 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, watch } from 'vue'
+import type {
+  Stripe,
+  StripeElements,
+  StripeCardElement,
+  StripeCardElementChangeEvent,
+} from '@stripe/stripe-js'
+import UiSpinner from '~/components/ui/UiSpinner.vue'
+
 useHead({ title: 'Checkout' })
 const sdk = useMedusaClient()
 const regionState = useRegion()
-const { cart, ensureCart, updateCart, listShippingOptions, addShippingMethod, complete, refresh } = useCart()
+const { cart, cartId, ensureCart, updateCart, listShippingOptions, addShippingMethod, complete, refresh } = useCart()
+const { stripePromise, isConfigured: stripeConfigured } = useStripe()
 await ensureCart()
+
+const STRIPE_PROVIDER_ID = 'pp_stripe_stripe'
+const isProd = import.meta.env.PROD
+
+const isStripeProvider = (id: string | undefined | null) => {
+  if (!id) return false
+  return id === STRIPE_PROVIDER_ID || id.startsWith('pp_stripe_')
+}
+
+const isManualProvider = (id: string | undefined | null) => {
+  if (!id) return false
+  return id === 'pp_system_default' || id === 'manual' || id.includes('system_default')
+}
+
+const providerLabel = (id: string) => {
+  if (isStripeProvider(id)) return 'Card (Visa, Mastercard, Amex)'
+  if (isManualProvider(id)) return 'Manual / Cash on delivery'
+  return id
+}
 
 const step = ref(1)
 const email = ref('')
@@ -329,33 +385,257 @@ const providers = ref<any[]>([])
 const providersLoading = ref(false)
 const selectedProviderId = ref('')
 
+const visibleProviders = computed(() => {
+  return providers.value.filter((p: any) => {
+    if (isProd && isManualProvider(p?.id)) return false
+    return true
+  })
+})
+
+const isStripeSelected = computed(() => isStripeProvider(selectedProviderId.value))
+
 const loadProviders = async () => {
   providersLoading.value = true
   try {
     const regionId = cart.value?.region_id || (regionState.regionId.value as any)
     const res = await sdk.store.payment.listPaymentProviders({ region_id: regionId } as any)
     providers.value = (res as any).payment_providers ?? []
-    if (providers.value.length === 1) selectedProviderId.value = providers.value[0].id
+    const visible = visibleProviders.value
+    // Prefer Stripe by default if available, otherwise the first visible provider.
+    const stripeOption = visible.find((p: any) => isStripeProvider(p.id))
+    if (stripeOption) {
+      selectedProviderId.value = stripeOption.id
+    } else if (visible.length === 1) {
+      selectedProviderId.value = visible[0].id
+    }
   } finally {
     providersLoading.value = false
   }
 }
+
+// ---------------------------------------------------------------------------
+// Stripe Elements lifecycle
+//
+// Stripe instances embed cross-origin iframes with internal mutable state.
+// They MUST NOT be wrapped in `reactive()` / `ref()` — Vue's Proxy machinery
+// breaks Stripe's internal `===` identity checks (same trap as Konva nodes).
+// We hold them in module-scoped `let` bindings and surface only primitives
+// (booleans, strings) via refs to the template.
+// ---------------------------------------------------------------------------
+let stripeInstance: Stripe | null = null
+let stripeElements: StripeElements | null = null
+let cardElement: StripeCardElement | null = null
+let stripeClientSecret: string | null = null
+let stripeInitInFlight = false
+
+const stripeMountEl = ref<HTMLDivElement | null>(null)
+const stripeReady = ref(false)
+const stripeInitError = ref<string | null>(null)
+const cardError = ref<string | null>(null)
+const cardComplete = ref(false)
+
+const extractClientSecret = (): string | null => {
+  const sessions = (cart.value as any)?.payment_collection?.payment_sessions ?? []
+  const stripeSession = sessions.find((s: any) => isStripeProvider(s?.provider_id))
+  return stripeSession?.data?.client_secret ?? null
+}
+
+const teardownStripe = () => {
+  if (cardElement) {
+    try { cardElement.unmount() } catch {}
+    try { cardElement.destroy() } catch {}
+    cardElement = null
+  }
+  stripeElements = null
+  stripeClientSecret = null
+  stripeReady.value = false
+  cardError.value = null
+  cardComplete.value = false
+}
+
+const initStripe = async () => {
+  if (stripeInitInFlight) return
+  if (cardElement) return // already mounted
+  if (!stripeConfigured) {
+    stripeInitError.value = 'Stripe publishable key is missing.'
+    return
+  }
+  stripeInitInFlight = true
+  stripeInitError.value = null
+  try {
+    // 1) Load Stripe.js once (singleton in useStripe()).
+    if (!stripeInstance) {
+      stripeInstance = await stripePromise
+      if (!stripeInstance) {
+        throw new Error('Failed to load Stripe.js.')
+      }
+    }
+
+    // 2) Initiate payment session on the cart so Medusa creates the
+    //    PaymentIntent and exposes its client_secret.
+    await sdk.store.payment.initiatePaymentSession(
+      cart.value as any,
+      { provider_id: STRIPE_PROVIDER_ID, data: {} } as any,
+    )
+    await refresh()
+    stripeClientSecret = extractClientSecret()
+    if (!stripeClientSecret) {
+      throw new Error('Stripe payment session was created but no client_secret was returned.')
+    }
+
+    // Dev-only debug hook for headless E2E verification. Stripped from prod.
+    if (import.meta.dev && import.meta.client) {
+      ;(window as any).__gmsStripeDebug = {
+        provider: STRIPE_PROVIDER_ID,
+        clientSecretPrefix: stripeClientSecret.slice(0, 18),
+        hasClientSecret: true,
+        elementsMounted: true,
+      }
+    }
+
+    // 3) Create Elements + Card Element. Note: we do NOT pass `clientSecret`
+    //    to elements() — that switches Elements into Payment-Element mode.
+    //    For the standalone Card Element + confirmCardPayment flow we hand
+    //    the secret directly to confirmCardPayment().
+    stripeElements = stripeInstance.elements()
+    cardElement = stripeElements.create('card', {
+      hidePostalCode: false,
+      style: {
+        base: {
+          fontFamily: 'Inter Tight, system-ui, sans-serif',
+          fontSize: '15px',
+          color: '#171717',
+          '::placeholder': { color: '#73777E' },
+        },
+        invalid: { color: '#D43A2F' },
+      },
+    })
+
+    cardElement.on('change', (event: StripeCardElementChangeEvent) => {
+      cardError.value = event.error?.message ?? null
+      cardComplete.value = event.complete
+    })
+
+    // 4) Reveal the mount target (v-show flips), then wait for the DOM to
+    //    flush before calling .mount() so Stripe sees a real, sized node.
+    stripeReady.value = true
+    await nextTick()
+    if (stripeMountEl.value) {
+      cardElement.mount(stripeMountEl.value)
+    } else {
+      throw new Error('Stripe mount target not found.')
+    }
+  } catch (e: any) {
+    stripeInitError.value = e?.message || 'Failed to initialize Stripe.'
+    teardownStripe()
+  } finally {
+    stripeInitInFlight = false
+  }
+}
+
+// React to provider radio changes. Selecting Stripe initializes (idempotent);
+// selecting anything else tears down so the iframe doesn't linger.
+watch(selectedProviderId, (next, prev) => {
+  if (isStripeProvider(next)) {
+    void initStripe()
+  } else if (isStripeProvider(prev)) {
+    teardownStripe()
+  }
+})
+
+// Tear down on step change away from payment + on unmount.
+watch(step, (next) => {
+  if (next !== 2) teardownStripe()
+})
+
+onBeforeUnmount(() => {
+  teardownStripe()
+})
 
 const placing = ref(false)
 const payError = ref<string | null>(null)
 const orderResult = ref<string | null>(null)
 const confirmationId = ref<string | null>(null)
 
+const placeDisabled = computed(() => {
+  if (placing.value) return true
+  if (!selectedProviderId.value) return true
+  if (isStripeSelected.value) {
+    if (!stripeReady.value || !cardElement || !stripeClientSecret) return true
+    if (!cardComplete.value) return true
+  }
+  return false
+})
+
+const buildBillingDetails = () => {
+  const c = cart.value as any
+  const billing = c?.billing_address ?? c?.shipping_address ?? {}
+  return {
+    name: [billing.first_name, billing.last_name].filter(Boolean).join(' ') || undefined,
+    email: c?.email || undefined,
+    phone: billing.phone || undefined,
+    address: {
+      city: billing.city || undefined,
+      country: billing.country_code || undefined,
+      line1: billing.address_1 || undefined,
+      line2: billing.address_2 || undefined,
+      postal_code: billing.postal_code || undefined,
+      state: billing.province || undefined,
+    },
+  }
+}
+
+const finalizeOrder = async () => {
+  const result: any = await complete()
+  // Medusa V2 returns either { type: 'order', order } on success or
+  // { type: 'cart', cart, error } when payment finalisation fails.
+  if (result?.type === 'cart' && result?.error) {
+    throw new Error(result.error?.message || 'Cart could not be completed.')
+  }
+  const order = result?.order ?? (result?.type === 'order' ? result?.order : null) ?? result
+  confirmationId.value = order?.id || result?.id || null
+  // Clear the cart cookie so a fresh cart is created on the next visit.
+  cartId.value = null
+  step.value = 3
+}
+
 const onPlaceOrder = async () => {
   if (!selectedProviderId.value) return
   placing.value = true
   payError.value = null
   try {
-    await sdk.store.payment.initiatePaymentSession(cart.value as any, { provider_id: selectedProviderId.value, data: {} } as any)
-    await refresh()
-    const result = await complete()
-    confirmationId.value = (result as any)?.order?.id || (result as any)?.id || null
-    step.value = 3
+    if (isStripeSelected.value) {
+      // Stripe branch: confirmCardPayment, then Medusa cart.complete().
+      if (!stripeInstance || !cardElement || !stripeClientSecret) {
+        throw new Error('Stripe is not ready. Please wait a moment and try again.')
+      }
+      const { error, paymentIntent } = await stripeInstance.confirmCardPayment(
+        stripeClientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: buildBillingDetails(),
+          },
+        },
+      )
+      if (error) {
+        cardError.value = error.message ?? 'Card was declined.'
+        return
+      }
+      if (paymentIntent?.status !== 'succeeded' && paymentIntent?.status !== 'requires_capture') {
+        cardError.value = `Payment status: ${paymentIntent?.status ?? 'unknown'}.`
+        return
+      }
+      await finalizeOrder()
+    } else {
+      // Manual / system_default branch: legacy flow.
+      await sdk.store.payment.initiatePaymentSession(
+        cart.value as any,
+        { provider_id: selectedProviderId.value, data: {} } as any,
+      )
+      await refresh()
+      await finalizeOrder()
+    }
   } catch (e: any) {
     payError.value = e?.message || 'Failed to place order.'
   } finally {

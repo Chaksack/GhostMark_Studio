@@ -2,9 +2,9 @@
   <div>
     <!-- Hero -->
     <div class="bg-[#f5f1ec] py-16 text-center sm:py-20">
-      <h1 class="font-serif text-[36px] leading-tight text-zinc-950 sm:text-[52px]">Good merch,<br class="hidden sm:block" /> for good brands</h1>
+      <h1 class="font-serif text-[36px] leading-tight text-zinc-950 sm:text-[52px]">A mark that outlasts<br class="hidden sm:block" /> the campaign.</h1>
       <p class="mx-auto mt-4 max-w-[55ch] text-[16px] leading-relaxed text-zinc-600">
-        We help companies create premium branded merchandise that people actually want to keep, made sustainably and responsibly.
+        One bench, three crafts: laser engraving, DTF print and apparel finishing &mdash; for studios, agencies and brands who care that the object outlasts the launch.
       </p>
     </div>
 
@@ -15,13 +15,13 @@
           <div>
             <span class="text-[13px] font-semibold uppercase tracking-widest text-zinc-500">Our mission</span>
             <h2 class="mt-3 font-serif text-[28px] leading-snug text-zinc-950 sm:text-[34px]">
-              Merch that makes an impact
+              The mark stays after the moment.
             </h2>
             <p class="mt-4 text-[15px] leading-relaxed text-zinc-600">
-              We believe branded products should be more than giveaways. They should be useful, beautiful, and made in a way that respects people and the planet. Every product in our catalog is selected for quality, durability, and sustainability.
+              The most powerful work isn't loud or complicated &mdash; it's the kind people feel before they fully understand it. A whisper of craft, precision and imagination. Every piece we make is chosen and finished with that in mind.
             </p>
             <p class="mt-3 text-[15px] leading-relaxed text-zinc-600">
-              Whether you need onboarding kits, event swag, or client gifts, we make the process effortless from design to delivery.
+              Onboarding kits, signature apparel, considered gifts &mdash; whatever the brief, we move it from sample to shipped without losing the thread.
             </p>
           </div>
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[#e8ddd3] to-[#f5f1ec]">
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: 'About' })
+useHead({ title: 'About — GhostMark Studio' })
 
 const values = [
   { emoji: '\u2728', title: 'Quality first', description: 'We select only premium products that people will actually use and keep.' },

@@ -1,100 +1,573 @@
 <template>
-  <footer class="border-t border-zinc-200 bg-[#F2E5D9]">
-    <div class="mx-auto w-full max-w-screen-2xl px-5 py-10 sm:px-6 lg:px-8">
-      <div class="mt-8 border-y border-zinc-200 py-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex flex-wrap items-center gap-4">
-            <span class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Follow us:</span>
-            <a href="#" class="text-sm text-zinc-950 hover:underline">Instagram</a>
-            <a href="#" class="text-sm text-zinc-950 hover:underline">LinkedIn</a>
-          </div>
+  <!--
+    AppFooter — single source of truth for the global footer band.
 
-          <p class="text-sm text-zinc-700">
-            Based in <span class="underline decoration-dotted underline-offset-4">London</span>,
-            United Kingdom.
+    Layout contract (intentionally rigid so home / PLP / PDP all match):
+      - Surface: bg-offWhite (warm editorial off-white from the merchery
+        palette). Top hairline uses border-greyLines.
+      - Columns: 5 fixed sections rendered in every state (no v-if drift).
+        Grid responds 2 → 3 → 5 across mobile / tablet / desktop, so the
+        footer height stays bounded:
+          mobile (<768)  : 2 cols × 3 rows ≈ ≤700px
+          tablet (768)   : 3 cols × 2 rows ≈ ≤500px
+          desktop (1024+): 5 cols × 1 row  ≈ ≤450px
+      - Bottom bar: copyright + locale on the left, social + legal +
+        payment chips on the right, hairline-divided by border-greyLines.
+
+    Authentication / locale / cart state MUST NOT add or remove columns
+    here — they belong in the bottom bar. Adding a sixth section breaks
+    the 5-column desktop rhythm and re-introduces the cross-page drift
+    reviewers reported.
+  -->
+  <footer class="border-t border-greyLines bg-offWhite">
+    <!--
+      Brand block: anchors the bottom of every page with the GhostMark
+      wordmark + a one-line studio summary on the left, and a "Get in
+      touch" contact group on the right. Hairline divider keeps it
+      visually attached to the column grid below without doubling the
+      border weight. Stacks vertically <md so the wordmark + contact
+      both have the full content width on narrow handsets.
+    -->
+    <div
+      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 pt-12 md:pt-16 lg:pt-20 pb-8 border-b border-greyLines"
+    >
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div class="flex flex-col gap-3 max-w-[480px]">
+          <NuxtLink
+            to="/"
+            class="inline-flex min-h-[44px] items-center font-display text-[34px] font-extrabold leading-none tracking-[0.2px] text-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+            aria-label="GhostMark — home"
+          >
+            GhostMark
+          </NuxtLink>
+          <p class="text-[14px] leading-[1.6] text-ink-700">
+            Branded objects for the kind of work people keep. Laser
+            engraving, DTF print, and apparel finishing — one studio in
+            Bordeaux.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <p class="text-[12px] uppercase tracking-[0.12em] text-ink-700">
+            Get in touch
+          </p>
+          <a
+            href="mailto:hello@ghostmark.studio"
+            class="inline-flex min-h-[44px] items-center text-[15px] font-medium text-ink-950 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+          >
+            hello@ghostmark.studio
+          </a>
+          <p class="text-[13px] text-ink-700">
+            Studio · Bordeaux, France
           </p>
         </div>
       </div>
+    </div>
 
-      <nav class="mt-7 grid gap-8 sm:grid-cols-2 lg:grid-cols-5" aria-label="Footer">
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Company</div>
-          <div class="mt-4 grid gap-2 text-sm text-zinc-950">
-            <NuxtLink to="/about" class="hover:underline">About us</NuxtLink>
-            <a href="#" class="hover:underline">Environmental footprint</a>
-            <a href="#" class="hover:underline">Value chain</a>
-            <a href="#" class="hover:underline">People &amp; culture</a>
-          </div>
+    <!--
+      Social row + region marker (v18 audit). Sits between the brand
+      block and the 5-column link grid as a single hairline-bounded
+      strip: "FOLLOW US" + iconography on the left, "Based in Bordeaux"
+      on the right. Stacks vertically <md so the icons keep their
+      44×44 hit targets without being crowded by the region line.
+    -->
+    <div
+      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 py-6 border-b border-greyLines"
+    >
+      <div
+        class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <span class="text-[12px] uppercase tracking-[0.12em] text-ink-700">Follow us</span>
+          <ul class="flex items-center gap-1" role="list">
+            <li>
+              <a
+                href="https://instagram.com/ghostmarkstudio"
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-ink-700 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <path d="M16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4z" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.linkedin.com/company/ghostmarkstudio"
+                aria-label="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-ink-700 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M4 4h4v4H4zM4 10h4v10H4zM10 10h4v2a3 3 0 0 1 6 0v8h-4v-7a1.5 1.5 0 0 0-3 0v7h-3z" />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://pinterest.com/ghostmarkstudio"
+                aria-label="Pinterest"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-ink-700 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M12 3a9 9 0 0 0-3.3 17.4c-.1-.7-.2-1.9 0-2.7l1.3-5.4s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.5 0 .9-.6 2.3-.9 3.6-.3 1.1.5 2 1.6 2 1.9 0 3.4-2 3.4-5 0-2.6-1.9-4.4-4.5-4.4-3.1 0-4.9 2.3-4.9 4.7 0 .9.4 1.9.8 2.5.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.5 6.5-1.1 0-2.1-.6-2.4-1.2l-.7 2.5c-.2 1-.9 2.2-1.4 3A9 9 0 1 0 12 3z" />
+                </svg>
+              </a>
+            </li>
+          </ul>
         </div>
+        <p class="text-[13px] text-ink-700">
+          Based in <span class="text-ink-950 font-medium">Bordeaux</span>. Designs shipped worldwide.
+        </p>
+      </div>
+    </div>
 
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Services</div>
-          <div class="mt-4 grid gap-2 text-sm text-zinc-950">
-            <NuxtLink to="/products" class="hover:underline">Shop all</NuxtLink>
-            <a href="#" class="hover:underline">Bespoke</a>
-            <a href="#" class="hover:underline">Platform</a>
-            <a href="#" class="hover:underline">Agencies</a>
-          </div>
-        </div>
+    <div
+      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 py-10 md:py-14 lg:py-16"
+    >
+      <!--
+        Mobile (<768): collapsible accordion. Each section ships closed so
+        the visible footer height stays bounded (~520px instead of 1000+).
+        Tap the heading to expand only what you need.
+      -->
+      <div class="md:hidden divide-y divide-greyLines border-y border-greyLines">
+        <details
+          v-for="section in sections"
+          :key="`m-${section.heading}`"
+          class="group"
+        >
+          <summary
+            class="flex min-h-[44px] cursor-pointer items-center justify-between py-3 text-[12px] font-medium uppercase tracking-[0.12em] text-ink-950 marker:hidden [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+          >
+            <span>{{ section.heading }}</span>
+            <svg
+              class="h-3 w-3 text-ink-700 transition-transform group-open:rotate-180"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M2 4l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <ul class="pb-2">
+            <li
+              v-for="link in section.links"
+              :key="`m-${link.to}-${link.label}`"
+            >
+              <NuxtLink
+                :to="link.to"
+                class="flex min-h-[44px] items-center py-2 text-[14px] text-ink-700 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+              >
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </details>
+      </div>
 
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Inspiration</div>
-          <div class="mt-4 grid gap-2 text-sm text-zinc-950">
-            <NuxtLink to="/blog" class="hover:underline">Blog</NuxtLink>
-            <a href="#" class="hover:underline">Cases</a>
-          </div>
-        </div>
-
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Let us help</div>
-          <div class="mt-4 grid gap-2 text-sm text-zinc-950">
-            <NuxtLink to="/faq" class="hover:underline">FAQ</NuxtLink>
-            <a href="#" class="hover:underline">Terms &amp; conditions</a>
-            <a href="#" class="hover:underline">Privacy</a>
-            <a href="#" class="hover:underline">Returns</a>
-            <NuxtLink to="/contact" class="hover:underline">Contact us</NuxtLink>
-          </div>
-        </div>
-
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Account</div>
-          <div class="mt-4 grid gap-2 text-sm text-zinc-950">
-            <NuxtLink to="/account" class="hover:underline">Orders</NuxtLink>
-            <a href="#" class="hover:underline">Preferences</a>
-            <a href="#" class="hover:underline">Saved projects</a>
-            <a href="#" class="hover:underline">Invoices</a>
-          </div>
+      <!--
+        Tablet+ (≥768): open grid. 3 columns at 768, 5 at 1024+. Five
+        deterministic sections, no v-if drift across pages.
+      -->
+      <nav
+        class="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12"
+        aria-label="Footer"
+      >
+        <div
+          v-for="section in sections"
+          :key="section.heading"
+        >
+          <h4
+            class="text-[12px] font-medium uppercase tracking-[0.12em] text-ink-700 mb-3 whitespace-nowrap"
+          >
+            {{ section.heading }}
+          </h4>
+          <ul>
+            <li
+              v-for="link in section.links"
+              :key="link.to + link.label"
+            >
+              <NuxtLink
+                :to="link.to"
+                class="flex min-h-[44px] items-center py-2 text-[14px] text-ink-700 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+              >
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
         </div>
       </nav>
 
-      <div class="mt-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div class="flex items-center gap-6">
-          <div class="grid place-items-center rounded-full border border-zinc-300 bg-white p-3">
-            <div class="text-center text-[10px] font-bold leading-none text-zinc-950">
-              Certified<br />B
-            </div>
-          </div>
-          <div class="grid place-items-center rounded-full border border-zinc-300 bg-white p-3">
-            <div class="text-center text-[10px] font-bold leading-none text-zinc-950">
-              1%<br />For the<br />Planet
-            </div>
-          </div>
+      <!--
+        Trust + payments band (v18 audit). Replaces the previous
+        Certified-B / 1% For The Planet pair — those certifications
+        are not held yet, so we surface neutral provenance markers
+        until the real audits land. Payment marks are TEXT, not
+        brand SVGs, to avoid licensing risk before Stripe Connect
+        is wired and a usage-rights review is on file.
+      -->
+      <div
+        class="mt-10 pt-6 border-t border-greyLines flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <span
+            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            aria-label="Made in Europe"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M12 22s-8-4.5-8-12V5l8-3 8 3v5c0 7.5-8 12-8 12z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+            Made in Europe
+          </span>
+          <span
+            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            aria-label="Family-owned in Bordeaux"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            Family-owned in Bordeaux
+          </span>
+          <span
+            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            aria-label="Carbon-aware shipping"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M3 12c2-3 6-6 9-6s7 3 9 6c-2 3-6 6-9 6s-7-3-9-6z" />
+              <path d="M12 9v6" />
+            </svg>
+            Carbon-aware shipping
+          </span>
         </div>
 
-        <div class="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
-          <span class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Secure payments:</span>
-          <span class="inline-flex items-center rounded border border-zinc-300 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-700">AMEX</span>
-          <span class="inline-flex items-center rounded border border-zinc-300 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-700">MC</span>
-          <span class="inline-flex items-center rounded border border-zinc-300 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-700">PayPal</span>
-          <span class="inline-flex items-center rounded border border-zinc-300 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-700">VISA</span>
+        <div class="flex items-center gap-3 flex-wrap">
+          <span
+            class="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-700"
+          >Secure payments</span>
+          <div class="flex items-center gap-2 flex-wrap" role="list" aria-label="Accepted payment methods">
+            <span
+              v-for="brand in payments"
+              :key="brand"
+              role="listitem"
+              class="px-3 py-1.5 border border-greyLines rounded text-[10px] font-bold text-ink-700 bg-offWhiteLight tracking-wide"
+            >{{ brand }}</span>
+          </div>
         </div>
       </div>
 
-      <div class="mt-8 text-xs text-zinc-500">© {{ year }} GhostMark</div>
+      <!--
+        Bottom bar: copyright + region/currency picker on the left,
+        social icons + legal links on the right. RegionSelector is the
+        canonical region/currency control (UiSheet-backed); the GeoModal
+        is the first-visit suggestion overlay and is intentionally not
+        the trigger here.
+      -->
+      <div
+        class="mt-8 pt-6 border-t border-greyLines flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[12px] text-ink-500"
+      >
+        <div class="flex flex-wrap items-center gap-4">
+          <p>
+            &copy; {{ year }} GhostMark Studio &middot; Bordeaux, France
+          </p>
+          <span class="hidden sm:inline-block h-3 w-px bg-greyLines" aria-hidden="true" />
+          <!--
+            Region trigger. We do not invoke RegionSelector here because
+            its `useRegion()` contract (loadRegions / setRegion) does not
+            yet match the live composable shape — wiring that up belongs
+            in the region composable refactor, not the footer. Until
+            then, the button is a NuxtLink that surfaces the region
+            picker via a route query the GeoModal layer can claim
+            without breaking SSR.
+          -->
+          <NuxtLink
+            to="/?region=open"
+            class="inline-flex min-h-[44px] items-center gap-2 py-2 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+            aria-label="Change region or currency"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <!--
+              Region label is now SSR-deterministic: `useRegion()` reads the
+              `gms_region_id` cookie via `useCookie()` (server + client) and
+              resolves the region object through `useAsyncData` during SSR.
+              For returning visitors the server already renders "EN · GBP",
+              so no <ClientOnly> wrap / hydration swap is needed. First-time
+              visitors (no cookie) render the "Choose region" fallback on
+              both passes — still hydration-safe.
+            -->
+            <span>{{ regionLabel }}</span>
+          </NuxtLink>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <div class="flex items-center gap-1">
+            <a
+              v-for="social in socials"
+              :key="social.label"
+              :href="social.href"
+              :aria-label="social.label"
+              rel="noopener noreferrer"
+              target="_blank"
+              class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-ink-500 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path :d="social.path" />
+                <circle
+                  v-if="social.dot"
+                  :cx="social.dot.cx"
+                  :cy="social.dot.cy"
+                  :r="social.dot.r"
+                  fill="currentColor"
+                  stroke="none"
+                />
+              </svg>
+            </a>
+          </div>
+          <span class="hidden sm:inline-block h-3 w-px bg-greyLines mx-1" aria-hidden="true" />
+          <NuxtLink
+            to="/privacy"
+            class="inline-flex min-h-[44px] items-center px-2 py-2 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+          >
+            Privacy
+          </NuxtLink>
+          <NuxtLink
+            to="/terms"
+            class="inline-flex min-h-[44px] items-center px-2 py-2 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+          >
+            Terms
+          </NuxtLink>
+          <NuxtLink
+            to="/cookies"
+            class="inline-flex min-h-[44px] items-center px-2 py-2 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
+          >
+            Cookies
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
+/**
+ * Footer copy lives in `sections` so the column count is deterministic
+ * — exactly five entries, top-to-bottom in the order they should ship.
+ * Add / remove links inside a section freely; do NOT add a sixth section
+ * without also bumping the desktop grid (currently lg:grid-cols-5).
+ */
+type FooterLink = { to: string, label: string }
+type FooterSection = { heading: string, links: FooterLink[] }
+
+const sections: FooterSection[] = [
+  {
+    heading: 'Company',
+    links: [
+      { to: '/about', label: 'About us' },
+      { to: '/sustainability', label: 'Sustainability' },
+      { to: '/about/value-chain', label: 'Value chain' },
+      { to: '/about/people-and-culture', label: 'People & culture' },
+      { to: '/press', label: 'Press' },
+    ],
+  },
+  {
+    heading: 'Shop',
+    links: [
+      { to: '/products', label: 'Shop all' },
+      { to: '/studio', label: 'Bespoke studio' },
+      { to: '/platform', label: 'Platform' },
+      { to: '/club', label: 'Club & agencies' },
+      { to: '/blog', label: 'Journal' },
+    ],
+  },
+  {
+    heading: 'Help',
+    links: [
+      { to: '/help', label: 'Help center' },
+      { to: '/faq', label: 'FAQ' },
+      { to: '/shipping', label: 'Shipping' },
+      { to: '/returns', label: 'Returns' },
+      { to: '/contact', label: 'Contact us' },
+    ],
+  },
+  {
+    heading: 'Account',
+    links: [
+      { to: '/account', label: 'Preferences' },
+      { to: '/account/orders', label: 'Orders' },
+      { to: '/account/orders', label: 'Invoices' },
+      { to: '/wishlist', label: 'Saved projects' },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { to: '/terms', label: 'Terms & conditions' },
+      { to: '/privacy', label: 'Privacy policy' },
+      { to: '/cookies', label: 'Cookies' },
+      { to: '/accessibility', label: 'Accessibility' },
+    ],
+  },
+]
+
+/**
+ * Text-only payment marks (v18 audit). We render the brand names as
+ * plain text inside neutral chips rather than vendor SVGs because we
+ * do not yet hold explicit usage rights for the Visa / Mastercard /
+ * Amex / PayPal / Apple Pay logos. Once Stripe Connect is wired and
+ * the brand-asset license review is on file, swap to real glyphs.
+ */
+const payments = ['VISA', 'MC', 'AMEX', 'PAYPAL', 'APPLE PAY'] as const
+
+/**
+ * Social icons rendered inline as compact SVGs — no external icon
+ * library, no font load. Each entry carries an explicit `aria-label`
+ * (the visible glyph is decorative). The path/dot tuple keeps the SVG
+ * markup uniform; `dot` is only used by the Instagram glyph.
+ */
+type SocialIcon = {
+  label: string
+  href: string
+  path: string
+  dot?: { cx: number, cy: number, r: number }
+}
+
+const socials: SocialIcon[] = [
+  {
+    label: 'Instagram',
+    href: 'https://instagram.com/ghostmarkstudio',
+    path: 'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm5 5.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5z',
+    dot: { cx: 17.5, cy: 6.5, r: 0.9 },
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/ghostmarkstudio',
+    path: 'M4 4h4v4H4zM4 10h4v10H4zM10 10h4v2a3 3 0 0 1 6 0v8h-4v-7a1.5 1.5 0 0 0-3 0v7h-3z',
+  },
+  {
+    label: 'Pinterest',
+    href: 'https://pinterest.com/ghostmarkstudio',
+    path: 'M12 3a9 9 0 0 0-3.3 17.4c-.1-.7-.2-1.9 0-2.7l1.3-5.4s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.5 0 .9-.6 2.3-.9 3.6-.3 1.1.5 2 1.6 2 1.9 0 3.4-2 3.4-5 0-2.6-1.9-4.4-4.5-4.4-3.1 0-4.9 2.3-4.9 4.7 0 .9.4 1.9.8 2.5.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.5 6.5-1.1 0-2.1-.6-2.4-1.2l-.7 2.5c-.2 1-.9 2.2-1.4 3A9 9 0 1 0 12 3z',
+  },
+  {
+    label: 'X (formerly Twitter)',
+    href: 'https://x.com/ghostmarkstudio',
+    path: 'M3 3l7.5 9.6L3.4 21h2.3l5.9-7 5.4 7H21l-7.9-10.2L20.4 3h-2.3l-5.4 6.3L7.6 3z',
+  },
+]
+
 const year = new Date().getFullYear()
+
+/**
+ * Region label rendered next to the globe icon. We deliberately keep
+ * this read-only here — switching regions still routes through the
+ * dedicated region picker (see GeoModal / RegionSelector). The label
+ * shape mirrors AppMobileNav's `EN · EUR` convention.
+ */
+const { region } = useRegion()
+const regionLabel = computed<string>(() => {
+  const r = region.value as { currency_code?: string, name?: string } | null
+  const currency = r?.currency_code?.toUpperCase()
+  if (currency) return `EN · ${currency}`
+  return 'Choose region'
+})
 </script>

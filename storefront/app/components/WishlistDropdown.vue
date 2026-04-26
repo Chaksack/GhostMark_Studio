@@ -1,22 +1,35 @@
 <template>
-  <div class="group relative">
+  <div
+    ref="rootRef"
+    data-wishlist-dropdown
+    class="relative hidden lg:block"
+    @mouseenter="open = true"
+    @mouseleave="open = false"
+    @focusin="open = true"
+    @focusout="onBlur"
+    @keydown.esc="open = false"
+  >
     <button
       class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-transparent text-zinc-950 hover:border-zinc-200 hover:bg-zinc-100"
       type="button"
       aria-label="Wishlist"
+      :aria-expanded="open ? 'true' : 'false'"
     >
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 21s-7-4.6-9.5-8.7C.2 8.6 2.6 5.7 6 5.5c1.9-.1 3.2.8 4 1.8.8-1 2.1-1.9 4-1.8 3.4.2 5.8 3.1 3.5 6.8C19 16.4 12 21 12 21z" />
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
       </svg>
-      <span
-        v-if="wishCount"
-        class="absolute right-1.5 top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-zinc-950 px-[5px] text-[11px] font-extrabold text-white"
-      >
-        {{ wishCount }}
-      </span>
+      <ClientOnly>
+        <span
+          v-if="wishCount"
+          class="absolute right-1.5 top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-zinc-950 px-[5px] text-[11px] font-extrabold text-white"
+        >
+          {{ wishCount }}
+        </span>
+      </ClientOnly>
     </button>
     <div
-      class="pointer-events-none absolute right-0 top-full z-[80] w-[320px] pt-2 opacity-0 invisible translate-y-1 transition duration-150 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100"
+      v-if="open"
+      class="absolute right-0 top-full z-[80] w-[320px] pt-2"
     >
       <div class="rounded-xl border border-zinc-200 bg-white shadow-xl">
         <div class="border-b border-zinc-100 px-4 py-3">
@@ -25,7 +38,7 @@
 
         <div v-if="!items.length" class="px-4 py-8 text-center">
           <svg class="mx-auto mb-3 text-zinc-300" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 21s-7-4.6-9.5-8.7C.2 8.6 2.6 5.7 6 5.5c1.9-.1 3.2.8 4 1.8.8-1 2.1-1.9 4-1.8 3.4.2 5.8 3.1 3.5 6.8C19 16.4 12 21 12 21z" />
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
           </svg>
           <p class="text-sm text-zinc-500">No saved items yet</p>
           <p class="mt-1 text-xs text-zinc-400">Click the heart icon on products to save them</p>
@@ -77,6 +90,19 @@
 
 <script setup lang="ts">
 const { hydrate, items, count: wishCount, remove } = useWishlist()
+
+const open = ref(false)
+const rootRef = ref<HTMLElement | null>(null)
+
+function onBlur() {
+  // Defer so document.activeElement reflects the new focus target
+  setTimeout(() => {
+    if (!rootRef.value) return
+    if (!rootRef.value.contains(document.activeElement)) {
+      open.value = false
+    }
+  }, 0)
+}
 
 onMounted(() => {
   hydrate()

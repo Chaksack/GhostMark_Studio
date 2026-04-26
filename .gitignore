@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE / editors
+.idea/
+.vscode/
+.fleet/
+*.swp
+*.swo
+*~
+
+# Env files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Dependencies
+node_modules/
+
+# Build / cache
+dist/
+build/
+.cache/
+.turbo/
+.next/
+.nuxt/
+.output/
+.nitro/
+.medusa/
+.strapi/
+*.tsbuildinfo
+
+# Logs / pids
+*.log
+*.pid
+logs/
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+*.tfvars.local
+
+# Pre-rename leftover (delete folder once migration is finalized)
+/ghostmark/

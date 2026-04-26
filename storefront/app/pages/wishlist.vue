@@ -16,7 +16,7 @@
     <section class="mx-auto w-full max-w-screen-xl px-5 py-10 sm:px-6 lg:px-8">
       <div v-if="!items.length" class="rounded-3xl border border-zinc-200 bg-white px-6 py-16 text-center sm:px-10">
         <svg class="mx-auto h-14 w-14 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M12 21s-7-4.6-9.5-8.7C.2 8.6 2.6 5.7 6 5.5c1.9-.1 3.2.8 4 1.8.8-1 2.1-1.9 4-1.8 3.4.2 5.8 3.1 3.5 6.8C19 16.4 12 21 12 21z" />
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
         </svg>
         <h2 class="mt-5 font-serif text-[28px] text-zinc-950">Your wishlist is empty</h2>
         <p class="mx-auto mt-3 max-w-xl text-[15px] text-zinc-500">Browse the catalog and save products to keep them handy here.</p>

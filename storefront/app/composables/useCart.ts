@@ -84,6 +84,31 @@ export const useCart = () => {
     return await sdk.store.cart.complete(c.id)
   }
 
+  /**
+   * Hard-reset the local cart reference. Drops the `gms_cart_id` cookie and
+   * any mirrored localStorage entry, clears in-memory state, and lets the
+   * next `ensureCart()` call mint a fresh cart on the backend.
+   *
+   * Wire this on logout / session reset so the badge does not display a
+   * stale quantity (e.g. the persistent "25" from a prior dev session).
+   * Manual recovery: in DevTools run
+   *   document.cookie = 'gms_cart_id=; Max-Age=0; path=/'
+   *   localStorage.removeItem('gms_cart_id')
+   * then reload.
+   */
+  const clearCart = () => {
+    cartId.value = null
+    cart.value = null
+    isReady.value = false
+    if (import.meta.client) {
+      try {
+        localStorage.removeItem('gms_cart_id')
+      } catch {
+        // localStorage may be unavailable (private mode); cookie reset is sufficient
+      }
+    }
+  }
+
   return {
     cartId,
     cart,
@@ -97,5 +122,6 @@ export const useCart = () => {
     listShippingOptions,
     addShippingMethod,
     complete,
+    clearCart,
   }
 }

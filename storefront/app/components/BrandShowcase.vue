@@ -1,6 +1,6 @@
 <template>
   <section class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
-    <h2 class="text-[22px] font-semibold tracking-tight text-zinc-950 sm:text-[26px]">Our best selling brands</h2>
+    <h2 class="font-display text-display-lg font-normal text-zinc-950">Our best selling brands</h2>
 
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <NuxtLink

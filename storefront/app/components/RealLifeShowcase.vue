@@ -2,7 +2,7 @@
   <section class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
     <div class="flex items-end justify-between gap-4">
       <div>
-        <h2 class="text-[22px] font-semibold tracking-tight text-zinc-950 sm:text-[26px]">Our products in real life</h2>
+        <h2 class="font-display text-display-md font-normal text-zinc-950">Our products in real life</h2>
         <p class="mt-1 text-[15px] text-zinc-500">As real as it gets</p>
       </div>
     </div>

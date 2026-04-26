@@ -1,70 +1,97 @@
 <template>
-  <header class="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-50/90">
-    <div class="border-b border-zinc-200 bg-zinc-100/60">
-      <div class="mx-auto flex w-full max-w-screen-3xl items-center justify-between gap-3 px-5 py-2.5 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center gap-3.5">
-          <span class="font-bold">Excellent</span>
-          <span class="text-zinc-500">4.8 out of 5</span>
-          <span class="text-zinc-500" aria-hidden="true">·</span>
-          <span class="text-zinc-500">Trustpilot</span>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3.5 max-[860px]:hidden">
-          <NuxtLink to="/about" class="text-zinc-500 hover:text-zinc-950">About</NuxtLink>
-          <NuxtLink to="/blog" class="text-zinc-500 hover:text-zinc-950">Resources</NuxtLink>
-          <NuxtLink to="/integrations" class="text-zinc-500 hover:text-zinc-950">Integrations</NuxtLink>
-          <NuxtLink to="/contact" class="text-zinc-500 hover:text-zinc-950">Contact us</NuxtLink>
-          <span class="h-[18px] w-px bg-zinc-200" aria-hidden="true" />
-          <button
-            class="cursor-pointer rounded-full border border-zinc-200 bg-transparent px-2.5 py-1.5 text-zinc-500 hover:bg-white hover:text-zinc-950"
-            type="button"
-          >
-            Europe · English
-          </button>
-        </div>
+  <!--
+    Header system, breakpoint-tiered:
+      1. Mobile (<md): bg-white compact row — burger (left) + logo (center) +
+         cart (right). Search, categories, account, wishlist, region, and
+         utility links all live inside <MobileNav>, the full-screen burger
+         overlay mounted at the bottom of this template.
+      2. Tablet (>=md, <lg): inline grid with logo + search + actions —
+         unchanged from the previous design.
+      3. Desktop fixed warmGrey (`hidden lg:flex`): logo + 58rem search +
+         account/wishlist/cart at h-[6.8rem].
+      4. Shared category nav band: hidden below lg (categories live in the
+         burger), fixed below the warmGrey bar on desktop
+         (`lg:fixed lg:top-[6.8rem] lg:h-[5rem]`).
+    Page wrappers compensate with `lg:pt-[118px]` (68 + 50) so content clears
+    BOTH desktop fixed bands.
+  -->
+  <header class="border-b border-greyLines sticky top-0 z-50 bg-white lg:hidden" role="banner">
+    <nav class="hidden lg:flex bg-offWhite justify-between h-[4.4rem] py-[10px] px-[30px] items-center">
+      <div class="flex flex-wrap items-center gap-3.5 text-greyText">
+        <span class="font-medium text-zinc-950">GhostMark Studio</span>
+        <span aria-hidden="true">·</span>
+        <span>Branded objects, made to last</span>
       </div>
-    </div>
+      <div class="hidden items-center gap-3.5 sm:flex">
+        <NuxtLink to="/about" class="text-greyText hover:text-zinc-950">About</NuxtLink>
+        <NuxtLink to="/contact" class="text-greyText hover:text-zinc-950">Contact</NuxtLink>
+      </div>
+    </nav>
 
     <div>
+      <!--
+        Mobile compact row (<md): burger (left) + logo (center) + cart (right).
+        Search, categories, account, wishlist, and utility links all live
+        inside the burger overlay to keep the chrome under thumb reach.
+      -->
+      <div class="mx-auto flex w-full items-center justify-between gap-3 bg-white px-5 py-3 sm:px-6 md:hidden">
+        <button
+          type="button"
+          aria-label="Open menu"
+          :aria-expanded="mobileNavOpen"
+          aria-controls="mobile-nav"
+          class="grid place-items-center min-h-[44px] min-w-[44px] -m-2 p-2 text-zinc-950 hover:bg-uiGrey rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+          @click="mobileNavOpen = true"
+        >
+          <Icon name="burger" :size="22" />
+        </button>
+
+        <NuxtLink to="/" class="text-[22px] font-extrabold leading-none tracking-[0.2px]" aria-label="Home">GhostMark</NuxtLink>
+
+        <NuxtLink
+          to="/cart"
+          class="relative grid place-items-center min-h-[44px] min-w-[44px] -m-2 p-2 text-zinc-950 hover:bg-uiGrey rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+          aria-label="Cart"
+        >
+          <Icon name="cart" :size="20" />
+          <ClientOnly>
+            <span
+              v-if="cartCount"
+              class="absolute -top-1 -right-1 inline-flex min-w-[18px] h-[18px] items-center justify-center px-1 rounded-full bg-zinc-950 text-cream-50 text-[11px] font-bold"
+            >
+              {{ cartCount }}
+            </span>
+          </ClientOnly>
+        </NuxtLink>
+      </div>
+
+      <!-- Tablet (>=md, <lg) inline grid: keeps the inline search bar for mid-size viewports -->
       <div
-        class="mx-auto grid w-full max-w-screen-3xl items-center gap-4 bg-white px-5 py-[18px] [grid-template-columns:1fr_minmax(240px,560px)_1fr] max-[860px]:grid-cols-1 sm:px-6 lg:px-8"
+        class="mx-auto hidden w-full max-w-screen-3xl items-center gap-4 bg-white px-5 py-2 lg:py-[18px] [grid-template-columns:1fr_minmax(240px,560px)_1fr] sm:px-6 md:grid lg:px-8"
       >
-        <NuxtLink to="/" class="text-[34px] font-extrabold leading-none tracking-[0.2px]" aria-label="Home">GhostMark</NuxtLink>
+        <NuxtLink to="/" class="text-[28px] font-extrabold leading-none tracking-[0.2px]" aria-label="Home">GhostMark</NuxtLink>
 
         <form class="relative" @submit.prevent="onSearch">
           <label class="sr-only" for="site-search">Search for a product</label>
           <input
             id="site-search"
             v-model="searchQuery"
-            class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 pr-11 text-zinc-950 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-zinc-50"
+            class="w-full bg-offWhiteLight rounded-[5px] h-[4.4rem] md:h-[40px] lg:h-[4.4rem] px-[1.4rem] pr-[3.6rem] text-zinc-950 placeholder:text-greyText focus:outline-none focus:ring-2 focus:ring-greyLines"
             type="search"
             name="q"
             placeholder="Search for a product"
             autocomplete="off"
           />
           <button
-            class="absolute right-2.5 top-1/2 flex h-[34px] w-[34px] -translate-y-1/2 items-center justify-center rounded-[10px] border border-transparent bg-transparent text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950"
+            class="absolute right-[0.4rem] top-1/2 flex h-11 w-11 min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-full text-greyText hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
             type="submit"
             aria-label="Search"
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="M20 20l-3.2-3.2" />
-            </svg>
+            <Icon name="search" :size="20" />
           </button>
         </form>
 
-        <div class="flex items-center justify-end gap-2.5 max-[860px]:justify-start">
+        <div class="flex items-center justify-end gap-2.5">
           <WishlistDropdown />
           <CartDropdown />
           <AppAccountMenu
@@ -80,40 +107,94 @@
         </div>
       </div>
     </div>
+  </header>
 
-    <nav class="relative border-t border-zinc-200 bg-white" aria-label="Categories">
-      <div class="mx-auto flex w-full max-w-screen-2xl flex-wrap justify-center gap-[18px] px-5 py-3 max-[860px]:justify-start sm:px-6 lg:px-8">
+  <!--
+    Desktop fixed warmGrey header — h-[6.8rem]. Page wrappers add
+    `lg:pt-[118px]` (68 + 50) to clear this band PLUS the category nav below.
+  -->
+  <header
+    class="fixed top-0 z-20 w-full h-[68px] flex-none bg-warmGrey hidden lg:flex"
+    role="banner"
+    aria-label="navigation desktop"
+  >
+    <nav class="hidden lg:flex h-full w-full items-center justify-between ml-[3rem] mr-[16px] gap-[20px]">
+      <NuxtLink
+        to="/"
+        class="text-[28px] font-extrabold leading-none tracking-[0.2px]"
+        aria-label="Home"
+      >
+        GhostMark
+      </NuxtLink>
+
+      <form class="relative" @submit.prevent="onSearch">
+        <label class="sr-only" for="site-search-desktop">Search for a product</label>
+        <input
+          id="site-search-desktop"
+          v-model="searchQuery"
+          class="bg-offWhiteLight rounded-[5px] h-[44px] w-[58rem] max-w-[58rem] px-[2rem] text-zinc-950 placeholder:text-greyText focus:outline-none focus:ring-2 focus:ring-greyLines"
+          type="search"
+          name="q"
+          placeholder="Search for a product"
+          autocomplete="off"
+        />
+        <button
+          class="absolute right-[0.4rem] top-1/2 -translate-y-1/2 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-greyText hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+          type="submit"
+          aria-label="Search"
+        >
+          <Icon name="search" :size="20" />
+        </button>
+      </form>
+
+      <div class="flex items-center gap-2.5">
+        <WishlistDropdown />
+        <CartDropdown />
+        <AppAccountMenu
+          :is-authenticated="hasActiveSession"
+          :customer-display-name="customerDisplayName"
+          :customer-email="customerEmail"
+          :account-initial="accountInitial"
+          :is-logging-out="isLoggingOut"
+          @unauthenticated-click="onUnauthenticatedAccountClick"
+          @account="goToAccount"
+          @logout="onLogout"
+        />
+      </div>
+    </nav>
+  </header>
+
+  <!--
+    Desktop category nav. Hidden below lg — on mobile, categories live
+    inside <MobileNav>. On desktop this is the fixed band directly under
+    the warmGrey bar at top-[6.8rem], h-[5rem], white with a hairline
+    greyLines bottom border — the row that holds the mega-menu on hover.
+  -->
+  <nav
+    class="relative hidden bg-white border-b border-greyLines lg:fixed lg:flex lg:top-[68px] lg:left-0 lg:right-0 lg:z-10 lg:h-[50px] lg:shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+    aria-label="Categories"
+  >
+      <div class="mx-auto flex w-full max-w-screen-2xl flex-nowrap items-center justify-start gap-[20px] overflow-x-auto px-5 py-3 sm:px-6 lg:h-full lg:justify-center lg:py-0 lg:px-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <div
           v-for="c in categories"
           :key="c.key"
-          class="group/menu static"
+          class="group/menu static shrink-0 whitespace-nowrap"
         >
           <button
             v-if="c.menu"
-            class="inline-flex items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 group-hover/menu:border-zinc-950 group-hover/menu:text-zinc-950 group-focus-within/menu:border-zinc-950 group-focus-within/menu:text-zinc-950"
+            class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 group-hover/menu:border-zinc-950 group-hover/menu:text-zinc-950 group-focus-within/menu:border-zinc-950 group-focus-within/menu:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
             type="button"
             aria-haspopup="true"
           >
             <span>{{ c.label }}</span>
-            <svg
-              viewBox="0 0 24 24"
-              width="12"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              class="transition group-hover/menu:rotate-180 group-focus-within/menu:rotate-180"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
+            <span class="inline-flex transition group-hover/menu:rotate-180 group-focus-within/menu:rotate-180">
+              <Icon name="chevron-down" :size="12" :stroke-width="2" />
+            </span>
           </button>
 
           <NuxtLink
             v-else
-            class="inline-flex items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950"
+            class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
             :to="c.to"
           >
             <span>{{ c.label }}</span>
@@ -121,7 +202,7 @@
 
           <div
             v-if="c.menu"
-            class="invisible absolute inset-x-0 top-full -mt-px z-[95] translate-y-2 border-t border-[#ece7dd] bg-[#fbfaf7] opacity-0 shadow-[0_28px_90px_-48px_rgba(24,24,27,0.28)] transition duration-180 ease-out pointer-events-none group-hover/menu:visible group-hover/menu:pointer-events-auto group-hover/menu:translate-y-0 group-hover/menu:opacity-100 group-focus-within/menu:visible group-focus-within/menu:pointer-events-auto group-focus-within/menu:translate-y-0 group-focus-within/menu:opacity-100"
+            class="hidden lg:block invisible absolute inset-x-0 top-full -mt-px z-[95] translate-y-2 border-t border-[#ece7dd] bg-[#fbfaf7] opacity-0 shadow-[0_28px_90px_-48px_rgba(24,24,27,0.28)] transition duration-180 ease-out pointer-events-none group-hover/menu:visible group-hover/menu:pointer-events-auto group-hover/menu:translate-y-0 group-hover/menu:opacity-100 group-focus-within/menu:visible group-focus-within/menu:pointer-events-auto group-focus-within/menu:translate-y-0 group-focus-within/menu:opacity-100"
           >
             <div class="absolute inset-x-0 -top-5 h-5" aria-hidden="true" />
             <div class="mx-auto grid w-full max-w-screen-3xl grid-cols-[minmax(460px,1.05fr)_minmax(360px,0.95fr)] gap-0 px-5 sm:px-6 lg:px-8">
@@ -154,7 +235,7 @@
 
                 <div class="relative flex h-full flex-col justify-end p-8 lg:p-10">
                   <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-700/55">{{ c.label }}</p>
-                  <h3 class="mt-3 max-w-[340px] font-serif text-[30px] leading-[1.02] text-zinc-950">{{ c.menu.featuredTitle }}</h3>
+                  <p class="mt-3 max-w-[340px] font-serif text-[30px] leading-[1.02] text-zinc-950">{{ c.menu.featuredTitle }}</p>
                   <p class="mt-3 max-w-[360px] text-[13px] leading-relaxed text-zinc-700/72">{{ c.menu.featuredDescription }}</p>
                   <span class="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold tracking-[0.01em] text-zinc-950">
                     Shop {{ c.label }}
@@ -202,13 +283,22 @@
           </div>
         </div>
       </div>
-    </nav>
+  </nav>
 
-    <AuthModal v-model="isAuthModalOpen" :initial-mode="authModalMode" @success="onAuthSuccess" />
-  </header>
+  <AuthModal v-model="isAuthModalOpen" :initial-mode="authModalMode" @success="onAuthSuccess" />
+
+  <!--
+    Full-screen mobile burger overlay. Mounted once, controlled by
+    `mobileNavOpen`. Categories pass-through so the overlay reuses the
+    same data the desktop mega-menu consumes — single source of truth.
+  -->
+  <MobileNav v-model:open="mobileNavOpen" :categories="categories" />
 </template>
 
 <script setup lang="ts">
+import MobileNav from '~/components/MobileNav.vue'
+import Icon from '~/components/ui/Icon.vue'
+
 type CategoryMenuLink = {
   label: string
   to: string
@@ -265,6 +355,20 @@ const onSearch = async () => {
   if (!q) return
   await navigateTo(`/products?search=${encodeURIComponent(q)}`)
 }
+
+// Mobile burger state. The compact mobile row now exposes a single
+// burger button which opens MobileNav — search lives inside that
+// overlay alongside categories, account, wishlist, and utility links.
+const mobileNavOpen = ref(false)
+
+// Cart badge for the mobile right-side cart link. We read directly from
+// useCart() so the count stays in sync with the rest of the app — and
+// wrap the badge in <ClientOnly> in the template to avoid SSR mismatch.
+const { cart } = useCart()
+const cartCount = computed(() => {
+  const items = (cart.value?.items || []) as Array<{ quantity?: number }>
+  return items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+})
 
 const authRouteMode = computed<'login' | 'register' | null>(() => {
   const rawMode = Array.isArray(route.query.auth) ? route.query.auth[0] : route.query.auth
@@ -370,9 +474,5 @@ watch(
   },
 )
 
-watch(
-  () => route.fullPath,
-  () => {
-  },
-)
+// Note: MobileNav handles its own route-change auto-close.
 </script>

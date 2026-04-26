@@ -1,0 +1,291 @@
+<template>
+  <!--
+    MobileNav — full-screen mobile navigation overlay.
+
+    Mounted by AppHeader as:
+        <MobileNav v-model:open="mobileNavOpen" :categories="categories" />
+
+    Layout (lg:hidden — burger overlay is mobile-only, <lg):
+      1. Backdrop  (fixed inset-0, click-self closes)
+      2. Sliding panel (88vw / max 400px) with three regions:
+         - Top band: GhostMark wordmark + close button (44x44)
+         - Search input (full-width, h-44 — mobile thumb friendly)
+         - Scrollable category list (native <details> for disclosure)
+         - Bottom utility band: Account / Saved / Cart trio + footer links
+
+    A11y guarantees:
+      - role="dialog" + aria-modal="true" for assistive tech
+      - aria-label set from `title` prop (defaults to "Main navigation")
+      - Body scroll locked while open via document.body.style.overflow
+      - Escape key closes (listener attached inside onMounted, removed
+        on unmount — keeps SSR safe and prevents leaks)
+      - Route change auto-closes (no stale chrome on navigation)
+      - First focusable element (search input) receives focus on open
+      - Each tappable target is min-h-44 for WCAG 2.5.5
+
+    SSR: Teleport `to="body"` is guarded by Nuxt — `<Teleport>` is
+    rendered server-side only when its target exists; in the browser
+    it mounts to document.body so positioning escapes any transformed
+    ancestor.
+  -->
+  <Teleport to="body">
+    <Transition
+      enter-from-class="opacity-0"
+      enter-active-class="transition-opacity duration-200"
+      leave-to-class="opacity-0"
+      leave-active-class="transition-opacity duration-200"
+    >
+      <div
+        v-if="open"
+        class="fixed inset-0 z-[120] bg-black/40 lg:hidden"
+        aria-hidden="true"
+        @click.self="closeOverlay"
+      />
+    </Transition>
+    <Transition
+      enter-from-class="-translate-x-full"
+      enter-active-class="transition-transform duration-300 ease-out"
+      leave-to-class="-translate-x-full"
+      leave-active-class="transition-transform duration-300 ease-in"
+    >
+      <div
+        v-if="open"
+        id="mobile-nav"
+        ref="dialogRef"
+        class="fixed inset-y-0 left-0 z-[121] flex w-[88vw] max-w-[400px] flex-col bg-white shadow-2xl lg:hidden"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="title || 'Main navigation'"
+      >
+        <!-- Top header band -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-greyLines">
+          <NuxtLink
+            to="/"
+            class="text-[24px] font-extrabold leading-none tracking-[0.2px]"
+            aria-label="GhostMark home"
+            @click="closeOverlay"
+          >
+            GhostMark
+          </NuxtLink>
+          <button
+            type="button"
+            class="grid place-items-center min-h-[44px] min-w-[44px] -m-2 p-2 text-greyText hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 rounded"
+            aria-label="Close menu"
+            @click="closeOverlay"
+          >
+            <Icon name="close" :size="20" />
+          </button>
+        </div>
+
+        <!-- Search (full-width, focuses on open) -->
+        <div class="px-5 py-4 border-b border-greyLines">
+          <form class="relative" @submit.prevent="onSearchSubmit">
+            <label class="sr-only" for="mobile-nav-search">Search products</label>
+            <input
+              id="mobile-nav-search"
+              ref="searchInput"
+              v-model="searchQuery"
+              type="search"
+              name="q"
+              placeholder="Search products"
+              autocomplete="off"
+              class="w-full bg-offWhiteLight rounded-[5px] h-[44px] px-[1.4rem] pr-[3.6rem] text-zinc-950 placeholder:text-greyText focus:outline-none focus:ring-2 focus:ring-greyLines"
+            />
+            <button
+              type="submit"
+              class="absolute right-[0.4rem] top-1/2 grid h-11 w-11 min-h-[44px] min-w-[44px] -translate-y-1/2 place-items-center rounded-full text-greyText hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+              aria-label="Search"
+            >
+              <Icon name="search" :size="20" />
+            </button>
+          </form>
+        </div>
+
+        <!--
+          Category list. Scrollable middle region.
+          Native <details>/<summary> chosen over HeadlessUI Disclosure
+          here because the markup is leaner, expansion is keyboard-
+          accessible by default, and we don't need controlled state
+          for sub-sections (each user expand is independent).
+        -->
+        <nav class="flex-1 overflow-y-auto" aria-label="Mobile categories">
+          <ul class="divide-y divide-greyLines">
+            <li v-for="c in categories" :key="c.key">
+              <details v-if="c.menu && c.menu.sections.length" class="group">
+                <summary class="flex items-center justify-between min-h-[56px] px-5 py-4 text-[16px] font-medium text-zinc-950 cursor-pointer list-none hover:bg-uiGrey">
+                  <span>{{ c.label }}</span>
+                  <span class="inline-flex transition group-open:rotate-90">
+                    <Icon name="chevron-right" :size="14" />
+                  </span>
+                </summary>
+                <ul class="pb-3 bg-offWhite">
+                  <li>
+                    <NuxtLink
+                      :to="c.to"
+                      class="block px-8 py-3 text-[15px] text-zinc-700 hover:text-zinc-950 min-h-[44px]"
+                      @click="closeOverlay"
+                    >
+                      All {{ c.label.toLowerCase() }}
+                    </NuxtLink>
+                  </li>
+                  <li v-for="section in c.menu.sections" :key="section.title">
+                    <p class="px-8 pt-3 pb-1 text-[11px] uppercase tracking-[0.12em] text-greyText">{{ section.title }}</p>
+                    <NuxtLink
+                      v-for="item in section.items"
+                      :key="item.label"
+                      :to="item.to"
+                      class="block px-8 py-2 text-[15px] text-zinc-700 hover:text-zinc-950 min-h-[44px]"
+                      @click="closeOverlay"
+                    >
+                      {{ item.label }}
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </details>
+              <NuxtLink
+                v-else
+                :to="c.to"
+                class="flex items-center min-h-[56px] px-5 py-4 text-[16px] font-medium text-zinc-950 hover:bg-uiGrey"
+                @click="closeOverlay"
+              >
+                {{ c.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Bottom utility band: account trio + footer links -->
+        <div class="border-t border-greyLines p-5 bg-offWhite space-y-3">
+          <div class="grid grid-cols-3 gap-3">
+            <NuxtLink
+              to="/account"
+              class="flex items-center justify-center gap-2 min-h-[44px] rounded border border-greyLines text-[14px] text-zinc-950 hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+              @click="closeOverlay"
+            >
+              <Icon name="user" :size="20" />
+              Account
+            </NuxtLink>
+            <NuxtLink
+              to="/wishlist"
+              class="flex items-center justify-center gap-2 min-h-[44px] rounded border border-greyLines text-[14px] text-zinc-950 hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+              @click="closeOverlay"
+            >
+              <Icon name="wishlist" :size="20" />
+              Saved
+            </NuxtLink>
+            <NuxtLink
+              to="/cart"
+              class="flex items-center justify-center gap-2 min-h-[44px] rounded border border-greyLines text-[14px] text-zinc-950 hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+              @click="closeOverlay"
+            >
+              <Icon name="cart" :size="20" />
+              Cart
+            </NuxtLink>
+          </div>
+          <div class="flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-greyText">
+            <NuxtLink to="/about" class="hover:text-zinc-950" @click="closeOverlay">About</NuxtLink>
+            <NuxtLink to="/contact" class="hover:text-zinc-950" @click="closeOverlay">Contact</NuxtLink>
+            <NuxtLink to="/help" class="hover:text-zinc-950" @click="closeOverlay">Help</NuxtLink>
+            <NuxtLink to="/returns" class="hover:text-zinc-950" @click="closeOverlay">Returns</NuxtLink>
+            <NuxtLink to="/accessibility" class="hover:text-zinc-950" @click="closeOverlay">Accessibility</NuxtLink>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+import Icon from '~/components/ui/Icon.vue'
+
+type CategoryMenuLink = {
+  label: string
+  to: string
+}
+
+type CategoryMenuSection = {
+  title: string
+  items: CategoryMenuLink[]
+}
+
+type CategoryMenu = {
+  featuredTitle?: string
+  featuredDescription?: string
+  featuredBackground?: string
+  sections: CategoryMenuSection[]
+}
+
+type CategoryLink = {
+  key: string
+  label: string
+  to: string
+  menu?: CategoryMenu
+}
+
+const props = defineProps<{
+  open: boolean
+  categories: CategoryLink[]
+  title?: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:open', value: boolean): void
+}>()
+
+const dialogRef = ref<HTMLElement | null>(null)
+const searchInput = ref<HTMLInputElement | null>(null)
+const searchQuery = ref('')
+
+const closeOverlay = () => {
+  emit('update:open', false)
+}
+
+// Body scroll lock + focus first interactive element on open.
+// SSR-guarded — `document` is undefined during prerender.
+watch(
+  () => props.open,
+  async (open) => {
+    if (typeof document === 'undefined') return
+    document.body.style.overflow = open ? 'hidden' : ''
+    if (open) {
+      await nextTick()
+      searchInput.value?.focus()
+    }
+  },
+)
+
+// Auto-close on route change so navigation always lands on a clean view.
+const route = useRoute()
+watch(
+  () => route.fullPath,
+  () => {
+    if (props.open) closeOverlay()
+  },
+)
+
+// Escape key handler. Attached/detached with the component lifecycle so
+// the listener never leaks and cannot run during SSR.
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.open) closeOverlay()
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', onKeydown)
+})
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('keydown', onKeydown)
+    // Defensive: if component is torn down while open, restore scroll.
+    document.body.style.overflow = ''
+  }
+})
+
+const onSearchSubmit = async () => {
+  const q = searchQuery.value.trim()
+  if (!q) return
+  await navigateTo(`/products?search=${encodeURIComponent(q)}`)
+  searchQuery.value = ''
+  closeOverlay()
+}
+</script>
