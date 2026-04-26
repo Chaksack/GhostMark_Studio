@@ -1,0 +1,371 @@
+- generic [active] [ref=e1]:
+  - banner "navigation desktop" [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - link "Shop all products" [ref=e8] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e10]:
+        - textbox "search input" [ref=e11]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e12] [cursor=pointer]:
+          - img [ref=e14]
+      - generic [ref=e17]:
+        - button "| English" [ref=e19] [cursor=pointer]:
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e146]: "|"
+            - generic [ref=e147]: English
+        - generic [ref=e148]:
+          - link "favorites" [ref=e149] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e150]:
+              - img [ref=e151]
+          - img [ref=e156]
+          - link:
+            - /url: /contact
+          - generic "not logged in user account" [ref=e158] [cursor=pointer]:
+            - img [ref=e160]
+  - article [ref=e165]:
+    - generic "product customization container" [ref=e166]:
+      - generic [ref=e168]:
+        - navigation "breadcrumb" [ref=e170]:
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "All products" [ref=e173] [cursor=pointer]:
+                - /url: /shop
+              - generic [ref=e174]: /
+            - listitem [ref=e175]:
+              - link "Discover" [ref=e176] [cursor=pointer]:
+                - /url: /shop/c/discover
+              - generic [ref=e177]: /
+            - listitem [ref=e178]:
+              - link "Recently added" [ref=e179] [cursor=pointer]:
+                - /url: /shop/c/discover/discover-recently-added
+        - generic [ref=e182]:
+          - button "Previous slide" [ref=e183]:
+            - generic [ref=e184]: Go to previous slide
+          - button "Next slide" [ref=e185]:
+            - generic [ref=e186]: Go to next slide
+          - generic [ref=e188]:
+            - group "5 / 5" [ref=e189]:
+              - generic [ref=e190]:
+                - figure
+            - group "1 / 5" [ref=e191]:
+              - generic [ref=e192]:
+                - figure
+            - group "2 / 5" [ref=e193]:
+              - generic [ref=e194]:
+                - figure
+            - group "3 / 5" [ref=e195]:
+              - generic [ref=e196]:
+                - figure
+            - group "4 / 5" [ref=e197]:
+              - generic [ref=e198]:
+                - figure
+            - group "5 / 5" [ref=e199]:
+              - generic [ref=e200]:
+                - figure
+            - group "1 / 5" [ref=e201]:
+              - generic [ref=e202]:
+                - figure
+          - generic [ref=e203]:
+            - button "Go to slide 1" [ref=e204] [cursor=pointer]
+            - button "Go to slide 2" [ref=e205] [cursor=pointer]
+            - button "Go to slide 3" [ref=e206] [cursor=pointer]
+            - button "Go to slide 4" [ref=e207] [cursor=pointer]
+            - button "Go to slide 5" [ref=e208] [cursor=pointer]
+      - generic [ref=e209]:
+        - generic [ref=e210]:
+          - generic [ref=e211]:
+            - heading "Merino wool beanie" [level=1] [ref=e214]
+            - generic [ref=e215]:
+              - link "View product details" [ref=e216] [cursor=pointer]:
+                - /url: "#variant-specificities"
+                - text: View product details
+                - generic [ref=e217]:
+                  - img
+              - button [ref=e219] [cursor=pointer]:
+                - generic [ref=e220]:
+                  - img
+          - generic "product details for desktop" [ref=e221]:
+            - generic [ref=e222]:
+              - heading "1. Pick a product variant" [level=2] [ref=e223]
+              - generic [ref=e224]:
+                - generic "Select Color" [ref=e225]: "Color:"
+                - group "Select Color" [ref=e226]:
+                  - button "Color Ecru" [ref=e227] [cursor=pointer]
+                  - button "Color Khaki" [ref=e228] [cursor=pointer]
+                  - button "Color Red" [ref=e229] [cursor=pointer]
+                  - button "Color Medium Grey" [ref=e230] [cursor=pointer]
+                  - button "Color Black" [ref=e231] [cursor=pointer]
+                  - button "Color Coffee" [ref=e232] [cursor=pointer]
+                  - button "Color Natural" [ref=e233] [cursor=pointer]
+                  - button "Color Navy" [ref=e234] [cursor=pointer]
+            - generic [ref=e235]:
+              - heading "2. Upload your design" [level=2] [ref=e236]
+              - generic "Customization section" [ref=e237]:
+                - generic [ref=e238]:
+                  - tablist [ref=e239]:
+                    - tab "Select location Cuff" [selected] [ref=e240] [cursor=pointer]: Cuff
+                  - tabpanel "Select location Cuff" [ref=e241]:
+                    - button "Upload logo" [ref=e243] [cursor=pointer]:
+                      - generic [ref=e244]:
+                        - img [ref=e245]
+                        - generic [ref=e248]: Click to upload or drag & drop
+                      - paragraph [ref=e249]: Maximum file size 10Mb. For best results please upload an EPS, ai. or PDF file. We can vectorize your artwork if necessary.
+            - generic "Quantity selection" [ref=e250]:
+              - heading "3. Quantity" [level=2] [ref=e251]
+              - generic [ref=e252]:
+                - generic [ref=e253]:
+                  - generic [ref=e254]:
+                    - textbox "Quantity input" [ref=e256]: "100"
+                    - paragraph [ref=e257]: 23,53 €/piece
+                    - paragraph [ref=e259]: Save 2%
+                    - paragraph [ref=e260]: 2.353,00 €
+                  - paragraph [ref=e261]: Fill in the exact amount you need. The minimum quantity for this product is 50.
+                - generic [ref=e263] [cursor=pointer]:
+                  - paragraph [ref=e264]: 50 pieces
+                  - paragraph [ref=e265]: 24,00 €/piece
+                  - paragraph [ref=e266]: 1.200,00 €
+                - generic [ref=e268] [cursor=pointer]:
+                  - paragraph [ref=e269]: 100 pieces
+                  - paragraph [ref=e270]: 23,53 €/piece
+                  - paragraph [ref=e272]: Save 2%
+                  - paragraph [ref=e273]: 2.353,00 €
+                - generic [ref=e275] [cursor=pointer]:
+                  - paragraph [ref=e276]: 250 pieces
+                  - paragraph [ref=e277]: 21,15 €/piece
+                  - paragraph [ref=e279]: Save 12%
+                  - paragraph [ref=e280]: 5.287,50 €
+                - generic [ref=e282] [cursor=pointer]:
+                  - paragraph [ref=e283]: 500 pieces
+                  - paragraph [ref=e284]: 19,09 €/piece
+                  - paragraph [ref=e286]: Save 20%
+                  - paragraph [ref=e287]: 9.545,00 €
+                - generic [ref=e289] [cursor=pointer]:
+                  - paragraph [ref=e290]: 1.000 pieces
+                  - paragraph [ref=e291]: 18,42 €/piece
+                  - paragraph [ref=e293]: Save 23%
+                  - paragraph [ref=e294]: 18.420,00 €
+        - generic [ref=e295]:
+          - generic [ref=e296]:
+            - generic [ref=e297]:
+              - paragraph [ref=e298]: "Lead time:"
+              - paragraph [ref=e299]: Approximately 20-25 business days
+            - generic [ref=e300]:
+              - generic [ref=e301]:
+                - generic [ref=e302]: "Total:"
+                - generic "Total price" [ref=e303]:
+                  - text: 2.353,00 €
+                  - button [ref=e304]:
+                    - generic [ref=e306]:
+                      - img
+              - generic [ref=e307]:
+                - paragraph [ref=e308]: Upload your design to get your final price.
+                - img [ref=e312]
+          - button "Add to cart button" [ref=e319] [cursor=pointer]:
+            - text: Add to cart
+            - generic [ref=e320]:
+              - img
+    - generic [ref=e321]:
+      - link "Excellent | 4.8 out of 5" [ref=e322] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e323]:
+          - img [ref=e324]
+          - paragraph [ref=e330]: Excellent | 4.8 out of 5
+      - generic [ref=e331]:
+        - generic [ref=e332]:
+          - img [ref=e334]
+          - generic [ref=e339]: Worldwide delivery
+        - generic [ref=e340]: EU, UK and USA
+      - generic [ref=e341]:
+        - generic [ref=e342]:
+          - img [ref=e344]
+          - generic [ref=e350]: Quality control
+        - generic [ref=e351]: Each order is double checked before production
+      - generic [ref=e352]:
+        - generic [ref=e353]:
+          - img [ref=e355]
+          - generic [ref=e357]: They trust us!
+        - generic [ref=e358]: Trusted by 2.000+ customers
+    - generic [ref=e359]:
+      - heading "Product details" [level=1] [ref=e360]
+      - generic [ref=e361]:
+        - paragraph [ref=e362]: Your go-to for chilly days. Knitted in France from extra-fine merino wool, the Merino wool beanie offers exceptional softness and warmth, with a flexible knit that fits comfortably without feeling tight. Designed for everyday wear, it naturally adapts to the shape of the head and keeps its structure over time. Ready to be personalised, it’s a timeless winter essential.
+        - generic [ref=e363]:
+          - heading "Product specificities" [level=3] [ref=e365]:
+            - button "Product specificities" [ref=e366] [cursor=pointer]:
+              - heading "Product specificities" [level=1] [ref=e367]
+          - heading "Care instructions" [level=3] [ref=e373]:
+            - button "Care instructions" [ref=e374] [cursor=pointer]:
+              - heading "Care instructions" [level=1] [ref=e375]
+          - heading "Production" [level=3] [ref=e381]:
+            - button "Production" [ref=e382] [cursor=pointer]:
+              - heading "Production" [level=1] [ref=e383]
+    - generic [ref=e390]:
+      - paragraph [ref=e392]: Rooted in a French knitting atelier since the 1970s, these merino wool pieces are crafted with expertise passed down through generations. The naturally soft, thermoregulating wool offers comfort and warmth with quiet elegance.
+      - figure [ref=e394]:
+        - img "Product attribute image" [ref=e395]
+    - generic [ref=e396]:
+      - heading "You might also like..." [level=2] [ref=e397]
+      - generic [ref=e399]:
+        - generic [ref=e401]: Go to previous slide
+        - generic [ref=e403]: Go to next slide
+        - generic [ref=e406]:
+          - group "1 / 8" [ref=e407]:
+            - link "Craft thermal headband From 11.19 € Add to favorites" [ref=e408] [cursor=pointer]:
+              - /url: /shop/craft-thermal-headband
+              - generic [ref=e409]:
+                - generic [ref=e410]:
+                  - generic [ref=e411]:
+                    - figure:
+                      - img "Craft thermal headband" [ref=e412]
+                    - figure:
+                      - img "Craft thermal headband" [ref=e413]
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: Craft thermal headband
+                    - generic [ref=e416]: From 11.19 €
+                - button "Add to favorites" [ref=e418]:
+                  - img [ref=e420]
+          - group "2 / 8" [ref=e423]:
+            - link "Made in Europe Merino wool scarf From 50 € Add to favorites" [ref=e424] [cursor=pointer]:
+              - /url: /shop/merino-wool-scarf
+              - generic [ref=e425]:
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - generic [ref=e429]: Made in Europe
+                    - figure:
+                      - img "Merino wool scarf" [ref=e430]
+                    - figure:
+                      - img "Merino wool scarf" [ref=e431]
+                  - generic [ref=e432]:
+                    - generic [ref=e433]: Merino wool scarf
+                    - generic [ref=e434]: From 50 €
+                - button "Add to favorites" [ref=e436]:
+                  - img [ref=e438]
+          - group "3 / 8" [ref=e441]:
+            - link "Fisherman beanie From 7.21 € Add to favorites" [ref=e442] [cursor=pointer]:
+              - /url: /shop/fisherman-beanie
+              - generic [ref=e443]:
+                - generic [ref=e444]:
+                  - generic [ref=e445]:
+                    - figure:
+                      - img "Fisherman beanie" [ref=e446]
+                    - figure:
+                      - img "Fisherman beanie" [ref=e447]
+                  - generic [ref=e448]:
+                    - generic [ref=e449]: Fisherman beanie
+                    - generic [ref=e450]: From 7.21 €
+                - button "Add to favorites" [ref=e452]:
+                  - img [ref=e454]
+          - group "4 / 8" [ref=e457]:
+            - link "Beanie From 7.1 € Add to favorites" [ref=e458] [cursor=pointer]:
+              - /url: /shop/beanie
+              - generic [ref=e459]:
+                - generic [ref=e460]:
+                  - generic [ref=e461]:
+                    - figure:
+                      - img "Beanie" [ref=e462]
+                    - figure:
+                      - img "Beanie" [ref=e463]
+                  - generic [ref=e464]:
+                    - generic [ref=e465]: Beanie
+                    - generic [ref=e466]: From 7.1 €
+                - button "Add to favorites" [ref=e468]:
+                  - img [ref=e470]
+          - group "5 / 8" [ref=e473]:
+            - link "Shell fleece jacket From 36.64 € Add to favorites" [ref=e474] [cursor=pointer]:
+              - /url: /shop/shell-fleece-jacket
+              - generic [ref=e475]:
+                - generic [ref=e476]:
+                  - generic [ref=e477]:
+                    - figure:
+                      - img "Shell fleece jacket" [ref=e478]
+                    - figure:
+                      - img "Shell fleece jacket" [ref=e479]
+                  - generic [ref=e480]:
+                    - generic [ref=e481]: Shell fleece jacket
+                    - generic [ref=e482]: From 36.64 €
+                - button "Add to favorites" [ref=e484]:
+                  - img [ref=e486]
+          - group "6 / 8" [ref=e489]:
+            - link "Made in Europe Wool socks From 8.18 € Add to favorites" [ref=e490] [cursor=pointer]:
+              - /url: /shop/wool-socks
+              - generic [ref=e491]:
+                - generic [ref=e492]:
+                  - generic [ref=e493]:
+                    - generic [ref=e495]: Made in Europe
+                    - figure:
+                      - img "Wool socks" [ref=e496]
+                    - figure:
+                      - img "Wool socks" [ref=e497]
+                  - generic [ref=e498]:
+                    - generic [ref=e499]: Wool socks
+                    - generic [ref=e500]: From 8.18 €
+                - button "Add to favorites" [ref=e502]:
+                  - img [ref=e504]
+          - group "7 / 8" [ref=e507]:
+            - link "Sherpa jacket From 42.56 € Add to favorites" [ref=e508] [cursor=pointer]:
+              - /url: /shop/sherpa-jacket
+              - generic [ref=e509]:
+                - generic [ref=e510]:
+                  - generic [ref=e511]:
+                    - figure:
+                      - img "Sherpa jacket" [ref=e512]
+                    - figure:
+                      - img "Sherpa jacket" [ref=e513]
+                  - generic [ref=e514]:
+                    - generic [ref=e515]: Sherpa jacket
+                    - generic [ref=e516]: From 42.56 €
+                - button "Add to favorites" [ref=e518]:
+                  - img [ref=e520]
+          - group "8 / 8" [ref=e523]:
+            - link "Made in Europe BUFF From 6.82 € Add to favorites" [ref=e524] [cursor=pointer]:
+              - /url: /shop/buff
+              - generic [ref=e525]:
+                - generic [ref=e526]:
+                  - generic [ref=e527]:
+                    - generic [ref=e529]: Made in Europe
+                    - figure:
+                      - img "BUFF" [ref=e530]
+                    - figure:
+                      - img "BUFF" [ref=e531]
+                  - generic [ref=e532]:
+                    - generic [ref=e533]: BUFF
+                    - generic [ref=e534]: From 6.82 €
+                - button "Add to favorites" [ref=e536]:
+                  - img [ref=e538]
+    - generic [ref=e541]:
+      - complementary "Frequently asked questions" [ref=e542]:
+        - generic [ref=e543]:
+          - heading "Frequently asked questions" [level=2] [ref=e544]
+          - paragraph [ref=e545]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e547] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e548]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e550]:
+            - button "How can I find out more about your products?" [ref=e551] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e557]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e558] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e564]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e565] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e571]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e572] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e578]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e579] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e585]:
+            - button "Where do you ship?" [ref=e586] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e592]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e593] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e598]:
+        - generic [ref=e599]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e600]
+          - generic [ref=e601]:
+            - textbox "Enter your email address" [ref=e603]
+            - button "Subscribe" [ref=e604] [cursor=pointer]
+  - alert [ref=e605]
+  - button "Open chat" [ref=e606] [cursor=pointer]:
+    - img [ref=e608]

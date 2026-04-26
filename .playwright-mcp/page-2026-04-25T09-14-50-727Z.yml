@@ -1,0 +1,298 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - iframe [ref=e5]:
+        - generic [ref=f92e2]:
+          - link "Trustpilot reviews" [ref=f92e3] [cursor=pointer]:
+            - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+            - generic [ref=f92e4]: Excellent
+            - generic [ref=f92e5]: 4.8 out of 5
+            - img "Trustpilot" [ref=f92e9]
+          - generic [ref=f92e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+          - generic [ref=f92e14]: Click to view the company's Trustpilot profile
+    - navigation [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - img [ref=e11] [cursor=pointer]
+          - link [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+        - generic [ref=e16]:
+          - generic "not logged in user account" [ref=e17] [cursor=pointer]:
+            - img [ref=e19]
+          - link:
+            - /url: /shop/c/favorites
+          - link "contact" [ref=e24] [cursor=pointer]:
+            - /url: /contact
+            - generic "contact" [ref=e25]:
+              - img [ref=e26]
+          - link "cart icon" [ref=e29] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon" [ref=e31]:
+              - generic "cart icon" [ref=e33]:
+                - img [ref=e35]
+      - generic [ref=e38]:
+        - textbox "search input" [ref=e39]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e40] [cursor=pointer]:
+          - img [ref=e42]
+  - article [ref=e45]:
+    - generic "product customization container" [ref=e46]:
+      - generic [ref=e48]:
+        - button [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]:
+            - img
+        - generic [ref=e54]:
+          - generic [ref=e56]:
+            - group "8 / 8" [ref=e57]:
+              - generic [ref=e58]:
+                - figure
+            - group "1 / 8" [ref=e59]:
+              - generic [ref=e60]:
+                - figure
+            - group "2 / 8" [ref=e61]:
+              - generic [ref=e62]:
+                - figure
+            - group "3 / 8" [ref=e63]:
+              - generic [ref=e64]:
+                - figure
+            - group "4 / 8" [ref=e65]:
+              - generic [ref=e66]:
+                - figure
+            - group "5 / 8" [ref=e67]:
+              - generic [ref=e68]:
+                - figure
+            - group "6 / 8" [ref=e69]:
+              - generic [ref=e70]:
+                - figure
+            - group "7 / 8" [ref=e71]:
+              - generic [ref=e72]:
+                - figure
+            - group "8 / 8" [ref=e73]:
+              - generic [ref=e74]:
+                - figure
+            - group "1 / 8" [ref=e75]:
+              - generic [ref=e76]:
+                - figure
+          - generic [ref=e77]:
+            - button "Go to slide 1" [ref=e78] [cursor=pointer]
+            - button "Go to slide 2" [ref=e79] [cursor=pointer]
+            - button "Go to slide 3" [ref=e80] [cursor=pointer]
+            - button "Go to slide 4" [ref=e81] [cursor=pointer]
+            - button "Go to slide 5" [ref=e82] [cursor=pointer]
+            - button "Go to slide 6" [ref=e83] [cursor=pointer]
+            - button "Go to slide 7" [ref=e84] [cursor=pointer]
+            - button "Go to slide 8" [ref=e85] [cursor=pointer]
+      - generic [ref=e87]:
+        - generic [ref=e89]:
+          - heading "Merchery heavy cabas" [level=1] [ref=e91]
+          - paragraph [ref=e92]: "There’s something we all want to say but never quite dare to: “please, not another cheap tote bag”. Well, we hear you loud and clear. This one is special in all the ways that matter. Made in Portugal from 100% heavyweight cotton canvas, it’s roomy, durable, and made to handle whatever you throw at it. See by yourself!"
+        - generic "product details for mobile" [ref=e94]:
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - generic [ref=e97]: "Item price:"
+              - text: 11.96 - €14.69
+            - generic [ref=e98]:
+              - generic [ref=e99]: "Lead time:"
+              - text: 7-12 days
+          - generic [ref=e100]:
+            - generic "Select Color" [ref=e101]: "Color:"
+            - group "Select Color" [ref=e102]:
+              - button "Color Navy" [ref=e103] [cursor=pointer]
+              - button "Color Black" [ref=e104] [cursor=pointer]
+              - button "Color Off white" [ref=e105] [cursor=pointer]
+          - generic [ref=e106]:
+            - heading "Customize this product" [level=2] [ref=e107]
+            - paragraph [ref=e108]: Unlock our full product customization experience on desktop. Our advanced tools are designed for larger screens.
+            - paragraph [ref=e109]: Save this product to your favorites and continue customizing later on desktop.
+          - generic [ref=e111]:
+            - button "Add to favorites" [ref=e112] [cursor=pointer]:
+              - text: Add to favorites
+              - generic [ref=e113]:
+                - img
+            - button "Buy a sample" [ref=e114] [cursor=pointer]:
+              - text: Buy a sample
+              - generic [ref=e115]:
+                - img
+    - generic [ref=e116]:
+      - link "Excellent | 4.8 out of 5" [ref=e117] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e118]:
+          - img [ref=e119]
+          - paragraph [ref=e125]: Excellent | 4.8 out of 5
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - img [ref=e129]
+          - generic [ref=e134]: Worldwide delivery
+        - generic [ref=e135]: EU, UK and USA
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - img [ref=e139]
+          - generic [ref=e145]: Quality control
+        - generic [ref=e146]: Each order is double checked before production
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - img [ref=e150]
+          - generic [ref=e152]: They trust us!
+        - generic [ref=e153]: Trusted by 2.000+ customers
+    - generic [ref=e154]:
+      - heading "Product details" [level=1] [ref=e155]
+      - generic [ref=e157]:
+        - heading "Production" [level=3] [ref=e159]:
+          - button "Production" [ref=e160] [cursor=pointer]:
+            - heading "Production" [level=1] [ref=e161]
+        - heading "Product specificities" [level=3] [ref=e167]:
+          - button "Product specificities" [ref=e168] [cursor=pointer]:
+            - heading "Product specificities" [level=1] [ref=e169]
+        - heading "Customization" [level=3] [ref=e175]:
+          - button "Customization" [ref=e176] [cursor=pointer]:
+            - heading "Customization" [level=1] [ref=e177]
+    - generic [ref=e183]:
+      - generic [ref=e184]:
+        - generic [ref=e185]: "This heavy cabas is part of our first line of blank products, thoughtfully designed and crafted by us. We drew inspiration from the best in the industry, then made it our own. The result: A large heavy cabas with thick handles and a naturally worn-in look. Designed with an inside pocket to hold what matters."
+        - figure [ref=e187]
+      - generic [ref=e188]:
+        - generic [ref=e189]: This cabas bag is made in Portugal. Not too far from our headquarter. For us, producing in Europe wasn’t just a choice. It was the obvious next step. It means being closer to the process, knowing who we work with, and how things are made. That connection leads to better quality. For the people, for the planet, for you. Exactly how it should be.
+        - figure [ref=e191]
+    - generic [ref=e192]:
+      - heading "You might also like..." [level=2] [ref=e193]
+      - generic [ref=e198]:
+        - group "1 / 6" [ref=e199]:
+          - link "Rains tote From 69.9 € Add to favorites" [ref=e200] [cursor=pointer]:
+            - /url: /shop/rains-tote
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - generic [ref=e203]:
+                  - figure:
+                    - img "Rains tote" [ref=e204]
+                  - figure:
+                    - img "Rains tote"
+                - generic [ref=e205]:
+                  - generic [ref=e206]: Rains tote
+                  - generic [ref=e207]: From 69.9 €
+              - button "Add to favorites" [ref=e209]:
+                - img [ref=e211]
+        - group "2 / 6" [ref=e214]:
+          - link "Fast shipping Weekend tote From 9.79 € Add to favorites" [ref=e215] [cursor=pointer]:
+            - /url: /shop/weekend-tote
+            - generic [ref=e216]:
+              - generic [ref=e217]:
+                - generic [ref=e218]:
+                  - generic [ref=e220]: Fast shipping
+                  - figure:
+                    - img "Weekend tote" [ref=e221]
+                  - figure:
+                    - img "Weekend tote"
+                - generic [ref=e222]:
+                  - generic [ref=e223]: Weekend tote
+                  - generic [ref=e224]: From 9.79 €
+              - button "Add to favorites" [ref=e226]:
+                - img [ref=e228]
+        - group "3 / 6" [ref=e231]:
+          - link "Linen shopping bag From 19.38 € Add to favorites" [ref=e232] [cursor=pointer]:
+            - /url: /shop/linen-shopping-bag
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - generic [ref=e235]:
+                  - figure:
+                    - img "Linen shopping bag" [ref=e236]
+                  - figure:
+                    - img "Linen shopping bag"
+                - generic [ref=e237]:
+                  - generic [ref=e238]: Linen shopping bag
+                  - generic [ref=e239]: From 19.38 €
+              - button "Add to favorites" [ref=e241]:
+                - img [ref=e243]
+        - group "4 / 6" [ref=e246]:
+          - link "Heavy cabas bag From 6.3 € Add to favorites" [ref=e247] [cursor=pointer]:
+            - /url: /shop/heavy-cabas-bag
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - generic [ref=e250]:
+                  - figure:
+                    - img "Heavy cabas bag" [ref=e251]
+                  - figure:
+                    - img "Heavy cabas bag"
+                - generic [ref=e252]:
+                  - generic [ref=e253]: Heavy cabas bag
+                  - generic [ref=e254]: From 6.3 €
+              - button "Add to favorites" [ref=e256]:
+                - img [ref=e258]
+        - group "5 / 6" [ref=e261]:
+          - link "Best sellers Tote bag heavy From 4 € Add to favorites" [ref=e262] [cursor=pointer]:
+            - /url: /shop/tote-bag-heavy
+            - generic [ref=e263]:
+              - generic [ref=e264]:
+                - generic [ref=e265]:
+                  - generic [ref=e267]: Best sellers
+                  - figure:
+                    - img "Tote bag heavy" [ref=e268]
+                  - figure:
+                    - img "Tote bag heavy"
+                - generic [ref=e269]:
+                  - generic [ref=e270]: Tote bag heavy
+                  - generic [ref=e271]: From 4 €
+              - button "Add to favorites" [ref=e273]:
+                - img [ref=e275]
+        - group "6 / 6" [ref=e278]:
+          - link "B Corp Db Journey weekender From 60 € Add to favorites" [ref=e279] [cursor=pointer]:
+            - /url: /shop/db-journey-weekender
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - generic [ref=e282]:
+                  - generic [ref=e284]: B Corp
+                  - figure:
+                    - img "Db Journey weekender" [ref=e285]
+                  - figure:
+                    - img "Db Journey weekender"
+                - generic [ref=e286]:
+                  - generic [ref=e287]: Db Journey weekender
+                  - generic [ref=e288]: From 60 €
+              - button "Add to favorites" [ref=e290]:
+                - img [ref=e292]
+    - generic [ref=e295]:
+      - complementary "Frequently asked questions" [ref=e296]:
+        - generic [ref=e297]:
+          - heading "Frequently asked questions" [level=2] [ref=e298]
+          - paragraph [ref=e299]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e301] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e302]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e304]:
+            - button "How can I find out more about your products?" [ref=e305] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e311]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e312] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e318]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e319] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e325]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e326] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e332]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e333] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e339]:
+            - button "Where do you ship?" [ref=e340] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e346]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e347] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e352]:
+        - generic [ref=e353]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e354]
+          - generic [ref=e355]:
+            - textbox "Enter your email address" [ref=e357]
+            - button "Subscribe" [ref=e358] [cursor=pointer]
+  - alert [ref=e359]
+  - button "Open chat" [ref=e360] [cursor=pointer]:
+    - img [ref=e362]
+  - generic [ref=e364]:
+    - paragraph [ref=e365]: You have reached the EU website, but it looks like you are visiting from Great Britain.
+    - generic [ref=e366]:
+      - generic [ref=e367]:
+        - text: Please choose your location
+        - combobox [ref=e368] [cursor=pointer]:
+          - generic [ref=e369]:
+            - img [ref=e370]
+            - generic: United Kingdom
+          - img [ref=e373]
+      - button "Confirm" [ref=e375] [cursor=pointer]
+    - button [ref=e376] [cursor=pointer]:
+      - img [ref=e378]
+  - iframe [ref=e380]:
+    

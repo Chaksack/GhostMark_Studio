@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - heading "500" [level=1] [ref=e5]
+    - heading "Server Error" [level=2] [ref=e6]
+    - paragraph [ref=e7]: IPC connection closed
+  - status [ref=e8]
+  - iframe [ref=e9]:
+    - generic [ref=f12e3]: This content is blocked. Contact the site owner to fix the issue.
+  - iframe [ref=e10]:
+    - generic [ref=f13e4]:
+      - heading "500" [level=1] [ref=f13e5]
+      - heading "Server Error" [level=2] [ref=f13e6]
+      - paragraph [ref=f13e7]: IPC connection closed
+  - button "Toggle detailed error view Hide error page preview" [expanded] [ref=e11]:
+    - generic [ref=e12]: Toggle detailed error view
+    - button "Hide error page preview" [ref=e13] [cursor=pointer]: ×
+  - generic:
+    - img
+  - generic [ref=e14]:
+    - button "Toggle Nuxt DevTools" [ref=e15] [cursor=pointer]:
+      - img [ref=e16]
+    - generic "App load time" [ref=e19]:
+      - generic [ref=e20]: "621"
+      - generic [ref=e21]: ms
+    - button "Toggle Component Inspector" [ref=e23] [cursor=pointer]:
+      - img [ref=e24]

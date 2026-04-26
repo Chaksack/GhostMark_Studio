@@ -1,0 +1,173 @@
+{
+  "site": "https://merchery.co/",
+  "inspectedAt": "2026-04-25T23:09:00Z",
+  "framework": {
+    "name": "Next.js",
+    "router": "app",
+    "evidence": [
+      "data-router=\"app\" on <html>",
+      "/_next/static/chunks/main-app-*.js, webpack-*.js",
+      "self.__next_f.push() RSC streaming flight payloads",
+      "<next-route-announcer> custom element",
+      "_rsc=19zvn prefetch query params on <Link> hovers"
+    ],
+    "reactServerComponents": true,
+    "rscPrefetchSamples": [
+      "/about?_rsc=19zvn",
+      "/work?_rsc=19zvn",
+      "/contact?_rsc=19zvn",
+      "/club?_rsc=19zvn"
+    ],
+    "noNextDataScript": "App Router uses inline RSC stream instead of legacy #__NEXT_DATA__"
+  },
+  "language": {
+    "i18nStrategy": "Per-locale subpath + separate US subdomain",
+    "hreflangs": [
+      "x-default => /",
+      "en => /",
+      "de => /de",
+      "fr => /fr",
+      "nl => /nl",
+      "es => /es",
+      "en-GB => /en-GB",
+      "en-US/CA/AU/NZ/ZA => https://us.merchery.co/"
+    ],
+    "geoCookies": ["did_select_region_v2_EU"],
+    "windowCountry": "GB"
+  },
+  "css": {
+    "approach": "Tailwind CSS (utility classes, brand tokens)",
+    "evidence": [
+      "Atomic classes everywhere: flex bg-offWhite justify-between h-[4.4rem]",
+      "Custom tokens: bg-offWhite, border-greyLines",
+      "Arbitrary values like h-[4.4rem], px-[30px] (Tailwind JIT)"
+    ],
+    "stylesheetCount": 5,
+    "totalCSSBytes": 29210,
+    "stylesheets": [
+      "/_next/static/css/dd1a45087a22bb13.css (24.7 KB)",
+      "/_next/static/css/57ad097064a737e6.css (2.9 KB)",
+      "/_next/static/css/aa179c37317084f0.css (0.9 KB)",
+      "/_next/static/css/78655b8768ebe44e.css (0.6 KB)",
+      "/_next/static/css/e1fa23774319b1f9.css (0.1 KB)"
+    ],
+    "noCSSModules": true,
+    "noStyledComponents": true
+  },
+  "uiLibraries": {
+    "radixUI": true,
+    "swiper": true,
+    "framerMotion": true,
+    "reactHotToast": true,
+    "goober": true,
+    "headlessUI": false,
+    "lenis": false,
+    "gsap": false,
+    "embla": false,
+    "viewTransitionsAPI": true
+  },
+  "fonts": {
+    "approach": "Self-hosted via next/font, no Google Fonts",
+    "families": ["Reckless (Reckless Neue)", "Grotesk (Neue Haas Grotesk)"],
+    "files": [
+      "/_next/static/media/RecklessNeue-Regular.a7336896.woff2 (44 KB)",
+      "/_next/static/media/NeueHaasGrotesk.3f5c4280.woff2 (25 KB)"
+    ],
+    "computed": {
+      "body": "Grotesk",
+      "h1": "Reckless, serif",
+      "p": "Grotesk"
+    }
+  },
+  "images": {
+    "cdn": "Cloudflare Images (cdn-cgi/image)",
+    "cms": "Strapi (path /cms/uploads/)",
+    "transformPattern": "/cdn-cgi/image/width=N,quality=90,format=auto/cms/uploads/...",
+    "responsive": "Native srcset 1x/2x and width-descriptor srcset, sizes attribute on hero/grid",
+    "lazyLoad": "loading=\"lazy\" decoding=\"async\"",
+    "noPictureElements": true,
+    "imgCount": 131,
+    "largestImage": "DSC_06344_13f6d2b220.jpg ~4.7 MB at 3840w (heavy)"
+  },
+  "thirdParty": {
+    "analytics": [
+      "Google Tag Manager + GA4 (G-XHCB5CQSZF)",
+      "Google Ads conversion (AW-651094136)",
+      "Microsoft Clarity (wd26bmdtfa)",
+      "Hotjar (3733816)",
+      "HubSpot Analytics (portal 14517983)"
+    ],
+    "advertising": [
+      "Facebook Pixel (893704334797703)",
+      "Google Ads remarketing pixel",
+      "AdRoll (ddwl4m2hdecbv.cloudfront.net 1N5W0H7Z77O5)"
+    ],
+    "crm": [
+      "HubSpot (hs-scripts, hs-banner, hs-analytics, hs-collectedforms, hs-adspixel, portal 14517983)"
+    ],
+    "chat": [
+      "Intercom (app qw6jum5j) — launcher disabled by display rules"
+    ],
+    "popup": [
+      "Wisepops (XDfEAC5Yoi) — currently 401 from CDN"
+    ],
+    "reviews": [
+      "Trustpilot (business 5C3WHK2), bootstrap v5"
+    ],
+    "auth": [
+      "Google Identity Services (accounts.google.com/gsi/client)"
+    ],
+    "infra": [
+      "Cloudflare (front edge, cf-mitigated challenges, cdn-cgi/image, cloudflareinsights beacon)",
+      "First-party tagging proxy: merch.merchery.co (server-side GTM container)"
+    ],
+    "errorMonitoring": [
+      "Sentry detected (window.__SENTRY__)"
+    ]
+  },
+  "backendHints": {
+    "cmsBaseDir": "/cms/uploads/* — Strapi conventional path",
+    "noShopifyMedusaStripeOnHomepage": true,
+    "firstPartyTagProxy": "merch.merchery.co (sGTM)"
+  },
+  "security": {
+    "csp": "default-src 'none' ... nonce based, allows Cloudflare Turnstile",
+    "coep": "require-corp",
+    "coop": "same-origin",
+    "corp": "same-origin",
+    "permissionsPolicy": "Strict (camera, mic, geolocation, payment all blocked)",
+    "referrerPolicy": "same-origin",
+    "xfo": "SAMEORIGIN",
+    "tls": "HTTP/2 via Cloudflare"
+  },
+  "bundle": {
+    "totalRequests": 204,
+    "totalKB": 9982,
+    "byInitiator": { "link": 9, "script": 64, "css": 2, "img": 87, "fetch": 29, "xmlhttprequest": 11, "iframe": 1, "other": 1 },
+    "topJSChunks": [
+      "b818f9f8 (vendor) 117 KB",
+      "94336 (chunk) 101 KB",
+      "facebook fbevents.js 99 KB",
+      "51545 (chunk) 84 KB",
+      "c091c20c 54 KB",
+      "49370 46 KB",
+      "54af8817 36 KB",
+      "77349 34 KB",
+      "41233 33 KB",
+      "93758 29 KB"
+    ],
+    "scriptCount": 64,
+    "inlineScripts": 48,
+    "noModulePreloads": true,
+    "noPreconnects": true
+  },
+  "cookies": [
+    "_gcl_au", "hubspotutk", "_fbp",
+    "intercom-id-qw6jum5j", "intercom-session-qw6jum5j", "intercom-device-id-qw6jum5j",
+    "consent", "cookie_confirm_date",
+    "_ga", "_ga_XHCB5CQSZF", "FPLC", "FPAU", "FPGSID",
+    "_hjSessionUser_3733816", "_hjSession_3733816",
+    "book_a_call_modal_seen", "did_select_region_v2_EU",
+    "__hstc", "__hssrc", "__hssc", "g_state"
+  ]
+}

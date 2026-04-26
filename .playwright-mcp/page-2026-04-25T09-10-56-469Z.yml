@@ -1,0 +1,972 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f15e2]:
+            - link "Trustpilot reviews" [ref=f15e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f15e4]: Excellent
+              - generic [ref=f15e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f15e9]
+            - generic [ref=f15e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f15e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /contact
+          - listitem [ref=e16]:
+            - button "Europe | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e144]: Europe
+                - generic [ref=e145]: "|"
+                - generic [ref=e146]: English
+                - img [ref=e147]
+      - navigation [ref=e149]:
+        - link [ref=e151] [cursor=pointer]:
+          - /url: /
+          - img [ref=e152]
+        - generic [ref=e155]:
+          - textbox "search input" [ref=e156]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e157] [cursor=pointer]:
+            - img [ref=e159]
+        - generic [ref=e162]:
+          - generic "not logged in user account" [ref=e163] [cursor=pointer]:
+            - img [ref=e165]
+          - link "favorites" [ref=e170] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e171]:
+              - img [ref=e172]
+          - link:
+            - /url: /contact
+          - link "cart icon" [ref=e174] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon" [ref=e176]:
+              - generic "cart icon" [ref=e178]:
+                - img [ref=e180]
+      - navigation [ref=e182]:
+        - list [ref=e183]:
+          - listitem [ref=e184]:
+            - link "Apparel" [ref=e185] [cursor=pointer]:
+              - /url: /shop/c/apparel
+          - listitem [ref=e186]:
+            - link "Bags" [ref=e187] [cursor=pointer]:
+              - /url: /shop/c/bags
+          - listitem [ref=e188]:
+            - link "Headwear" [ref=e189] [cursor=pointer]:
+              - /url: /shop/c/headwear
+          - listitem [ref=e190]:
+            - link "Office" [ref=e191] [cursor=pointer]:
+              - /url: /shop/c/office
+          - listitem [ref=e192]:
+            - link "Drinkware" [ref=e193] [cursor=pointer]:
+              - /url: /shop/c/drinkware
+          - listitem [ref=e194]:
+            - link "Home" [ref=e195] [cursor=pointer]:
+              - /url: /shop/c/home
+          - listitem [ref=e196]:
+            - link "Wellness" [ref=e197] [cursor=pointer]:
+              - /url: /shop/c/wellness
+          - listitem [ref=e198]:
+            - link "Others" [ref=e199] [cursor=pointer]:
+              - /url: /shop/c/others
+          - listitem [ref=e200]:
+            - link "Discover" [ref=e201] [cursor=pointer]:
+              - /url: /shop/c/discover
+          - listitem [ref=e202]:
+            - link "Brands" [ref=e203] [cursor=pointer]:
+              - /url: /shop/c/brands
+    - generic [ref=e204]:
+      - generic [ref=e205]:
+        - heading "Good merch, for good brands." [level=1] [ref=e206]
+        - generic [ref=e207]:
+          - link "Shop all products" [ref=e208] [cursor=pointer]:
+            - /url: /shop
+          - link "Talk to our team" [ref=e209] [cursor=pointer]:
+            - /url: /contact
+        - link [ref=e210] [cursor=pointer]:
+          - /url: /blog/a-look-back-at-our-b-corp-certification-journey
+          - figure [ref=e211]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e212]
+      - generic [ref=e213]:
+        - figure [ref=e214]:
+          - img "Cabas bag" [ref=e215]
+        - generic [ref=e216]:
+          - generic [ref=e217]: Cabas bag
+          - paragraph [ref=e218]: Arc'teryx
+        - generic [ref=e221]:
+          - button "Previous slide" [ref=e222]:
+            - generic [ref=e223]: Go to previous slide
+          - button "Next slide" [ref=e224]:
+            - generic [ref=e225]: Go to next slide
+          - generic [ref=e227]:
+            - group "4 / 4" [ref=e228]:
+              - generic [ref=e229]:
+                - figure:
+                  - img "Kaweco pen" [ref=e230]
+              - generic [ref=e231]:
+                - strong [ref=e232]: Kaweco pen
+                - paragraph [ref=e233]: Soeur Paris
+            - group "1 / 4" [ref=e234]:
+              - generic [ref=e235]:
+                - figure:
+                  - img "Cabas bag" [ref=e236]
+              - generic [ref=e237]:
+                - strong [ref=e238]: Cabas bag
+                - paragraph [ref=e239]: Arc'teryx
+            - group "2 / 4" [ref=e240]:
+              - generic [ref=e241]:
+                - figure:
+                  - img "Yeti tumbler" [ref=e242]
+              - generic [ref=e243]:
+                - strong [ref=e244]: Yeti tumbler
+                - paragraph [ref=e245]: Osom coffee
+            - group "3 / 4" [ref=e246]:
+              - generic [ref=e247]:
+                - figure:
+                  - img "Linen napkin" [ref=e248]
+              - generic [ref=e249]:
+                - strong [ref=e250]: Linen napkin
+                - paragraph [ref=e251]: Delvaux
+            - group "4 / 4" [ref=e252]:
+              - generic [ref=e253]:
+                - figure:
+                  - img "Kaweco pen" [ref=e254]
+              - generic [ref=e255]:
+                - strong [ref=e256]: Kaweco pen
+                - paragraph [ref=e257]: Soeur Paris
+            - group "1 / 4" [ref=e258]:
+              - generic [ref=e259]:
+                - figure:
+                  - img "Cabas bag" [ref=e260]
+              - generic [ref=e261]:
+                - strong [ref=e262]: Cabas bag
+                - paragraph [ref=e263]: Arc'teryx
+          - generic [ref=e264]:
+            - button "Go to slide 1" [ref=e265] [cursor=pointer]
+            - button "Go to slide 2" [ref=e266] [cursor=pointer]
+            - button "Go to slide 3" [ref=e267] [cursor=pointer]
+            - button "Go to slide 4" [ref=e268] [cursor=pointer]
+    - list [ref=e270]:
+      - listitem [ref=e271]:
+        - figure [ref=e272]:
+          - img "accenture_logo_black_and_white_58302362ed.png" [ref=e273]
+      - listitem [ref=e274]:
+        - figure [ref=e275]:
+          - img "parnter_oatly_logo_3d133ef9d3.png" [ref=e276]
+      - listitem [ref=e277]:
+        - figure [ref=e278]:
+          - img "Highsnobiety_Logo_text.png" [ref=e279]
+      - listitem [ref=e280]:
+        - figure [ref=e281]:
+          - img "partner_spotify_logo.png" [ref=e282]
+      - listitem [ref=e283]:
+        - figure [ref=e284]:
+          - img "Untitled_design_25_dd4ac15256.png" [ref=e285]
+      - listitem [ref=e286]:
+        - figure [ref=e287]:
+          - img "partner_caudalie_logo.png" [ref=e288]
+      - listitem [ref=e289]:
+        - figure [ref=e290]:
+          - img "partner_wetransfer_logo.png" [ref=e291]
+      - listitem [ref=e292]:
+        - figure [ref=e293]:
+          - img "partner_deliveroo_logo.svg" [ref=e294]
+      - listitem [ref=e295]:
+        - figure [ref=e296]:
+          - img "partner_deloitte_logo.png" [ref=e297]
+      - listitem [ref=e298]:
+        - figure [ref=e299]:
+          - img "partner_deliciously_logo.png" [ref=e300]
+      - listitem [ref=e301]:
+        - figure [ref=e302]:
+          - img "partner_organic_basics_logo.png" [ref=e303]
+      - listitem [ref=e304]:
+        - figure [ref=e305]:
+          - img "partner_dior_logo.png" [ref=e306]
+      - listitem [ref=e307]:
+        - figure [ref=e308]:
+          - img "accenture_logo_black_and_white_58302362ed.png" [ref=e309]
+      - listitem [ref=e310]:
+        - figure [ref=e311]:
+          - img "parnter_oatly_logo_3d133ef9d3.png" [ref=e312]
+      - listitem [ref=e313]:
+        - figure [ref=e314]:
+          - img "Highsnobiety_Logo_text.png" [ref=e315]
+      - listitem [ref=e316]:
+        - figure [ref=e317]:
+          - img "partner_spotify_logo.png" [ref=e318]
+      - listitem [ref=e319]:
+        - figure [ref=e320]:
+          - img "Untitled_design_25_dd4ac15256.png" [ref=e321]
+      - listitem [ref=e322]:
+        - figure [ref=e323]:
+          - img "partner_caudalie_logo.png" [ref=e324]
+      - listitem [ref=e325]:
+        - figure [ref=e326]:
+          - img "partner_wetransfer_logo.png" [ref=e327]
+      - listitem [ref=e328]:
+        - figure [ref=e329]:
+          - img "partner_deliveroo_logo.svg" [ref=e330]
+      - listitem [ref=e331]:
+        - figure [ref=e332]:
+          - img "partner_deloitte_logo.png" [ref=e333]
+      - listitem [ref=e334]:
+        - figure [ref=e335]:
+          - img "partner_deliciously_logo.png" [ref=e336]
+      - listitem [ref=e337]:
+        - figure [ref=e338]:
+          - img "partner_organic_basics_logo.png" [ref=e339]
+      - listitem [ref=e340]:
+        - figure [ref=e341]:
+          - img "partner_dior_logo.png" [ref=e342]
+      - listitem [ref=e343]:
+        - figure [ref=e344]:
+          - img "accenture_logo_black_and_white_58302362ed.png" [ref=e345]
+      - listitem [ref=e346]:
+        - figure [ref=e347]:
+          - img "parnter_oatly_logo_3d133ef9d3.png" [ref=e348]
+      - listitem [ref=e349]:
+        - figure [ref=e350]:
+          - img "Highsnobiety_Logo_text.png" [ref=e351]
+      - listitem [ref=e352]:
+        - figure [ref=e353]:
+          - img "partner_spotify_logo.png" [ref=e354]
+      - listitem [ref=e355]:
+        - figure [ref=e356]:
+          - img "Untitled_design_25_dd4ac15256.png" [ref=e357]
+      - listitem [ref=e358]:
+        - figure [ref=e359]:
+          - img "partner_caudalie_logo.png" [ref=e360]
+      - listitem [ref=e361]:
+        - figure [ref=e362]:
+          - img "partner_wetransfer_logo.png" [ref=e363]
+      - listitem [ref=e364]:
+        - figure [ref=e365]:
+          - img "partner_deliveroo_logo.svg" [ref=e366]
+      - listitem [ref=e367]:
+        - figure [ref=e368]:
+          - img "partner_deloitte_logo.png" [ref=e369]
+      - listitem [ref=e370]:
+        - figure [ref=e371]:
+          - img "partner_deliciously_logo.png" [ref=e372]
+      - listitem [ref=e373]:
+        - figure [ref=e374]:
+          - img "partner_organic_basics_logo.png" [ref=e375]
+      - listitem [ref=e376]:
+        - figure [ref=e377]:
+          - img "partner_dior_logo.png" [ref=e378]
+      - listitem [ref=e379]:
+        - figure [ref=e380]:
+          - img "accenture_logo_black_and_white_58302362ed.png" [ref=e381]
+      - listitem [ref=e382]:
+        - figure [ref=e383]:
+          - img "parnter_oatly_logo_3d133ef9d3.png" [ref=e384]
+      - listitem [ref=e385]:
+        - figure [ref=e386]:
+          - img "Highsnobiety_Logo_text.png" [ref=e387]
+      - listitem [ref=e388]:
+        - figure [ref=e389]:
+          - img "partner_spotify_logo.png" [ref=e390]
+      - listitem [ref=e391]:
+        - figure [ref=e392]:
+          - img "Untitled_design_25_dd4ac15256.png" [ref=e393]
+      - listitem [ref=e394]:
+        - figure [ref=e395]:
+          - img "partner_caudalie_logo.png" [ref=e396]
+      - listitem [ref=e397]:
+        - figure [ref=e398]:
+          - img "partner_wetransfer_logo.png" [ref=e399]
+      - listitem [ref=e400]:
+        - figure [ref=e401]:
+          - img "partner_deliveroo_logo.svg" [ref=e402]
+      - listitem [ref=e403]:
+        - figure [ref=e404]:
+          - img "partner_deloitte_logo.png" [ref=e405]
+      - listitem [ref=e406]:
+        - figure [ref=e407]:
+          - img "partner_deliciously_logo.png" [ref=e408]
+      - listitem [ref=e409]:
+        - figure [ref=e410]:
+          - img "partner_organic_basics_logo.png" [ref=e411]
+      - listitem [ref=e412]:
+        - figure [ref=e413]:
+          - img "partner_dior_logo.png" [ref=e414]
+    - generic [ref=e415]:
+      - generic [ref=e416]:
+        - heading "We personalise the most beautiful and premium products for your brand to shine in real life." [level=2] [ref=e417]:
+          - text: We personalise the most beautiful and
+          - link "premium" [ref=e418] [cursor=pointer]:
+            - /url: /about/environmental-footprint
+          - text: products for your brand to shine in real life.
+        - link "View all products" [ref=e419] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e421]:
+        - heading "Our best sellers" [level=2] [ref=e422]
+        - generic [ref=e424]:
+          - generic [ref=e426]: Go to previous slide
+          - generic [ref=e428]: Go to next slide
+          - generic [ref=e431]:
+            - group "1 / 17" [ref=e432]:
+              - link "Enamel mug From 9.6 € Add to favorites" [ref=e433] [cursor=pointer]:
+                - /url: /shop/enamel-mug
+                - generic [ref=e434]:
+                  - generic [ref=e435]:
+                    - generic [ref=e436]:
+                      - figure:
+                        - img "Enamel mug" [ref=e437]
+                      - figure:
+                        - img "Enamel mug" [ref=e438]
+                    - generic [ref=e439]:
+                      - generic [ref=e440]: Enamel mug
+                      - generic [ref=e441]: From 9.6 €
+                  - button "Add to favorites" [ref=e443]:
+                    - img [ref=e445]
+            - group "2 / 17" [ref=e448]:
+              - link "Rains weekend bag From 79.9 € Add to favorites" [ref=e449] [cursor=pointer]:
+                - /url: /shop/rains-weekend-bag
+                - generic [ref=e450]:
+                  - generic [ref=e451]:
+                    - generic [ref=e452]:
+                      - figure:
+                        - img "Rains weekend bag" [ref=e453]
+                      - figure:
+                        - img "Rains weekend bag" [ref=e454]
+                    - generic [ref=e455]:
+                      - generic [ref=e456]: Rains weekend bag
+                      - generic [ref=e457]: From 79.9 €
+                  - button "Add to favorites" [ref=e459]:
+                    - img [ref=e461]
+            - group "3 / 17" [ref=e464]:
+              - link "Vintage cap From 8.98 € Add to favorites" [ref=e465] [cursor=pointer]:
+                - /url: /shop/vintage-cap
+                - generic [ref=e466]:
+                  - generic [ref=e467]:
+                    - generic [ref=e468]:
+                      - figure:
+                        - img "Vintage cap" [ref=e469]
+                      - figure:
+                        - img "Vintage cap" [ref=e470]
+                    - generic [ref=e471]:
+                      - generic [ref=e472]: Vintage cap
+                      - generic [ref=e473]: From 8.98 €
+                  - button "Add to favorites" [ref=e475]:
+                    - img [ref=e477]
+            - group "4 / 17" [ref=e480]:
+              - link "Merchery sport T-shirt From 13.36 € Add to favorites" [ref=e481] [cursor=pointer]:
+                - /url: /shop/merchery-sport-t-shirt
+                - generic [ref=e482]:
+                  - generic [ref=e483]:
+                    - generic [ref=e484]:
+                      - figure:
+                        - img "Merchery sport T-shirt" [ref=e485]
+                      - figure:
+                        - img "Merchery sport T-shirt" [ref=e486]
+                    - generic [ref=e487]:
+                      - generic [ref=e488]: Merchery sport T-shirt
+                      - generic [ref=e489]: From 13.36 €
+                  - button "Add to favorites" [ref=e491]:
+                    - img [ref=e493]
+            - group "5 / 17" [ref=e496]:
+              - link "Karst stone paper notebook From 17.48 € Add to favorites" [ref=e497] [cursor=pointer]:
+                - /url: /shop/karst-stone-paper-notebook
+                - generic [ref=e498]:
+                  - generic [ref=e499]:
+                    - generic [ref=e500]:
+                      - figure:
+                        - img "Karst stone paper notebook" [ref=e501]
+                      - figure:
+                        - img "Karst stone paper notebook" [ref=e502]
+                    - generic [ref=e503]:
+                      - generic [ref=e504]: Karst stone paper notebook
+                      - generic [ref=e505]: From 17.48 €
+                  - button "Add to favorites" [ref=e507]:
+                    - img [ref=e509]
+            - group "6 / 17" [ref=e512]:
+              - link "Fisherman beanie From 7.21 € Add to favorites" [ref=e513] [cursor=pointer]:
+                - /url: /shop/fisherman-beanie
+                - generic [ref=e514]:
+                  - generic [ref=e515]:
+                    - generic [ref=e516]:
+                      - figure:
+                        - img "Fisherman beanie" [ref=e517]
+                      - figure:
+                        - img "Fisherman beanie" [ref=e518]
+                    - generic [ref=e519]:
+                      - generic [ref=e520]: Fisherman beanie
+                      - generic [ref=e521]: From 7.21 €
+                  - button "Add to favorites" [ref=e523]:
+                    - img [ref=e525]
+            - group "7 / 17" [ref=e528]:
+              - link "Merchery heavy cabas From 11.96 € Add to favorites" [ref=e529] [cursor=pointer]:
+                - /url: /shop/merchery-heavy-cabas
+                - generic [ref=e530]:
+                  - generic [ref=e531]:
+                    - generic [ref=e532]:
+                      - figure:
+                        - img "Merchery heavy cabas" [ref=e533]
+                      - figure:
+                        - img "Merchery heavy cabas" [ref=e534]
+                    - generic [ref=e535]:
+                      - generic [ref=e536]: Merchery heavy cabas
+                      - generic [ref=e537]: From 11.96 €
+                  - button "Add to favorites" [ref=e539]:
+                    - img [ref=e541]
+            - group "8 / 17" [ref=e544]:
+              - link "Caran d'Ache pencil From 13.85 € Add to favorites" [ref=e545] [cursor=pointer]:
+                - /url: /shop/caran-dache-pencil
+                - generic [ref=e546]:
+                  - generic [ref=e547]:
+                    - generic [ref=e548]:
+                      - figure:
+                        - img "Caran d'Ache pencil" [ref=e549]
+                      - figure:
+                        - img "Caran d'Ache pencil" [ref=e550]
+                    - generic [ref=e551]:
+                      - generic [ref=e552]: Caran d'Ache pencil
+                      - generic [ref=e553]: From 13.85 €
+                  - button "Add to favorites" [ref=e555]:
+                    - img [ref=e557]
+            - group "9 / 17" [ref=e560]:
+              - link "Boxy heavy T-shirt From 11.83 € Add to favorites" [ref=e561] [cursor=pointer]:
+                - /url: /shop/boxy-heavy-t-shirt
+                - generic [ref=e562]:
+                  - generic [ref=e563]:
+                    - generic [ref=e564]:
+                      - figure:
+                        - img "Boxy heavy T-shirt" [ref=e565]
+                      - figure:
+                        - img "Boxy heavy T-shirt" [ref=e566]
+                    - generic [ref=e567]:
+                      - generic [ref=e568]: Boxy heavy T-shirt
+                      - generic [ref=e569]: From 11.83 €
+                  - button "Add to favorites" [ref=e571]:
+                    - img [ref=e573]
+            - group "10 / 17" [ref=e576]:
+              - link "Corkscrew From 5.73 € Add to favorites" [ref=e577] [cursor=pointer]:
+                - /url: /shop/corkscrew
+                - generic [ref=e578]:
+                  - generic [ref=e579]:
+                    - generic [ref=e580]:
+                      - figure:
+                        - img "Corkscrew" [ref=e581]
+                      - figure:
+                        - img "Corkscrew" [ref=e582]
+                    - generic [ref=e583]:
+                      - generic [ref=e584]: Corkscrew
+                      - generic [ref=e585]: From 5.73 €
+                  - button "Add to favorites" [ref=e587]:
+                    - img [ref=e589]
+            - group "11 / 17" [ref=e592]:
+              - link "Silk sleep mask From 15.2 € Add to favorites" [ref=e593] [cursor=pointer]:
+                - /url: /shop/silk-sleep-mask
+                - generic [ref=e594]:
+                  - generic [ref=e595]:
+                    - generic [ref=e596]:
+                      - figure:
+                        - img "Silk sleep mask" [ref=e597]
+                      - figure:
+                        - img "Silk sleep mask" [ref=e598]
+                    - generic [ref=e599]:
+                      - generic [ref=e600]: Silk sleep mask
+                      - generic [ref=e601]: From 15.2 €
+                  - button "Add to favorites" [ref=e603]:
+                    - img [ref=e605]
+            - group "12 / 17" [ref=e608]:
+              - link "Oversized crewneck From 26.56 € Add to favorites" [ref=e609] [cursor=pointer]:
+                - /url: /shop/oversized-crewneck
+                - generic [ref=e610]:
+                  - generic [ref=e611]:
+                    - generic [ref=e612]:
+                      - figure:
+                        - img "Oversized crewneck" [ref=e613]
+                      - figure:
+                        - img "Oversized crewneck" [ref=e614]
+                    - generic [ref=e615]:
+                      - generic [ref=e616]: Oversized crewneck
+                      - generic [ref=e617]: From 26.56 €
+                  - button "Add to favorites" [ref=e619]:
+                    - img [ref=e621]
+            - group "13 / 17" [ref=e624]:
+              - link "Wool socks From 8.18 € Add to favorites" [ref=e625] [cursor=pointer]:
+                - /url: /shop/wool-socks
+                - generic [ref=e626]:
+                  - generic [ref=e627]:
+                    - generic [ref=e628]:
+                      - figure:
+                        - img "Wool socks" [ref=e629]
+                      - figure:
+                        - img "Wool socks" [ref=e630]
+                    - generic [ref=e631]:
+                      - generic [ref=e632]: Wool socks
+                      - generic [ref=e633]: From 8.18 €
+                  - button "Add to favorites" [ref=e635]:
+                    - img [ref=e637]
+            - group "14 / 17" [ref=e640]:
+              - link "Craft thermal headband From 11.19 € Add to favorites" [ref=e641] [cursor=pointer]:
+                - /url: /shop/craft-thermal-headband
+                - generic [ref=e642]:
+                  - generic [ref=e643]:
+                    - generic [ref=e644]:
+                      - figure:
+                        - img "Craft thermal headband" [ref=e645]
+                      - figure:
+                        - img "Craft thermal headband" [ref=e646]
+                    - generic [ref=e647]:
+                      - generic [ref=e648]: Craft thermal headband
+                      - generic [ref=e649]: From 11.19 €
+                  - button "Add to favorites" [ref=e651]:
+                    - img [ref=e653]
+            - group "15 / 17" [ref=e656]:
+              - link "Merchery notebook From 6 € Add to favorites" [ref=e657] [cursor=pointer]:
+                - /url: /shop/merchery-notebook
+                - generic [ref=e658]:
+                  - generic [ref=e659]:
+                    - generic [ref=e660]:
+                      - figure:
+                        - img "Merchery notebook" [ref=e661]
+                      - figure:
+                        - img "Merchery notebook" [ref=e662]
+                    - generic [ref=e663]:
+                      - generic [ref=e664]: Merchery notebook
+                      - generic [ref=e665]: From 6 €
+                  - button "Add to favorites" [ref=e667]:
+                    - img [ref=e669]
+            - group "16 / 17" [ref=e672]:
+              - link "The North Face puff jacket From 160.88 € Add to favorites" [ref=e673] [cursor=pointer]:
+                - /url: /shop/the-north-face-puff-jacket
+                - generic [ref=e674]:
+                  - generic [ref=e675]:
+                    - generic [ref=e676]:
+                      - figure:
+                        - img "The North Face puff jacket" [ref=e677]
+                      - figure:
+                        - img "The North Face puff jacket" [ref=e678]
+                    - generic [ref=e679]:
+                      - generic [ref=e680]: The North Face puff jacket
+                      - generic [ref=e681]: From 160.88 €
+                  - button "Add to favorites" [ref=e683]:
+                    - img [ref=e685]
+            - group "17 / 17" [ref=e688]:
+              - link "The North Face puff vest From 138.55 € Add to favorites" [ref=e689] [cursor=pointer]:
+                - /url: /shop/the-north-face-puff-vest
+                - generic [ref=e690]:
+                  - generic [ref=e691]:
+                    - generic [ref=e692]:
+                      - figure:
+                        - img "The North Face puff vest" [ref=e693]
+                      - figure:
+                        - img "The North Face puff vest" [ref=e694]
+                    - generic [ref=e695]:
+                      - generic [ref=e696]: The North Face puff vest
+                      - generic [ref=e697]: From 138.55 €
+                  - button "Add to favorites" [ref=e699]:
+                    - img [ref=e701]
+      - generic [ref=e704]:
+        - generic [ref=e705]:
+          - heading "Our products in real life" [level=2] [ref=e706]
+          - paragraph [ref=e707]: As real as it gets
+        - list [ref=e708]:
+          - listitem [ref=e709]:
+            - link "Tarta Gelatina Oversized tees made in Portugal for the Barcelona-based homeware brand. Oversized t-shirt" [ref=e710] [cursor=pointer]:
+              - /url: https://merchery.co/shop/oversized-t-shirt
+              - generic [ref=e711]:
+                - figure [ref=e712]:
+                  - img "Oversized tees made in Portugal for the Barcelona-based homeware brand." [ref=e713]
+                - generic [ref=e714]:
+                  - heading "Tarta Gelatina" [level=3] [ref=e715]
+                  - paragraph [ref=e716]: Oversized tees made in Portugal for the Barcelona-based homeware brand.
+                - generic [ref=e718]: Oversized t-shirt
+          - listitem [ref=e719]:
+            - link "Financial Times Totes and caps for the Financial Times. Vintage cap" [ref=e720] [cursor=pointer]:
+              - /url: /shop/vintage-cap
+              - generic [ref=e721]:
+                - figure [ref=e722]:
+                  - img "Totes and caps for the Financial Times." [ref=e723]
+                - generic [ref=e724]:
+                  - heading "Financial Times" [level=3] [ref=e725]
+                  - paragraph [ref=e726]: Totes and caps for the Financial Times.
+                - generic [ref=e728]: Vintage cap
+          - listitem [ref=e729]:
+            - link "Charlotte Taylor Opinel knives, bottle openers, mugs, socks, for Charlotte's collection Home from Home. Opinel" [ref=e730] [cursor=pointer]:
+              - /url: https://merchery.co/shop/opinel
+              - generic [ref=e731]:
+                - figure [ref=e732]:
+                  - img "Opinel knives, bottle openers, mugs, socks, for Charlotte's collection Home from Home." [ref=e733]
+                - generic [ref=e734]:
+                  - heading "Charlotte Taylor" [level=3] [ref=e735]
+                  - paragraph [ref=e736]: Opinel knives, bottle openers, mugs, socks, for Charlotte's collection Home from Home.
+                - generic [ref=e738]: Opinel
+          - listitem [ref=e739]:
+            - link "Combeau Custom oversized t-shirts for the parisian brand Combeau. Oversized t-shirt" [ref=e740] [cursor=pointer]:
+              - /url: https://merchery.co/shop/oversized-t-shirt
+              - generic [ref=e741]:
+                - figure [ref=e742]:
+                  - img "Custom oversized t-shirts for the parisian brand Combeau." [ref=e743]
+                - generic [ref=e744]:
+                  - heading "Combeau" [level=3] [ref=e745]
+                  - paragraph [ref=e746]: Custom oversized t-shirts for the parisian brand Combeau.
+                - generic [ref=e748]: Oversized t-shirt
+          - listitem [ref=e749]:
+            - link "Paradiso Mediterraneo Fully customised beach towels. Bespoke" [ref=e750] [cursor=pointer]:
+              - /url: https://www.instagram.com/p/DMiSm1tIk-H/?img_index=1
+              - generic [ref=e751]:
+                - figure [ref=e752]:
+                  - img "Fully customised beach towels." [ref=e753]
+                - generic [ref=e754]:
+                  - heading "Paradiso Mediterraneo" [level=3] [ref=e755]
+                  - paragraph [ref=e756]: Fully customised beach towels.
+                - generic [ref=e758]: Bespoke
+        - generic:
+          - generic:
+            - img
+            - paragraph:
+              - text: Read
+              - text: more
+      - generic [ref=e759]:
+        - heading "Discover" [level=2] [ref=e760]
+        - list [ref=e761]:
+          - listitem [ref=e762]:
+            - link "Made in Europe Our selection of products sourced exclusively in Europe." [ref=e763] [cursor=pointer]:
+              - /url: /shop/c/discover/discover-made-in-europe
+              - generic [ref=e766]:
+                - figure:
+                  - img "Made in Europe" [ref=e767]
+              - generic [ref=e768]:
+                - heading "Made in Europe" [level=3] [ref=e769]
+                - paragraph [ref=e770]: Our selection of products sourced exclusively in Europe.
+          - listitem [ref=e771]:
+            - link "Our bespoke offer Fully custom project? We're here to help." [ref=e772] [cursor=pointer]:
+              - /url: https://merchery.co/bespoke
+              - generic [ref=e775]:
+                - figure:
+                  - img "Our bespoke offer" [ref=e776]
+              - generic [ref=e777]:
+                - heading "Our bespoke offer" [level=3] [ref=e778]
+                - paragraph [ref=e779]: Fully custom project? We're here to help.
+          - listitem [ref=e780]:
+            - link "Spring selection Quality that blooms with your brand." [ref=e781] [cursor=pointer]:
+              - /url: /shop/c/discover/discover-spring-selection
+              - generic [ref=e784]:
+                - figure:
+                  - img "Spring selection" [ref=e785]
+              - generic [ref=e786]:
+                - heading "Spring selection" [level=3] [ref=e787]
+                - paragraph [ref=e788]: Quality that blooms with your brand.
+      - generic [ref=e790]:
+        - generic [ref=e791]:
+          - heading "Discover our collaboration with Pentagram." [level=3] [ref=e792]
+          - link "Read more" [ref=e793] [cursor=pointer]:
+            - /url: https://merchery.co/blog/marina-willer-pentagram-love-supreme-branding
+        - figure [ref=e794]:
+          - img "Discover our collaboration with Pentagram. illustration" [ref=e795]
+      - generic [ref=e796]:
+        - heading "Our best selling brands" [level=2] [ref=e797]
+        - list [ref=e798]:
+          - listitem [ref=e799]:
+            - link "Custom Patagonia Add your logo to our selection of Patagonia products." [ref=e800] [cursor=pointer]:
+              - /url: /shop/c/brands/brands-patagonia
+              - generic [ref=e803]:
+                - figure:
+                  - img "DSCF0412.jpg" [ref=e804]
+              - generic [ref=e805]:
+                - heading "Custom Patagonia" [level=3] [ref=e806]
+                - paragraph [ref=e807]: Add your logo to our selection of Patagonia products.
+          - listitem [ref=e808]:
+            - link "Custom Kinto Custom drinkware, but make it incredibly pure and elegant." [ref=e809] [cursor=pointer]:
+              - /url: /shop/c/brands/brands-kinto
+              - generic [ref=e812]:
+                - figure:
+                  - img "Custom Kinto" [ref=e813]
+              - generic [ref=e814]:
+                - heading "Custom Kinto" [level=3] [ref=e815]
+                - paragraph [ref=e816]: Custom drinkware, but make it incredibly pure and elegant.
+          - listitem [ref=e817]:
+            - link "Custom Moleskine Showcase your brand on the most premium notebooks." [ref=e818] [cursor=pointer]:
+              - /url: /shop/c/brands/brands-moleskine
+              - generic [ref=e821]:
+                - figure:
+                  - img "Custom Moleskine" [ref=e822]
+              - generic [ref=e823]:
+                - heading "Custom Moleskine" [level=3] [ref=e824]
+                - paragraph [ref=e825]: Showcase your brand on the most premium notebooks.
+      - generic [ref=e826]:
+        - button "Previous slide" [ref=e827]:
+          - generic [ref=e828]: Go to previous slide
+        - button "Next slide" [ref=e829]:
+          - generic [ref=e830]: Go to next slide
+        - generic [ref=e832]:
+          - group "3 / 3" [ref=e833]:
+            - generic [ref=e834]:
+              - heading "\"It's beautiful, it's aligned with our values, I wish I could buy it all for myself :)\"" [level=2] [ref=e835]
+              - paragraph [ref=e836]:
+                - paragraph [ref=e838]:
+                  - text: Alain Etienne -
+                  - link "KAZIDOMI" [ref=e839] [cursor=pointer]:
+                    - /url: https://www.kazidomi.com/
+          - group "1 / 3" [ref=e840]:
+            - generic [ref=e841]:
+              - heading "\"Finally, corporate gifts to live up to our brand and planet!\"" [level=2] [ref=e842]
+              - paragraph [ref=e843]:
+                - paragraph [ref=e845]:
+                  - text: Géraldine Huet -
+                  - link "DEGROOF PETERCAM" [ref=e846] [cursor=pointer]:
+                    - /url: https://www.degroofpetercam.com/
+          - group "2 / 3" [ref=e847]:
+            - generic [ref=e848]:
+              - heading "“The perfect combination of beautiful and sustainable merch.”" [level=2] [ref=e849]
+              - paragraph [ref=e850]:
+                - paragraph [ref=e852]:
+                  - text: Lukas Fleige -
+                  - link "ACCENTURE" [ref=e853] [cursor=pointer]:
+                    - /url: https://accenture.com
+          - group "3 / 3" [ref=e854]:
+            - generic [ref=e855]:
+              - heading "\"It's beautiful, it's aligned with our values, I wish I could buy it all for myself :)\"" [level=2] [ref=e856]
+              - paragraph [ref=e857]:
+                - paragraph [ref=e859]:
+                  - text: Alain Etienne -
+                  - link "KAZIDOMI" [ref=e860] [cursor=pointer]:
+                    - /url: https://www.kazidomi.com/
+          - group "1 / 3" [ref=e861]:
+            - generic [ref=e862]:
+              - heading "\"Finally, corporate gifts to live up to our brand and planet!\"" [level=2] [ref=e863]
+              - paragraph [ref=e864]:
+                - paragraph [ref=e866]:
+                  - text: Géraldine Huet -
+                  - link "DEGROOF PETERCAM" [ref=e867] [cursor=pointer]:
+                    - /url: https://www.degroofpetercam.com/
+        - generic [ref=e868]:
+          - button "Go to slide 1" [ref=e869] [cursor=pointer]
+          - button "Go to slide 2" [ref=e870] [cursor=pointer]
+          - button "Go to slide 3" [ref=e871] [cursor=pointer]
+      - generic [ref=e873]:
+        - heading "Recently added" [level=2] [ref=e874]
+        - generic [ref=e876]:
+          - generic [ref=e878]: Go to previous slide
+          - generic [ref=e880]: Go to next slide
+          - generic [ref=e883]:
+            - group "1 / 11" [ref=e884]:
+              - link "Maison Dandoy speculoos From 14.74 € Add to favorites" [ref=e885] [cursor=pointer]:
+                - /url: /shop/maison-dandoy-speculoos
+                - generic [ref=e886]:
+                  - generic [ref=e887]:
+                    - generic [ref=e888]:
+                      - figure:
+                        - img "Maison Dandoy speculoos" [ref=e889]
+                      - figure:
+                        - img "Maison Dandoy speculoos" [ref=e890]
+                    - generic [ref=e891]:
+                      - generic [ref=e892]: Maison Dandoy speculoos
+                      - generic [ref=e893]: From 14.74 €
+                  - button "Add to favorites" [ref=e895]:
+                    - img [ref=e897]
+            - group "2 / 11" [ref=e900]:
+              - link "Grip socks From 6.27 € Add to favorites" [ref=e901] [cursor=pointer]:
+                - /url: /shop/grip-socks
+                - generic [ref=e902]:
+                  - generic [ref=e903]:
+                    - generic [ref=e904]:
+                      - figure:
+                        - img "Grip socks" [ref=e905]
+                      - figure:
+                        - img "Grip socks" [ref=e906]
+                    - generic [ref=e907]:
+                      - generic [ref=e908]: Grip socks
+                      - generic [ref=e909]: From 6.27 €
+                  - button "Add to favorites" [ref=e911]:
+                    - img [ref=e913]
+            - group "3 / 11" [ref=e916]:
+              - link "Boxy heavy T-shirt From 11.83 € Add to favorites" [ref=e917] [cursor=pointer]:
+                - /url: /shop/boxy-heavy-t-shirt
+                - generic [ref=e918]:
+                  - generic [ref=e919]:
+                    - generic [ref=e920]:
+                      - figure:
+                        - img "Boxy heavy T-shirt" [ref=e921]
+                      - figure:
+                        - img "Boxy heavy T-shirt" [ref=e922]
+                    - generic [ref=e923]:
+                      - generic [ref=e924]: Boxy heavy T-shirt
+                      - generic [ref=e925]: From 11.83 €
+                  - button "Add to favorites" [ref=e927]:
+                    - img [ref=e929]
+            - group "4 / 11" [ref=e932]:
+              - link "Caran d’Ache Fibralo pens From 13.15 € Add to favorites" [ref=e933] [cursor=pointer]:
+                - /url: /shop/caran-dache-fibralo-pens
+                - generic [ref=e934]:
+                  - generic [ref=e935]:
+                    - generic [ref=e936]:
+                      - figure:
+                        - img "Caran d’Ache Fibralo pens" [ref=e937]
+                      - figure:
+                        - img "Caran d’Ache Fibralo pens" [ref=e938]
+                    - generic [ref=e939]:
+                      - generic [ref=e940]: Caran d’Ache Fibralo pens
+                      - generic [ref=e941]: From 13.15 €
+                  - button "Add to favorites" [ref=e943]:
+                    - img [ref=e945]
+            - group "5 / 11" [ref=e948]:
+              - link "Sport bottle From 3.75 € Add to favorites" [ref=e949] [cursor=pointer]:
+                - /url: /shop/sport-bottle
+                - generic [ref=e950]:
+                  - generic [ref=e951]:
+                    - generic [ref=e952]:
+                      - figure:
+                        - img "Sport bottle" [ref=e953]
+                      - figure:
+                        - img "Sport bottle" [ref=e954]
+                    - generic [ref=e955]:
+                      - generic [ref=e956]: Sport bottle
+                      - generic [ref=e957]: From 3.75 €
+                  - button "Add to favorites" [ref=e959]:
+                    - img [ref=e961]
+            - group "6 / 11" [ref=e964]:
+              - link "Db Journey weekender From 60 € Add to favorites" [ref=e965] [cursor=pointer]:
+                - /url: /shop/db-journey-weekender
+                - generic [ref=e966]:
+                  - generic [ref=e967]:
+                    - generic [ref=e968]:
+                      - figure:
+                        - img "Db Journey weekender" [ref=e969]
+                      - figure:
+                        - img "Db Journey weekender" [ref=e970]
+                    - generic [ref=e971]:
+                      - generic [ref=e972]: Db Journey weekender
+                      - generic [ref=e973]: From 60 €
+                  - button "Add to favorites" [ref=e975]:
+                    - img [ref=e977]
+            - group "7 / 11" [ref=e980]:
+              - link "Lemonade From 6.61 € Add to favorites" [ref=e981] [cursor=pointer]:
+                - /url: /shop/lemonade
+                - generic [ref=e982]:
+                  - generic [ref=e983]:
+                    - generic [ref=e984]:
+                      - figure:
+                        - img "Lemonade" [ref=e985]
+                      - figure:
+                        - img "Lemonade" [ref=e986]
+                    - generic [ref=e987]:
+                      - generic [ref=e988]: Lemonade
+                      - generic [ref=e989]: From 6.61 €
+                  - button "Add to favorites" [ref=e991]:
+                    - img [ref=e993]
+            - group "8 / 11" [ref=e996]:
+              - link "Midweight tote From 3.58 € Add to favorites" [ref=e997] [cursor=pointer]:
+                - /url: /shop/midweight-tote
+                - generic [ref=e998]:
+                  - generic [ref=e999]:
+                    - generic [ref=e1000]:
+                      - figure:
+                        - img "Midweight tote" [ref=e1001]
+                      - figure:
+                        - img "Midweight tote" [ref=e1002]
+                    - generic [ref=e1003]:
+                      - generic [ref=e1004]: Midweight tote
+                      - generic [ref=e1005]: From 3.58 €
+                  - button "Add to favorites" [ref=e1007]:
+                    - img [ref=e1009]
+            - group "9 / 11" [ref=e1012]:
+              - link "The North Face backpack From 63.81 € Add to favorites" [ref=e1013] [cursor=pointer]:
+                - /url: /shop/the-north-face-backpack
+                - generic [ref=e1014]:
+                  - generic [ref=e1015]:
+                    - generic [ref=e1016]:
+                      - figure:
+                        - img "The North Face backpack" [ref=e1017]
+                      - figure:
+                        - img "The North Face backpack" [ref=e1018]
+                    - generic [ref=e1019]:
+                      - generic [ref=e1020]: The North Face backpack
+                      - generic [ref=e1021]: From 63.81 €
+                  - button "Add to favorites" [ref=e1023]:
+                    - img [ref=e1025]
+            - group "10 / 11" [ref=e1028]:
+              - link "Alessi moka pot From 61.97 € Add to favorites" [ref=e1029] [cursor=pointer]:
+                - /url: /shop/alessi-moka-pot
+                - generic [ref=e1030]:
+                  - generic [ref=e1031]:
+                    - generic [ref=e1032]:
+                      - figure:
+                        - img "Alessi moka pot" [ref=e1033]
+                      - figure:
+                        - img "Alessi moka pot" [ref=e1034]
+                    - generic [ref=e1035]:
+                      - generic [ref=e1036]: Alessi moka pot
+                      - generic [ref=e1037]: From 61.97 €
+                  - button "Add to favorites" [ref=e1039]:
+                    - img [ref=e1041]
+            - group "11 / 11" [ref=e1044]:
+              - link "Heavy cabas bag From 6.3 € Add to favorites" [ref=e1045] [cursor=pointer]:
+                - /url: /shop/heavy-cabas-bag
+                - generic [ref=e1046]:
+                  - generic [ref=e1047]:
+                    - generic [ref=e1048]:
+                      - figure:
+                        - img "Heavy cabas bag" [ref=e1049]
+                      - figure:
+                        - img "Heavy cabas bag" [ref=e1050]
+                    - generic [ref=e1051]:
+                      - generic [ref=e1052]: Heavy cabas bag
+                      - generic [ref=e1053]: From 6.3 €
+                  - button "Add to favorites" [ref=e1055]:
+                    - img [ref=e1057]
+    - generic [ref=e1060]:
+      - complementary "Frequently asked questions" [ref=e1061]:
+        - generic [ref=e1062]:
+          - heading "Frequently asked questions" [level=2] [ref=e1063]
+          - paragraph [ref=e1064]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e1066] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e1067]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e1069]:
+            - button "How can I find out more about your products?" [ref=e1070] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e1076]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e1077] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e1083]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e1084] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e1090]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e1091] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e1097]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e1098] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e1104]:
+            - button "Where do you ship?" [ref=e1105] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e1111]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e1112] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e1117]:
+        - generic [ref=e1118]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e1119]
+          - generic [ref=e1120]:
+            - textbox "Enter your email address" [ref=e1122]
+            - button "Subscribe" [ref=e1123] [cursor=pointer]
+  - alert [ref=e1124]
+  - button "Open chat" [ref=e1125] [cursor=pointer]:
+    - img [ref=e1127]
+  - generic [ref=e1129]:
+    - paragraph [ref=e1130]: You have reached the EU website, but it looks like you are visiting from Great Britain.
+    - generic [ref=e1131]:
+      - generic [ref=e1132]:
+        - text: Please choose your location
+        - combobox [ref=e1133] [cursor=pointer]:
+          - generic [ref=e1134]:
+            - img [ref=e1135]
+            - generic: United Kingdom
+          - img [ref=e1138]
+      - button "Confirm" [ref=e1140] [cursor=pointer]
+    - button [ref=e1141] [cursor=pointer]:
+      - img [ref=e1143]
+  - generic:
+    - img
+  - iframe [ref=e1145]:
+    

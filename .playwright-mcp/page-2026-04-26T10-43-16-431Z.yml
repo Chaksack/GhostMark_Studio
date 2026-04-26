@@ -1,0 +1,336 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - button "Open menu" [ref=e7] [cursor=pointer]:
+          - img [ref=e8]
+        - link "Home" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - link "Cart" [ref=e11] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e12]
+    - main [ref=e17]:
+      - generic [ref=e18]:
+        - generic "product customization container" [ref=e19]:
+          - img "Studio Tee — Charcoal" [ref=e23]
+          - generic [ref=e25]:
+            - navigation "breadcrumb" [ref=e26]:
+              - list [ref=e27]:
+                - listitem [ref=e28]:
+                  - link "All products" [ref=e29] [cursor=pointer]:
+                    - /url: /products
+                - listitem [ref=e30]: /
+                - listitem [ref=e31]:
+                  - generic [ref=e32]: Studio Tee — Charcoal
+            - generic [ref=e34]:
+              - heading "Studio Tee — Charcoal" [level=1] [ref=e36]
+              - generic [ref=e37]:
+                - generic [ref=e38]: From £35.00 / piece
+                - generic [ref=e39]: ·
+                - generic [ref=e40]: MOQ 25
+                - generic [ref=e41]: ·
+                - generic [ref=e42]: E-proof in 48h
+              - paragraph [ref=e43]: The same 280gsm organic cotton in pigment-dyed charcoal. Softens with every wash.
+            - generic [ref=e44]:
+              - heading "1. Pick a product variant" [level=2] [ref=e45]
+              - generic [ref=e47]:
+                - paragraph [ref=e48]: Size
+                - radiogroup [ref=e49]:
+                  - generic [ref=e50]: Size
+                  - generic [ref=e51]:
+                    - radio "Size S" [checked] [ref=e52] [cursor=pointer]: S
+                    - radio "Size M" [ref=e53] [cursor=pointer]: M
+                    - radio "Size L" [ref=e54] [cursor=pointer]: L
+                    - radio "Size XL" [ref=e55] [cursor=pointer]: XL
+            - generic [ref=e56]:
+              - heading "2. Upload your design" [level=2] [ref=e57]
+              - generic [ref=e58]:
+                - button "Upload your design file" [ref=e59] [cursor=pointer]:
+                  - img [ref=e60]
+                  - generic [ref=e63]: Upload your design
+                - paragraph [ref=e64]: PNG, JPG, WebP · max 10MB
+              - generic [ref=e67]: Loading editor…
+            - generic [ref=e68]:
+              - heading "3. Quantity" [level=2] [ref=e69]
+              - paragraph [ref=e70]: "Minimum order: 25 pieces"
+              - radiogroup "Quantity tiers" [ref=e71]:
+                - radio "25 pieces £35.00/piece" [checked] [ref=e72] [cursor=pointer]:
+                  - generic [ref=e73]: 25 pieces
+                  - generic [ref=e74]: £35.00/piece
+                - radio "50 pieces £32.55/piece Save 7%" [ref=e75] [cursor=pointer]:
+                  - generic [ref=e76]: 50 pieces
+                  - generic [ref=e77]: £32.55/piece
+                  - generic [ref=e79]: Save 7%
+                - radio "100 pieces £29.75/piece Save 15%" [ref=e80] [cursor=pointer]:
+                  - generic [ref=e81]: 100 pieces
+                  - generic [ref=e82]: £29.75/piece
+                  - generic [ref=e84]: Save 15%
+                - radio "200 pieces £27.30/piece Save 22%" [ref=e85] [cursor=pointer]:
+                  - generic [ref=e86]: 200 pieces
+                  - generic [ref=e87]: £27.30/piece
+                  - generic [ref=e89]: Save 22%
+                - radio "300 pieces £25.20/piece Save 28%" [ref=e90] [cursor=pointer]:
+                  - generic [ref=e91]: 300 pieces
+                  - generic [ref=e92]: £25.20/piece
+                  - generic [ref=e94]: Save 28%
+                - radio "500 pieces £23.10/piece Save 34%" [ref=e95] [cursor=pointer]:
+                  - generic [ref=e96]: 500 pieces
+                  - generic [ref=e97]: £23.10/piece
+                  - generic [ref=e99]: Save 34%
+                - radio "1000 pieces £21.00/piece Save 40%" [ref=e100] [cursor=pointer]:
+                  - generic [ref=e101]: 1000 pieces
+                  - generic [ref=e102]: £21.00/piece
+                  - generic [ref=e104]: Save 40%
+              - generic [ref=e105]:
+                - generic [ref=e106]:
+                  - generic [ref=e107]: Quantity
+                  - generic [ref=e108]:
+                    - button "Decrease quantity" [disabled] [ref=e109]: −
+                    - spinbutton "Quantity" [ref=e110]: "25"
+                    - button "Increase quantity" [ref=e111] [cursor=pointer]: +
+                - generic [ref=e112]:
+                  - generic [ref=e113]: Total
+                  - generic [ref=e114]: £875.00
+              - generic [ref=e115]:
+                - button "Add to cart" [ref=e116] [cursor=pointer]
+                - button "Add to favorites" [ref=e117] [cursor=pointer]:
+                  - img [ref=e118]
+        - generic [ref=e120]:
+          - link "Excellent | 4.8 out of 5" [ref=e121] [cursor=pointer]:
+            - /url: https://trustpilot.com
+            - generic [ref=e122]:
+              - img [ref=e123]
+              - img [ref=e125]
+              - img [ref=e127]
+              - img [ref=e129]
+              - img [ref=e131]
+            - generic [ref=e133]: Excellent | 4.8 out of 5
+          - generic [ref=e134]:
+            - generic [ref=e135]:
+              - img [ref=e136]
+              - generic [ref=e141]: Worldwide delivery
+            - generic [ref=e142]: EU, UK and USA
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - img [ref=e145]
+              - generic [ref=e147]: Quality control
+            - generic [ref=e148]: Each order is double checked before production
+          - generic [ref=e149]:
+            - generic [ref=e150]:
+              - img [ref=e151]
+              - generic [ref=e156]: They trust us!
+            - generic [ref=e157]: Trusted by 2.000+ customers
+        - generic [ref=e159]:
+          - button "Product details" [ref=e161] [cursor=pointer]:
+            - generic [ref=e162]: Product details
+            - img [ref=e163]
+          - button "Size guide and measurements" [ref=e166] [cursor=pointer]:
+            - generic [ref=e167]: Size guide and measurements
+            - img [ref=e168]
+          - button "Production" [ref=e171] [cursor=pointer]:
+            - generic [ref=e172]: Production
+            - img [ref=e173]
+          - button "Customization" [ref=e176] [cursor=pointer]:
+            - generic [ref=e177]: Customization
+            - img [ref=e178]
+          - button "Product specificities" [ref=e181] [cursor=pointer]:
+            - generic [ref=e182]: Product specificities
+            - img [ref=e183]
+        - generic [ref=e185]:
+          - heading "You might also like…" [level=2] [ref=e186]
+          - list [ref=e188]:
+            - listitem [ref=e189]:
+              - generic [ref=e190]:
+                - link [ref=e191] [cursor=pointer]:
+                  - /url: /products/workshop-tote
+                  - figure [ref=e192]:
+                    - img "Workshop Tote" [ref=e193]
+                  - figure [ref=e194]:
+                    - img "Workshop Tote" [ref=e195]
+                - generic [ref=e196]:
+                  - generic [ref=e197]:
+                    - link "Workshop Tote" [ref=e198] [cursor=pointer]:
+                      - /url: /products/workshop-tote
+                      - paragraph [ref=e199]: Workshop Tote
+                    - paragraph [ref=e200]: From £22.00
+                  - button "Add Workshop Tote to favorites" [ref=e201] [cursor=pointer]:
+                    - img [ref=e202]
+            - listitem [ref=e204]:
+              - generic [ref=e205]:
+                - link [ref=e206] [cursor=pointer]:
+                  - /url: /products/studio-tee-cream
+                  - figure [ref=e207]:
+                    - img "Studio Tee — Cream" [ref=e208]
+                  - figure [ref=e209]:
+                    - img "Studio Tee — Cream" [ref=e210]
+                - generic [ref=e211]:
+                  - generic [ref=e212]:
+                    - link "Studio Tee — Cream" [ref=e213] [cursor=pointer]:
+                      - /url: /products/studio-tee-cream
+                      - paragraph [ref=e214]: Studio Tee — Cream
+                    - paragraph [ref=e215]: From £35.00
+                  - button "Add Studio Tee — Cream to favorites" [ref=e216] [cursor=pointer]:
+                    - img [ref=e217]
+            - listitem [ref=e219]:
+              - generic [ref=e220]:
+                - link [ref=e221] [cursor=pointer]:
+                  - /url: /products/atelier-hoodie
+                  - figure [ref=e222]:
+                    - img "Atelier Hoodie" [ref=e223]
+                  - figure [ref=e224]:
+                    - img "Atelier Hoodie" [ref=e225]
+                - generic [ref=e226]:
+                  - generic [ref=e227]:
+                    - link "Atelier Hoodie" [ref=e228] [cursor=pointer]:
+                      - /url: /products/atelier-hoodie
+                      - paragraph [ref=e229]: Atelier Hoodie
+                    - paragraph [ref=e230]: From £89.00
+                  - button "Add Atelier Hoodie to favorites" [ref=e231] [cursor=pointer]:
+                    - img [ref=e232]
+            - listitem [ref=e234]:
+              - generic [ref=e235]:
+                - link [ref=e236] [cursor=pointer]:
+                  - /url: /products/ghostmark-cap
+                  - figure [ref=e237]:
+                    - img "GhostMark Cap" [ref=e238]
+                  - figure [ref=e239]:
+                    - img "GhostMark Cap" [ref=e240]
+                - generic [ref=e241]:
+                  - generic [ref=e242]:
+                    - link "GhostMark Cap" [ref=e243] [cursor=pointer]:
+                      - /url: /products/ghostmark-cap
+                      - paragraph [ref=e244]: GhostMark Cap
+                    - paragraph [ref=e245]: From £28.00
+                  - button "Add GhostMark Cap to favorites" [ref=e246] [cursor=pointer]:
+                    - img [ref=e247]
+        - generic [ref=e249]:
+          - complementary "Frequently asked questions" [ref=e250]:
+            - generic [ref=e251]:
+              - heading "Frequently asked questions" [level=2] [ref=e252]
+              - paragraph [ref=e253]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+              - link "View more" [ref=e255] [cursor=pointer]:
+                - /url: /faq
+            - generic [ref=e256]:
+              - heading "Is it possible to put different items into gift boxes?" [level=3] [ref=e258]:
+                - button "Is it possible to put different items into gift boxes?" [ref=e259] [cursor=pointer]:
+                  - generic [ref=e260]: Is it possible to put different items into gift boxes?
+              - heading "How can I find out more about your products?" [level=3] [ref=e266]:
+                - button "How can I find out more about your products?" [ref=e267] [cursor=pointer]:
+                  - generic [ref=e268]: How can I find out more about your products?
+              - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e274]:
+                - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e275] [cursor=pointer]:
+                  - generic [ref=e276]: Will it be possible to see the e-proof before my order goes into production?
+              - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e282]:
+                - button "Is it possible to shorten the lead time for production?" [ref=e283] [cursor=pointer]:
+                  - generic [ref=e284]: Is it possible to shorten the lead time for production?
+              - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e290]:
+                - button "Why are your prices not fixed and vary within a range?" [ref=e291] [cursor=pointer]:
+                  - generic [ref=e292]: Why are your prices not fixed and vary within a range?
+              - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e298]:
+                - button "Can you ship the merch to multiple addresses?" [ref=e299] [cursor=pointer]:
+                  - generic [ref=e300]: Can you ship the merch to multiple addresses?
+              - heading "Where do you ship?" [level=3] [ref=e306]:
+                - button "Where do you ship?" [ref=e307] [cursor=pointer]:
+                  - generic [ref=e308]: Where do you ship?
+              - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e314]:
+                - button "What is the minimum order quantity (MOQ)?" [ref=e315] [cursor=pointer]:
+                  - generic [ref=e316]: What is the minimum order quantity (MOQ)?
+          - complementary "Subscribe, and get access to exclusive news, sneak peeks on new launches." [ref=e321]:
+            - generic [ref=e322]:
+              - heading "Subscribe, and get access to exclusive news, sneak peeks on new launches." [level=2] [ref=e323]
+              - generic [ref=e324]:
+                - generic [ref=e325]:
+                  - generic [ref=e326]:
+                    - generic [ref=e327]: Enter your email address
+                    - textbox "Enter your email address" [ref=e328]
+                  - button "Subscribe" [ref=e329] [cursor=pointer]
+                - paragraph [ref=e330]:
+                  - text: By subscribing you agree to receive occasional emails from GhostMark Studio. Unsubscribe anytime — see our
+                  - link "privacy policy" [ref=e331] [cursor=pointer]:
+                    - /url: /privacy
+                  - text: .
+    - contentinfo [ref=e332]:
+      - generic [ref=e334]:
+        - generic [ref=e335]:
+          - link "GhostMark — home" [ref=e336] [cursor=pointer]:
+            - /url: /
+            - text: GhostMark
+          - paragraph [ref=e337]: Branded objects for the kind of work people keep. Laser engraving, DTF print, and apparel finishing — one studio in Bordeaux.
+        - generic [ref=e338]:
+          - paragraph [ref=e339]: Get in touch
+          - link "hello@ghostmark.studio" [ref=e340] [cursor=pointer]:
+            - /url: mailto:hello@ghostmark.studio
+          - paragraph [ref=e341]: Studio · Bordeaux, France
+      - generic [ref=e342]:
+        - generic [ref=e343]:
+          - group [ref=e344]:
+            - generic "Company" [ref=e345] [cursor=pointer]:
+              - generic [ref=e346]: Company
+              - img [ref=e347]
+          - group [ref=e349]:
+            - generic "Shop" [ref=e350] [cursor=pointer]:
+              - generic [ref=e351]: Shop
+              - img [ref=e352]
+          - group [ref=e354]:
+            - generic "Help" [ref=e355] [cursor=pointer]:
+              - generic [ref=e356]: Help
+              - img [ref=e357]
+          - group [ref=e359]:
+            - generic "Account" [ref=e360] [cursor=pointer]:
+              - generic [ref=e361]: Account
+              - img [ref=e362]
+          - group [ref=e364]:
+            - generic "Legal" [ref=e365] [cursor=pointer]:
+              - generic [ref=e366]: Legal
+              - img [ref=e367]
+        - generic [ref=e369]:
+          - link "Certified B Corporation — view our score" [ref=e370] [cursor=pointer]:
+            - /url: /sustainability#section-2
+            - text: Certified B
+          - link "1% for the Planet — read about our pledge" [ref=e371] [cursor=pointer]:
+            - /url: /sustainability#section-4
+            - text: 1% For the Planet
+          - generic [ref=e372]:
+            - generic [ref=e373]: Secure payments
+            - generic [ref=e374]: AMEX
+            - generic [ref=e375]: MC
+            - generic [ref=e376]: PayPal
+            - generic [ref=e377]: VISA
+        - generic [ref=e378]:
+          - generic [ref=e379]:
+            - paragraph [ref=e380]: © 2026 GhostMark Studio · Bordeaux, France
+            - link "Change region or currency" [ref=e381] [cursor=pointer]:
+              - /url: /?region=open
+              - img [ref=e382]
+              - generic [ref=e385]: Choose region
+          - generic [ref=e386]:
+            - generic [ref=e387]:
+              - link "Instagram" [ref=e388] [cursor=pointer]:
+                - /url: https://instagram.com/ghostmarkstudio
+                - img [ref=e389]
+              - link "LinkedIn" [ref=e392] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/ghostmarkstudio
+                - img [ref=e393]
+              - link "Pinterest" [ref=e395] [cursor=pointer]:
+                - /url: https://pinterest.com/ghostmarkstudio
+                - img [ref=e396]
+              - link "X (formerly Twitter)" [ref=e398] [cursor=pointer]:
+                - /url: https://x.com/ghostmarkstudio
+                - img [ref=e399]
+            - link "Privacy" [ref=e402] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e403] [cursor=pointer]:
+              - /url: /terms
+            - link "Cookies" [ref=e404] [cursor=pointer]:
+              - /url: /cookies
+  - generic:
+    - img
+  - generic [ref=e405]:
+    - button "Toggle Nuxt DevTools" [ref=e406] [cursor=pointer]:
+      - img [ref=e407]
+    - generic "App load time" [ref=e410]:
+      - generic [ref=e411]: "118"
+      - generic [ref=e412]: ms
+    - button "Toggle Component Inspector" [ref=e414] [cursor=pointer]:
+      - img [ref=e415]

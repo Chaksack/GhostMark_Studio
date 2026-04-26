@@ -1,0 +1,931 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f105e2]:
+            - link "Trustpilot reviews" [ref=f105e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f105e4]: Excellent
+              - generic [ref=f105e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f105e9]
+            - generic [ref=f105e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f105e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /contact
+          - listitem [ref=e16]:
+            - button "Europe | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e144]: Europe
+                - generic [ref=e145]: "|"
+                - generic [ref=e146]: English
+                - img [ref=e147]
+      - navigation [ref=e149]:
+        - link [ref=e151] [cursor=pointer]:
+          - /url: /
+          - img [ref=e152]
+        - generic [ref=e155]:
+          - textbox "search input" [ref=e156]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e157] [cursor=pointer]:
+            - img [ref=e159]
+        - generic [ref=e162]:
+          - generic "not logged in user account" [ref=e163] [cursor=pointer]:
+            - img [ref=e165]
+          - link "favorites" [ref=e170] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e171]:
+              - img [ref=e172]
+          - link:
+            - /url: /contact
+          - link "cart icon 1" [ref=e174] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon 1" [ref=e176]:
+              - generic [ref=e177]:
+                - generic "cart icon" [ref=e178]:
+                  - img [ref=e180]
+                - generic [ref=e182]: "1"
+      - navigation [ref=e183]:
+        - list [ref=e184]:
+          - listitem [ref=e185]:
+            - link "Apparel" [ref=e186] [cursor=pointer]:
+              - /url: /shop/c/apparel
+          - listitem [ref=e187]:
+            - link "Bags" [ref=e188] [cursor=pointer]:
+              - /url: /shop/c/bags
+          - listitem [ref=e189]:
+            - link "Headwear" [ref=e190] [cursor=pointer]:
+              - /url: /shop/c/headwear
+          - listitem [ref=e191]:
+            - link "Office" [ref=e192] [cursor=pointer]:
+              - /url: /shop/c/office
+          - listitem [ref=e193]:
+            - link "Drinkware" [ref=e194] [cursor=pointer]:
+              - /url: /shop/c/drinkware
+          - listitem [ref=e195]:
+            - link "Home" [ref=e196] [cursor=pointer]:
+              - /url: /shop/c/home
+          - listitem [ref=e197]:
+            - link "Wellness" [ref=e198] [cursor=pointer]:
+              - /url: /shop/c/wellness
+          - listitem [ref=e199]:
+            - link "Others" [ref=e200] [cursor=pointer]:
+              - /url: /shop/c/others
+          - listitem [ref=e201]:
+            - link "Discover" [ref=e202] [cursor=pointer]:
+              - /url: /shop/c/discover
+          - listitem [ref=e203]:
+            - link "Brands" [ref=e204] [cursor=pointer]:
+              - /url: /shop/c/brands
+    - generic [ref=e205]:
+      - navigation "breadcrumbs" [ref=e206]:
+        - list [ref=e207]:
+          - link "All products" [ref=e208] [cursor=pointer]:
+            - /url: /shop
+          - paragraph [ref=e209]: /
+          - link "Bags":
+            - /url: /shop/c/bags
+      - heading "Bags" [level=1] [ref=e210]
+      - paragraph [ref=e211]: Daily commuting, travelling, hiking, or hitting the gym... Our custom bags are designed to fit every lifestyle. Durable, functional, and easy to personalise with your logo or design, they’re built to carry what matters wherever the day takes you.
+    - navigation [ref=e213]:
+      - generic [ref=e214]:
+        - button "Category" [ref=e216] [cursor=pointer]:
+          - generic [ref=e217]: Category
+          - img [ref=e219]
+        - button "Price range" [ref=e222] [cursor=pointer]:
+          - generic [ref=e223]: Price range
+          - img [ref=e225]
+        - button "Quantity" [ref=e228] [cursor=pointer]:
+          - generic [ref=e229]: Quantity
+          - img [ref=e231]
+        - button "Lead time" [ref=e234] [cursor=pointer]:
+          - generic [ref=e235]: Lead time
+          - img [ref=e237]
+        - button "Color" [ref=e240] [cursor=pointer]:
+          - generic [ref=e241]: Color
+          - img [ref=e243]
+        - button "Brands" [ref=e246] [cursor=pointer]:
+          - generic [ref=e247]: Brands
+          - img [ref=e249]
+        - button "Labels" [ref=e252] [cursor=pointer]:
+          - generic [ref=e253]: Labels
+          - img [ref=e255]
+        - generic [ref=e257] [cursor=pointer]:
+          - checkbox "Fast shipping" [ref=e258]
+          - generic [ref=e259]: Fast shipping
+      - 'button "Sort by: Relevance" [ref=e262] [cursor=pointer]':
+        - generic [ref=e263]: "Sort by: Relevance"
+        - img [ref=e265]
+    - list [ref=e268]:
+      - listitem [ref=e269]:
+        - generic [ref=e270]:
+          - generic [ref=e271]:
+            - paragraph [ref=e272]: B Corp
+            - paragraph [ref=e273]: Best sellers
+            - paragraph [ref=e274]: Fast shipping
+            - paragraph [ref=e275]: Made in Europe
+            - paragraph [ref=e276]: Merchery product
+          - link [ref=e277] [cursor=pointer]:
+            - /url: /shop/merchery-heavy-cabas
+            - figure [ref=e278]:
+              - img "Product image" [ref=e279]
+            - figure [ref=e280]:
+              - img "Product image" [ref=e281]
+          - generic [ref=e282]:
+            - generic [ref=e283]:
+              - link "Merchery heavy cabas" [ref=e284] [cursor=pointer]:
+                - /url: /shop/merchery-heavy-cabas
+                - paragraph [ref=e285]: Merchery heavy cabas
+              - paragraph [ref=e286]: From 11,96 €
+            - button "Add to favorites" [ref=e287] [cursor=pointer]:
+              - img [ref=e289]
+      - listitem [ref=e292]:
+        - generic [ref=e293]:
+          - link [ref=e294] [cursor=pointer]:
+            - /url: /shop/sandqvist-rolltop
+            - figure [ref=e295]:
+              - img "Product image" [ref=e296]
+            - figure [ref=e297]:
+              - img "Product image" [ref=e298]
+          - generic [ref=e299]:
+            - generic [ref=e300]:
+              - link "Sandqvist rolltop" [ref=e301] [cursor=pointer]:
+                - /url: /shop/sandqvist-rolltop
+                - paragraph [ref=e302]: Sandqvist rolltop
+              - paragraph [ref=e303]: From 66,22 €
+            - button "Add to favorites" [ref=e304] [cursor=pointer]:
+              - img [ref=e306]
+      - listitem [ref=e309]:
+        - generic [ref=e310]:
+          - paragraph [ref=e312]: B Corp
+          - link [ref=e313] [cursor=pointer]:
+            - /url: /shop/db-journey-weekender
+            - figure [ref=e314]:
+              - img "Product image" [ref=e315]
+            - figure [ref=e316]:
+              - img "Product image" [ref=e317]
+          - generic [ref=e318]:
+            - generic [ref=e319]:
+              - link "Db Journey weekender" [ref=e320] [cursor=pointer]:
+                - /url: /shop/db-journey-weekender
+                - paragraph [ref=e321]: Db Journey weekender
+              - paragraph [ref=e322]: From 60,00 €
+            - button "Add to favorites" [ref=e323] [cursor=pointer]:
+              - img [ref=e325]
+      - listitem [ref=e328]:
+        - generic [ref=e329]:
+          - link [ref=e330] [cursor=pointer]:
+            - /url: /shop/the-north-face-duffel-bag
+            - figure [ref=e331]:
+              - img "Product image" [ref=e332]
+            - figure [ref=e333]:
+              - img "Product image" [ref=e334]
+          - generic [ref=e335]:
+            - generic [ref=e336]:
+              - link "The North Face duffel bag" [ref=e337] [cursor=pointer]:
+                - /url: /shop/the-north-face-duffel-bag
+                - paragraph [ref=e338]: The North Face duffel bag
+              - paragraph [ref=e339]: From 132,18 €
+            - button "Add to favorites" [ref=e340] [cursor=pointer]:
+              - img [ref=e342]
+      - listitem [ref=e345]:
+        - generic [ref=e346]:
+          - link [ref=e347] [cursor=pointer]:
+            - /url: /shop/osprey-daypack
+            - figure [ref=e348]:
+              - img "Product image" [ref=e349]
+            - figure [ref=e350]:
+              - img "Product image" [ref=e351]
+          - generic [ref=e352]:
+            - generic [ref=e353]:
+              - link "Osprey daypack" [ref=e354] [cursor=pointer]:
+                - /url: /shop/osprey-daypack
+                - paragraph [ref=e355]: Osprey daypack
+              - paragraph [ref=e356]: From 50,68 €
+            - button "Add to favorites" [ref=e357] [cursor=pointer]:
+              - img [ref=e359]
+      - listitem [ref=e362]:
+        - generic [ref=e363]:
+          - link [ref=e364] [cursor=pointer]:
+            - /url: /shop/rains-tote
+            - figure [ref=e365]:
+              - img "Product image" [ref=e366]
+            - figure [ref=e367]:
+              - img "Product image" [ref=e368]
+          - generic [ref=e369]:
+            - generic [ref=e370]:
+              - link "Rains tote" [ref=e371] [cursor=pointer]:
+                - /url: /shop/rains-tote
+                - paragraph [ref=e372]: Rains tote
+              - paragraph [ref=e373]: From 69,90 €
+            - button "Add to favorites" [ref=e374] [cursor=pointer]:
+              - img [ref=e376]
+      - listitem [ref=e379]:
+        - generic [ref=e380]:
+          - link [ref=e381] [cursor=pointer]:
+            - /url: /shop/square-tote-bag
+            - figure [ref=e382]:
+              - img "Product image" [ref=e383]
+            - figure [ref=e384]:
+              - img "Product image" [ref=e385]
+          - generic [ref=e386]:
+            - generic [ref=e387]:
+              - link "Square tote bag" [ref=e388] [cursor=pointer]:
+                - /url: /shop/square-tote-bag
+                - paragraph [ref=e389]: Square tote bag
+              - paragraph [ref=e390]: From 6,02 €
+            - button "Add to favorites" [ref=e391] [cursor=pointer]:
+              - img [ref=e393]
+      - listitem [ref=e396]:
+        - generic [ref=e397]:
+          - paragraph [ref=e399]: B Corp
+          - link [ref=e400] [cursor=pointer]:
+            - /url: /shop/patagonia-backpack
+            - figure [ref=e401]:
+              - img "Product image" [ref=e402]
+            - figure [ref=e403]:
+              - img "Product image" [ref=e404]
+          - generic [ref=e405]:
+            - generic [ref=e406]:
+              - link "Patagonia backpack" [ref=e407] [cursor=pointer]:
+                - /url: /shop/patagonia-backpack
+                - paragraph [ref=e408]: Patagonia backpack
+              - paragraph [ref=e409]: From 150,00 €
+            - button "Add to favorites" [ref=e410] [cursor=pointer]:
+              - img [ref=e412]
+      - listitem [ref=e415]:
+        - generic [ref=e416]:
+          - link [ref=e417] [cursor=pointer]:
+            - /url: /shop/as-colour-shoulder-bag
+            - figure [ref=e418]:
+              - img "Product image" [ref=e419]
+            - figure [ref=e420]:
+              - img "Product image" [ref=e421]
+          - generic [ref=e422]:
+            - generic [ref=e423]:
+              - link "AS Colour shoulder bag" [ref=e424] [cursor=pointer]:
+                - /url: /shop/as-colour-shoulder-bag
+                - paragraph [ref=e425]: AS Colour shoulder bag
+              - paragraph [ref=e426]: From 64,60 €
+            - button "Add to favorites" [ref=e427] [cursor=pointer]:
+              - img [ref=e429]
+      - listitem [ref=e432]:
+        - generic [ref=e433]:
+          - paragraph [ref=e435]: Best sellers
+          - link [ref=e436] [cursor=pointer]:
+            - /url: /shop/rains-backpack
+            - figure [ref=e437]:
+              - img "Product image" [ref=e438]
+            - figure [ref=e439]:
+              - img "Product image" [ref=e440]
+          - generic [ref=e441]:
+            - generic [ref=e442]:
+              - link "Rains backpack" [ref=e443] [cursor=pointer]:
+                - /url: /shop/rains-backpack
+                - paragraph [ref=e444]: Rains backpack
+              - paragraph [ref=e445]: From 109,00 €
+            - button "Add to favorites" [ref=e446] [cursor=pointer]:
+              - img [ref=e448]
+      - listitem [ref=e451]:
+        - generic [ref=e452]:
+          - link [ref=e453] [cursor=pointer]:
+            - /url: /shop/the-north-face-backpack
+            - figure [ref=e454]:
+              - img "Product image" [ref=e455]
+            - figure [ref=e456]:
+              - img "Product image" [ref=e457]
+          - generic [ref=e458]:
+            - generic [ref=e459]:
+              - link "The North Face backpack" [ref=e460] [cursor=pointer]:
+                - /url: /shop/the-north-face-backpack
+                - paragraph [ref=e461]: The North Face backpack
+              - paragraph [ref=e462]: From 63,81 €
+            - button "Add to favorites" [ref=e463] [cursor=pointer]:
+              - img [ref=e465]
+      - listitem [ref=e468]:
+        - generic [ref=e469]:
+          - link [ref=e470] [cursor=pointer]:
+            - /url: /shop/recycled-canvas-tote
+            - figure [ref=e471]:
+              - img "Product image" [ref=e472]
+            - figure [ref=e473]:
+              - img "Product image" [ref=e474]
+          - generic [ref=e475]:
+            - generic [ref=e476]:
+              - link "Recycled canvas tote" [ref=e477] [cursor=pointer]:
+                - /url: /shop/recycled-canvas-tote
+                - paragraph [ref=e478]: Recycled canvas tote
+              - paragraph [ref=e479]: From 14,20 €
+            - button "Add to favorites" [ref=e480] [cursor=pointer]:
+              - img [ref=e482]
+      - listitem [ref=e485]:
+        - generic [ref=e486]:
+          - paragraph [ref=e488]: Made in Europe
+          - link [ref=e489] [cursor=pointer]:
+            - /url: /shop/key-tag
+            - figure [ref=e490]:
+              - img "Product image" [ref=e491]
+            - figure [ref=e492]:
+              - img "Product image" [ref=e493]
+          - generic [ref=e494]:
+            - generic [ref=e495]:
+              - link "Key tag" [ref=e496] [cursor=pointer]:
+                - /url: /shop/key-tag
+                - paragraph [ref=e497]: Key tag
+              - paragraph [ref=e498]: From 1,51 €
+            - button "Add to favorites" [ref=e499] [cursor=pointer]:
+              - img [ref=e501]
+      - listitem [ref=e504]:
+        - generic [ref=e505]:
+          - paragraph [ref=e507]: Best sellers
+          - link [ref=e508] [cursor=pointer]:
+            - /url: /shop/tote-bag-heavy
+            - figure [ref=e509]:
+              - img "Product image" [ref=e510]
+            - figure [ref=e511]:
+              - img "Product image" [ref=e512]
+          - generic [ref=e513]:
+            - generic [ref=e514]:
+              - link "Tote bag heavy" [ref=e515] [cursor=pointer]:
+                - /url: /shop/tote-bag-heavy
+                - paragraph [ref=e516]: Tote bag heavy
+              - paragraph [ref=e517]: From 4,00 €
+            - button "Add to favorites" [ref=e518] [cursor=pointer]:
+              - img [ref=e520]
+      - listitem [ref=e523]:
+        - generic [ref=e524]:
+          - link [ref=e525] [cursor=pointer]:
+            - /url: /shop/sandqvist-icon-rolltop
+            - figure [ref=e526]:
+              - img "Product image" [ref=e527]
+            - figure [ref=e528]:
+              - img "Product image" [ref=e529]
+          - generic [ref=e530]:
+            - generic [ref=e531]:
+              - link "Sandqvist Icon rolltop" [ref=e532] [cursor=pointer]:
+                - /url: /shop/sandqvist-icon-rolltop
+                - paragraph [ref=e533]: Sandqvist Icon rolltop
+              - paragraph [ref=e534]: From 82,43 €
+            - button "Add to favorites" [ref=e535] [cursor=pointer]:
+              - img [ref=e537]
+      - listitem [ref=e540]:
+        - generic [ref=e541]:
+          - link [ref=e542] [cursor=pointer]:
+            - /url: /shop/roll-top-backpack
+            - figure [ref=e543]:
+              - img "Product image" [ref=e544]
+            - figure [ref=e545]:
+              - img "Product image" [ref=e546]
+          - generic [ref=e547]:
+            - generic [ref=e548]:
+              - link "Roll-top backpack" [ref=e549] [cursor=pointer]:
+                - /url: /shop/roll-top-backpack
+                - paragraph [ref=e550]: Roll-top backpack
+              - paragraph [ref=e551]: From 34,99 €
+            - button "Add to favorites" [ref=e552] [cursor=pointer]:
+              - img [ref=e554]
+      - listitem [ref=e557]:
+        - generic [ref=e558]:
+          - link [ref=e559] [cursor=pointer]:
+            - /url: /shop/osprey-everyday-backpack
+            - figure [ref=e560]:
+              - img "Product image" [ref=e561]
+            - figure [ref=e562]:
+              - img "Product image" [ref=e563]
+          - generic [ref=e564]:
+            - generic [ref=e565]:
+              - link "Osprey everyday backpack" [ref=e566] [cursor=pointer]:
+                - /url: /shop/osprey-everyday-backpack
+                - paragraph [ref=e567]: Osprey everyday backpack
+              - paragraph [ref=e568]: From 87,84 €
+            - button "Add to favorites" [ref=e569] [cursor=pointer]:
+              - img [ref=e571]
+      - listitem [ref=e574]:
+        - generic [ref=e575]:
+          - paragraph [ref=e577]: Fast shipping
+          - link [ref=e578] [cursor=pointer]:
+            - /url: /shop/herschel-backpack
+            - figure [ref=e579]:
+              - img "Product image" [ref=e580]
+            - figure [ref=e581]:
+              - img "Product image" [ref=e582]
+          - generic [ref=e583]:
+            - generic [ref=e584]:
+              - link "Herschel backpack" [ref=e585] [cursor=pointer]:
+                - /url: /shop/herschel-backpack
+                - paragraph [ref=e586]: Herschel backpack
+              - paragraph [ref=e587]: From 49,47 €
+            - button "Add to favorites" [ref=e588] [cursor=pointer]:
+              - img [ref=e590]
+      - listitem [ref=e593]:
+        - generic [ref=e594]:
+          - paragraph [ref=e596]: Fast shipping
+          - link [ref=e597] [cursor=pointer]:
+            - /url: /shop/weekend-tote
+            - figure [ref=e598]:
+              - img "Product image" [ref=e599]
+            - figure [ref=e600]:
+              - img "Product image" [ref=e601]
+          - generic [ref=e602]:
+            - generic [ref=e603]:
+              - link "Weekend tote" [ref=e604] [cursor=pointer]:
+                - /url: /shop/weekend-tote
+                - paragraph [ref=e605]: Weekend tote
+              - paragraph [ref=e606]: From 9,79 €
+            - button "Add to favorites" [ref=e607] [cursor=pointer]:
+              - img [ref=e609]
+      - listitem [ref=e612]:
+        - generic [ref=e613]:
+          - paragraph [ref=e615]: Made in Europe
+          - link [ref=e616] [cursor=pointer]:
+            - /url: /shop/luggage-tag
+            - figure [ref=e617]:
+              - img "Product image" [ref=e618]
+            - figure [ref=e619]:
+              - img "Product image" [ref=e620]
+          - generic [ref=e621]:
+            - generic [ref=e622]:
+              - link "Luggage tag" [ref=e623] [cursor=pointer]:
+                - /url: /shop/luggage-tag
+                - paragraph [ref=e624]: Luggage tag
+              - paragraph [ref=e625]: From 12,91 €
+            - button "Add to favorites" [ref=e626] [cursor=pointer]:
+              - img [ref=e628]
+      - listitem [ref=e631]:
+        - generic [ref=e632]:
+          - link [ref=e633] [cursor=pointer]:
+            - /url: /shop/heavy-cabas-bag
+            - figure [ref=e634]:
+              - img "Product image" [ref=e635]
+            - figure [ref=e636]:
+              - img "Product image" [ref=e637]
+          - generic [ref=e638]:
+            - generic [ref=e639]:
+              - link "Heavy cabas bag" [ref=e640] [cursor=pointer]:
+                - /url: /shop/heavy-cabas-bag
+                - paragraph [ref=e641]: Heavy cabas bag
+              - paragraph [ref=e642]: From 6,30 €
+            - button "Add to favorites" [ref=e643] [cursor=pointer]:
+              - img [ref=e645]
+      - listitem [ref=e648]:
+        - generic [ref=e649]:
+          - link [ref=e650] [cursor=pointer]:
+            - /url: /shop/db-journey-backpack
+            - figure [ref=e651]:
+              - img "Product image" [ref=e652]
+            - figure [ref=e653]:
+              - img "Product image" [ref=e654]
+          - generic [ref=e655]:
+            - generic [ref=e656]:
+              - link "Db Journey backpack" [ref=e657] [cursor=pointer]:
+                - /url: /shop/db-journey-backpack
+                - paragraph [ref=e658]: Db Journey backpack
+              - paragraph [ref=e659]: From 120,60 €
+            - button "Add to favorites" [ref=e660] [cursor=pointer]:
+              - img [ref=e662]
+      - listitem [ref=e665]:
+        - generic [ref=e666]:
+          - link [ref=e667] [cursor=pointer]:
+            - /url: /shop/linen-shopping-bag
+            - figure [ref=e668]:
+              - img "Product image" [ref=e669]
+            - figure [ref=e670]:
+              - img "Product image" [ref=e671]
+          - generic [ref=e672]:
+            - generic [ref=e673]:
+              - link "Linen shopping bag" [ref=e674] [cursor=pointer]:
+                - /url: /shop/linen-shopping-bag
+                - paragraph [ref=e675]: Linen shopping bag
+              - paragraph [ref=e676]: From 19,38 €
+            - button "Add to favorites" [ref=e677] [cursor=pointer]:
+              - img [ref=e679]
+      - listitem [ref=e682]:
+        - generic [ref=e683]:
+          - link [ref=e684] [cursor=pointer]:
+            - /url: /shop/craft-backpack
+            - figure [ref=e685]:
+              - img "Product image" [ref=e686]
+            - figure [ref=e687]:
+              - img "Product image" [ref=e688]
+          - generic [ref=e689]:
+            - generic [ref=e690]:
+              - link "Craft backpack" [ref=e691] [cursor=pointer]:
+                - /url: /shop/craft-backpack
+                - paragraph [ref=e692]: Craft backpack
+              - paragraph [ref=e693]: From 69,20 €
+            - button "Add to favorites" [ref=e694] [cursor=pointer]:
+              - img [ref=e696]
+      - listitem [ref=e699]:
+        - generic [ref=e700]:
+          - paragraph [ref=e702]: B Corp
+          - link [ref=e703] [cursor=pointer]:
+            - /url: /shop/patagonia-pouch
+            - figure [ref=e704]:
+              - img "Product image" [ref=e705]
+            - figure [ref=e706]:
+              - img "Product image" [ref=e707]
+          - generic [ref=e708]:
+            - generic [ref=e709]:
+              - link "Patagonia pouch" [ref=e710] [cursor=pointer]:
+                - /url: /shop/patagonia-pouch
+                - paragraph [ref=e711]: Patagonia pouch
+              - paragraph [ref=e712]: From 50,00 €
+            - button "Add to favorites" [ref=e713] [cursor=pointer]:
+              - img [ref=e715]
+      - listitem [ref=e718]:
+        - generic [ref=e719]:
+          - paragraph [ref=e721]: Best sellers
+          - link [ref=e722] [cursor=pointer]:
+            - /url: /shop/rains-weekend-bag
+            - figure [ref=e723]:
+              - img "Product image" [ref=e724]
+            - figure [ref=e725]:
+              - img "Product image" [ref=e726]
+          - generic [ref=e727]:
+            - generic [ref=e728]:
+              - link "Rains weekend bag" [ref=e729] [cursor=pointer]:
+                - /url: /shop/rains-weekend-bag
+                - paragraph [ref=e730]: Rains weekend bag
+              - paragraph [ref=e731]: From 79,90 €
+            - button "Add to favorites" [ref=e732] [cursor=pointer]:
+              - img [ref=e734]
+      - listitem [ref=e737]:
+        - generic [ref=e738]:
+          - paragraph [ref=e740]: B Corp
+          - link [ref=e741] [cursor=pointer]:
+            - /url: /shop/patagonia-hip-bag
+            - figure [ref=e742]:
+              - img "Product image" [ref=e743]
+            - figure [ref=e744]:
+              - img "Product image" [ref=e745]
+          - generic [ref=e746]:
+            - generic [ref=e747]:
+              - link "Patagonia hip bag" [ref=e748] [cursor=pointer]:
+                - /url: /shop/patagonia-hip-bag
+                - paragraph [ref=e749]: Patagonia hip bag
+              - paragraph [ref=e750]: From 35,00 €
+            - button "Add to favorites" [ref=e751] [cursor=pointer]:
+              - img [ref=e753]
+      - listitem [ref=e756]:
+        - generic [ref=e757]:
+          - generic [ref=e758]:
+            - paragraph [ref=e759]: B Corp
+            - paragraph [ref=e760]: Made in Europe
+          - link [ref=e761] [cursor=pointer]:
+            - /url: /shop/persimmon-card-holder
+            - figure [ref=e762]:
+              - img "Product image" [ref=e763]
+            - figure [ref=e764]:
+              - img "Product image" [ref=e765]
+          - generic [ref=e766]:
+            - generic [ref=e767]:
+              - link "Persimmon card holder" [ref=e768] [cursor=pointer]:
+                - /url: /shop/persimmon-card-holder
+                - paragraph [ref=e769]: Persimmon card holder
+              - paragraph [ref=e770]: From 21,28 €
+            - button "Add to favorites" [ref=e771] [cursor=pointer]:
+              - img [ref=e773]
+      - listitem [ref=e776]:
+        - generic [ref=e777]:
+          - generic [ref=e778]:
+            - paragraph [ref=e779]: B Corp
+            - paragraph [ref=e780]: Made in Europe
+          - link [ref=e781] [cursor=pointer]:
+            - /url: /shop/secrid-bandwallet
+            - figure [ref=e782]:
+              - img "Product image" [ref=e783]
+            - figure [ref=e784]:
+              - img "Product image" [ref=e785]
+          - generic [ref=e786]:
+            - generic [ref=e787]:
+              - link "Secrid bandwallet" [ref=e788] [cursor=pointer]:
+                - /url: /shop/secrid-bandwallet
+                - paragraph [ref=e789]: Secrid bandwallet
+              - paragraph [ref=e790]: From 43,86 €
+            - button "Add to favorites" [ref=e791] [cursor=pointer]:
+              - img [ref=e793]
+      - listitem [ref=e796]:
+        - generic [ref=e797]:
+          - link [ref=e798] [cursor=pointer]:
+            - /url: /shop/midweight-tote
+            - figure [ref=e799]:
+              - img "Product image" [ref=e800]
+            - figure [ref=e801]:
+              - img "Product image" [ref=e802]
+          - generic [ref=e803]:
+            - generic [ref=e804]:
+              - link "Midweight tote" [ref=e805] [cursor=pointer]:
+                - /url: /shop/midweight-tote
+                - paragraph [ref=e806]: Midweight tote
+              - paragraph [ref=e807]: From 3,58 €
+            - button "Add to favorites" [ref=e808] [cursor=pointer]:
+              - img [ref=e810]
+      - listitem [ref=e813]:
+        - generic [ref=e814]:
+          - paragraph [ref=e816]: Made in Europe
+          - link [ref=e817] [cursor=pointer]:
+            - /url: /shop/vegan-card-holder
+            - figure [ref=e818]:
+              - img "Product image" [ref=e819]
+            - figure [ref=e820]:
+              - img "Product image" [ref=e821]
+          - generic [ref=e822]:
+            - generic [ref=e823]:
+              - link "Vegan card holder" [ref=e824] [cursor=pointer]:
+                - /url: /shop/vegan-card-holder
+                - paragraph [ref=e825]: Vegan card holder
+              - paragraph [ref=e826]: From 25,72 €
+            - button "Add to favorites" [ref=e827] [cursor=pointer]:
+              - img [ref=e829]
+      - listitem [ref=e832]:
+        - generic [ref=e833]:
+          - paragraph [ref=e835]: Fast shipping
+          - link [ref=e836] [cursor=pointer]:
+            - /url: /shop/hemp-wash-bag
+            - figure [ref=e837]:
+              - img "Product image" [ref=e838]
+            - figure [ref=e839]:
+              - img "Product image" [ref=e840]
+          - generic [ref=e841]:
+            - generic [ref=e842]:
+              - link "Hemp wash bag" [ref=e843] [cursor=pointer]:
+                - /url: /shop/hemp-wash-bag
+                - paragraph [ref=e844]: Hemp wash bag
+              - paragraph [ref=e845]: From 7,15 €
+            - button "Add to favorites" [ref=e846] [cursor=pointer]:
+              - img [ref=e848]
+      - listitem [ref=e851]:
+        - generic [ref=e852]:
+          - link [ref=e853] [cursor=pointer]:
+            - /url: /shop/beach-bag
+            - figure [ref=e854]:
+              - img "Product image" [ref=e855]
+            - figure [ref=e856]:
+              - img "Product image" [ref=e857]
+          - generic [ref=e858]:
+            - generic [ref=e859]:
+              - link "Beach bag" [ref=e860] [cursor=pointer]:
+                - /url: /shop/beach-bag
+                - paragraph [ref=e861]: Beach bag
+              - paragraph [ref=e862]: From 9,15 €
+            - button "Add to favorites" [ref=e863] [cursor=pointer]:
+              - img [ref=e865]
+      - listitem [ref=e868]:
+        - generic [ref=e869]:
+          - link [ref=e870] [cursor=pointer]:
+            - /url: /shop/cotton-wash-bag
+            - figure [ref=e871]:
+              - img "Product image" [ref=e872]
+            - figure [ref=e873]:
+              - img "Product image" [ref=e874]
+          - generic [ref=e875]:
+            - generic [ref=e876]:
+              - link "Cotton wash bag" [ref=e877] [cursor=pointer]:
+                - /url: /shop/cotton-wash-bag
+                - paragraph [ref=e878]: Cotton wash bag
+              - paragraph [ref=e879]: From 4,50 €
+            - button "Add to favorites" [ref=e880] [cursor=pointer]:
+              - img [ref=e882]
+      - listitem [ref=e885]:
+        - generic [ref=e886]:
+          - link [ref=e887] [cursor=pointer]:
+            - /url: /shop/light-tote
+            - figure [ref=e888]:
+              - img "Product image" [ref=e889]
+            - figure [ref=e890]:
+              - img "Product image" [ref=e891]
+          - generic [ref=e892]:
+            - generic [ref=e893]:
+              - link "Light tote" [ref=e894] [cursor=pointer]:
+                - /url: /shop/light-tote
+                - paragraph [ref=e895]: Light tote
+              - paragraph [ref=e896]: From 2,23 €
+            - button "Add to favorites" [ref=e897] [cursor=pointer]:
+              - img [ref=e899]
+      - listitem [ref=e902]:
+        - generic [ref=e903]:
+          - link [ref=e904] [cursor=pointer]:
+            - /url: /shop/organic-pouch
+            - figure [ref=e905]:
+              - img "Product image" [ref=e906]
+            - figure [ref=e907]:
+              - img "Product image" [ref=e908]
+          - generic [ref=e909]:
+            - generic [ref=e910]:
+              - link "Organic pouch" [ref=e911] [cursor=pointer]:
+                - /url: /shop/organic-pouch
+                - paragraph [ref=e912]: Organic pouch
+              - paragraph [ref=e913]: From 2,52 €
+            - button "Add to favorites" [ref=e914] [cursor=pointer]:
+              - img [ref=e916]
+      - listitem [ref=e919]:
+        - generic [ref=e920]:
+          - link [ref=e921] [cursor=pointer]:
+            - /url: /shop/pencil-case
+            - figure [ref=e922]:
+              - img "Product image" [ref=e923]
+            - figure [ref=e924]:
+              - img "Product image" [ref=e925]
+          - generic [ref=e926]:
+            - generic [ref=e927]:
+              - link "Pencil case" [ref=e928] [cursor=pointer]:
+                - /url: /shop/pencil-case
+                - paragraph [ref=e929]: Pencil case
+              - paragraph [ref=e930]: From 3,35 €
+            - button "Add to favorites" [ref=e931] [cursor=pointer]:
+              - img [ref=e933]
+      - listitem [ref=e936]:
+        - generic [ref=e937]:
+          - link [ref=e938] [cursor=pointer]:
+            - /url: /shop/rpet-tote
+            - figure [ref=e939]:
+              - img "Product image" [ref=e940]
+            - figure [ref=e941]:
+              - img "Product image" [ref=e942]
+          - generic [ref=e943]:
+            - generic [ref=e944]:
+              - link "rPET tote" [ref=e945] [cursor=pointer]:
+                - /url: /shop/rpet-tote
+                - paragraph [ref=e946]: rPET tote
+              - paragraph [ref=e947]: From 2,58 €
+            - button "Add to favorites" [ref=e948] [cursor=pointer]:
+              - img [ref=e950]
+      - listitem [ref=e953]:
+        - generic [ref=e954]:
+          - link [ref=e955] [cursor=pointer]:
+            - /url: /shop/recycled-duffle-bag
+            - figure [ref=e956]:
+              - img "Product image" [ref=e957]
+            - figure [ref=e958]:
+              - img "Product image" [ref=e959]
+          - generic [ref=e960]:
+            - generic [ref=e961]:
+              - link "Recycled duffle bag" [ref=e962] [cursor=pointer]:
+                - /url: /shop/recycled-duffle-bag
+                - paragraph [ref=e963]: Recycled duffle bag
+              - paragraph [ref=e964]: From 15,16 €
+            - button "Add to favorites" [ref=e965] [cursor=pointer]:
+              - img [ref=e967]
+      - listitem [ref=e970]:
+        - generic [ref=e971]:
+          - generic [ref=e972]:
+            - paragraph [ref=e973]: B Corp
+            - paragraph [ref=e974]: Made in Europe
+          - link [ref=e975] [cursor=pointer]:
+            - /url: /shop/secrid-card-holder
+            - figure [ref=e976]:
+              - img "Product image" [ref=e977]
+            - figure [ref=e978]:
+              - img "Product image" [ref=e979]
+          - generic [ref=e980]:
+            - generic [ref=e981]:
+              - link "Secrid card holder" [ref=e982] [cursor=pointer]:
+                - /url: /shop/secrid-card-holder
+                - paragraph [ref=e983]: Secrid card holder
+              - paragraph [ref=e984]: From 20,32 €
+            - button "Add to favorites" [ref=e985] [cursor=pointer]:
+              - img [ref=e987]
+      - listitem [ref=e990]:
+        - generic [ref=e991]:
+          - generic [ref=e992]:
+            - paragraph [ref=e993]: B Corp
+            - paragraph [ref=e994]: Made in Europe
+          - link [ref=e995] [cursor=pointer]:
+            - /url: /shop/secrid-wallet
+            - figure [ref=e996]:
+              - img "Product image" [ref=e997]
+            - figure [ref=e998]:
+              - img "Product image" [ref=e999]
+          - generic [ref=e1000]:
+            - generic [ref=e1001]:
+              - link "Secrid wallet" [ref=e1002] [cursor=pointer]:
+                - /url: /shop/secrid-wallet
+                - paragraph [ref=e1003]: Secrid wallet
+              - paragraph [ref=e1004]: From 37,92 €
+            - button "Add to favorites" [ref=e1005] [cursor=pointer]:
+              - img [ref=e1007]
+      - listitem [ref=e1010]:
+        - generic [ref=e1011]:
+          - paragraph [ref=e1013]: B Corp
+          - link [ref=e1014] [cursor=pointer]:
+            - /url: /shop/stormproof-umbrella
+            - figure [ref=e1015]:
+              - img "Product image" [ref=e1016]
+            - figure [ref=e1017]:
+              - img "Product image" [ref=e1018]
+          - generic [ref=e1019]:
+            - generic [ref=e1020]:
+              - link "Stormproof umbrella" [ref=e1021] [cursor=pointer]:
+                - /url: /shop/stormproof-umbrella
+                - paragraph [ref=e1022]: Stormproof umbrella
+              - paragraph [ref=e1023]: From 38,22 €
+            - button "Add to favorites" [ref=e1024] [cursor=pointer]:
+              - img [ref=e1026]
+    - generic [ref=e1029]:
+      - generic [ref=e1031]:
+        - generic [ref=e1034]:
+          - 'heading "Custom bags: the perfect corporate gift" [level=2] [ref=e1035]'
+          - generic [ref=e1036]:
+            - paragraph [ref=e1037]: "Branded bags are everywhere. But let’s be honest: most of them aren’t built to last. Uncomfortable straps, weak zippers, thin fabrics, awkward compartments… you’ve probably received one that was quickly forgotten."
+            - paragraph [ref=e1038]: "That’s exactly why we take bags seriously and curate high-quality custom bags designed for real life: sturdy, functional, and made to be used daily."
+            - paragraph [ref=e1039]: "Branded bags are among the most effective corporate gifts: functional, reusable, and naturally aligned with responsibility goals. When the quality is right, your brand becomes part of someone’s everyday routine, not just another giveaway."
+            - paragraph [ref=e1040]:
+              - text: Curious why quality makes such a difference? Discover
+              - link "our article" [ref=e1041] [cursor=pointer]:
+                - /url: https://merchery.co/blog/the-truth-about-custom-merch-quality-6-myths-debunked
+              - text: and learn what truly defines great branded merchandise.
+        - generic [ref=e1042]:
+          - figure:
+            - img "LA_Apparel_heavy_zip_tote_MERCHERY_25_JULY_10214_1_4bc0e38370.jpg" [ref=e1043]
+      - generic [ref=e1045]:
+        - generic [ref=e1048]:
+          - heading "Qualitative materials, designed for performance" [level=2] [ref=e1049]
+          - generic [ref=e1050]:
+            - paragraph [ref=e1051]: Great bags start with great materials. That’s why we prioritise fabrics that balance durability with responsibility at the core, including organic and cotton, recycled cotton, recycled PET, and heavyweight canvas.
+            - paragraph [ref=e1052]: Whether your focus is responsibility, premium feel, lightweight construction, or long-term performance, we help you choose a bag that reflects your brand values while meeting the demands of everyday use, inside and outside the office.
+            - paragraph [ref=e1053]: Transparency matters to us.
+            - paragraph [ref=e1054]:
+              - text: Explore our
+              - link "value chain" [ref=e1055] [cursor=pointer]:
+                - /url: https://merchery.co/about/value-chain
+              - text: to see how your bags are produced with responsibility for both people and planet.
+        - generic [ref=e1056]:
+          - figure:
+            - img "Weekend_tote_Green_MERCHERY_MAY_2430277_1_2eb567fbc0.jpg" [ref=e1057]
+      - generic [ref=e1059]:
+        - generic [ref=e1062]:
+          - heading "Why gifting a branded bag?" [level=2] [ref=e1063]
+          - generic [ref=e1064]:
+            - paragraph [ref=e1065]: A custom bag is more than a practical item. It’s a powerful brand touchpoint. Carried to the office, the gym, the airport, or the grocery store, it gives your visibility in an authentic, lasting way.
+            - paragraph [ref=e1066]: Personalise your bags with your logo, design, or message using high-quality techniques such as printing or embroidery. The result? A cohesive, professional look your employees and clients will genuinely want to carry with them… everywhere.
+            - paragraph [ref=e1067]: Perfect for onboarding kits, events, trade shows, client gifts, or company milestones, always with durability in mind.
+            - paragraph [ref=e1068]:
+              - text: Not sure which branding method is best for your bag and material? Our
+              - link "guide to customisation techniques" [ref=e1069] [cursor=pointer]:
+                - /url: https://merchery.co/blog/how-to-choose-the-right-customisation-technique-for-you-merch
+              - text: makes choosing easy.
+        - generic [ref=e1070]:
+          - figure:
+            - img "Rains_backpack_black_MERCHERY_DEC_233953_2_1_a2f8ab5ddc.jpg" [ref=e1071]
+      - generic [ref=e1073]:
+        - generic [ref=e1076]:
+          - heading "Choosing the right custom bag" [level=2] [ref=e1077]
+          - generic [ref=e1078]:
+            - paragraph [ref=e1079]: From minimalist totes to structured backpacks, resilient duffel bags, compact pouches, recycled options, and more sophisticated designs, our curated collection helps you find the right fit for every use case and budget.
+            - paragraph [ref=e1080]: Looking to go further? Pair your bag with complementary items to create thoughtful, ready-to-gift bundles that employees and clients will actually appreciate and keep.
+            - paragraph [ref=e1081]:
+              - text: See some merch bundle inspirations
+              - link "here" [ref=e1082] [cursor=pointer]:
+                - /url: https://merchery.co/blog/bundle-products-with-purpose-Merchery-guide
+              - text: .
+            - paragraph [ref=e1083]: Ready to get started? Browse our selection of premium custom bags. You'll receive support from product choice to customisation, global logistics, and delivery.
+          - link "Contact us" [ref=e1084] [cursor=pointer]:
+            - /url: https://merchery.co/contact
+        - generic [ref=e1085]:
+          - figure:
+            - img "r_pet_tote_Matshi_Merchery_1_webp_6c5f101b95.png" [ref=e1086]
+    - generic [ref=e1087]:
+      - complementary "Frequently asked questions" [ref=e1088]:
+        - generic [ref=e1089]:
+          - heading "Frequently asked questions" [level=2] [ref=e1090]
+          - paragraph [ref=e1091]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e1093] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e1094]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e1096]:
+            - button "How can I find out more about your products?" [ref=e1097] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e1103]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e1104] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e1110]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e1111] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e1117]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e1118] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e1124]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e1125] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e1131]:
+            - button "Where do you ship?" [ref=e1132] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e1138]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e1139] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e1144]:
+        - generic [ref=e1145]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e1146]
+          - generic [ref=e1147]:
+            - textbox "Enter your email address" [ref=e1149]
+            - button "Subscribe" [ref=e1150] [cursor=pointer]
+  - alert [ref=e1151]
+  - button "Open chat" [ref=e1152] [cursor=pointer]:
+    - img [ref=e1154]
+  - iframe [ref=e1156]:
+    

@@ -1,0 +1,56 @@
+{
+  "productLinks": [],
+  "gridInfo": null,
+  "cardInfo": null,
+  "h1Info": {
+    "text": "Branded gifts,\nmade the right way.",
+    "fontFamily": "Reckless, serif",
+    "fontSize": "80px",
+    "lineHeight": "88px",
+    "fontWeight": "400"
+  },
+  "eyebrows": [
+    {
+      "text": "COMPANY",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    },
+    {
+      "text": "SERVICES",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    },
+    {
+      "text": "INSPIRATION",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    },
+    {
+      "text": "LET US HELP",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    },
+    {
+      "text": "ACCOUNT",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    },
+    {
+      "text": "SECURE PAYMENTS:",
+      "fontSize": "12px",
+      "letterSpacing": "normal",
+      "fontWeight": "400",
+      "fontFamily": "Grotesk"
+    }
+  ]
+}

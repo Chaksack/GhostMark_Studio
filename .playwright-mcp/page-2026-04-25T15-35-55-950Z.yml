@@ -1,0 +1,286 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Excellent
+          - generic [ref=e9]: 4.8 out of 5
+          - generic [ref=e10]: ·
+          - generic [ref=e11]: Trustpilot
+        - generic [ref=e12]:
+          - link "About" [ref=e802] [cursor=pointer]:
+            - /url: /about
+          - link "Resources" [ref=e803] [cursor=pointer]:
+            - /url: /blog
+          - link "Integrations" [ref=e804] [cursor=pointer]:
+            - /url: /integrations
+          - link "Contact us" [ref=e805] [cursor=pointer]:
+            - /url: /contact
+          - button "Change region. Currently United Kingdom, GBP." [ref=e806] [cursor=pointer]: United Kingdom · English
+      - generic [ref=e20]:
+        - generic [ref=e22]:
+          - link "GhostMark — home" [ref=e807] [cursor=pointer]:
+            - /url: /
+            - text: GhostMark
+          - generic [ref=e24]: Studio
+        - generic [ref=e26]:
+          - generic [ref=e27]: Search for a product
+          - combobox "Search for a product" [ref=e808]
+          - button "Search" [ref=e809] [cursor=pointer]:
+            - img [ref=e30]
+        - generic [ref=e33]:
+          - button "Open wishlist" [ref=e810] [cursor=pointer]:
+            - img [ref=e36]
+          - button "Open cart" [ref=e811] [cursor=pointer]:
+            - img [ref=e40]
+            - generic [ref=e595]: "1"
+          - button "Open account menu" [ref=e812] [cursor=pointer]:
+            - img [ref=e47]
+            - generic [ref=e813]: QA
+            - generic [ref=e814]: Q
+      - navigation "Categories" [ref=e815]:
+        - generic [ref=e51]:
+          - button "Stationary & Business" [ref=e816] [cursor=pointer]:
+            - generic [ref=e54]: Stationary & Business
+            - img [ref=e55]
+          - button "Gifts" [ref=e817] [cursor=pointer]:
+            - generic [ref=e59]: Gifts
+            - img [ref=e60]
+          - button "Men Clothing" [ref=e818] [cursor=pointer]:
+            - generic [ref=e64]: Men Clothing
+            - img [ref=e65]
+          - button "Women clothing" [ref=e819] [cursor=pointer]:
+            - generic [ref=e69]: Women clothing
+            - img [ref=e70]
+          - button "Tote bags" [ref=e820] [cursor=pointer]:
+            - generic [ref=e74]: Tote bags
+            - img [ref=e75]
+          - button "Mugs" [ref=e821] [cursor=pointer]:
+            - generic [ref=e79]: Mugs
+            - img [ref=e80]
+          - button "Hats" [ref=e822] [cursor=pointer]:
+            - generic [ref=e84]: Hats
+            - img [ref=e85]
+          - button "Cards" [ref=e823] [cursor=pointer]:
+            - generic [ref=e89]: Cards
+            - img [ref=e90]
+          - button "Notebooks" [ref=e824] [cursor=pointer]:
+            - generic [ref=e94]: Notebooks
+            - img [ref=e95]
+          - button "Kids & bay clothing" [ref=e825] [cursor=pointer]:
+            - generic [ref=e99]: Kids & bay clothing
+            - img [ref=e100]
+    - main [ref=e102]:
+      - generic [ref=e827]:
+        - generic [ref=e828]:
+          - paragraph [ref=e829]: My account
+          - heading "Hello, QA" [level=1] [ref=e830]
+          - paragraph [ref=e831]: A snapshot of your recent activity. Pick up where you left off, or jump to a specific section in the sidebar.
+        - generic [ref=e832]:
+          - complementary [ref=e833]:
+            - paragraph [ref=e834]: Signed in as
+            - paragraph [ref=e835]: QA
+            - paragraph [ref=e836]: qa-1777131308002@example.test
+            - navigation "Account sections" [ref=e837]:
+              - link "Overview" [ref=e838] [cursor=pointer]:
+                - /url: /account
+              - link "Orders" [ref=e839] [cursor=pointer]:
+                - /url: /account/orders
+              - link "Profile" [ref=e840] [cursor=pointer]:
+                - /url: /account/profile
+              - link "Addresses" [ref=e841] [cursor=pointer]:
+                - /url: /account/addresses
+              - link "Wishlist" [ref=e842] [cursor=pointer]:
+                - /url: /wishlist
+            - button "Sign out" [ref=e844] [cursor=pointer]
+          - main [ref=e845]:
+            - generic [ref=e846]:
+              - article [ref=e847]:
+                - generic [ref=e848]:
+                  - heading "Recent orders" [level=2] [ref=e849]
+                  - link "View all" [ref=e850] [cursor=pointer]:
+                    - /url: /account/orders
+                    - text: View all →
+                - generic [ref=e852]:
+                  - paragraph [ref=e853]: No orders yet.
+                  - link "Browse the catalog" [ref=e854] [cursor=pointer]:
+                    - /url: /products
+                    - text: Browse the catalog
+                    - generic [ref=e855]: →
+              - article [ref=e856]:
+                - paragraph [ref=e857]: Profile
+                - heading "QA Tester" [level=2] [ref=e858]
+                - paragraph [ref=e859]: qa-1777131308002@example.test
+                - link "Edit profile" [ref=e860] [cursor=pointer]:
+                  - /url: /account/profile
+                  - text: Edit profile
+                  - generic [ref=e861]: →
+              - article [ref=e862]:
+                - paragraph [ref=e863]: Quick links
+                - generic [ref=e864]:
+                  - link "Addresses Manage saved shipping addresses" [ref=e865] [cursor=pointer]:
+                    - /url: /account/addresses
+                    - paragraph [ref=e866]: Addresses
+                    - paragraph [ref=e867]: Manage saved shipping addresses
+                  - link "Wishlist Pieces you're saving for later" [ref=e868] [cursor=pointer]:
+                    - /url: /wishlist
+                    - paragraph [ref=e869]: Wishlist
+                    - paragraph [ref=e870]: Pieces you're saving for later
+                  - link "Order history Track past + upcoming orders" [ref=e871] [cursor=pointer]:
+                    - /url: /account/orders
+                    - paragraph [ref=e872]: Order history
+                    - paragraph [ref=e873]: Track past + upcoming orders
+                  - link "Help & support FAQs, contact, returns" [ref=e874] [cursor=pointer]:
+                    - /url: /help
+                    - paragraph [ref=e875]: Help & support
+                    - paragraph [ref=e876]: FAQs, contact, returns
+    - contentinfo [ref=e472]:
+      - generic [ref=e473]:
+        - generic [ref=e474]:
+          - generic [ref=e475]:
+            - heading "Shop" [level=2] [ref=e877]
+            - list [ref=e477]:
+              - listitem [ref=e478]:
+                - link "All products" [ref=e878] [cursor=pointer]:
+                  - /url: /products
+              - listitem [ref=e480]:
+                - link "Best sellers" [ref=e879] [cursor=pointer]:
+                  - /url: /products?sort=best-sellers
+              - listitem [ref=e482]:
+                - link "New arrivals" [ref=e880] [cursor=pointer]:
+                  - /url: /products?sort=new
+              - listitem [ref=e484]:
+                - link "Categories" [ref=e881] [cursor=pointer]:
+                  - /url: /categories
+          - generic [ref=e486]:
+            - heading "Company" [level=2] [ref=e882]
+            - list [ref=e488]:
+              - listitem [ref=e489]:
+                - link "About" [ref=e883] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e491]:
+                - link "Studio" [ref=e884] [cursor=pointer]:
+                  - /url: /studio
+              - listitem [ref=e493]:
+                - link "Customer stories" [ref=e885] [cursor=pointer]:
+                  - /url: /customer-stories
+              - listitem [ref=e495]:
+                - link "Sustainability" [ref=e886] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e497]:
+                - link "Press" [ref=e887] [cursor=pointer]:
+                  - /url: /press
+          - generic [ref=e499]:
+            - heading "Support" [level=2] [ref=e888]
+            - list [ref=e501]:
+              - listitem [ref=e502]:
+                - link "Help center" [ref=e889] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e504]:
+                - link "Shipping" [ref=e890] [cursor=pointer]:
+                  - /url: /shipping
+              - listitem [ref=e506]:
+                - link "Returns" [ref=e891] [cursor=pointer]:
+                  - /url: /returns
+              - listitem [ref=e508]:
+                - link "FAQ" [ref=e892] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e510]:
+                - link "Contact" [ref=e893] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e512]:
+            - heading "Follow" [level=2] [ref=e894]
+            - list [ref=e514]:
+              - listitem [ref=e515]:
+                - link "Instagram" [ref=e895] [cursor=pointer]:
+                  - /url: https://instagram.com
+              - listitem [ref=e517]:
+                - link "Pinterest" [ref=e896] [cursor=pointer]:
+                  - /url: https://pinterest.com
+              - listitem [ref=e519]:
+                - link "Newsletter" [ref=e897] [cursor=pointer]:
+                  - /url: "#newsletter"
+          - generic [ref=e521]:
+            - heading "Studio" [level=2] [ref=e898]
+            - paragraph [ref=e523]:
+              - text: Made with care in
+              - link "Brussels" [ref=e899] [cursor=pointer]:
+                - /url: "#"
+              - text: and
+              - link "Berlin" [ref=e900] [cursor=pointer]:
+                - /url: "#"
+              - text: .
+            - paragraph [ref=e526]:
+              - text: Shipping worldwide from
+              - link "Antwerp" [ref=e901] [cursor=pointer]:
+                - /url: "#"
+              - text: .
+        - generic [ref=e528]:
+          - paragraph [ref=e529]: GhostMark
+          - generic [ref=e530]: GhostMark Studio
+        - generic [ref=e531]:
+          - generic [ref=e532]:
+            - figure "Climate Neutral certified" [ref=e902]:
+              - img [ref=e535]
+              - generic [ref=e537]: Climate Neutral certified
+              - generic [ref=e538]: Climate Neutral
+            - figure "1% For The Planet member" [ref=e903]:
+              - img [ref=e541]
+              - generic [ref=e544]: 1% For The Planet member
+              - generic [ref=e545]: 1% For The Planet
+            - figure "Certified B Corporation" [ref=e904]:
+              - img [ref=e548]
+              - generic [ref=e551]: Certified B Corporation
+              - generic [ref=e552]: B Corp
+            - figure "Carbon Neutral shipping" [ref=e905]:
+              - img [ref=e555]
+              - generic [ref=e557]: Carbon Neutral shipping
+              - generic [ref=e558]: Carbon Neutral
+          - generic [ref=e559]:
+            - paragraph [ref=e560]: Secure payments
+            - figure "Visa" [ref=e906]:
+              - img [ref=e562]
+              - generic [ref=e564]: Visa
+            - figure "Mastercard" [ref=e907]:
+              - img [ref=e566]
+              - generic [ref=e569]: Mastercard
+            - figure "American Express" [ref=e908]:
+              - img [ref=e571]
+              - generic [ref=e573]: American Express
+            - figure "PayPal" [ref=e909]:
+              - img [ref=e575]
+              - generic [ref=e577]: PayPal
+            - figure "Apple Pay" [ref=e910]:
+              - img [ref=e579]
+              - generic [ref=e581]: Apple Pay
+        - generic [ref=e582]:
+          - paragraph [ref=e583]:
+            - text: © 2026 GhostMark Studio. Made with care in
+            - link "Brussels" [ref=e911] [cursor=pointer]:
+              - /url: "#"
+            - text: and
+            - link "Berlin" [ref=e912] [cursor=pointer]:
+              - /url: "#"
+            - text: .
+          - list [ref=e586]:
+            - listitem [ref=e587]:
+              - link "Privacy" [ref=e913] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e589]:
+              - link "Terms" [ref=e914] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e591]:
+              - link "Cookies" [ref=e915] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e593]:
+              - button "Change region. Currently United Kingdom, GBP." [ref=e916] [cursor=pointer]: EN · GBP
+  - generic:
+    - img
+  - generic [ref=e598]:
+    - button "Toggle Nuxt DevTools" [ref=e599] [cursor=pointer]:
+      - img [ref=e600]
+    - generic "Page load time" [ref=e603]:
+      - generic [ref=e604]: "360"
+      - generic [ref=e605]: ms
+    - button "Toggle Component Inspector" [ref=e607] [cursor=pointer]:
+      - img [ref=e608]

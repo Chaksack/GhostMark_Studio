@@ -1,0 +1,11 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - heading "500" [level=1] [ref=e5]
+    - heading "Server Error" [level=2] [ref=e6]
+    - paragraph [ref=e7]: IPC connection closed
+  - status [ref=e8]
+  - iframe [ref=e9]:
+    - generic [ref=f18e3]: This content is blocked. Contact the site owner to fix the issue.
+  - button "Toggle detailed error view Hide error page preview" [expanded] [ref=e10]:
+    - generic [ref=e11]: Toggle detailed error view
+    - button "Hide error page preview" [ref=e12] [cursor=pointer]: ×

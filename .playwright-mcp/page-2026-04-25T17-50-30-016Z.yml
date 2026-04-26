@@ -1,0 +1,307 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Excellent
+          - generic [ref=e9]: 4.8 out of 5
+          - generic [ref=e10]: ·
+          - generic [ref=e11]: Trustpilot
+        - generic [ref=e12]:
+          - link "About" [ref=e13] [cursor=pointer]:
+            - /url: /about
+          - link "Resources" [ref=e14] [cursor=pointer]:
+            - /url: /blog
+          - link "Integrations" [ref=e15] [cursor=pointer]:
+            - /url: /integrations
+          - link "Contact us" [ref=e16] [cursor=pointer]:
+            - /url: /contact
+          - button "Europe · English" [ref=e18] [cursor=pointer]
+      - generic [ref=e20]:
+        - link "Home" [ref=e21] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - generic [ref=e22]:
+          - generic [ref=e23]: Search for a product
+          - searchbox "Search for a product" [ref=e24]
+          - button "Search" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+        - generic [ref=e29]:
+          - button "Wishlist" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+          - link "Cart" [ref=e35] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e36]
+          - button "Open account login modal" [ref=e42] [cursor=pointer]:
+            - img [ref=e43]
+      - navigation "Categories" [ref=e46]:
+        - generic [ref=e47]:
+          - button "Apparel" [ref=e49] [cursor=pointer]:
+            - generic [ref=e50]: Apparel
+            - img [ref=e51]
+          - button "Bags" [ref=e54] [cursor=pointer]:
+            - generic [ref=e55]: Bags
+            - img [ref=e56]
+          - button "Headwear" [ref=e59] [cursor=pointer]:
+            - generic [ref=e60]: Headwear
+            - img [ref=e61]
+          - button "Office" [ref=e64] [cursor=pointer]:
+            - generic [ref=e65]: Office
+            - img [ref=e66]
+          - button "Drinkware" [ref=e69] [cursor=pointer]:
+            - generic [ref=e70]: Drinkware
+            - img [ref=e71]
+          - button "Home" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: Home
+            - img [ref=e76]
+          - button "Wellness" [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: Wellness
+            - img [ref=e81]
+          - button "Others" [ref=e84] [cursor=pointer]:
+            - generic [ref=e85]: Others
+            - img [ref=e86]
+          - button "Discover" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]: Discover
+            - img [ref=e91]
+          - button "Brands" [ref=e94] [cursor=pointer]:
+            - generic [ref=e95]: Brands
+            - img [ref=e96]
+    - main [ref=e98]:
+      - generic [ref=e99]:
+        - region "Shop by category." [ref=e100]:
+          - generic [ref=e101]:
+            - paragraph [ref=e102]: Catalog
+            - heading "Shop by category." [level=1] [ref=e103]
+            - paragraph [ref=e104]:
+              - text: Pick a corner of the studio. Each category lists the blanks we keep stocked, the run sizes they suit, and the finishes we offer. Need something we don't list?
+              - link "Tell us about it" [ref=e105] [cursor=pointer]:
+                - /url: /contact
+              - text: .
+        - region "All categories" [ref=e106]:
+          - generic [ref=e107]:
+            - heading "All categories" [level=2] [ref=e108]
+            - list [ref=e109]:
+              - listitem [ref=e110]:
+                - link "Stationary & Business" [ref=e111] [cursor=pointer]:
+                  - /url: /products?category=stationary-business
+                  - generic [ref=e112]: Stationary & Business
+              - listitem [ref=e113]:
+                - link "Gifts" [ref=e114] [cursor=pointer]:
+                  - /url: /products?category=gifts
+                  - generic [ref=e115]: Gifts
+              - listitem [ref=e116]:
+                - link "Men Clothing" [ref=e117] [cursor=pointer]:
+                  - /url: /products?category=men-clothing
+                  - generic [ref=e118]: Men Clothing
+              - listitem [ref=e119]:
+                - link "Women clothing" [ref=e120] [cursor=pointer]:
+                  - /url: /products?category=women-clothing
+                  - generic [ref=e121]: Women clothing
+              - listitem [ref=e122]:
+                - link "Tote bags" [ref=e123] [cursor=pointer]:
+                  - /url: /products?category=tote-bags
+                  - generic [ref=e124]: Tote bags
+              - listitem [ref=e125]:
+                - link "Mugs" [ref=e126] [cursor=pointer]:
+                  - /url: /products?category=mugs
+                  - generic [ref=e127]: Mugs
+              - listitem [ref=e128]:
+                - link "Hats" [ref=e129] [cursor=pointer]:
+                  - /url: /products?category=hats
+                  - generic [ref=e130]: Hats
+              - listitem [ref=e131]:
+                - link "Cards" [ref=e132] [cursor=pointer]:
+                  - /url: /products?category=cards
+                  - generic [ref=e133]: Cards
+              - listitem [ref=e134]:
+                - link "Notebooks" [ref=e135] [cursor=pointer]:
+                  - /url: /products?category=notebooks
+                  - generic [ref=e136]: Notebooks
+              - listitem [ref=e137]:
+                - link "Kids & bay clothing" [ref=e138] [cursor=pointer]:
+                  - /url: /products?category=kids-baby-clothing
+                  - generic [ref=e139]: Kids & bay clothing
+              - listitem [ref=e140]:
+                - link "Apparel 4 styles" [ref=e141] [cursor=pointer]:
+                  - /url: /products?category=apparel
+                  - generic [ref=e142]: Apparel
+                  - generic [ref=e143]: 4 styles
+              - listitem [ref=e144]:
+                - link "Drinkware 3 styles" [ref=e145] [cursor=pointer]:
+                  - /url: /products?category=drinkware
+                  - generic [ref=e146]: Drinkware
+                  - generic [ref=e147]: 3 styles
+              - listitem [ref=e148]:
+                - link "Accessories 3 styles" [ref=e149] [cursor=pointer]:
+                  - /url: /products?category=accessories
+                  - generic [ref=e150]: Accessories
+                  - generic [ref=e151]: 3 styles
+              - listitem [ref=e152]:
+                - link "Lifestyle 2 styles" [ref=e153] [cursor=pointer]:
+                  - /url: /products?category=lifestyle
+                  - generic [ref=e154]: Lifestyle
+                  - generic [ref=e155]: 2 styles
+              - listitem [ref=e156]:
+                - link "T-shirts" [ref=e157] [cursor=pointer]:
+                  - /url: /products?category=apparel-tshirts
+                  - generic [ref=e158]: T-shirts
+              - listitem [ref=e159]:
+                - link "Hoodies" [ref=e160] [cursor=pointer]:
+                  - /url: /products?category=apparel-hoodies
+                  - generic [ref=e161]: Hoodies
+              - listitem [ref=e162]:
+                - link "Sweatshirts" [ref=e163] [cursor=pointer]:
+                  - /url: /products?category=apparel-sweatshirts
+                  - generic [ref=e164]: Sweatshirts
+              - listitem [ref=e165]:
+                - link "Caps" [ref=e166] [cursor=pointer]:
+                  - /url: /products?category=apparel-caps
+                  - generic [ref=e167]: Caps
+              - listitem [ref=e168]:
+                - link "Mugs" [ref=e169] [cursor=pointer]:
+                  - /url: /products?category=drinkware-mugs
+                  - generic [ref=e170]: Mugs
+              - listitem [ref=e171]:
+                - link "Water bottles" [ref=e172] [cursor=pointer]:
+                  - /url: /products?category=drinkware-bottles
+                  - generic [ref=e173]: Water bottles
+              - listitem [ref=e174]:
+                - link "Tumblers" [ref=e175] [cursor=pointer]:
+                  - /url: /products?category=drinkware-tumblers
+                  - generic [ref=e176]: Tumblers
+              - listitem [ref=e177]:
+                - link "Tote bags" [ref=e178] [cursor=pointer]:
+                  - /url: /products?category=accessories-totes
+                  - generic [ref=e179]: Tote bags
+              - listitem [ref=e180]:
+                - link "Stickers" [ref=e181] [cursor=pointer]:
+                  - /url: /products?category=accessories-stickers
+                  - generic [ref=e182]: Stickers
+              - listitem [ref=e183]:
+                - link "Notebooks" [ref=e184] [cursor=pointer]:
+                  - /url: /products?category=accessories-notebooks
+                  - generic [ref=e185]: Notebooks
+              - listitem [ref=e186]:
+                - link "Tech" [ref=e187] [cursor=pointer]:
+                  - /url: /products?category=lifestyle-tech
+                  - generic [ref=e188]: Tech
+              - listitem [ref=e189]:
+                - link "Home" [ref=e190] [cursor=pointer]:
+                  - /url: /products?category=lifestyle-home
+                  - generic [ref=e191]: Home
+        - region "Can't find the right blank?" [ref=e192]:
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - heading "Can't find the right blank?" [level=2] [ref=e196]
+              - paragraph [ref=e197]: We source for custom briefs every week — heavyweight tees, vintage caps, ceramic that survives a dishwasher. Tell us what you need and we'll quote a small batch.
+            - generic [ref=e198]:
+              - link "Request a sample" [ref=e199] [cursor=pointer]:
+                - /url: /contact
+                - generic [ref=e200]: Request a sample
+              - link "Order swatches" [ref=e201] [cursor=pointer]:
+                - /url: /swatches
+                - generic [ref=e202]: Order swatches
+    - contentinfo [ref=e203]:
+      - generic [ref=e204]:
+        - generic [ref=e206]:
+          - generic [ref=e207]:
+            - generic [ref=e208]: "Follow us:"
+            - link "Instagram" [ref=e209] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+            - link "LinkedIn" [ref=e210] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+          - paragraph [ref=e211]: Based in London, United Kingdom.
+        - navigation "Footer" [ref=e212]:
+          - generic [ref=e213]:
+            - generic [ref=e214]: Company
+            - generic [ref=e215]:
+              - link "About us" [ref=e216] [cursor=pointer]:
+                - /url: /about
+              - link "Environmental footprint" [ref=e217] [cursor=pointer]:
+                - /url: /about/environmental-footprint
+              - link "Value chain" [ref=e218] [cursor=pointer]:
+                - /url: /about/value-chain
+              - link "People & culture" [ref=e219] [cursor=pointer]:
+                - /url: /about/people-and-culture
+              - link "Sustainability" [ref=e220] [cursor=pointer]:
+                - /url: /sustainability
+              - link "Press" [ref=e221] [cursor=pointer]:
+                - /url: /press
+          - generic [ref=e222]:
+            - generic [ref=e223]: Services
+            - generic [ref=e224]:
+              - link "Shop all" [ref=e225] [cursor=pointer]:
+                - /url: /products
+              - link "Bespoke studio" [ref=e226] [cursor=pointer]:
+                - /url: /studio
+              - link "Platform" [ref=e227] [cursor=pointer]:
+                - /url: /platform
+              - link "Club & agencies" [ref=e228] [cursor=pointer]:
+                - /url: /club
+          - generic [ref=e229]:
+            - generic [ref=e230]: Inspiration
+            - generic [ref=e231]:
+              - link "Blog" [ref=e232] [cursor=pointer]:
+                - /url: /blog
+              - link "Customer stories" [ref=e233] [cursor=pointer]:
+                - /url: /customer-stories
+          - generic [ref=e234]:
+            - generic [ref=e235]: Let us help
+            - generic [ref=e236]:
+              - link "Help center" [ref=e237] [cursor=pointer]:
+                - /url: /help
+              - link "FAQ" [ref=e238] [cursor=pointer]:
+                - /url: /faq
+              - link "Shipping" [ref=e239] [cursor=pointer]:
+                - /url: /shipping
+              - link "Returns" [ref=e240] [cursor=pointer]:
+                - /url: /returns
+              - link "Terms & conditions" [ref=e241] [cursor=pointer]:
+                - /url: /terms
+              - link "Privacy" [ref=e242] [cursor=pointer]:
+                - /url: /privacy
+              - link "Cookies" [ref=e243] [cursor=pointer]:
+                - /url: /cookies
+              - link "Contact us" [ref=e244] [cursor=pointer]:
+                - /url: /contact
+          - generic [ref=e245]:
+            - generic [ref=e246]: Account
+            - generic [ref=e247]:
+              - link "Orders" [ref=e248] [cursor=pointer]:
+                - /url: /account/orders
+              - link "Preferences" [ref=e249] [cursor=pointer]:
+                - /url: /account
+              - link "Saved projects" [ref=e250] [cursor=pointer]:
+                - /url: /wishlist
+              - link "Invoices" [ref=e251] [cursor=pointer]:
+                - /url: /account/orders
+        - generic [ref=e252]:
+          - generic [ref=e253]:
+            - link "Certified B Corporation — view our score" [ref=e254] [cursor=pointer]:
+              - /url: /sustainability#section-2
+              - generic [ref=e255]:
+                - text: Certified
+                - text: B
+            - link "1% for the Planet — read about our pledge" [ref=e256] [cursor=pointer]:
+              - /url: /sustainability#section-4
+              - generic [ref=e257]:
+                - text: 1%
+                - text: For the
+                - text: Planet
+          - generic [ref=e258]:
+            - generic [ref=e259]: "Secure payments:"
+            - generic [ref=e260]: AMEX
+            - generic [ref=e261]: MC
+            - generic [ref=e262]: PayPal
+            - generic [ref=e263]: VISA
+        - generic [ref=e264]: © 2026 GhostMark
+  - generic:
+    - img
+  - generic [ref=e265]:
+    - button "Toggle Nuxt DevTools" [ref=e266] [cursor=pointer]:
+      - img [ref=e267]
+    - generic "Page load time" [ref=e270]:
+      - generic [ref=e271]: "34"
+      - generic [ref=e272]: ms
+    - button "Toggle Component Inspector" [ref=e274] [cursor=pointer]:
+      - img [ref=e275]

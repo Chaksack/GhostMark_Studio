@@ -1,0 +1,192 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f103e2]:
+            - link "Trustpilot reviews" [ref=f103e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f103e4]: Excellent
+              - generic [ref=f103e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f103e9]
+            - generic [ref=f103e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f103e14]: Click to view the company's Trustpilot profile
+      - navigation [ref=e7]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - img [ref=e12] [cursor=pointer]
+            - link [ref=e13] [cursor=pointer]:
+              - /url: /
+              - img [ref=e14]
+          - generic [ref=e17]:
+            - generic "not logged in user account" [ref=e18] [cursor=pointer]:
+              - img [ref=e20]
+            - link:
+              - /url: /shop/c/favorites
+            - link "contact" [ref=e25] [cursor=pointer]:
+              - /url: /contact
+              - generic "contact" [ref=e26]:
+                - img [ref=e27]
+            - link "cart icon" [ref=e30] [cursor=pointer]:
+              - /url: /checkout/cart
+              - button "cart icon" [ref=e32]:
+                - generic "cart icon" [ref=e34]:
+                  - img [ref=e36]
+        - generic [ref=e39]:
+          - textbox "search input" [ref=e40]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - generic [ref=e51]:
+          - heading "Why Merchery?" [level=2] [ref=e52]
+          - generic [ref=e53]:
+            - paragraph [ref=e54]: Haven’t we all walked out of an event with our hands full of useless, ugly promotional items? As the world of corporate gifts is made of smoke and mirrors, we wanted to offer a solution that is both premium & sustainable. We were tired of all those cheap corporate gifting such as the ridiculous plastic USB key, the poor quality t-shirt or the basic plastic pens.
+            - paragraph [ref=e55]: So we decided to act! As a unique gifts supplier, we hope to break the cycle. Our company is here to offer you a selection of custom corporate gifts that are both qualitative and long-lasting.
+        - generic [ref=e56]:
+          - figure:
+            - img "DSC_04272_11405c9cba.jpg" [ref=e57]
+      - generic [ref=e58]:
+        - heading "Our mission is to create beautiful & sustainable custom merch that people are proud to give and delighted to receive." [level=2] [ref=e59]
+        - text: "0"
+      - generic [ref=e61]:
+        - heading "Manifesto" [level=2] [ref=e62]
+        - list [ref=e63]:
+          - listitem [ref=e64]:
+            - generic [ref=e66]:
+              - heading [level=2] [ref=e67]: "1"
+              - heading "We prioritize quality over quantity." [level=2] [ref=e68]
+          - listitem [ref=e69]:
+            - generic [ref=e71]:
+              - heading [level=2] [ref=e72]: "2"
+              - heading "We source customizable gifts people actually want." [level=2] [ref=e73]
+          - listitem [ref=e74]:
+            - generic [ref=e76]:
+              - heading [level=2] [ref=e77]: "3"
+              - heading "We source gifts that are long lasting." [level=2] [ref=e78]
+          - listitem [ref=e79]:
+            - generic [ref=e81]:
+              - heading [level=2] [ref=e82]: "4"
+              - heading "We put design at the core of our sourcing criteria." [level=2] [ref=e83]
+          - listitem [ref=e84]:
+            - generic [ref=e86]:
+              - heading [level=2] [ref=e87]: "5"
+              - heading "We are as transparent as possible. From cradle to grave." [level=2] [ref=e88]
+          - listitem [ref=e89]:
+            - generic [ref=e91]:
+              - heading [level=2] [ref=e92]: "6"
+              - heading "We ensure all our manufacturers follow our code of conduct." [level=2] [ref=e93]
+          - listitem [ref=e94]:
+            - generic [ref=e96]:
+              - heading [level=2] [ref=e97]: "7"
+              - heading "We measure each product's carbon footprint." [level=2] [ref=e98]
+          - listitem [ref=e99]:
+            - generic [ref=e101]:
+              - heading [level=2] [ref=e102]: "8"
+              - heading "We are aware that we are not perfect, but always strive to get better." [level=2] [ref=e103]
+      - generic [ref=e104]:
+        - heading "Our commitments" [level=2] [ref=e105]
+        - list [ref=e106]:
+          - listitem [ref=e107]:
+            - link "To the environment read_more" [ref=e108] [cursor=pointer]:
+              - /url: /about/environmental-footprint
+              - generic [ref=e111]:
+                - figure:
+                  - img "To the environment" [ref=e112]
+              - heading "To the environment" [level=3] [ref=e114]
+              - generic:
+                - generic:
+                  - img
+                  - paragraph: read_more
+          - listitem [ref=e115]:
+            - link "To our product sourcing read_more" [ref=e116] [cursor=pointer]:
+              - /url: /about/value-chain
+              - generic [ref=e119]:
+                - figure:
+                  - img "To our product sourcing" [ref=e120]
+              - heading "To our product sourcing" [level=3] [ref=e122]
+              - generic:
+                - generic:
+                  - img
+                  - paragraph: read_more
+          - listitem [ref=e123]:
+            - link "To our people & culture read_more" [ref=e124] [cursor=pointer]:
+              - /url: /about/people-and-culture
+              - generic [ref=e127]:
+                - figure:
+                  - img "To our people & culture" [ref=e128]
+              - heading "To our people & culture" [level=3] [ref=e130]
+              - generic:
+                - generic:
+                  - img
+                  - paragraph: read_more
+      - generic [ref=e132]:
+        - generic [ref=e135]:
+          - heading "We source sustainable business gifts" [level=2] [ref=e136]
+          - generic [ref=e137]:
+            - paragraph [ref=e138]: We believe that quality can win over quantity. And we thought that a better sourcing and transparency on where and how our promotional products are made would bring back value to this short term game.
+            - paragraph [ref=e139]: That's why we source only thoughtful gifts options. From high-quality leather goods to eco-friendly products, our team of experts carefully selects each item to ensure that they meet our standards of quality and sustainability. We're proud to propose you a catalogue full of top brands and products, with real values & commitment towards both people and planet.
+          - link "Learn more about our sourcing" [ref=e140] [cursor=pointer]:
+            - /url: /about/value-chain
+        - generic [ref=e141]:
+          - figure:
+            - img "DSC_06474_2_e0f7496b9b.jpg" [ref=e142]
+      - generic [ref=e144]:
+        - generic [ref=e147]:
+          - heading "High end gifts, but high end service too." [level=2] [ref=e148]
+          - generic [ref=e149]:
+            - paragraph [ref=e150]: We put a lot of importance on offering tailor-made services to ensure that your products stand out from the crowd. Our dedicated sales and production team is committed to providing the best possible gifting experience to our customers.
+            - paragraph [ref=e151]: When you are interested in finding the best gifts, you will first pass through the hands of our sales staff. This team is made from experienced professionals who are knowledgeable about the promotional products and services we offer. They are trained to work closely with clients to understand their specific needs and requirements, and to help them choose the right corporate gift while providing advice on customisation options.
+            - paragraph [ref=e152]: Once you have placed your order, our production team takes over. We work with partners that use state-of-the-art equipment and techniques to produce high-quality customisable gifts that meet your specifications. Whether you need your logo in a specific colour or placed in a certain corner of the gift, our production team will make it happen, as long as it's doable.
+          - link "Contact us" [ref=e153] [cursor=pointer]:
+            - /url: /contact
+        - generic [ref=e154]:
+          - figure:
+            - img "DSC_05353_e44047a839.JPG" [ref=e155]
+    - generic [ref=e156]:
+      - complementary "Frequently asked questions" [ref=e157]:
+        - generic [ref=e158]:
+          - heading "Frequently asked questions" [level=2] [ref=e159]
+          - paragraph [ref=e160]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e162] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e163]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e165]:
+            - button "How can I find out more about your products?" [ref=e166] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e172]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e173] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e179]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e180] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e186]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e187] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e193]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e194] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e200]:
+            - button "Where do you ship?" [ref=e201] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e207]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e208] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e213]:
+        - generic [ref=e214]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e215]
+          - generic [ref=e216]:
+            - textbox "Enter your email address" [ref=e218]
+            - button "Subscribe" [ref=e219] [cursor=pointer]
+  - alert [ref=e220]
+  - button "Open chat" [ref=e221] [cursor=pointer]:
+    - img [ref=e223]
+  - generic [ref=e225]:
+    - paragraph [ref=e226]: You have reached the EU website, but it looks like you are visiting from Great Britain.
+    - generic [ref=e227]:
+      - generic [ref=e228]:
+        - text: Please choose your location
+        - combobox [ref=e229] [cursor=pointer]:
+          - generic [ref=e230]:
+            - img [ref=e231]
+            - generic: United Kingdom
+          - img [ref=e234]
+      - button "Confirm" [ref=e236] [cursor=pointer]
+    - button [ref=e237] [cursor=pointer]:
+      - img [ref=e239]
+  - iframe [ref=e241]:
+    

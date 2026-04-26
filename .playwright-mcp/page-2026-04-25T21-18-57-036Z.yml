@@ -1,0 +1,884 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f21e2]:
+            - link "Trustpilot reviews" [ref=f21e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f21e4]: Excellent
+              - generic [ref=f21e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f21e9]
+            - generic [ref=f21e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f21e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /contact
+          - listitem [ref=e16]:
+            - button "Europe | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e144]: Europe
+                - generic [ref=e145]: "|"
+                - generic [ref=e146]: English
+                - img [ref=e147]
+      - navigation [ref=e149]:
+        - link [ref=e151] [cursor=pointer]:
+          - /url: /
+          - img [ref=e152]
+        - generic [ref=e155]:
+          - textbox "search input" [ref=e156]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e157] [cursor=pointer]:
+            - img [ref=e159]
+        - generic [ref=e162]:
+          - generic "not logged in user account" [ref=e163] [cursor=pointer]:
+            - img [ref=e165]
+          - link "favorites" [ref=e170] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e171]:
+              - img [ref=e172]
+          - link:
+            - /url: /contact
+          - link "cart icon" [ref=e174] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon" [ref=e176]:
+              - generic "cart icon" [ref=e178]:
+                - img [ref=e180]
+      - navigation [ref=e182]:
+        - list [ref=e183]:
+          - listitem [ref=e184]:
+            - link "Apparel" [ref=e185] [cursor=pointer]:
+              - /url: /shop/c/apparel
+          - listitem [ref=e186]:
+            - link "Bags" [ref=e187] [cursor=pointer]:
+              - /url: /shop/c/bags
+          - listitem [ref=e188]:
+            - link "Headwear" [ref=e189] [cursor=pointer]:
+              - /url: /shop/c/headwear
+          - listitem [ref=e190]:
+            - link "Office" [ref=e191] [cursor=pointer]:
+              - /url: /shop/c/office
+          - listitem [ref=e192]:
+            - link "Drinkware" [ref=e193] [cursor=pointer]:
+              - /url: /shop/c/drinkware
+          - listitem [ref=e194]:
+            - link "Home" [ref=e195] [cursor=pointer]:
+              - /url: /shop/c/home
+          - listitem [ref=e196]:
+            - link "Wellness" [ref=e197] [cursor=pointer]:
+              - /url: /shop/c/wellness
+          - listitem [ref=e198]:
+            - link "Others" [ref=e199] [cursor=pointer]:
+              - /url: /shop/c/others
+          - listitem [ref=e200]:
+            - link "Discover" [ref=e201] [cursor=pointer]:
+              - /url: /shop/c/discover
+          - listitem [ref=e202]:
+            - link "Brands" [ref=e203] [cursor=pointer]:
+              - /url: /shop/c/brands
+    - generic [ref=e204]:
+      - navigation "breadcrumbs" [ref=e205]:
+        - list [ref=e206]:
+          - link "All products" [ref=e207] [cursor=pointer]:
+            - /url: /shop
+          - paragraph [ref=e208]: /
+          - link "Drinkware":
+            - /url: /shop/c/drinkware
+      - heading "Drinkware" [level=1] [ref=e209]
+      - paragraph [ref=e210]: The most complete selection of custom drinkware to satisfy all your needs. For athletes, coffee lovers, and those who like to have custom mugs on their desks, we curated drinkware for every occasion.
+    - navigation [ref=e212]:
+      - generic [ref=e213]:
+        - button "Category" [ref=e215] [cursor=pointer]:
+          - generic [ref=e216]: Category
+          - img [ref=e218]
+        - button "Price range" [ref=e221] [cursor=pointer]:
+          - generic [ref=e222]: Price range
+          - img [ref=e224]
+        - button "Quantity" [ref=e227] [cursor=pointer]:
+          - generic [ref=e228]: Quantity
+          - img [ref=e230]
+        - button "Lead time" [ref=e233] [cursor=pointer]:
+          - generic [ref=e234]: Lead time
+          - img [ref=e236]
+        - button "Color" [ref=e239] [cursor=pointer]:
+          - generic [ref=e240]: Color
+          - img [ref=e242]
+        - button "Brands" [ref=e245] [cursor=pointer]:
+          - generic [ref=e246]: Brands
+          - img [ref=e248]
+        - button "Labels" [ref=e251] [cursor=pointer]:
+          - generic [ref=e252]: Labels
+          - img [ref=e254]
+        - generic [ref=e256] [cursor=pointer]:
+          - checkbox "Fast shipping" [ref=e257]
+          - generic [ref=e258]: Fast shipping
+      - 'button "Sort by: Relevance" [ref=e261] [cursor=pointer]':
+        - generic [ref=e262]: "Sort by: Relevance"
+        - img [ref=e264]
+    - list [ref=e267]:
+      - listitem [ref=e268]:
+        - generic [ref=e269]:
+          - link [ref=e270] [cursor=pointer]:
+            - /url: /shop/kinto-straw-tumbler
+            - figure [ref=e271]:
+              - img "Product image" [ref=e272]
+            - figure [ref=e273]:
+              - img "Product image" [ref=e274]
+          - generic [ref=e275]:
+            - generic [ref=e276]:
+              - link "Kinto straw tumbler" [ref=e277] [cursor=pointer]:
+                - /url: /shop/kinto-straw-tumbler
+                - paragraph [ref=e278]: Kinto straw tumbler
+              - paragraph [ref=e279]: From 33,44 €
+            - button "Add to favorites" [ref=e280] [cursor=pointer]:
+              - img [ref=e282]
+      - listitem [ref=e285]:
+        - generic [ref=e286]:
+          - link [ref=e287] [cursor=pointer]:
+            - /url: /shop/keepcup-straw-tumbler
+            - figure [ref=e288]:
+              - img "Product image" [ref=e289]
+            - figure [ref=e290]:
+              - img "Product image" [ref=e291]
+          - generic [ref=e292]:
+            - generic [ref=e293]:
+              - link "KeepCup straw tumbler" [ref=e294] [cursor=pointer]:
+                - /url: /shop/keepcup-straw-tumbler
+                - paragraph [ref=e295]: KeepCup straw tumbler
+              - paragraph [ref=e296]: From 17,50 €
+            - button "Add to favorites" [ref=e297] [cursor=pointer]:
+              - img [ref=e299]
+      - listitem [ref=e302]:
+        - generic [ref=e303]:
+          - paragraph [ref=e305]: Quickship
+          - link [ref=e306] [cursor=pointer]:
+            - /url: /shop/stanley-camp-mug
+            - figure [ref=e307]:
+              - img "Product image" [ref=e308]
+            - figure [ref=e309]:
+              - img "Product image" [ref=e310]
+          - generic [ref=e311]:
+            - generic [ref=e312]:
+              - link "Stanley camp mug" [ref=e313] [cursor=pointer]:
+                - /url: /shop/stanley-camp-mug
+                - paragraph [ref=e314]: Stanley camp mug
+              - paragraph [ref=e315]: From 28,71 €
+            - button "Add to favorites" [ref=e316] [cursor=pointer]:
+              - img [ref=e318]
+      - listitem [ref=e321]:
+        - generic [ref=e322]:
+          - link [ref=e323] [cursor=pointer]:
+            - /url: /shop/kinto-active-bottle
+            - figure [ref=e324]:
+              - img "Product image" [ref=e325]
+            - figure [ref=e326]:
+              - img "Product image" [ref=e327]
+          - generic [ref=e328]:
+            - generic [ref=e329]:
+              - link "Kinto active bottle" [ref=e330] [cursor=pointer]:
+                - /url: /shop/kinto-active-bottle
+                - paragraph [ref=e331]: Kinto active bottle
+              - paragraph [ref=e332]: From 15,29 €
+            - button "Add to favorites" [ref=e333] [cursor=pointer]:
+              - img [ref=e335]
+      - listitem [ref=e338]:
+        - generic [ref=e339]:
+          - link [ref=e340] [cursor=pointer]:
+            - /url: /shop/kinto-insulated-water-bottle
+            - figure [ref=e341]:
+              - img "Product image" [ref=e342]
+            - figure [ref=e343]:
+              - img "Product image" [ref=e344]
+          - generic [ref=e345]:
+            - generic [ref=e346]:
+              - link "Kinto insulated water bottle" [ref=e347] [cursor=pointer]:
+                - /url: /shop/kinto-insulated-water-bottle
+                - paragraph [ref=e348]: Kinto insulated water bottle
+              - paragraph [ref=e349]: From 32,33 €
+            - button "Add to favorites" [ref=e350] [cursor=pointer]:
+              - img [ref=e352]
+      - listitem [ref=e355]:
+        - generic [ref=e356]:
+          - paragraph [ref=e358]: Quickship
+          - link [ref=e359] [cursor=pointer]:
+            - /url: /shop/espresso-cup
+            - figure [ref=e360]:
+              - img "Product image" [ref=e361]
+            - figure [ref=e362]:
+              - img "Product image" [ref=e363]
+          - generic [ref=e364]:
+            - generic [ref=e365]:
+              - link "Espresso cup" [ref=e366] [cursor=pointer]:
+                - /url: /shop/espresso-cup
+                - paragraph [ref=e367]: Espresso cup
+              - paragraph [ref=e368]: From 2,18 €
+            - button "Add to favorites" [ref=e369] [cursor=pointer]:
+              - img [ref=e371]
+      - listitem [ref=e374]:
+        - generic [ref=e375]:
+          - paragraph [ref=e377]: Fast shipping
+          - link [ref=e378] [cursor=pointer]:
+            - /url: /shop/stanley-tumbler
+            - figure [ref=e379]:
+              - img "Product image" [ref=e380]
+            - figure [ref=e381]:
+              - img "Product image" [ref=e382]
+          - generic [ref=e383]:
+            - generic [ref=e384]:
+              - link "Stanley tumbler" [ref=e385] [cursor=pointer]:
+                - /url: /shop/stanley-tumbler
+                - paragraph [ref=e386]: Stanley tumbler
+              - paragraph [ref=e387]: From 45,64 €
+            - button "Add to favorites" [ref=e388] [cursor=pointer]:
+              - img [ref=e390]
+      - listitem [ref=e393]:
+        - generic [ref=e394]:
+          - paragraph [ref=e396]: Made in Europe
+          - link [ref=e397] [cursor=pointer]:
+            - /url: /shop/kaffeeform-cup
+            - figure [ref=e398]:
+              - img "Product image" [ref=e399]
+            - figure [ref=e400]:
+              - img "Product image" [ref=e401]
+          - generic [ref=e402]:
+            - generic [ref=e403]:
+              - link "Kaffeeform cup" [ref=e404] [cursor=pointer]:
+                - /url: /shop/kaffeeform-cup
+                - paragraph [ref=e405]: Kaffeeform cup
+              - paragraph [ref=e406]: From 8,98 €
+            - button "Add to favorites" [ref=e407] [cursor=pointer]:
+              - img [ref=e409]
+      - listitem [ref=e412]:
+        - generic [ref=e413]:
+          - link [ref=e414] [cursor=pointer]:
+            - /url: /shop/kinto-carry-tumbler
+            - figure [ref=e415]:
+              - img "Product image" [ref=e416]
+            - figure [ref=e417]:
+              - img "Product image" [ref=e418]
+          - generic [ref=e419]:
+            - generic [ref=e420]:
+              - link "Kinto carry tumbler" [ref=e421] [cursor=pointer]:
+                - /url: /shop/kinto-carry-tumbler
+                - paragraph [ref=e422]: Kinto carry tumbler
+              - paragraph [ref=e423]: From 34,14 €
+            - button "Add to favorites" [ref=e424] [cursor=pointer]:
+              - img [ref=e426]
+      - listitem [ref=e429]:
+        - generic [ref=e430]:
+          - link [ref=e431] [cursor=pointer]:
+            - /url: /shop/acme-coffee-cup
+            - figure [ref=e432]:
+              - img "Product image" [ref=e433]
+            - figure [ref=e434]:
+              - img "Product image" [ref=e435]
+          - generic [ref=e436]:
+            - generic [ref=e437]:
+              - link "Acme coffee cup" [ref=e438] [cursor=pointer]:
+                - /url: /shop/acme-coffee-cup
+                - paragraph [ref=e439]: Acme coffee cup
+              - paragraph [ref=e440]: From 8,34 €
+            - button "Add to favorites" [ref=e441] [cursor=pointer]:
+              - img [ref=e443]
+      - listitem [ref=e446]:
+        - generic [ref=e447]:
+          - paragraph [ref=e449]: Fast shipping
+          - link [ref=e450] [cursor=pointer]:
+            - /url: /shop/insulated-bottle
+            - figure [ref=e451]:
+              - img "Product image" [ref=e452]
+            - figure [ref=e453]:
+              - img "Product image" [ref=e454]
+          - generic [ref=e455]:
+            - generic [ref=e456]:
+              - link "Insulated bottle" [ref=e457] [cursor=pointer]:
+                - /url: /shop/insulated-bottle
+                - paragraph [ref=e458]: Insulated bottle
+              - paragraph [ref=e459]: From 9,80 €
+            - button "Add to favorites" [ref=e460] [cursor=pointer]:
+              - img [ref=e462]
+      - listitem [ref=e465]:
+        - generic [ref=e466]:
+          - paragraph [ref=e468]: B Corp
+          - link [ref=e469] [cursor=pointer]:
+            - /url: /shop/memobottle
+            - figure [ref=e470]:
+              - img "Product image" [ref=e471]
+            - figure [ref=e472]:
+              - img "Product image" [ref=e473]
+          - generic [ref=e474]:
+            - generic [ref=e475]:
+              - link "Memobottle" [ref=e476] [cursor=pointer]:
+                - /url: /shop/memobottle
+                - paragraph [ref=e477]: Memobottle
+              - paragraph [ref=e478]: From 11,19 €
+            - button "Add to favorites" [ref=e479] [cursor=pointer]:
+              - img [ref=e481]
+      - listitem [ref=e484]:
+        - generic [ref=e485]:
+          - paragraph [ref=e487]: Made in Europe
+          - link [ref=e488] [cursor=pointer]:
+            - /url: /shop/enamel-mug
+            - figure [ref=e489]:
+              - img "Product image" [ref=e490]
+            - figure [ref=e491]:
+              - img "Product image" [ref=e492]
+          - generic [ref=e493]:
+            - generic [ref=e494]:
+              - link "Enamel mug" [ref=e495] [cursor=pointer]:
+                - /url: /shop/enamel-mug
+                - paragraph [ref=e496]: Enamel mug
+              - paragraph [ref=e497]: From 9,60 €
+            - button "Add to favorites" [ref=e498] [cursor=pointer]:
+              - img [ref=e500]
+      - listitem [ref=e503]:
+        - generic [ref=e504]:
+          - link [ref=e505] [cursor=pointer]:
+            - /url: /shop/kinto-traveller
+            - figure [ref=e506]:
+              - img "Product image" [ref=e507]
+            - figure [ref=e508]:
+              - img "Product image" [ref=e509]
+          - generic [ref=e510]:
+            - generic [ref=e511]:
+              - link "Kinto traveller" [ref=e512] [cursor=pointer]:
+                - /url: /shop/kinto-traveller
+                - paragraph [ref=e513]: Kinto traveller
+              - paragraph [ref=e514]: From 24,14 €
+            - button "Add to favorites" [ref=e515] [cursor=pointer]:
+              - img [ref=e517]
+      - listitem [ref=e520]:
+        - generic [ref=e521]:
+          - paragraph [ref=e523]: Made in Europe
+          - link [ref=e524] [cursor=pointer]:
+            - /url: /shop/sport-bottle
+            - figure [ref=e525]:
+              - img "Product image" [ref=e526]
+            - figure [ref=e527]:
+              - img "Product image" [ref=e528]
+          - generic [ref=e529]:
+            - generic [ref=e530]:
+              - link "Sport bottle" [ref=e531] [cursor=pointer]:
+                - /url: /shop/sport-bottle
+                - paragraph [ref=e532]: Sport bottle
+              - paragraph [ref=e533]: From 3,75 €
+            - button "Add to favorites" [ref=e534] [cursor=pointer]:
+              - img [ref=e536]
+      - listitem [ref=e539]:
+        - generic [ref=e540]:
+          - generic [ref=e541]:
+            - paragraph [ref=e542]: B Corp
+            - paragraph [ref=e543]: Fast shipping
+          - link [ref=e544] [cursor=pointer]:
+            - /url: /shop/ocean-bottle-insulated
+            - figure [ref=e545]:
+              - img "Product image" [ref=e546]
+            - figure [ref=e547]:
+              - img "Product image" [ref=e548]
+          - generic [ref=e549]:
+            - generic [ref=e550]:
+              - link "Ocean Bottle insulated" [ref=e551] [cursor=pointer]:
+                - /url: /shop/ocean-bottle-insulated
+                - paragraph [ref=e552]: Ocean Bottle insulated
+              - paragraph [ref=e553]: From 38,72 €
+            - button "Add to favorites" [ref=e554] [cursor=pointer]:
+              - img [ref=e556]
+      - listitem [ref=e559]:
+        - generic [ref=e560]:
+          - generic [ref=e561]:
+            - paragraph [ref=e562]: B Corp
+            - paragraph [ref=e563]: Fast shipping
+          - link [ref=e564] [cursor=pointer]:
+            - /url: /shop/ocean-bottle-tumbler
+            - figure [ref=e565]:
+              - img "Product image" [ref=e566]
+            - figure [ref=e567]:
+              - img "Product image" [ref=e568]
+          - generic [ref=e569]:
+            - generic [ref=e570]:
+              - link "Ocean Bottle tumbler" [ref=e571] [cursor=pointer]:
+                - /url: /shop/ocean-bottle-tumbler
+                - paragraph [ref=e572]: Ocean Bottle tumbler
+              - paragraph [ref=e573]: From 39,00 €
+            - button "Add to favorites" [ref=e574] [cursor=pointer]:
+              - img [ref=e576]
+      - listitem [ref=e579]:
+        - generic [ref=e580]:
+          - generic [ref=e581]:
+            - paragraph [ref=e582]: B Corp
+            - paragraph [ref=e583]: Made in Europe
+          - link [ref=e584] [cursor=pointer]:
+            - /url: /shop/keepcup
+            - figure [ref=e585]:
+              - img "Product image" [ref=e586]
+            - figure [ref=e587]:
+              - img "Product image" [ref=e588]
+          - generic [ref=e589]:
+            - generic [ref=e590]:
+              - link "KeepCup" [ref=e591] [cursor=pointer]:
+                - /url: /shop/keepcup
+                - paragraph [ref=e592]: KeepCup
+              - paragraph [ref=e593]: From 17,93 €
+            - button "Add to favorites" [ref=e594] [cursor=pointer]:
+              - img [ref=e596]
+      - listitem [ref=e599]:
+        - generic [ref=e600]:
+          - paragraph [ref=e602]: Made in Europe
+          - link [ref=e603] [cursor=pointer]:
+            - /url: /shop/sigg-tumbler
+            - figure [ref=e604]:
+              - img "Product image" [ref=e605]
+            - figure [ref=e606]:
+              - img "Product image" [ref=e607]
+          - generic [ref=e608]:
+            - generic [ref=e609]:
+              - link "Sigg tumbler" [ref=e610] [cursor=pointer]:
+                - /url: /shop/sigg-tumbler
+                - paragraph [ref=e611]: Sigg tumbler
+              - paragraph [ref=e612]: From 17,40 €
+            - button "Add to favorites" [ref=e613] [cursor=pointer]:
+              - img [ref=e615]
+      - listitem [ref=e618]:
+        - generic [ref=e619]:
+          - link [ref=e620] [cursor=pointer]:
+            - /url: /shop/kinto-water-bottle
+            - figure [ref=e621]:
+              - img "Product image" [ref=e622]
+            - figure [ref=e623]:
+              - img "Product image" [ref=e624]
+          - generic [ref=e625]:
+            - generic [ref=e626]:
+              - link "Kinto water bottle" [ref=e627] [cursor=pointer]:
+                - /url: /shop/kinto-water-bottle
+                - paragraph [ref=e628]: Kinto water bottle
+              - paragraph [ref=e629]: From 9,67 €
+            - button "Add to favorites" [ref=e630] [cursor=pointer]:
+              - img [ref=e632]
+      - listitem [ref=e635]:
+        - generic [ref=e636]:
+          - link [ref=e637] [cursor=pointer]:
+            - /url: /shop/nalgene-narrow-mouth
+            - figure [ref=e638]:
+              - img "Product image" [ref=e639]
+            - figure [ref=e640]:
+              - img "Product image" [ref=e641]
+          - generic [ref=e642]:
+            - generic [ref=e643]:
+              - link "Nalgene narrow mouth" [ref=e644] [cursor=pointer]:
+                - /url: /shop/nalgene-narrow-mouth
+                - paragraph [ref=e645]: Nalgene narrow mouth
+              - paragraph [ref=e646]: From 11,97 €
+            - button "Add to favorites" [ref=e647] [cursor=pointer]:
+              - img [ref=e649]
+      - listitem [ref=e652]:
+        - generic [ref=e653]:
+          - paragraph [ref=e655]: B Corp
+          - link [ref=e656] [cursor=pointer]:
+            - /url: /shop/stainless-steel-dopper
+            - figure [ref=e657]:
+              - img "Product image" [ref=e658]
+            - figure [ref=e659]:
+              - img "Product image" [ref=e660]
+          - generic [ref=e661]:
+            - generic [ref=e662]:
+              - link "Stainless steel Dopper" [ref=e663] [cursor=pointer]:
+                - /url: /shop/stainless-steel-dopper
+                - paragraph [ref=e664]: Stainless steel Dopper
+              - paragraph [ref=e665]: From 9,54 €
+            - button "Add to favorites" [ref=e666] [cursor=pointer]:
+              - img [ref=e668]
+      - listitem [ref=e671]:
+        - generic [ref=e672]:
+          - paragraph [ref=e674]: Made in Europe
+          - link [ref=e675] [cursor=pointer]:
+            - /url: /shop/sigg-sport-bottle
+            - figure [ref=e676]:
+              - img "Product image" [ref=e677]
+            - figure [ref=e678]:
+              - img "Product image" [ref=e679]
+          - generic [ref=e680]:
+            - generic [ref=e681]:
+              - link "Sigg sport bottle" [ref=e682] [cursor=pointer]:
+                - /url: /shop/sigg-sport-bottle
+                - paragraph [ref=e683]: Sigg sport bottle
+              - paragraph [ref=e684]: From 13,18 €
+            - button "Add to favorites" [ref=e685] [cursor=pointer]:
+              - img [ref=e687]
+      - listitem [ref=e690]:
+        - generic [ref=e691]:
+          - link [ref=e692] [cursor=pointer]:
+            - /url: /shop/kinto-active-tumbler
+            - figure [ref=e693]:
+              - img "Product image" [ref=e694]
+            - figure [ref=e695]:
+              - img "Product image" [ref=e696]
+          - generic [ref=e697]:
+            - generic [ref=e698]:
+              - link "Kinto active tumbler" [ref=e699] [cursor=pointer]:
+                - /url: /shop/kinto-active-tumbler
+                - paragraph [ref=e700]: Kinto active tumbler
+              - paragraph [ref=e701]: From 32,76 €
+            - button "Add to favorites" [ref=e702] [cursor=pointer]:
+              - img [ref=e704]
+      - listitem [ref=e707]:
+        - generic [ref=e708]:
+          - paragraph [ref=e710]: Made in Europe
+          - link [ref=e711] [cursor=pointer]:
+            - /url: /shop/aluminium-bottle
+            - figure [ref=e712]:
+              - img "Product image" [ref=e713]
+            - figure [ref=e714]:
+              - img "Product image" [ref=e715]
+          - generic [ref=e716]:
+            - generic [ref=e717]:
+              - link "Aluminium bottle" [ref=e718] [cursor=pointer]:
+                - /url: /shop/aluminium-bottle
+                - paragraph [ref=e719]: Aluminium bottle
+              - paragraph [ref=e720]: From 5,96 €
+            - button "Add to favorites" [ref=e721] [cursor=pointer]:
+              - img [ref=e723]
+      - listitem [ref=e726]:
+        - generic [ref=e727]:
+          - generic [ref=e728]:
+            - paragraph [ref=e729]: Fast shipping
+            - paragraph [ref=e730]: Made in Europe
+          - link [ref=e731] [cursor=pointer]:
+            - /url: /shop/americano-tumbler
+            - figure [ref=e732]:
+              - img "Product image" [ref=e733]
+            - figure [ref=e734]:
+              - img "Product image" [ref=e735]
+          - generic [ref=e736]:
+            - generic [ref=e737]:
+              - link "Americano tumbler" [ref=e738] [cursor=pointer]:
+                - /url: /shop/americano-tumbler
+                - paragraph [ref=e739]: Americano tumbler
+              - paragraph [ref=e740]: From 4,81 €
+            - button "Add to favorites" [ref=e741] [cursor=pointer]:
+              - img [ref=e743]
+      - listitem [ref=e746]:
+        - generic [ref=e747]:
+          - generic [ref=e748]:
+            - paragraph [ref=e749]: Best sellers
+            - paragraph [ref=e750]: Fast shipping
+          - link [ref=e751] [cursor=pointer]:
+            - /url: /shop/ceramic-mug
+            - figure [ref=e752]:
+              - img "Product image" [ref=e753]
+            - figure [ref=e754]:
+              - img "Product image" [ref=e755]
+          - generic [ref=e756]:
+            - generic [ref=e757]:
+              - link "Ceramic mug" [ref=e758] [cursor=pointer]:
+                - /url: /shop/ceramic-mug
+                - paragraph [ref=e759]: Ceramic mug
+              - paragraph [ref=e760]: From 2,91 €
+            - button "Add to favorites" [ref=e761] [cursor=pointer]:
+              - img [ref=e763]
+      - listitem [ref=e766]:
+        - generic [ref=e767]:
+          - paragraph [ref=e769]: Made in Europe
+          - link [ref=e770] [cursor=pointer]:
+            - /url: /shop/cycling-bottle
+            - figure [ref=e771]:
+              - img "Product image" [ref=e772]
+            - figure [ref=e773]:
+              - img "Product image" [ref=e774]
+          - generic [ref=e775]:
+            - generic [ref=e776]:
+              - link "Cycling bottle" [ref=e777] [cursor=pointer]:
+                - /url: /shop/cycling-bottle
+                - paragraph [ref=e778]: Cycling bottle
+              - paragraph [ref=e779]: From 1,65 €
+            - button "Add to favorites" [ref=e780] [cursor=pointer]:
+              - img [ref=e782]
+      - listitem [ref=e785]:
+        - generic [ref=e786]:
+          - paragraph [ref=e788]: B Corp
+          - link [ref=e789] [cursor=pointer]:
+            - /url: /shop/klean-kanteen-tumbler
+            - figure [ref=e790]:
+              - img "Product image" [ref=e791]
+            - figure [ref=e792]:
+              - img "Product image" [ref=e793]
+          - generic [ref=e794]:
+            - generic [ref=e795]:
+              - link "Klean Kanteen tumbler" [ref=e796] [cursor=pointer]:
+                - /url: /shop/klean-kanteen-tumbler
+                - paragraph [ref=e797]: Klean Kanteen tumbler
+              - paragraph [ref=e798]: From 16,22 €
+            - button "Add to favorites" [ref=e799] [cursor=pointer]:
+              - img [ref=e801]
+      - listitem [ref=e804]:
+        - generic [ref=e805]:
+          - paragraph [ref=e807]: B Corp
+          - link [ref=e808] [cursor=pointer]:
+            - /url: /shop/dopper-insulated
+            - figure [ref=e809]:
+              - img "Product image" [ref=e810]
+            - figure [ref=e811]:
+              - img "Product image" [ref=e812]
+          - generic [ref=e813]:
+            - generic [ref=e814]:
+              - link "Dopper insulated" [ref=e815] [cursor=pointer]:
+                - /url: /shop/dopper-insulated
+                - paragraph [ref=e816]: Dopper insulated
+              - paragraph [ref=e817]: From 20,56 €
+            - button "Add to favorites" [ref=e818] [cursor=pointer]:
+              - img [ref=e820]
+      - listitem [ref=e823]:
+        - generic [ref=e824]:
+          - generic [ref=e825]:
+            - paragraph [ref=e826]: B Corp
+            - paragraph [ref=e827]: Made in Europe
+          - link [ref=e828] [cursor=pointer]:
+            - /url: /shop/dopper-original
+            - figure [ref=e829]:
+              - img "Product image" [ref=e830]
+            - figure [ref=e831]:
+              - img "Product image" [ref=e832]
+          - generic [ref=e833]:
+            - generic [ref=e834]:
+              - link "Dopper original" [ref=e835] [cursor=pointer]:
+                - /url: /shop/dopper-original
+                - paragraph [ref=e836]: Dopper original
+              - paragraph [ref=e837]: From 9,25 €
+            - button "Add to favorites" [ref=e838] [cursor=pointer]:
+              - img [ref=e840]
+      - listitem [ref=e843]:
+        - generic [ref=e844]:
+          - paragraph [ref=e846]: Fast shipping
+          - link [ref=e847] [cursor=pointer]:
+            - /url: /shop/insulated-steel-bottle
+            - figure [ref=e848]:
+              - img "Product image" [ref=e849]
+            - figure [ref=e850]:
+              - img "Product image" [ref=e851]
+          - generic [ref=e852]:
+            - generic [ref=e853]:
+              - link "Insulated steel bottle" [ref=e854] [cursor=pointer]:
+                - /url: /shop/insulated-steel-bottle
+                - paragraph [ref=e855]: Insulated steel bottle
+              - paragraph [ref=e856]: From 7,05 €
+            - button "Add to favorites" [ref=e857] [cursor=pointer]:
+              - img [ref=e859]
+      - listitem [ref=e862]:
+        - generic [ref=e863]:
+          - link [ref=e864] [cursor=pointer]:
+            - /url: /shop/kinto-day-off
+            - figure [ref=e865]:
+              - img "Product image" [ref=e866]
+            - figure [ref=e867]:
+              - img "Product image" [ref=e868]
+          - generic [ref=e869]:
+            - generic [ref=e870]:
+              - link "Kinto day off" [ref=e871] [cursor=pointer]:
+                - /url: /shop/kinto-day-off
+                - paragraph [ref=e872]: Kinto day off
+              - paragraph [ref=e873]: From 28,25 €
+            - button "Add to favorites" [ref=e874] [cursor=pointer]:
+              - img [ref=e876]
+      - listitem [ref=e879]:
+        - generic [ref=e880]:
+          - link [ref=e881] [cursor=pointer]:
+            - /url: /shop/kinto-to-go
+            - figure [ref=e882]:
+              - img "Product image" [ref=e883]
+            - figure [ref=e884]:
+              - img "Product image" [ref=e885]
+          - generic [ref=e886]:
+            - generic [ref=e887]:
+              - link "Kinto to go" [ref=e888] [cursor=pointer]:
+                - /url: /shop/kinto-to-go
+                - paragraph [ref=e889]: Kinto to go
+              - paragraph [ref=e890]: From 27,42 €
+            - button "Add to favorites" [ref=e891] [cursor=pointer]:
+              - img [ref=e893]
+      - listitem [ref=e896]:
+        - generic [ref=e897]:
+          - link [ref=e898] [cursor=pointer]:
+            - /url: /shop/nalgene-bottle-sustain
+            - figure [ref=e899]:
+              - img "Product image" [ref=e900]
+            - figure [ref=e901]:
+              - img "Product image" [ref=e902]
+          - generic [ref=e903]:
+            - generic [ref=e904]:
+              - link "Nalgene bottle sustain" [ref=e905] [cursor=pointer]:
+                - /url: /shop/nalgene-bottle-sustain
+                - paragraph [ref=e906]: Nalgene bottle sustain
+              - paragraph [ref=e907]: From 13,69 €
+            - button "Add to favorites" [ref=e908] [cursor=pointer]:
+              - img [ref=e910]
+      - listitem [ref=e913]:
+        - generic [ref=e914]:
+          - paragraph [ref=e916]: Made in Europe
+          - link [ref=e917] [cursor=pointer]:
+            - /url: /shop/sigg-traveller-recycled
+            - figure [ref=e918]:
+              - img "Product image" [ref=e919]
+            - figure [ref=e920]:
+              - img "Product image" [ref=e921]
+          - generic [ref=e922]:
+            - generic [ref=e923]:
+              - link "Sigg traveller recycled" [ref=e924] [cursor=pointer]:
+                - /url: /shop/sigg-traveller-recycled
+                - paragraph [ref=e925]: Sigg traveller recycled
+              - paragraph [ref=e926]: From 11,91 €
+            - button "Add to favorites" [ref=e927] [cursor=pointer]:
+              - img [ref=e929]
+      - listitem [ref=e932]:
+        - generic [ref=e933]:
+          - paragraph [ref=e935]: Made in Europe
+          - link [ref=e936] [cursor=pointer]:
+            - /url: /shop/sigg-traveller
+            - figure [ref=e937]:
+              - img "Product image" [ref=e938]
+            - figure [ref=e939]:
+              - img "Product image" [ref=e940]
+          - generic [ref=e941]:
+            - generic [ref=e942]:
+              - link "Sigg traveller" [ref=e943] [cursor=pointer]:
+                - /url: /shop/sigg-traveller
+                - paragraph [ref=e944]: Sigg traveller
+              - paragraph [ref=e945]: From 10,87 €
+            - button "Add to favorites" [ref=e946] [cursor=pointer]:
+              - img [ref=e948]
+      - listitem [ref=e951]:
+        - generic [ref=e952]:
+          - paragraph [ref=e954]: Fast shipping
+          - link [ref=e955] [cursor=pointer]:
+            - /url: /shop/steel-mug
+            - figure [ref=e956]:
+              - img "Product image" [ref=e957]
+            - figure [ref=e958]:
+              - img "Product image" [ref=e959]
+          - generic [ref=e960]:
+            - generic [ref=e961]:
+              - link "Steel mug" [ref=e962] [cursor=pointer]:
+                - /url: /shop/steel-mug
+                - paragraph [ref=e963]: Steel mug
+              - paragraph [ref=e964]: From 8,49 €
+            - button "Add to favorites" [ref=e965] [cursor=pointer]:
+              - img [ref=e967]
+    - generic [ref=e970]:
+      - generic [ref=e972]:
+        - generic [ref=e975]:
+          - heading "Custom drinkware for any occasion" [level=2] [ref=e976]
+          - generic [ref=e977]:
+            - paragraph [ref=e978]: "Drinkware is one of the few branded items people use multiple times a day: at their desk, during commutes, at the gym, or while working from home. And as always, quality makes all the difference. Poor insulation, leaking lids, fragile materials… the wrong choice gets replaced fast."
+            - paragraph [ref=e979]: At Merchery, custom drinkware is designed for style, performance, and durability. From insulated bottles and tumblers to classic mugs, lightweight cups, and practical accessories, every product is selected to fit naturally into everyday routines.
+            - paragraph [ref=e980]: Wondering what truly separates great merch from forgettable giveaways?
+            - paragraph [ref=e981]:
+              - text: Discover
+              - 'link "The truth about custom merch quality: 6 myths debunked" [ref=e982] [cursor=pointer]':
+                - /url: https://merchery.co/blog/the-truth-about-custom-merch-quality-6-myths-debunked
+              - text: and see why investing in quality always pays off.
+        - generic [ref=e983]:
+          - figure:
+            - img "Kinto_porcelain_mug_MERCHERY_2025_JANUARY_14330_1_1_ef3d28af11.jpg" [ref=e984]
+      - generic [ref=e986]:
+        - generic [ref=e989]:
+          - heading "Designed for high performance" [level=2] [ref=e990]
+          - generic [ref=e991]:
+            - paragraph [ref=e992]: Great drinkware starts with materials that deliver. We prioritize high-grade stainless steel, durable recycled materials, BPA-free plastics, and carefully sourced components that preserve taste and withstand daily use.
+            - paragraph [ref=e993]: Whether your focus is thermal performance, lightweight portability, minimalist design, or reduced environmental impact, we help you select drinkware that reflects your brand values and keeps up with modern work lifestyles.
+            - paragraph [ref=e994]:
+              - text: Transparency and responsibility across our
+              - link "value chain" [ref=e995] [cursor=pointer]:
+                - /url: https://merchery.co/about/value-chain
+              - text: matter to us, from sourcing to production and beyond.
+        - generic [ref=e996]:
+          - figure:
+            - img "MERCHERY_MAY_2022_Sport_bottle_USA_details_1_e0fca22e86.jpg" [ref=e997]
+      - generic [ref=e999]:
+        - generic [ref=e1002]:
+          - heading "Partnering with iconic drinkware brands" [level=2] [ref=e1003]
+          - generic [ref=e1004]:
+            - paragraph [ref=e1005]: When it comes to drinkware, materials and performance truly matter. That’s why we collaborate with some of the most trusted and recognisable brands in the industry. Names known for setting the standard in durability, innovation, and design.
+            - paragraph [ref=e1006]:
+              - text: We proudly partner with brands like
+              - link "Memobottle" [ref=e1007] [cursor=pointer]:
+                - /url: https://merchery.co/shop/c/brands/brands-memobottle
+              - text: ","
+              - link "Nalgene" [ref=e1008] [cursor=pointer]:
+                - /url: https://merchery.co/shop/c/brands/brands-nalgene
+              - text: ","
+              - link "Stanley" [ref=e1009] [cursor=pointer]:
+                - /url: https://merchery.co/shop/c/brands/brands-stanley
+              - text: ","
+              - link "Dopper" [ref=e1010] [cursor=pointer]:
+                - /url: https://merchery.co/shop/c/brands/brands-dopper
+              - text: ", and many more."
+            - paragraph [ref=e1011]: Choosing these iconic brands means offering items your teams and clients already know, trust, and genuinely want to use. Beyond performance, they also share a commitment to reducing single-use waste and promoting more responsible consumption.
+            - paragraph [ref=e1012]: Because great branding starts with great products.
+          - link "Contact us" [ref=e1013] [cursor=pointer]:
+            - /url: https://merchery.co/contact
+        - generic [ref=e1014]:
+          - figure:
+            - img "MERCHERY_Memobottle_stainless_steel_A6_white_closeup_1_97f9a7b4b3.jpg" [ref=e1015]
+      - generic [ref=e1017]:
+        - generic [ref=e1020]:
+          - heading "Simply done right" [level=2] [ref=e1021]
+          - generic [ref=e1022]:
+            - paragraph [ref=e1023]: "A well-designed bottle, mug, or tumbler quickly becomes part of someone’s daily rhythm: refilled, carried, and seen again and again. Few branded items offer this level of authentic, repeated exposure."
+            - paragraph [ref=e1024]: Personalise your drinkware with your logo, message, or design using premium techniques that ensure a clean, long-lasting finish. The result is a practical object that strengthens brand recognition with every sip.
+            - paragraph [ref=e1025]: Not sure which method best suits your product?
+            - paragraph [ref=e1026]:
+              - text: Explore our
+              - link "guide to customisation techniques" [ref=e1027] [cursor=pointer]:
+                - /url: https://merchery.co/blog/how-to-choose-the-right-customisation-technique-for-you-merch
+              - text: and choose intentionally.
+            - paragraph [ref=e1028]: From sleek bottles and custom tumblers to evergreen mugs, event cups, and smart accessories, our curated selection fits every need, occasion, and budget.
+            - paragraph [ref=e1029]:
+              - text: Ready to get started?
+              - link "Browse our premium drinkware collection" [ref=e1030] [cursor=pointer]:
+                - /url: https://merchery.co/shop/c/drinkware
+              - text: ", we’ll support you from product selection to customisation and delivery."
+          - link "Contact us" [ref=e1031] [cursor=pointer]:
+            - /url: https://merchery.co/contact
+        - generic [ref=e1032]:
+          - figure:
+            - img "1_1_6b8bb0571b.png" [ref=e1033]
+    - generic [ref=e1034]:
+      - complementary "Frequently asked questions" [ref=e1035]:
+        - generic [ref=e1036]:
+          - heading "Frequently asked questions" [level=2] [ref=e1037]
+          - paragraph [ref=e1038]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e1040] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e1041]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e1043]:
+            - button "How can I find out more about your products?" [ref=e1044] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e1050]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e1051] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e1057]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e1058] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e1064]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e1065] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e1071]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e1072] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e1078]:
+            - button "Where do you ship?" [ref=e1079] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e1085]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e1086] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e1091]:
+        - generic [ref=e1092]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e1093]
+          - generic [ref=e1094]:
+            - textbox "Enter your email address" [ref=e1096]
+            - button "Subscribe" [ref=e1097] [cursor=pointer]
+  - alert [ref=e1098]
+  - button "Open chat" [ref=e1099] [cursor=pointer]:
+    - img [ref=e1101]

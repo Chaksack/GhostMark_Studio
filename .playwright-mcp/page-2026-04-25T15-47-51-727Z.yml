@@ -1,0 +1,257 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - heading "500" [level=1] [ref=e5]
+    - heading "Server Error" [level=2] [ref=e6]
+    - paragraph [ref=e7]: useMedusaClient is not defined
+  - status [ref=e8]
+  - iframe [ref=e9]:
+    - generic [ref=f22e2]:
+      - banner [ref=f22e3]:
+        - generic [ref=f22e5]:
+          - checkbox [ref=f22e6]
+          - generic "Light mode" [ref=f22e8] [cursor=pointer]:
+            - img [ref=f22e9]
+      - generic [ref=f22e13]:
+        - heading "Error" [level=4] [ref=f22e14]
+        - heading "An error has occurred" [level=1] [ref=f22e15]
+      - heading "useMedusaClient is not defined Copy error with stack trace to clipboard" [level=2] [ref=f22e19]:
+        - img [ref=f22e21]
+        - generic [ref=f22e23]: useMedusaClient is not defined
+        - button "Copy error with stack trace to clipboard" [ref=f22e24] [cursor=pointer]:
+          - img [ref=f22e25]
+      - generic [ref=f22e30]:
+        - heading "Stack Trace" [level=3] [ref=f22e33]
+        - generic [ref=f22e35]:
+          - generic [ref=f22e36]:
+            - generic [ref=f22e38]:
+              - checkbox "View All Frames" [ref=f22e39]
+              - generic [ref=f22e40]: View All Frames
+            - generic [ref=f22e42]:
+              - button "Pretty" [ref=f22e43]
+              - button "Raw" [ref=f22e44]
+          - list [ref=f22e47]:
+            - listitem [ref=f22e48]:
+              - generic [ref=f22e49]:
+                - button "app/pages/index.vue in setup at line 41:17" [ref=f22e50]:
+                  - link "app/pages/index.vue" [ref=f22e51] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/app/pages/index.vue:41
+                  - generic [ref=f22e52]:
+                    - text: in
+                    - code [ref=f22e53]: setup
+                  - generic [ref=f22e54]:
+                    - text: at line
+                    - code [ref=f22e55]: 41:17
+                - generic [ref=f22e56]:
+                  - generic [ref=f22e57]: In App
+                  - button [ref=f22e58]:
+                    - img [ref=f22e59]
+              - code [ref=f22e63]:
+                - generic [ref=f22e77]: "<script setup lang=\"ts\"> useHead({ title: 'Home' }) const sdk = useMedusaClient() const regionState = useRegion() // Resolve the active region BEFORE listing products. Without `region_id` on // the request, Medusa returns variants with `calculated_price = null`, which // silently strips every \"From £X\" price tag from the BestSellers and // RecentlyAdded grids on the homepage. Same fix as `/products`."
+            - listitem [ref=f22e78]:
+              - generic [ref=f22e79]:
+                - button "app/pages/index.vue in _sfc_main.setup at line 113:23" [ref=f22e80]:
+                  - link "app/pages/index.vue" [ref=f22e81] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/app/pages/index.vue:113
+                  - generic [ref=f22e82]:
+                    - text: in
+                    - code [ref=f22e83]: _sfc_main.setup
+                  - generic [ref=f22e84]:
+                    - text: at line
+                    - code [ref=f22e85]: 113:23
+                - generic [ref=f22e86]:
+                  - generic [ref=f22e87]: In App
+                  - button [ref=f22e88]:
+                    - img [ref=f22e89]
+            - listitem [ref=f22e91]:
+              - generic [ref=f22e92]:
+                - button "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js in callWithErrorHandling at line 200:19" [ref=f22e93]:
+                  - link "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js" [ref=f22e94] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:200
+                  - generic [ref=f22e95]:
+                    - text: in
+                    - code [ref=f22e96]: callWithErrorHandling
+                  - generic [ref=f22e97]:
+                    - text: at line
+                    - code [ref=f22e98]: 200:19
+                - button [ref=f22e100]:
+                  - img [ref=f22e101]
+            - listitem [ref=f22e103]:
+              - generic [ref=f22e104]:
+                - button "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js in setupStatefulComponent at line 8031:25" [ref=f22e105]:
+                  - link "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js" [ref=f22e106] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:8031
+                  - generic [ref=f22e107]:
+                    - text: in
+                    - code [ref=f22e108]: setupStatefulComponent
+                  - generic [ref=f22e109]:
+                    - text: at line
+                    - code [ref=f22e110]: 8031:25
+                - button [ref=f22e112]:
+                  - img [ref=f22e113]
+            - listitem [ref=f22e115]:
+              - generic [ref=f22e116]:
+                - button "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js in setupComponent at line 7993:36" [ref=f22e117]:
+                  - link "node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js" [ref=f22e118] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+runtime-core@3.5.30/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:7993
+                  - generic [ref=f22e119]:
+                    - text: in
+                    - code [ref=f22e120]: setupComponent
+                  - generic [ref=f22e121]:
+                    - text: at line
+                    - code [ref=f22e122]: 7993:36
+                - button [ref=f22e124]:
+                  - img [ref=f22e125]
+            - listitem [ref=f22e127]:
+              - generic [ref=f22e128]:
+                - button "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js in renderComponentVNode at line 675:15" [ref=f22e129]:
+                  - link "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js" [ref=f22e130] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:675
+                  - generic [ref=f22e131]:
+                    - text: in
+                    - code [ref=f22e132]: renderComponentVNode
+                  - generic [ref=f22e133]:
+                    - text: at line
+                    - code [ref=f22e134]: 675:15
+                - button [ref=f22e136]:
+                  - img [ref=f22e137]
+            - listitem [ref=f22e139]:
+              - generic [ref=f22e140]:
+                - button "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js in renderVNode at line 809:14" [ref=f22e141]:
+                  - link "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js" [ref=f22e142] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:809
+                  - generic [ref=f22e143]:
+                    - text: in
+                    - code [ref=f22e144]: renderVNode
+                  - generic [ref=f22e145]:
+                    - text: at line
+                    - code [ref=f22e146]: 809:14
+                - button [ref=f22e148]:
+                  - img [ref=f22e149]
+            - listitem [ref=f22e151]:
+              - generic [ref=f22e152]:
+                - button "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js in renderComponentSubTree at line 760:7" [ref=f22e153]:
+                  - link "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js" [ref=f22e154] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:760
+                  - generic [ref=f22e155]:
+                    - text: in
+                    - code [ref=f22e156]: renderComponentSubTree
+                  - generic [ref=f22e157]:
+                    - text: at line
+                    - code [ref=f22e158]: 760:7
+                - button [ref=f22e160]:
+                  - img [ref=f22e161]
+            - listitem [ref=f22e163]:
+              - generic [ref=f22e164]:
+                - button "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js in renderComponentVNode at line 694:12" [ref=f22e165]:
+                  - link "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js" [ref=f22e166] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:694
+                  - generic [ref=f22e167]:
+                    - text: in
+                    - code [ref=f22e168]: renderComponentVNode
+                  - generic [ref=f22e169]:
+                    - text: at line
+                    - code [ref=f22e170]: 694:12
+                - button [ref=f22e172]:
+                  - img [ref=f22e173]
+            - listitem [ref=f22e175]:
+              - generic [ref=f22e176]:
+                - button "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js in renderVNode at line 809:14" [ref=f22e177]:
+                  - link "node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js" [ref=f22e178] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@vue+server-renderer@3.5.30_vue@3.5.30_typescript@5.9.3_/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:809
+                  - generic [ref=f22e179]:
+                    - text: in
+                    - code [ref=f22e180]: renderVNode
+                  - generic [ref=f22e181]:
+                    - text: at line
+                    - code [ref=f22e182]: 809:14
+                - button [ref=f22e184]:
+                  - img [ref=f22e185]
+      - generic [ref=f22e188]:
+        - heading "Error Cause" [level=3] [ref=f22e191]
+        - code [ref=f22e196]:
+          - generic [ref=f22e197]:
+            - text: "ReferenceError {"
+            - button "▼" [ref=f22e198]:
+              - generic [ref=f22e199]: ▼
+            - text: "}"
+      - generic [ref=f22e201]:
+        - heading "Request" [level=3] [ref=f22e203]
+        - generic [ref=f22e204]:
+          - generic [ref=f22e205]:
+            - heading "url" [level=4] [ref=f22e206]
+            - text: http://localhost:3000/
+          - generic [ref=f22e207]:
+            - heading "method" [level=4] [ref=f22e208]
+            - text: GET
+          - generic [ref=f22e209]:
+            - heading "headers" [level=4] [ref=f22e210]
+            - table [ref=f22e211]:
+              - rowgroup [ref=f22e212]:
+                - row "host localhost:3000" [ref=f22e213]:
+                  - cell "host" [ref=f22e214]
+                  - cell "localhost:3000" [ref=f22e215]
+                - row "connection close" [ref=f22e216]:
+                  - cell "connection" [ref=f22e217]
+                  - cell "close" [ref=f22e218]
+                - row "sec-ch-ua \"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"" [ref=f22e219]:
+                  - cell "sec-ch-ua" [ref=f22e220]
+                  - cell "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"" [ref=f22e221]
+                - row "sec-ch-ua-mobile ?0" [ref=f22e222]:
+                  - cell "sec-ch-ua-mobile" [ref=f22e223]
+                  - cell "?0" [ref=f22e224]
+                - row "sec-ch-ua-platform \"macOS\"" [ref=f22e225]:
+                  - cell "sec-ch-ua-platform" [ref=f22e226]
+                  - cell "\"macOS\"" [ref=f22e227]
+                - row "upgrade-insecure-requests 1" [ref=f22e228]:
+                  - cell "upgrade-insecure-requests" [ref=f22e229]
+                  - cell "1" [ref=f22e230]
+                - row "user-agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=f22e231]:
+                  - cell "user-agent" [ref=f22e232]
+                  - cell "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=f22e233]
+                - row "accept text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=f22e234]:
+                  - cell "accept" [ref=f22e235]
+                  - cell "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=f22e236]
+                - row "sec-fetch-site none" [ref=f22e237]:
+                  - cell "sec-fetch-site" [ref=f22e238]
+                  - cell "none" [ref=f22e239]
+                - row "sec-fetch-mode navigate" [ref=f22e240]:
+                  - cell "sec-fetch-mode" [ref=f22e241]
+                  - cell "navigate" [ref=f22e242]
+                - row "sec-fetch-user ?1" [ref=f22e243]:
+                  - cell "sec-fetch-user" [ref=f22e244]
+                  - cell "?1" [ref=f22e245]
+                - row "sec-fetch-dest document" [ref=f22e246]:
+                  - cell "sec-fetch-dest" [ref=f22e247]
+                  - cell "document" [ref=f22e248]
+                - row "accept-encoding gzip, deflate, br, zstd" [ref=f22e249]:
+                  - cell "accept-encoding" [ref=f22e250]
+                  - cell "gzip, deflate, br, zstd" [ref=f22e251]
+                - row "accept-language en-GB,en-US;q=0.9,en;q=0.8" [ref=f22e252]:
+                  - cell "accept-language" [ref=f22e253]
+                  - cell "en-GB,en-US;q=0.9,en;q=0.8" [ref=f22e254]
+                - 'row "cookie Object { ▼ }" [ref=f22e255]':
+                  - cell "cookie" [ref=f22e256]
+                  - 'cell "Object { ▼ }" [ref=f22e257]':
+                    - code [ref=f22e260]:
+                      - generic [ref=f22e261]:
+                        - text: "Object {"
+                        - button "▼" [ref=f22e262]:
+                          - generic [ref=f22e263]: ▼
+                        - text: "}"
+                - row "x-forwarded-for ::1" [ref=f22e264]:
+                  - cell "x-forwarded-for" [ref=f22e265]
+                  - cell "::1" [ref=f22e266]
+                - row "x-forwarded-port 3000" [ref=f22e267]:
+                  - cell "x-forwarded-port" [ref=f22e268]
+                  - cell "3000" [ref=f22e269]
+                - row "x-forwarded-proto http" [ref=f22e270]:
+                  - cell "x-forwarded-proto" [ref=f22e271]
+                  - cell "http" [ref=f22e272]
+  - iframe [ref=e10]:
+    - generic [ref=f23e4]:
+      - heading "500" [level=1] [ref=f23e5]
+      - heading "Server Error" [level=2] [ref=f23e6]
+      - paragraph [ref=f23e7]: useMedusaClient is not defined
+  - button "Toggle detailed error view Hide error page preview" [expanded] [ref=e11]:
+    - generic [ref=e12]: Toggle detailed error view
+    - button "Hide error page preview" [ref=e13] [cursor=pointer]: ×

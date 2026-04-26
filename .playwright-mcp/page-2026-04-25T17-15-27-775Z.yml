@@ -1,0 +1,296 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f137e2]:
+            - link "Trustpilot reviews" [ref=f137e3] [cursor=pointer]:
+              - /url: https://uk.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f137e4]: Excellent
+              - generic [ref=f137e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f137e9]
+            - generic [ref=f137e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f137e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /en-GB/about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /en-GB/work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /en-GB/club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /en-GB/contact
+          - listitem [ref=e16]:
+            - button "United Kingdom | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e30]: United Kingdom
+                - generic [ref=e31]: "|"
+                - generic [ref=e32]: English
+                - img [ref=e33]
+      - navigation [ref=e35]:
+        - link [ref=e37] [cursor=pointer]:
+          - /url: /en-GB
+          - img [ref=e38]
+        - generic [ref=e41]:
+          - textbox "search input" [ref=e42]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e43] [cursor=pointer]:
+            - img [ref=e45]
+        - generic [ref=e48]:
+          - generic "not logged in user account" [ref=e49] [cursor=pointer]:
+            - img [ref=e51]
+          - link "favorites" [ref=e56] [cursor=pointer]:
+            - /url: /en-GB/shop/c/favorites
+            - generic "favorites" [ref=e57]:
+              - img [ref=e58]
+          - link:
+            - /url: /en-GB/contact
+          - link "cart icon" [ref=e60] [cursor=pointer]:
+            - /url: /en-GB/checkout/cart
+            - button "cart icon" [ref=e62]:
+              - generic "cart icon" [ref=e64]:
+                - img [ref=e66]
+      - navigation [ref=e68]:
+        - list [ref=e69]:
+          - listitem [ref=e70]:
+            - link "Apparel" [ref=e71] [cursor=pointer]:
+              - /url: /en-GB/shop/c/apparel
+          - listitem [ref=e72]:
+            - link "Bags" [ref=e73] [cursor=pointer]:
+              - /url: /en-GB/shop/c/bags
+          - listitem [ref=e74]:
+            - link "Headwear" [ref=e75] [cursor=pointer]:
+              - /url: /en-GB/shop/c/headwear
+          - listitem [ref=e76]:
+            - link "Office" [ref=e77] [cursor=pointer]:
+              - /url: /en-GB/shop/c/office
+          - listitem [ref=e78]:
+            - link "Drinkware" [ref=e79] [cursor=pointer]:
+              - /url: /en-GB/shop/c/drinkware
+          - listitem [ref=e80]:
+            - link "Home" [ref=e81] [cursor=pointer]:
+              - /url: /en-GB/shop/c/home
+          - listitem [ref=e82]:
+            - link "Wellness" [ref=e83] [cursor=pointer]:
+              - /url: /en-GB/shop/c/wellness
+          - listitem [ref=e84]:
+            - link "Others" [ref=e85] [cursor=pointer]:
+              - /url: /en-GB/shop/c/others
+          - listitem [ref=e86]:
+            - link "Discover" [ref=e87] [cursor=pointer]:
+              - /url: /en-GB/shop/c/discover
+          - listitem [ref=e88]:
+            - link "Brands" [ref=e89] [cursor=pointer]:
+              - /url: /en-GB/shop/c/brands
+    - generic [ref=e90]:
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - heading "Please, log in" [level=1] [ref=e94]
+          - paragraph [ref=e95]: You already have an account?
+          - paragraph [ref=e96]: Log in for a quick checkout and access to your orders history.
+        - generic [ref=e97]:
+          - textbox "login form email input" [ref=e99]:
+            - /placeholder: Enter your email address
+          - generic [ref=e100]:
+            - generic [ref=e102]:
+              - textbox "login form password input" [ref=e103]:
+                - /placeholder: Enter password
+              - button "login form password show/hide button" [ref=e104] [cursor=pointer]:
+                - generic [ref=e105]:
+                  - img
+            - button "Forgot your password?" [ref=e106] [cursor=pointer]
+          - generic [ref=e107]:
+            - checkbox "Stay logged in" [ref=e108] [cursor=pointer]
+            - checkbox
+            - generic [ref=e109]: Stay logged in
+          - button "login form submit button" [ref=e110] [cursor=pointer]: Log in
+          - generic [ref=e111]: or
+          - generic [ref=e114]:
+            - button "Continue with Google. Opens in new tab" [ref=e116] [cursor=pointer]:
+              - generic [ref=e118]:
+                - img [ref=e120]
+                - generic [ref=e127]: Continue with Google
+            - iframe
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - heading "New to Merchery?" [level=1] [ref=e131]
+          - paragraph [ref=e132]: To continue shopping, please create an account.
+          - paragraph [ref=e133]: This will allow you to follow all your orders and shipments.
+        - generic [ref=e134]:
+          - textbox "create account form email input" [ref=e136]:
+            - /placeholder: Enter your email address
+          - generic [ref=e138]:
+            - textbox "create account form password input" [ref=e139]:
+              - /placeholder: Enter password
+            - button "create account form password show/hide button" [ref=e140] [cursor=pointer]:
+              - generic [ref=e141]:
+                - img
+          - generic [ref=e143]:
+            - textbox "create account form password confirmation input" [ref=e144]:
+              - /placeholder: Enter password confirmation
+            - button "create account form password confirmation show/hide button" [ref=e145] [cursor=pointer]:
+              - generic [ref=e146]:
+                - img
+          - generic [ref=e147]:
+            - generic [ref=e148]:
+              - checkbox "Subscribe to our newsletter" [ref=e149] [cursor=pointer]
+              - checkbox
+              - generic [ref=e150]: Subscribe to our newsletter
+            - generic [ref=e152]:
+              - checkbox "I have read and accepted the Terms and conditions for this website" [ref=e153] [cursor=pointer]
+              - checkbox
+              - generic [ref=e154]:
+                - text: I have read and accepted the
+                - link "Terms and conditions" [ref=e155] [cursor=pointer]:
+                  - /url: /terms
+                - text: for this website
+          - button "create account form submit button" [ref=e156] [cursor=pointer]: Create an account
+  - alert [ref=e157]: Log in | Merchery
+  - contentinfo [ref=e158]:
+    - generic [ref=e159]:
+      - generic "Social networks" [ref=e160]:
+        - generic [ref=e161]: "FOLLOW US:"
+        - list [ref=e162]:
+          - listitem [ref=e163]:
+            - link "Instagram" [ref=e164] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e165]:
+            - link "LinkedIn" [ref=e166] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e168]:
+        - text: Based in
+        - link "Brussels" [ref=e169] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e170] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e171] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - list [ref=e172]:
+      - listitem [ref=e173]:
+        - navigation "Primary pages" [ref=e174]:
+          - generic [ref=e175]: Company
+          - list [ref=e176]:
+            - listitem [ref=e177]:
+              - link "About us" [ref=e178] [cursor=pointer]:
+                - /url: /en-GB/about
+            - listitem [ref=e179]:
+              - link "Environmental footprint" [ref=e180] [cursor=pointer]:
+                - /url: /en-GB/about/environmental-footprint
+            - listitem [ref=e181]:
+              - link "Value chain" [ref=e182] [cursor=pointer]:
+                - /url: /en-GB/about/value-chain
+            - listitem [ref=e183]:
+              - link "People & culture" [ref=e184] [cursor=pointer]:
+                - /url: /en-GB/about/people-and-culture
+      - listitem [ref=e185]:
+        - navigation "Primary pages" [ref=e186]:
+          - generic [ref=e187]: Services
+          - list [ref=e188]:
+            - listitem [ref=e189]:
+              - link "Shop all" [ref=e190] [cursor=pointer]:
+                - /url: /en-GB/shop
+            - listitem [ref=e191]:
+              - link "Bespoke" [ref=e192] [cursor=pointer]:
+                - /url: /en-GB/bespoke
+            - listitem [ref=e193]:
+              - link "Platform" [ref=e194] [cursor=pointer]:
+                - /url: /en-GB/platform
+            - listitem [ref=e195]:
+              - link "Agencies" [ref=e196] [cursor=pointer]:
+                - /url: /en-GB/club
+      - listitem [ref=e197]:
+        - navigation "Primary pages" [ref=e198]:
+          - generic [ref=e199]: Inspiration
+          - list [ref=e200]:
+            - listitem [ref=e201]:
+              - link "Blog" [ref=e202] [cursor=pointer]:
+                - /url: /en-GB/blog
+            - listitem [ref=e203]:
+              - link "Cases" [ref=e204] [cursor=pointer]:
+                - /url: /en-GB/work
+      - listitem [ref=e205]:
+        - navigation "Primary pages" [ref=e206]:
+          - generic [ref=e207]: Let us help
+          - list [ref=e208]:
+            - listitem [ref=e209]:
+              - link "FAQ" [ref=e210] [cursor=pointer]:
+                - /url: /en-GB/faq
+            - listitem [ref=e211]:
+              - link "Terms & conditions" [ref=e212] [cursor=pointer]:
+                - /url: /en-GB/terms
+            - listitem [ref=e213]:
+              - link "Privacy" [ref=e214] [cursor=pointer]:
+                - /url: /en-GB/privacy
+            - listitem [ref=e215]:
+              - link "Returns" [ref=e216] [cursor=pointer]:
+                - /url: /en-GB/terms
+            - listitem [ref=e217]:
+              - link "Contact us" [ref=e218] [cursor=pointer]:
+                - /url: /en-GB/contact
+      - listitem [ref=e219]:
+        - navigation "Primary pages" [ref=e220]:
+          - generic [ref=e221]: Account
+          - list [ref=e222]:
+            - listitem [ref=e223]:
+              - link "Orders" [ref=e224] [cursor=pointer]:
+                - /url: /en-GB/account/orders
+            - listitem [ref=e225]:
+              - link "Preferences" [ref=e226] [cursor=pointer]:
+                - /url: /en-GB/account/preferences/information
+            - listitem [ref=e227]:
+              - link "Saved projects" [ref=e228] [cursor=pointer]:
+                - /url: /en-GB/account/projects
+            - listitem [ref=e229]:
+              - link "Invoices" [ref=e230] [cursor=pointer]:
+                - /url: /en-GB/account/preferences/invoices
+    - generic [ref=e231]:
+      - list [ref=e232]:
+        - listitem [ref=e233]:
+          - figure [ref=e234]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e235]
+        - listitem [ref=e236]:
+          - figure [ref=e237]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e238]
+      - generic [ref=e239]:
+        - generic [ref=e240]: "Secure payments:"
+        - list [ref=e241]:
+          - listitem [ref=e242]:
+            - figure [ref=e243]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e244]
+          - listitem [ref=e245]:
+            - figure [ref=e246]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e247]
+          - listitem [ref=e248]:
+            - figure [ref=e249]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e250]
+          - listitem [ref=e251]:
+            - figure [ref=e252]:
+              - img "Visa_613308d9b9.svg" [ref=e253]
+          - listitem [ref=e254]:
+            - figure [ref=e255]:
+              - img "American_express_e0a23a5002.svg" [ref=e256]
+  - button "Open chat" [ref=e257] [cursor=pointer]:
+    - img [ref=e259]
+  - generic [ref=e261]:
+    - paragraph [ref=e262]: You have reached the UK website, but it looks like you are visiting from another region.
+    - generic [ref=e263]:
+      - generic [ref=e264]:
+        - text: Please choose your location
+        - combobox [ref=e265] [cursor=pointer]:
+          - generic [ref=e266]:
+            - img [ref=e267]
+            - generic: Europe
+          - img [ref=e270]
+      - button "Confirm" [ref=e272] [cursor=pointer]
+    - button [ref=e273] [cursor=pointer]:
+      - img [ref=e275]
+  - iframe [ref=e277]:
+    

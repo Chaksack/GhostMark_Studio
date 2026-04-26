@@ -1,0 +1,554 @@
+- generic [active] [ref=e1]:
+  - banner "navigation desktop" [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - link "Shop all products" [ref=e8] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e10]:
+        - textbox "search input" [ref=e11]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e12] [cursor=pointer]:
+          - img [ref=e14]
+      - generic [ref=e17]:
+        - button "| English" [ref=e19] [cursor=pointer]:
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e146]: "|"
+            - generic [ref=e147]: English
+        - generic [ref=e148]:
+          - link "favorites" [ref=e149] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e150]:
+              - img [ref=e151]
+          - link "cart icon" [ref=e651] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon" [ref=e653]:
+              - generic "cart icon" [ref=e655]:
+                - img [ref=e657]
+          - link:
+            - /url: /contact
+          - generic "not logged in user account" [ref=e158] [cursor=pointer]:
+            - img [ref=e160]
+  - article [ref=e165]:
+    - generic "product customization container" [ref=e166]:
+      - generic [ref=e168]:
+        - navigation "breadcrumb" [ref=e170]:
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "All products" [ref=e173] [cursor=pointer]:
+                - /url: /shop
+              - generic [ref=e174]: /
+            - listitem [ref=e175]:
+              - link "Quickship" [ref=e176] [cursor=pointer]:
+                - /url: /shop/c/quickship
+              - generic [ref=e177]: /
+            - listitem [ref=e178]:
+              - link "Quickship" [ref=e179] [cursor=pointer]:
+                - /url: /shop/c/quickship/quickship-quickship
+        - generic [ref=e182]:
+          - button "Previous slide" [ref=e183]:
+            - generic [ref=e184]: Go to previous slide
+          - button "Next slide" [ref=e185]:
+            - generic [ref=e186]: Go to next slide
+          - generic [ref=e188]:
+            - group "5 / 5" [ref=e189]:
+              - generic [ref=e190]:
+                - figure
+            - group "1 / 5" [ref=e191]:
+              - generic [ref=e192]:
+                - figure
+            - group "2 / 5" [ref=e193]:
+              - generic [ref=e194]:
+                - figure
+            - group "3 / 5" [ref=e195]:
+              - generic [ref=e196]:
+                - figure
+            - group "4 / 5" [ref=e197]:
+              - generic [ref=e198]:
+                - figure
+            - group "5 / 5" [ref=e199]:
+              - generic [ref=e200]:
+                - figure
+            - group "1 / 5" [ref=e201]:
+              - generic [ref=e202]:
+                - figure
+          - generic [ref=e203]:
+            - button "Go to slide 1" [ref=e204] [cursor=pointer]
+            - button "Go to slide 2" [ref=e205] [cursor=pointer]
+            - button "Go to slide 3" [ref=e206] [cursor=pointer]
+            - button "Go to slide 4" [ref=e207] [cursor=pointer]
+            - button "Go to slide 5" [ref=e208] [cursor=pointer]
+      - generic [ref=e209]:
+        - generic [ref=e210]:
+          - generic [ref=e211]:
+            - heading "Stanley camp mug" [level=1] [ref=e214]
+            - generic [ref=e215]:
+              - link "View product details" [ref=e216] [cursor=pointer]:
+                - /url: "#variant-specificities"
+                - text: View product details
+                - generic [ref=e217]:
+                  - img
+              - button "Buy a sample" [ref=e218] [cursor=pointer]:
+                - text: Buy a sample
+                - generic [ref=e219]:
+                  - img
+              - button [ref=e659] [cursor=pointer]:
+                - generic [ref=e660]:
+                  - img
+          - generic "product details for desktop" [ref=e223]:
+            - generic [ref=e224]:
+              - heading "1. Upload your design" [level=2] [ref=e225]
+              - generic "Customization section" [ref=e226]:
+                - generic [ref=e227]:
+                  - tablist [ref=e228]:
+                    - tab "Select location Back" [selected] [ref=e229] [cursor=pointer]: Back
+                  - tabpanel "Select location Back" [ref=e230]:
+                    - generic "Recently added logos" [ref=e661]:
+                      - generic [ref=e662]:
+                        - generic [ref=e663]:
+                          - text: Recently uploaded
+                          - button "test-logo.svg" [ref=e665] [cursor=pointer]:
+                            - img "test-logo.svg" [ref=e666]
+                        - button "Upload new" [ref=e668] [cursor=pointer]:
+                          - text: Upload new
+                          - img
+                      - generic [ref=e670]:
+                        - generic [ref=e671]:
+                          - paragraph [ref=e672]: Save & access your full library
+                          - paragraph [ref=e673]: Login to reuse designs across all your orders
+                        - button "Login or Sign up" [ref=e674] [cursor=pointer]
+            - generic "Quantity selection" [ref=e239]:
+              - heading "2. Quantity" [level=2] [ref=e240]
+              - generic [ref=e241]:
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - textbox "Quantity input" [ref=e245]: "50"
+                    - paragraph [ref=e246]: 30,95 €/piece
+                    - paragraph [ref=e248]: Save 2%
+                    - paragraph [ref=e249]: 1.547,50 €
+                  - paragraph [ref=e250]: Fill in the exact amount you need. The minimum quantity for this product is 25.
+                - generic [ref=e252] [cursor=pointer]:
+                  - paragraph [ref=e253]: 25 pieces
+                  - paragraph [ref=e254]: 31,44 €/piece
+                  - paragraph [ref=e255]: 786,00 €
+                - generic [ref=e257] [cursor=pointer]:
+                  - paragraph [ref=e258]: 50 pieces
+                  - paragraph [ref=e259]: 30,95 €/piece
+                  - paragraph [ref=e261]: Save 2%
+                  - paragraph [ref=e262]: 1.547,50 €
+                - generic [ref=e264] [cursor=pointer]:
+                  - paragraph [ref=e265]: 100 pieces
+                  - paragraph [ref=e266]: 30,48 €/piece
+                  - paragraph [ref=e268]: Save 3%
+                  - paragraph [ref=e269]: 3.048,00 €
+                - generic [ref=e271] [cursor=pointer]:
+                  - paragraph [ref=e272]: 200 pieces
+                  - paragraph [ref=e273]: 29,79 €/piece
+                  - paragraph [ref=e275]: Save 5%
+                  - paragraph [ref=e276]: 5.958,00 €
+                - generic [ref=e278] [cursor=pointer]:
+                  - paragraph [ref=e279]: 500 pieces
+                  - paragraph [ref=e280]: 28,71 €/piece
+                  - paragraph [ref=e282]: Save 9%
+                  - paragraph [ref=e283]: 14.355,00 €
+        - generic [ref=e284]:
+          - generic [ref=e285]:
+            - generic [ref=e286]:
+              - paragraph [ref=e287]: "Lead time:"
+              - paragraph [ref=e288]: Approximately 8-12 business days
+            - generic [ref=e289]:
+              - generic [ref=e290]:
+                - generic [ref=e291]: "Total:"
+                - generic "Total price" [ref=e292]:
+                  - text: 1.547,50 €
+                  - button [ref=e293]:
+                    - generic [ref=e295]:
+                      - img
+              - generic [ref=e296]:
+                - paragraph [ref=e297]: Upload your design to get your final price.
+                - img [ref=e301]
+          - button "Add to cart button" [ref=e308] [cursor=pointer]:
+            - text: Add to cart
+            - generic [ref=e309]:
+              - img
+    - generic [ref=e310]:
+      - link "Excellent | 4.8 out of 5" [ref=e311] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e312]:
+          - img [ref=e313]
+          - paragraph [ref=e319]: Excellent | 4.8 out of 5
+      - generic [ref=e320]:
+        - generic [ref=e321]:
+          - img [ref=e323]
+          - generic [ref=e328]: Worldwide delivery
+        - generic [ref=e329]: EU, UK and USA
+      - generic [ref=e330]:
+        - generic [ref=e331]:
+          - img [ref=e333]
+          - generic [ref=e339]: Quality control
+        - generic [ref=e340]: Each order is double checked before production
+      - generic [ref=e341]:
+        - generic [ref=e342]:
+          - img [ref=e344]
+          - generic [ref=e346]: They trust us!
+        - generic [ref=e347]: Trusted by 2.000+ customers
+    - generic [ref=e348]:
+      - heading "Product details" [level=1] [ref=e349]
+      - generic [ref=e350]:
+        - paragraph [ref=e351]: Wherever adventure takes you, the Stanley camp mug comes along. Durable stainless steel with double-wall insulation keeps coffee hot or drinks cold, whether at your desk, outdoors, or by the fire. The handle and press-fit lid make sipping easy and spill-free. Built for everyday use and ready to be personalised, it brings a timeless outdoor feel to your routine.
+        - generic [ref=e352]:
+          - heading "Product specificities" [level=3] [ref=e354]:
+            - button "Product specificities" [ref=e355] [cursor=pointer]:
+              - heading "Product specificities" [level=1] [ref=e356]
+          - heading "Production" [level=3] [ref=e362]:
+            - button "Production" [ref=e363] [cursor=pointer]:
+              - heading "Production" [level=1] [ref=e364]
+    - generic [ref=e371]:
+      - paragraph [ref=e373]: Since 1913, Stanley has combined smart design with lasting quality, making every sip simple and reliable. The secure press-fit Tritan™ lid keeps drinks splash-free, so you can enjoy them anywhere.
+      - figure [ref=e375]:
+        - img "Product attribute image" [ref=e376]
+    - generic [ref=e377]:
+      - heading "You might also like..." [level=2] [ref=e378]
+      - generic [ref=e380]:
+        - generic [ref=e382]: Go to previous slide
+        - generic [ref=e384]: Go to next slide
+        - generic [ref=e387]:
+          - group "1 / 11" [ref=e388]:
+            - link "Kinto day off From 28.25 € Add to favorites" [ref=e389] [cursor=pointer]:
+              - /url: /shop/kinto-day-off
+              - generic [ref=e390]:
+                - generic [ref=e391]:
+                  - generic [ref=e392]:
+                    - figure:
+                      - img "Kinto day off" [ref=e393]
+                    - figure:
+                      - img "Kinto day off" [ref=e394]
+                  - generic [ref=e395]:
+                    - generic [ref=e396]: Kinto day off
+                    - generic [ref=e397]: From 28.25 €
+                - button "Add to favorites" [ref=e399]:
+                  - img [ref=e401]
+          - group "2 / 11" [ref=e404]:
+            - link "Best sellers Fast shipping Ceramic mug From 2.91 € Add to favorites" [ref=e405] [cursor=pointer]:
+              - /url: /shop/ceramic-mug
+              - generic [ref=e406]:
+                - generic [ref=e407]:
+                  - generic [ref=e408]:
+                    - generic [ref=e409]:
+                      - generic [ref=e410]: Best sellers
+                      - generic [ref=e411]: Fast shipping
+                    - figure:
+                      - img "Ceramic mug" [ref=e412]
+                    - figure:
+                      - img "Ceramic mug" [ref=e413]
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: Ceramic mug
+                    - generic [ref=e416]: From 2.91 €
+                - button "Add to favorites" [ref=e418]:
+                  - img [ref=e420]
+          - group "3 / 11" [ref=e423]:
+            - link "Fast shipping Made in Europe Americano tumbler From 4.81 € Add to favorites" [ref=e424] [cursor=pointer]:
+              - /url: /shop/americano-tumbler
+              - generic [ref=e425]:
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - generic [ref=e428]:
+                      - generic [ref=e429]: Fast shipping
+                      - generic [ref=e430]: Made in Europe
+                    - figure:
+                      - img "Americano tumbler" [ref=e431]
+                    - figure:
+                      - img "Americano tumbler" [ref=e432]
+                  - generic [ref=e433]:
+                    - generic [ref=e434]: Americano tumbler
+                    - generic [ref=e435]: From 4.81 €
+                - button "Add to favorites" [ref=e437]:
+                  - img [ref=e439]
+          - group "4 / 11" [ref=e442]:
+            - link "B Corp Dopper insulated From 20.56 € Add to favorites" [ref=e443] [cursor=pointer]:
+              - /url: /shop/dopper-insulated
+              - generic [ref=e444]:
+                - generic [ref=e445]:
+                  - generic [ref=e446]:
+                    - generic [ref=e448]: B Corp
+                    - figure:
+                      - img "Dopper insulated" [ref=e449]
+                    - figure:
+                      - img "Dopper insulated" [ref=e450]
+                  - generic [ref=e451]:
+                    - generic [ref=e452]: Dopper insulated
+                    - generic [ref=e453]: From 20.56 €
+                - button "Add to favorites" [ref=e455]:
+                  - img [ref=e457]
+          - group "5 / 11" [ref=e460]:
+            - link "Made in Europe Moka Bialetti From 21.73 € Add to favorites" [ref=e461] [cursor=pointer]:
+              - /url: /shop/moka-bialetti
+              - generic [ref=e462]:
+                - generic [ref=e463]:
+                  - generic [ref=e464]:
+                    - generic [ref=e466]: Made in Europe
+                    - figure:
+                      - img "Moka Bialetti" [ref=e467]
+                    - figure:
+                      - img "Moka Bialetti" [ref=e468]
+                  - generic [ref=e469]:
+                    - generic [ref=e470]: Moka Bialetti
+                    - generic [ref=e471]: From 21.73 €
+                - button "Add to favorites" [ref=e473]:
+                  - img [ref=e475]
+          - group "6 / 11" [ref=e478]:
+            - link "B Corp Klean Kanteen tumbler From 16.22 € Add to favorites" [ref=e479] [cursor=pointer]:
+              - /url: /shop/klean-kanteen-tumbler
+              - generic [ref=e480]:
+                - generic [ref=e481]:
+                  - generic [ref=e482]:
+                    - generic [ref=e484]: B Corp
+                    - figure:
+                      - img "Klean Kanteen tumbler" [ref=e485]
+                    - figure:
+                      - img "Klean Kanteen tumbler" [ref=e486]
+                  - generic [ref=e487]:
+                    - generic [ref=e488]: Klean Kanteen tumbler
+                    - generic [ref=e489]: From 16.22 €
+                - button "Add to favorites" [ref=e491]:
+                  - img [ref=e493]
+          - group "7 / 11" [ref=e496]:
+            - link "Quickship Espresso cup From 2.18 € Add to favorites" [ref=e497] [cursor=pointer]:
+              - /url: /shop/espresso-cup
+              - generic [ref=e498]:
+                - generic [ref=e499]:
+                  - generic [ref=e500]:
+                    - generic [ref=e502]: Quickship
+                    - figure:
+                      - img "Espresso cup" [ref=e503]
+                    - figure:
+                      - img "Espresso cup" [ref=e504]
+                  - generic [ref=e505]:
+                    - generic [ref=e506]: Espresso cup
+                    - generic [ref=e507]: From 2.18 €
+                - button "Add to favorites" [ref=e509]:
+                  - img [ref=e511]
+          - group "8 / 11" [ref=e514]:
+            - link "Fast shipping Stanley food jar From 41.07 € Add to favorites" [ref=e515] [cursor=pointer]:
+              - /url: /shop/stanley-food-jar
+              - generic [ref=e516]:
+                - generic [ref=e517]:
+                  - generic [ref=e518]:
+                    - generic [ref=e520]: Fast shipping
+                    - figure:
+                      - img "Stanley food jar" [ref=e521]
+                    - figure:
+                      - img "Stanley food jar" [ref=e522]
+                  - generic [ref=e523]:
+                    - generic [ref=e524]: Stanley food jar
+                    - generic [ref=e525]: From 41.07 €
+                - button "Add to favorites" [ref=e527]:
+                  - img [ref=e529]
+          - group "9 / 11" [ref=e532]:
+            - link "Kinto tea carafe From 33.1 € Add to favorites" [ref=e533] [cursor=pointer]:
+              - /url: /shop/kinto-tea-carafe
+              - generic [ref=e534]:
+                - generic [ref=e535]:
+                  - generic [ref=e536]:
+                    - figure:
+                      - img "Kinto tea carafe" [ref=e537]
+                    - figure:
+                      - img "Kinto tea carafe" [ref=e538]
+                  - generic [ref=e539]:
+                    - generic [ref=e540]: Kinto tea carafe
+                    - generic [ref=e541]: From 33.1 €
+                - button "Add to favorites" [ref=e543]:
+                  - img [ref=e545]
+          - group "10 / 11" [ref=e548]:
+            - link "Kinto to go From 27.42 € Add to favorites" [ref=e549] [cursor=pointer]:
+              - /url: /shop/kinto-to-go
+              - generic [ref=e550]:
+                - generic [ref=e551]:
+                  - generic [ref=e552]:
+                    - figure:
+                      - img "Kinto to go" [ref=e553]
+                    - figure:
+                      - img "Kinto to go" [ref=e554]
+                  - generic [ref=e555]:
+                    - generic [ref=e556]: Kinto to go
+                    - generic [ref=e557]: From 27.42 €
+                - button "Add to favorites" [ref=e559]:
+                  - img [ref=e561]
+          - group "11 / 11" [ref=e564]:
+            - link "Made in Europe Enamel mug From 9.6 € Add to favorites" [ref=e565] [cursor=pointer]:
+              - /url: /shop/enamel-mug
+              - generic [ref=e566]:
+                - generic [ref=e567]:
+                  - generic [ref=e568]:
+                    - generic [ref=e570]: Made in Europe
+                    - figure:
+                      - img "Enamel mug" [ref=e571]
+                    - figure:
+                      - img "Enamel mug" [ref=e572]
+                  - generic [ref=e573]:
+                    - generic [ref=e574]: Enamel mug
+                    - generic [ref=e575]: From 9.6 €
+                - button "Add to favorites" [ref=e577]:
+                  - img [ref=e579]
+    - generic [ref=e582]:
+      - complementary "Frequently asked questions" [ref=e583]:
+        - generic [ref=e584]:
+          - heading "Frequently asked questions" [level=2] [ref=e585]
+          - paragraph [ref=e586]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e588] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e589]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e591]:
+            - button "How can I find out more about your products?" [ref=e592] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e598]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e599] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e605]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e606] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e612]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e613] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e619]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e620] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e626]:
+            - button "Where do you ship?" [ref=e627] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e633]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e634] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e639]:
+        - generic [ref=e640]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e641]
+          - generic [ref=e642]:
+            - textbox "Enter your email address" [ref=e644]
+            - button "Subscribe" [ref=e645] [cursor=pointer]
+  - alert [ref=e646]
+  - contentinfo [ref=e675]:
+    - generic [ref=e676]:
+      - generic "Social networks" [ref=e677]:
+        - generic [ref=e678]: "FOLLOW US:"
+        - list [ref=e679]:
+          - listitem [ref=e680]:
+            - link "Instagram" [ref=e681] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e682]:
+            - link "LinkedIn" [ref=e683] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e685]:
+        - text: Based in
+        - link "Brussels" [ref=e686] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e687] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e688] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - list [ref=e689]:
+      - listitem [ref=e690]:
+        - navigation "Primary pages" [ref=e691]:
+          - generic [ref=e692]: Company
+          - list [ref=e693]:
+            - listitem [ref=e694]:
+              - link "About us" [ref=e695] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e696]:
+              - link "Environmental footprint" [ref=e697] [cursor=pointer]:
+                - /url: /about/environmental-footprint
+            - listitem [ref=e698]:
+              - link "Value chain" [ref=e699] [cursor=pointer]:
+                - /url: /about/value-chain
+            - listitem [ref=e700]:
+              - link "People & culture" [ref=e701] [cursor=pointer]:
+                - /url: /about/people-and-culture
+      - listitem [ref=e702]:
+        - navigation "Primary pages" [ref=e703]:
+          - generic [ref=e704]: Services
+          - list [ref=e705]:
+            - listitem [ref=e706]:
+              - link "Shop all" [ref=e707] [cursor=pointer]:
+                - /url: /shop
+            - listitem [ref=e708]:
+              - link "Bespoke" [ref=e709] [cursor=pointer]:
+                - /url: /bespoke
+            - listitem [ref=e710]:
+              - link "Platform" [ref=e711] [cursor=pointer]:
+                - /url: /platform
+            - listitem [ref=e712]:
+              - link "Agencies" [ref=e713] [cursor=pointer]:
+                - /url: /club
+      - listitem [ref=e714]:
+        - navigation "Primary pages" [ref=e715]:
+          - generic [ref=e716]: Inspiration
+          - list [ref=e717]:
+            - listitem [ref=e718]:
+              - link "Blog" [ref=e719] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e720]:
+              - link "Cases" [ref=e721] [cursor=pointer]:
+                - /url: /work
+      - listitem [ref=e722]:
+        - navigation "Primary pages" [ref=e723]:
+          - generic [ref=e724]: Let us help
+          - list [ref=e725]:
+            - listitem [ref=e726]:
+              - link "FAQ" [ref=e727] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e728]:
+              - link "Terms & conditions" [ref=e729] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e730]:
+              - link "Privacy" [ref=e731] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e732]:
+              - link "Returns" [ref=e733] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e734]:
+              - link "Contact us" [ref=e735] [cursor=pointer]:
+                - /url: /contact
+      - listitem [ref=e736]:
+        - navigation "Primary pages" [ref=e737]:
+          - generic [ref=e738]: Account
+          - list [ref=e739]:
+            - listitem [ref=e740]:
+              - link "Orders" [ref=e741] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e742]:
+              - link "Preferences" [ref=e743] [cursor=pointer]:
+                - /url: /account/preferences/information
+            - listitem [ref=e744]:
+              - link "Saved projects" [ref=e745] [cursor=pointer]:
+                - /url: /account/projects
+            - listitem [ref=e746]:
+              - link "Invoices" [ref=e747] [cursor=pointer]:
+                - /url: /account/preferences/invoices
+    - generic [ref=e748]:
+      - list [ref=e749]:
+        - listitem [ref=e750]:
+          - figure [ref=e751]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e752]
+        - listitem [ref=e753]:
+          - figure [ref=e754]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e755]
+      - generic [ref=e756]:
+        - generic [ref=e757]: "Secure payments:"
+        - list [ref=e758]:
+          - listitem [ref=e759]:
+            - figure [ref=e760]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e761]
+          - listitem [ref=e762]:
+            - figure [ref=e763]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e764]
+          - listitem [ref=e765]:
+            - figure [ref=e766]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e767]
+          - listitem [ref=e768]:
+            - figure [ref=e769]:
+              - img "Visa_613308d9b9.svg" [ref=e770]
+          - listitem [ref=e771]:
+            - figure [ref=e772]:
+              - img "American_express_e0a23a5002.svg" [ref=e773]
+  - button "Open chat" [ref=e647] [cursor=pointer]:
+    - img [ref=e649]
+  - iframe [ref=e774]:
+    

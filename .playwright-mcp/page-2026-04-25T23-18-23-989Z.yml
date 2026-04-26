@@ -1,0 +1,516 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Excellent
+        - generic [ref=e9]: 4.8 out of 5
+        - generic [ref=e10]: ·
+        - generic [ref=e11]: Trustpilot
+      - generic [ref=e12]:
+        - link "About" [ref=e13] [cursor=pointer]:
+          - /url: /about
+        - link "Resources" [ref=e14] [cursor=pointer]:
+          - /url: /blog
+        - link "Integrations" [ref=e15] [cursor=pointer]:
+          - /url: /integrations
+        - link "Contact us" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Europe · English" [ref=e18] [cursor=pointer]
+    - generic [ref=e20]:
+      - link "Home" [ref=e21] [cursor=pointer]:
+        - /url: /
+        - text: GhostMark
+      - generic [ref=e22]:
+        - generic [ref=e23]: Search for a product
+        - searchbox "Search for a product" [ref=e24]
+        - button "Search" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+      - generic [ref=e29]:
+        - button "Wishlist" [ref=e31] [cursor=pointer]:
+          - img [ref=e32]
+        - link "Cart" [ref=e35] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e36]
+        - button "Open account login modal" [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+    - navigation "Categories" [ref=e46]:
+      - generic [ref=e47]:
+        - button "Apparel" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: Apparel
+          - img [ref=e51]
+        - button "Bags" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: Bags
+          - img [ref=e56]
+        - button "Headwear" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]: Headwear
+          - img [ref=e61]
+        - button "Office" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: Office
+          - img [ref=e66]
+        - button "Drinkware" [ref=e69] [cursor=pointer]:
+          - generic [ref=e70]: Drinkware
+          - img [ref=e71]
+        - button "Home" [ref=e74] [cursor=pointer]:
+          - generic [ref=e75]: Home
+          - img [ref=e76]
+        - button "Wellness" [ref=e79] [cursor=pointer]:
+          - generic [ref=e80]: Wellness
+          - img [ref=e81]
+        - button "Others" [ref=e84] [cursor=pointer]:
+          - generic [ref=e85]: Others
+          - img [ref=e86]
+        - button "Discover" [ref=e89] [cursor=pointer]:
+          - generic [ref=e90]: Discover
+          - img [ref=e91]
+        - button "Brands" [ref=e94] [cursor=pointer]:
+          - generic [ref=e95]: Brands
+          - img [ref=e96]
+  - main [ref=e98]:
+    - generic [ref=e99]:
+      - generic [ref=e101]:
+        - generic [ref=e103]:
+          - text: Studio — est. Bordeaux
+          - heading "A mark that outlasts the campaign." [level=1] [ref=e104]:
+            - text: A mark that outlasts
+            - text: the campaign.
+          - paragraph [ref=e105]:
+            - text: Laser engraving, DTF print and apparel finishing — one
+            - link "studio" [ref=e106] [cursor=pointer]:
+              - /url: /about
+            - text: ", one bench. We make objects for the kind of work people keep."
+          - generic [ref=e107]:
+            - link "Shop all products" [ref=e108] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e109]: Shop all products
+              - img [ref=e110]
+            - link "Talk to our team" [ref=e112] [cursor=pointer]:
+              - /url: /contact
+        - generic [ref=e113]:
+          - img "Model wearing the Atelier Hoodie in cream — GhostMark Studio editorial hero" [ref=e115]
+          - generic: Atelier Hoodie — SS26
+      - generic [ref=e117]:
+        - generic [ref=e118]: Oatly
+        - generic [ref=e119]: Highsnobiety
+        - generic [ref=e120]: Spotify
+        - generic [ref=e121]: Caudalie
+        - generic [ref=e122]: WeTransfer
+        - generic [ref=e123]: Deliveroo
+        - generic [ref=e124]: Deloitte
+        - generic [ref=e125]: Deliciously Ella
+        - generic [ref=e126]: Bain & Company
+        - generic [ref=e127]: Organic Basics
+        - generic [ref=e128]: Dior
+        - generic [ref=e129]: Accenture
+        - generic [ref=e130]: Oatly
+        - generic [ref=e131]: Highsnobiety
+        - generic [ref=e132]: Spotify
+        - generic [ref=e133]: Caudalie
+        - generic [ref=e134]: WeTransfer
+        - generic [ref=e135]: Deliveroo
+        - generic [ref=e136]: Deloitte
+        - generic [ref=e137]: Deliciously Ella
+        - generic [ref=e138]: Bain & Company
+        - generic [ref=e139]: Organic Basics
+        - generic [ref=e140]: Dior
+        - generic [ref=e141]: Accenture
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - heading "Our best sellers" [level=2] [ref=e145]
+            - link "View all" [ref=e146] [cursor=pointer]:
+              - /url: /products
+          - generic [ref=e147]:
+            - link "Workshop Tote B Corp Made in Europe Best sellers Workshop Tote From £22.00" [ref=e148] [cursor=pointer]:
+              - /url: /products/workshop-tote
+              - img "Workshop Tote" [ref=e150]
+              - generic [ref=e151]:
+                - generic [ref=e152]: B Corp
+                - generic [ref=e153]: ·
+                - generic [ref=e154]: Made in Europe
+                - generic [ref=e155]: ·
+                - generic [ref=e156]: Best sellers
+              - heading "Workshop Tote" [level=3] [ref=e157]
+              - paragraph [ref=e158]: From £22.00
+            - link "Studio Tee — Charcoal Best sellers Fast shipping Studio Tee — Charcoal From £35.00" [ref=e159] [cursor=pointer]:
+              - /url: /products/studio-tee-charcoal
+              - img "Studio Tee — Charcoal" [ref=e161]
+              - generic [ref=e162]:
+                - generic [ref=e163]: Best sellers
+                - generic [ref=e164]: ·
+                - generic [ref=e165]: Fast shipping
+              - heading "Studio Tee — Charcoal" [level=3] [ref=e166]
+              - paragraph [ref=e167]: From £35.00
+            - link "Studio Tee — Cream Best sellers GhostMark studio Studio Tee — Cream From £35.00" [ref=e168] [cursor=pointer]:
+              - /url: /products/studio-tee-cream
+              - img "Studio Tee — Cream" [ref=e170]
+              - generic [ref=e171]:
+                - generic [ref=e172]: Best sellers
+                - generic [ref=e173]: ·
+                - generic [ref=e174]: GhostMark studio
+              - heading "Studio Tee — Cream" [level=3] [ref=e175]
+              - paragraph [ref=e176]: From £35.00
+            - link "Atelier Hoodie B Corp Best sellers Made in Europe GhostMark studio Atelier Hoodie From £89.00" [ref=e177] [cursor=pointer]:
+              - /url: /products/atelier-hoodie
+              - img "Atelier Hoodie" [ref=e179]
+              - generic [ref=e180]:
+                - generic [ref=e181]: B Corp
+                - generic [ref=e182]: ·
+                - generic [ref=e183]: Best sellers
+                - generic [ref=e184]: ·
+                - generic [ref=e185]: Made in Europe
+                - generic [ref=e186]: ·
+                - generic [ref=e187]: GhostMark studio
+              - heading "Atelier Hoodie" [level=3] [ref=e188]
+              - paragraph [ref=e189]: From £89.00
+            - link "GhostMark Cap Best sellers GhostMark studio GhostMark Cap From £28.00" [ref=e190] [cursor=pointer]:
+              - /url: /products/ghostmark-cap
+              - img "GhostMark Cap" [ref=e192]
+              - generic [ref=e193]:
+                - generic [ref=e194]: Best sellers
+                - generic [ref=e195]: ·
+                - generic [ref=e196]: GhostMark studio
+              - heading "GhostMark Cap" [level=3] [ref=e197]
+              - paragraph [ref=e198]: From £28.00
+            - link "Studio Sticker Pack Studio Sticker Pack From £8.00" [ref=e199] [cursor=pointer]:
+              - /url: /products/studio-sticker-pack
+              - img "Studio Sticker Pack" [ref=e201]
+              - heading "Studio Sticker Pack" [level=3] [ref=e202]
+              - paragraph [ref=e203]: From £8.00
+            - link "Studio Notebook - A5 Best sellers GhostMark studio Studio Notebook - A5 From £14.00" [ref=e204] [cursor=pointer]:
+              - /url: /products/studio-notebook-a5
+              - img "Studio Notebook - A5" [ref=e206]
+              - generic [ref=e207]:
+                - generic [ref=e208]: Best sellers
+                - generic [ref=e209]: ·
+                - generic [ref=e210]: GhostMark studio
+              - heading "Studio Notebook - A5" [level=3] [ref=e211]
+              - paragraph [ref=e212]: From £14.00
+            - link "Ceramic Mug - Sage Made in Europe Ceramic Mug - Sage From £18.00" [ref=e213] [cursor=pointer]:
+              - /url: /products/ceramic-mug-sage
+              - img "Ceramic Mug - Sage" [ref=e215]
+              - generic [ref=e217]: Made in Europe
+              - heading "Ceramic Mug - Sage" [level=3] [ref=e218]
+              - paragraph [ref=e219]: From £18.00
+            - link "Studio Notebook - A6 New Studio Notebook - A6 From £12.00" [ref=e220] [cursor=pointer]:
+              - /url: /products/studio-notebook-a6
+              - img "Studio Notebook - A6" [ref=e222]
+              - generic [ref=e224]: New
+              - heading "Studio Notebook - A6" [level=3] [ref=e225]
+              - paragraph [ref=e226]: From £12.00
+            - link "Ceramic Mug - Cream Made in Europe Best sellers Ceramic Mug - Cream From £18.00" [ref=e227] [cursor=pointer]:
+              - /url: /products/ceramic-mug-cream
+              - img "Ceramic Mug - Cream" [ref=e229]
+              - generic [ref=e230]:
+                - generic [ref=e231]: Made in Europe
+                - generic [ref=e232]: ·
+                - generic [ref=e233]: Best sellers
+              - heading "Ceramic Mug - Cream" [level=3] [ref=e234]
+              - paragraph [ref=e235]: From £18.00
+        - generic [ref=e236]:
+          - generic [ref=e238]:
+            - heading "Our products in real life" [level=2] [ref=e239]
+            - paragraph [ref=e240]: As real as it gets
+          - generic [ref=e241]:
+            - generic [ref=e242]:
+              - img [ref=e245]
+              - generic [ref=e249]:
+                - generic [ref=e250]: Tarta Gelatina
+                - generic [ref=e251]: Oversized tees made in Portugal for the Barcelona-based homeware brand.
+                - link "Oversized t-shirt" [ref=e252] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e253]:
+              - img [ref=e256]
+              - generic [ref=e260]:
+                - generic [ref=e261]: Financial Times
+                - generic [ref=e262]: Totes and caps for the Financial Times.
+                - link "Vintage cap" [ref=e263] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e264]:
+              - img [ref=e267]
+              - generic [ref=e271]:
+                - generic [ref=e272]: Charlotte Taylor
+                - generic [ref=e273]: Opinel knives, bottle openers, mugs, socks, for Charlotte's collection Home from Home.
+                - link "Opinel" [ref=e274] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e275]:
+              - img [ref=e278]
+              - generic [ref=e282]:
+                - generic [ref=e283]: Combeau
+                - generic [ref=e284]: Custom oversized t-shirts for the parisian brand Combeau.
+                - link "Oversized t-shirt" [ref=e285] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e286]:
+              - img [ref=e289]
+              - generic [ref=e293]:
+                - generic [ref=e294]: Paradiso Mediterraneo
+                - generic [ref=e295]: Fully customised beach towels.
+                - link "Bespoke" [ref=e296] [cursor=pointer]:
+                  - /url: /products
+        - generic [ref=e297]:
+          - heading "Discover" [level=2] [ref=e298]
+          - generic [ref=e299]:
+            - link "Made in Europe Our selection of products sourced exclusively in Europe. Explore →" [ref=e300] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e301]:
+                - heading "Made in Europe" [level=3] [ref=e302]
+                - paragraph [ref=e303]: Our selection of products sourced exclusively in Europe.
+              - generic [ref=e304]: Explore →
+            - link "Our bespoke offer Fully custom project? We're here to help. Explore →" [ref=e305] [cursor=pointer]:
+              - /url: /contact
+              - generic [ref=e306]:
+                - heading "Our bespoke offer" [level=3] [ref=e307]
+                - paragraph [ref=e308]: Fully custom project? We're here to help.
+              - generic [ref=e309]: Explore →
+            - link "Spring selection Quality that blooms with your brand. Explore →" [ref=e310] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e311]:
+                - heading "Spring selection" [level=3] [ref=e312]
+                - paragraph [ref=e313]: Quality that blooms with your brand.
+              - generic [ref=e314]: Explore →
+            - generic [ref=e315]:
+              - img [ref=e318]
+              - generic [ref=e322]:
+                - heading "Discover our collaboration with Pentagram." [level=3] [ref=e323]
+                - link "Read more →" [ref=e324] [cursor=pointer]:
+                  - /url: /blog
+        - generic [ref=e325]:
+          - heading "Our best selling brands" [level=2] [ref=e326]
+          - generic [ref=e327]:
+            - link "Patagonia Custom Patagonia Add your logo to our selection of Patagonia products." [ref=e328] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e331]: Patagonia
+              - generic [ref=e332]:
+                - heading "Custom Patagonia" [level=3] [ref=e333]
+                - paragraph [ref=e334]: Add your logo to our selection of Patagonia products.
+            - link "Kinto Custom Kinto Custom drinkware, but make it incredibly pure and elegant." [ref=e335] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e338]: Kinto
+              - generic [ref=e339]:
+                - heading "Custom Kinto" [level=3] [ref=e340]
+                - paragraph [ref=e341]: Custom drinkware, but make it incredibly pure and elegant.
+            - link "Moleskine Custom Moleskine Showcase your brand on the most premium notebooks." [ref=e342] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e345]: Moleskine
+              - generic [ref=e346]:
+                - heading "Custom Moleskine" [level=3] [ref=e347]
+                - paragraph [ref=e348]: Showcase your brand on the most premium notebooks.
+        - generic [ref=e350]:
+          - generic [ref=e351]:
+            - blockquote [ref=e352]:
+              - paragraph [ref=e353]: “It's beautiful, it's aligned with our values, I wish I could buy it all for myself :)”
+              - generic [ref=e354]: Alain Etienne — Kazidomi
+            - blockquote [ref=e355]:
+              - paragraph [ref=e356]: “Finally, corporate gifts to live up to our brand and planet!”
+              - generic [ref=e357]: Géraldine Huet — Degroof Petercam
+            - blockquote [ref=e358]:
+              - paragraph [ref=e359]: “The perfect combination of beautiful and sustainable merch.”
+              - generic [ref=e360]: Lukas Fleige — Accenture
+          - generic [ref=e361]:
+            - button "Go to testimonial 1" [ref=e362] [cursor=pointer]
+            - button "Go to testimonial 2" [ref=e363] [cursor=pointer]
+            - button "Go to testimonial 3" [ref=e364] [cursor=pointer]
+        - generic [ref=e365]:
+          - generic [ref=e366]:
+            - heading "Recently added" [level=2] [ref=e367]
+            - link "View all" [ref=e368] [cursor=pointer]:
+              - /url: /products
+          - generic [ref=e369]:
+            - link "Atelier Hoodie - Charcoal B Corp Made in Europe Atelier Hoodie - Charcoal From £89.00" [ref=e370] [cursor=pointer]:
+              - /url: /products/atelier-hoodie-charcoal
+              - img "Atelier Hoodie - Charcoal" [ref=e372]
+              - generic [ref=e373]:
+                - generic [ref=e374]: B Corp
+                - generic [ref=e375]: ·
+                - generic [ref=e376]: Made in Europe
+              - heading "Atelier Hoodie - Charcoal" [level=3] [ref=e377]
+              - paragraph [ref=e378]: From £89.00
+            - link "Market Tote - Oat B Corp New Market Tote - Oat From £24.00" [ref=e379] [cursor=pointer]:
+              - /url: /products/market-tote-oat
+              - img "Market Tote - Oat" [ref=e381]
+              - generic [ref=e382]:
+                - generic [ref=e383]: B Corp
+                - generic [ref=e384]: ·
+                - generic [ref=e385]: New
+              - heading "Market Tote - Oat" [level=3] [ref=e386]
+              - paragraph [ref=e387]: From £24.00
+            - link "Panel Cap - Black New Panel Cap - Black From £28.00" [ref=e388] [cursor=pointer]:
+              - /url: /products/panel-cap-black
+              - img "Panel Cap - Black" [ref=e390]
+              - generic [ref=e392]: New
+              - heading "Panel Cap - Black" [level=3] [ref=e393]
+              - paragraph [ref=e394]: From £28.00
+            - link "Ceramic Mug - Sage Made in Europe Ceramic Mug - Sage From £18.00" [ref=e395] [cursor=pointer]:
+              - /url: /products/ceramic-mug-sage
+              - img "Ceramic Mug - Sage" [ref=e397]
+              - generic [ref=e399]: Made in Europe
+              - heading "Ceramic Mug - Sage" [level=3] [ref=e400]
+              - paragraph [ref=e401]: From £18.00
+            - link "Studio Notebook - A6 New Studio Notebook - A6 From £12.00" [ref=e402] [cursor=pointer]:
+              - /url: /products/studio-notebook-a6
+              - img "Studio Notebook - A6" [ref=e404]
+              - generic [ref=e406]: New
+              - heading "Studio Notebook - A6" [level=3] [ref=e407]
+              - paragraph [ref=e408]: From £12.00
+            - link "Steel Bottle - 500ml Best sellers Steel Bottle - 500ml From £28.00" [ref=e409] [cursor=pointer]:
+              - /url: /products/steel-bottle-500
+              - img "Steel Bottle - 500ml" [ref=e411]
+              - generic [ref=e413]: Best sellers
+              - heading "Steel Bottle - 500ml" [level=3] [ref=e414]
+              - paragraph [ref=e415]: From £28.00
+            - link "Heavyweight Sweatshirt - Black Made in Europe Heavyweight Sweatshirt - Black From £75.00" [ref=e416] [cursor=pointer]:
+              - /url: /products/heavyweight-sweatshirt-black
+              - img "Heavyweight Sweatshirt - Black" [ref=e418]
+              - generic [ref=e420]: Made in Europe
+              - heading "Heavyweight Sweatshirt - Black" [level=3] [ref=e421]
+              - paragraph [ref=e422]: From £75.00
+            - link "Insulated Tumbler - Cream Insulated Tumbler - Cream From £24.00" [ref=e423] [cursor=pointer]:
+              - /url: /products/insulated-tumbler-cream
+              - img "Insulated Tumbler - Cream" [ref=e425]
+              - heading "Insulated Tumbler - Cream" [level=3] [ref=e426]
+              - paragraph [ref=e427]: From £24.00
+            - link "Ceramic Mug - Cream Made in Europe Best sellers Ceramic Mug - Cream From £18.00" [ref=e428] [cursor=pointer]:
+              - /url: /products/ceramic-mug-cream
+              - img "Ceramic Mug - Cream" [ref=e430]
+              - generic [ref=e431]:
+                - generic [ref=e432]: Made in Europe
+                - generic [ref=e433]: ·
+                - generic [ref=e434]: Best sellers
+              - heading "Ceramic Mug - Cream" [level=3] [ref=e435]
+              - paragraph [ref=e436]: From £18.00
+            - link "Studio Sticker Pack Studio Sticker Pack From £8.00" [ref=e437] [cursor=pointer]:
+              - /url: /products/studio-sticker-pack
+              - img "Studio Sticker Pack" [ref=e439]
+              - heading "Studio Sticker Pack" [level=3] [ref=e440]
+              - paragraph [ref=e441]: From £8.00
+        - generic [ref=e444]:
+          - generic [ref=e445]:
+            - heading "Frequently asked questions" [level=2] [ref=e446]
+            - paragraph [ref=e447]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+            - link "View more" [ref=e448] [cursor=pointer]:
+              - /url: /faq
+          - generic [ref=e449]:
+            - button "Is it possible to put different items into gift boxes? +" [ref=e451] [cursor=pointer]:
+              - generic [ref=e452]: Is it possible to put different items into gift boxes?
+              - generic [ref=e453]: +
+            - button "How can I find out more about your products? +" [ref=e455] [cursor=pointer]:
+              - generic [ref=e456]: How can I find out more about your products?
+              - generic [ref=e457]: +
+            - button "Will it be possible to see the e-proof before my order goes into production? +" [ref=e459] [cursor=pointer]:
+              - generic [ref=e460]: Will it be possible to see the e-proof before my order goes into production?
+              - generic [ref=e461]: +
+            - button "Is it possible to shorten the lead time for production? +" [ref=e463] [cursor=pointer]:
+              - generic [ref=e464]: Is it possible to shorten the lead time for production?
+              - generic [ref=e465]: +
+            - button "Why are your prices not fixed and vary within a range? +" [ref=e467] [cursor=pointer]:
+              - generic [ref=e468]: Why are your prices not fixed and vary within a range?
+              - generic [ref=e469]: +
+            - button "Can you ship the merch to multiple addresses? +" [ref=e471] [cursor=pointer]:
+              - generic [ref=e472]: Can you ship the merch to multiple addresses?
+              - generic [ref=e473]: +
+            - button "Where do you ship? +" [ref=e475] [cursor=pointer]:
+              - generic [ref=e476]: Where do you ship?
+              - generic [ref=e477]: +
+            - button "What is the minimum order quantity (MOQ)? +" [ref=e479] [cursor=pointer]:
+              - generic [ref=e480]: What is the minimum order quantity (MOQ)?
+              - generic [ref=e481]: +
+        - generic [ref=e483]:
+          - heading "Letters from the studio." [level=2] [ref=e484]
+          - paragraph [ref=e485]: New work, occasional thoughts, no fluff. Once a month.
+          - generic [ref=e486]:
+            - generic [ref=e487]: Enter your email address
+            - textbox "Enter your email address" [ref=e488]
+            - button "Subscribe" [ref=e489] [cursor=pointer]
+  - contentinfo [ref=e490]:
+    - generic [ref=e491]:
+      - generic [ref=e493]:
+        - generic [ref=e494]:
+          - generic [ref=e495]: "Follow us:"
+          - link "Instagram" [ref=e496] [cursor=pointer]:
+            - /url: https://instagram.com/ghostmarkstudio
+          - link "LinkedIn" [ref=e497] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/ghostmarkstudio
+        - paragraph [ref=e498]: Based in London, United Kingdom.
+      - navigation "Footer" [ref=e499]:
+        - generic [ref=e500]:
+          - generic [ref=e501]: Company
+          - generic [ref=e502]:
+            - link "About us" [ref=e503] [cursor=pointer]:
+              - /url: /about
+            - link "Environmental footprint" [ref=e504] [cursor=pointer]:
+              - /url: /about/environmental-footprint
+            - link "Value chain" [ref=e505] [cursor=pointer]:
+              - /url: /about/value-chain
+            - link "People & culture" [ref=e506] [cursor=pointer]:
+              - /url: /about/people-and-culture
+            - link "Sustainability" [ref=e507] [cursor=pointer]:
+              - /url: /sustainability
+            - link "Press" [ref=e508] [cursor=pointer]:
+              - /url: /press
+        - generic [ref=e509]:
+          - generic [ref=e510]: Services
+          - generic [ref=e511]:
+            - link "Shop all" [ref=e512] [cursor=pointer]:
+              - /url: /products
+            - link "Bespoke studio" [ref=e513] [cursor=pointer]:
+              - /url: /studio
+            - link "Platform" [ref=e514] [cursor=pointer]:
+              - /url: /platform
+            - link "Club & agencies" [ref=e515] [cursor=pointer]:
+              - /url: /club
+        - generic [ref=e516]:
+          - generic [ref=e517]: Inspiration
+          - generic [ref=e518]:
+            - link "Blog" [ref=e519] [cursor=pointer]:
+              - /url: /blog
+            - link "Customer stories" [ref=e520] [cursor=pointer]:
+              - /url: /customer-stories
+        - generic [ref=e521]:
+          - generic [ref=e522]: Let us help
+          - generic [ref=e523]:
+            - link "Help center" [ref=e524] [cursor=pointer]:
+              - /url: /help
+            - link "FAQ" [ref=e525] [cursor=pointer]:
+              - /url: /faq
+            - link "Shipping" [ref=e526] [cursor=pointer]:
+              - /url: /shipping
+            - link "Returns" [ref=e527] [cursor=pointer]:
+              - /url: /returns
+            - link "Terms & conditions" [ref=e528] [cursor=pointer]:
+              - /url: /terms
+            - link "Privacy" [ref=e529] [cursor=pointer]:
+              - /url: /privacy
+            - link "Cookies" [ref=e530] [cursor=pointer]:
+              - /url: /cookies
+            - link "Contact us" [ref=e531] [cursor=pointer]:
+              - /url: /contact
+        - generic [ref=e532]:
+          - generic [ref=e533]: Account
+          - generic [ref=e534]:
+            - link "Orders" [ref=e535] [cursor=pointer]:
+              - /url: /account/orders
+            - link "Preferences" [ref=e536] [cursor=pointer]:
+              - /url: /account
+            - link "Saved projects" [ref=e537] [cursor=pointer]:
+              - /url: /wishlist
+            - link "Invoices" [ref=e538] [cursor=pointer]:
+              - /url: /account/orders
+      - generic [ref=e539]:
+        - generic [ref=e540]:
+          - link "Certified B Corporation — view our score" [ref=e541] [cursor=pointer]:
+            - /url: /sustainability#section-2
+            - generic [ref=e542]:
+              - text: Certified
+              - text: B
+          - link "1% for the Planet — read about our pledge" [ref=e543] [cursor=pointer]:
+            - /url: /sustainability#section-4
+            - generic [ref=e544]:
+              - text: 1%
+              - text: For the
+              - text: Planet
+        - generic [ref=e545]:
+          - generic [ref=e546]: "Secure payments:"
+          - generic [ref=e547]: AMEX
+          - generic [ref=e548]: MC
+          - generic [ref=e549]: PayPal
+          - generic [ref=e550]: VISA
+      - generic [ref=e551]: © 2026 GhostMark

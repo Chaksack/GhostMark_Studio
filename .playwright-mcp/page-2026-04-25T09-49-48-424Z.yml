@@ -1,0 +1,408 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Excellent
+        - generic [ref=e9]: 4.8 out of 5
+        - generic [ref=e10]: ·
+        - generic [ref=e11]: Trustpilot
+      - generic [ref=e12]:
+        - link "About" [ref=e13] [cursor=pointer]:
+          - /url: /about
+        - link "Resources" [ref=e14] [cursor=pointer]:
+          - /url: /blog
+        - link "Integrations" [ref=e15] [cursor=pointer]:
+          - /url: /integrations
+        - link "Contact us" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Europe · English" [ref=e18] [cursor=pointer]
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - link "GhostMark — home" [ref=e23] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - generic [ref=e24]: Studio
+      - generic [ref=e25]:
+        - generic [ref=e26]: Search for a product
+        - searchbox "Search for a product" [ref=e27]
+        - button "Search" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+      - generic [ref=e32]:
+        - button "Open wishlist" [ref=e34] [cursor=pointer]:
+          - img [ref=e35]
+        - button "Open cart" [ref=e38] [cursor=pointer]:
+          - img [ref=e39]
+        - button "Open account login modal" [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+    - navigation "Categories" [ref=e49]:
+      - generic [ref=e50]:
+        - button "Apparel" [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]: Apparel
+          - img [ref=e54]
+        - button "Bags" [ref=e57] [cursor=pointer]:
+          - generic [ref=e58]: Bags
+          - img [ref=e59]
+        - button "Headwear" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: Headwear
+          - img [ref=e64]
+        - button "Office" [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: Office
+          - img [ref=e69]
+        - button "Drinkware" [ref=e72] [cursor=pointer]:
+          - generic [ref=e73]: Drinkware
+          - img [ref=e74]
+        - button "Home" [ref=e77] [cursor=pointer]:
+          - generic [ref=e78]: Home
+          - img [ref=e79]
+        - button "Wellness" [ref=e82] [cursor=pointer]:
+          - generic [ref=e83]: Wellness
+          - img [ref=e84]
+        - button "Others" [ref=e87] [cursor=pointer]:
+          - generic [ref=e88]: Others
+          - img [ref=e89]
+        - button "Discover" [ref=e92] [cursor=pointer]:
+          - generic [ref=e93]: Discover
+          - img [ref=e94]
+        - button "Brands" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: Brands
+          - img [ref=e99]
+  - main [ref=e101]:
+    - generic [ref=e102]:
+      - region "Quiet objects, made to last." [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Studio collection
+            - heading "Quiet objects, made to last." [level=1] [ref=e108]:
+              - text: Quiet objects,
+              - text: made to last.
+            - paragraph [ref=e109]:
+              - text: Considered goods for the studio, the desk, and the well-lived day. Made with care in
+              - link "Brussels and Berlin" [ref=e110] [cursor=pointer]:
+                - /url: /about
+              - text: .
+            - generic [ref=e111]:
+              - link "Shop the studio" [ref=e112] [cursor=pointer]:
+                - /url: /products
+                - generic [ref=e113]: Shop the studio
+              - link "Browse swatches" [ref=e114] [cursor=pointer]:
+                - /url: /swatches
+                - generic [ref=e115]: Browse swatches
+          - img [ref=e117]:
+            - generic [ref=e119]:
+              - img [ref=e120]
+              - generic [ref=e124]: Hero image — replace with branded lifestyle photography
+      - generic [ref=e126]:
+        - generic [ref=e127]: Oatly
+        - generic [ref=e128]: Highsnobiety
+        - generic [ref=e129]: Spotify
+        - generic [ref=e130]: Caudalie
+        - generic [ref=e131]: WeTransfer
+        - generic [ref=e132]: Deliveroo
+        - generic [ref=e133]: Deloitte
+        - generic [ref=e134]: Deliciously Ella
+        - generic [ref=e135]: Bain & Company
+        - generic [ref=e136]: Organic Basics
+        - generic [ref=e137]: Dior
+        - generic [ref=e138]: Accenture
+        - generic [ref=e139]: Oatly
+        - generic [ref=e140]: Highsnobiety
+        - generic [ref=e141]: Spotify
+        - generic [ref=e142]: Caudalie
+        - generic [ref=e143]: WeTransfer
+        - generic [ref=e144]: Deliveroo
+        - generic [ref=e145]: Deloitte
+        - generic [ref=e146]: Deliciously Ella
+        - generic [ref=e147]: Bain & Company
+        - generic [ref=e148]: Organic Basics
+        - generic [ref=e149]: Dior
+        - generic [ref=e150]: Accenture
+      - generic [ref=e151]:
+        - generic [ref=e153]:
+          - paragraph [ref=e154]: Best sellers
+          - heading "Studio favourites" [level=2] [ref=e155]
+        - generic [ref=e189]:
+          - generic [ref=e191]:
+            - heading "Our products in real life" [level=2] [ref=e192]
+            - paragraph [ref=e193]: As real as it gets
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - img [ref=e198]
+              - generic [ref=e202]:
+                - generic [ref=e203]: Tarta Gelatina
+                - generic [ref=e204]: Oversized tees made in Portugal for the Barcelona-based homeware brand.
+                - link "Oversized t-shirt" [ref=e205] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e206]:
+              - img [ref=e209]
+              - generic [ref=e213]:
+                - generic [ref=e214]: Financial Times
+                - generic [ref=e215]: Totes and caps for the Financial Times.
+                - link "Vintage cap" [ref=e216] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e217]:
+              - img [ref=e220]
+              - generic [ref=e224]:
+                - generic [ref=e225]: Charlotte Taylor
+                - generic [ref=e226]: Opinel knives, bottle openers, mugs, socks, for Charlotte's collection Home from Home.
+                - link "Opinel" [ref=e227] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e228]:
+              - img [ref=e231]
+              - generic [ref=e235]:
+                - generic [ref=e236]: Combeau
+                - generic [ref=e237]: Custom oversized t-shirts for the parisian brand Combeau.
+                - link "Oversized t-shirt" [ref=e238] [cursor=pointer]:
+                  - /url: /products
+            - generic [ref=e239]:
+              - img [ref=e242]
+              - generic [ref=e246]:
+                - generic [ref=e247]: Paradiso Mediterraneo
+                - generic [ref=e248]: Fully customised beach towels.
+                - link "Bespoke" [ref=e249] [cursor=pointer]:
+                  - /url: /products
+        - generic [ref=e250]:
+          - heading "Discover" [level=2] [ref=e251]
+          - generic [ref=e252]:
+            - link "Made in Europe Our selection of products sourced exclusively in Europe. Explore →" [ref=e253] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e254]:
+                - heading "Made in Europe" [level=3] [ref=e255]
+                - paragraph [ref=e256]: Our selection of products sourced exclusively in Europe.
+              - generic [ref=e257]: Explore →
+            - link "Our bespoke offer Fully custom project? We're here to help. Explore →" [ref=e258] [cursor=pointer]:
+              - /url: /contact
+              - generic [ref=e259]:
+                - heading "Our bespoke offer" [level=3] [ref=e260]
+                - paragraph [ref=e261]: Fully custom project? We're here to help.
+              - generic [ref=e262]: Explore →
+            - link "Spring selection Quality that blooms with your brand. Explore →" [ref=e263] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e264]:
+                - heading "Spring selection" [level=3] [ref=e265]
+                - paragraph [ref=e266]: Quality that blooms with your brand.
+              - generic [ref=e267]: Explore →
+            - generic [ref=e268]:
+              - img [ref=e271]
+              - generic [ref=e275]:
+                - heading "Discover our collaboration with Pentagram." [level=3] [ref=e276]
+                - link "Read more →" [ref=e277] [cursor=pointer]:
+                  - /url: /blog
+        - generic [ref=e278]:
+          - heading "Our best selling brands" [level=2] [ref=e279]
+          - generic [ref=e280]:
+            - link "Patagonia Custom Patagonia Add your logo to our selection of Patagonia products." [ref=e281] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e284]: Patagonia
+              - generic [ref=e285]:
+                - heading "Custom Patagonia" [level=3] [ref=e286]
+                - paragraph [ref=e287]: Add your logo to our selection of Patagonia products.
+            - link "Kinto Custom Kinto Custom drinkware, but make it incredibly pure and elegant." [ref=e288] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e291]: Kinto
+              - generic [ref=e292]:
+                - heading "Custom Kinto" [level=3] [ref=e293]
+                - paragraph [ref=e294]: Custom drinkware, but make it incredibly pure and elegant.
+            - link "Moleskine Custom Moleskine Showcase your brand on the most premium notebooks." [ref=e295] [cursor=pointer]:
+              - /url: /products
+              - generic [ref=e298]: Moleskine
+              - generic [ref=e299]:
+                - heading "Custom Moleskine" [level=3] [ref=e300]
+                - paragraph [ref=e301]: Showcase your brand on the most premium notebooks.
+        - generic [ref=e303]:
+          - generic [ref=e304]:
+            - blockquote [ref=e305]:
+              - paragraph [ref=e306]: “It's beautiful, it's aligned with our values, I wish I could buy it all for myself :)”
+              - generic [ref=e307]: Alain Etienne — Kazidomi
+            - blockquote [ref=e308]:
+              - paragraph [ref=e309]: “Finally, corporate gifts to live up to our brand and planet!”
+              - generic [ref=e310]: Géraldine Huet — Degroof Petercam
+            - blockquote [ref=e311]:
+              - paragraph [ref=e312]: “The perfect combination of beautiful and sustainable merch.”
+              - generic [ref=e313]: Lukas Fleige — Accenture
+          - generic [ref=e314]:
+            - button "Go to testimonial 1" [ref=e315] [cursor=pointer]
+            - button "Go to testimonial 2" [ref=e316] [cursor=pointer]
+            - button "Go to testimonial 3" [ref=e317] [cursor=pointer]
+        - generic [ref=e319]:
+          - paragraph [ref=e320]: Just landed
+          - heading "Recently added" [level=2] [ref=e321]
+        - generic [ref=e357]:
+          - generic [ref=e358]:
+            - heading "Frequently asked questions" [level=2] [ref=e359]
+            - paragraph [ref=e360]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+            - link "View more" [ref=e361] [cursor=pointer]:
+              - /url: /faq
+          - generic [ref=e362]:
+            - button "Is it possible to put different items into gift boxes? +" [ref=e364] [cursor=pointer]:
+              - generic [ref=e365]: Is it possible to put different items into gift boxes?
+              - generic [ref=e366]: +
+            - button "How can I find out more about your products? +" [ref=e368] [cursor=pointer]:
+              - generic [ref=e369]: How can I find out more about your products?
+              - generic [ref=e370]: +
+            - button "Will it be possible to see the e-proof before my order goes into production? +" [ref=e372] [cursor=pointer]:
+              - generic [ref=e373]: Will it be possible to see the e-proof before my order goes into production?
+              - generic [ref=e374]: +
+            - button "Is it possible to shorten the lead time for production? +" [ref=e376] [cursor=pointer]:
+              - generic [ref=e377]: Is it possible to shorten the lead time for production?
+              - generic [ref=e378]: +
+            - button "Why are your prices not fixed and vary within a range? +" [ref=e380] [cursor=pointer]:
+              - generic [ref=e381]: Why are your prices not fixed and vary within a range?
+              - generic [ref=e382]: +
+            - button "Can you ship the merch to multiple addresses? +" [ref=e384] [cursor=pointer]:
+              - generic [ref=e385]: Can you ship the merch to multiple addresses?
+              - generic [ref=e386]: +
+            - button "Where do you ship? +" [ref=e388] [cursor=pointer]:
+              - generic [ref=e389]: Where do you ship?
+              - generic [ref=e390]: +
+            - button "What is the minimum order quantity (MOQ)? +" [ref=e392] [cursor=pointer]:
+              - generic [ref=e393]: What is the minimum order quantity (MOQ)?
+              - generic [ref=e394]: +
+        - region "Quiet dispatches from the studio." [ref=e395]:
+          - generic [ref=e397]:
+            - generic [ref=e398]:
+              - heading "Quiet dispatches from the studio." [level=2] [ref=e399]
+              - paragraph [ref=e400]: Subscribe for early looks at new launches, restocks, and the occasional behind-the-scenes note — no marketing noise.
+            - generic [ref=e401]:
+              - generic [ref=e402]:
+                - generic [ref=e403]: Email address
+                - textbox "Email address" [ref=e404]:
+                  - /placeholder: you@studio.com
+                - button "Subscribe" [ref=e405] [cursor=pointer]:
+                  - generic [ref=e406]: Subscribe
+              - paragraph [ref=e407]: No spam, just studio updates. Unsubscribe anytime.
+  - contentinfo [ref=e408]:
+    - generic [ref=e409]:
+      - generic [ref=e410]:
+        - generic [ref=e411]:
+          - heading "Shop" [level=2] [ref=e412]
+          - list [ref=e413]:
+            - listitem [ref=e414]:
+              - link "All products" [ref=e415] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e416]:
+              - link "Best sellers" [ref=e417] [cursor=pointer]:
+                - /url: /products?sort=best-sellers
+            - listitem [ref=e418]:
+              - link "New arrivals" [ref=e419] [cursor=pointer]:
+                - /url: /products?sort=new
+            - listitem [ref=e420]:
+              - link "Categories" [ref=e421] [cursor=pointer]:
+                - /url: /categories
+        - generic [ref=e422]:
+          - heading "Company" [level=2] [ref=e423]
+          - list [ref=e424]:
+            - listitem [ref=e425]:
+              - link "About" [ref=e426] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e427]:
+              - link "Studio" [ref=e428] [cursor=pointer]:
+                - /url: /studio
+            - listitem [ref=e429]:
+              - link "Sustainability" [ref=e430] [cursor=pointer]:
+                - /url: /sustainability
+            - listitem [ref=e431]:
+              - link "Press" [ref=e432] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e433]:
+          - heading "Support" [level=2] [ref=e434]
+          - list [ref=e435]:
+            - listitem [ref=e436]:
+              - link "Help center" [ref=e437] [cursor=pointer]:
+                - /url: /help
+            - listitem [ref=e438]:
+              - link "Shipping" [ref=e439] [cursor=pointer]:
+                - /url: /shipping
+            - listitem [ref=e440]:
+              - link "Returns" [ref=e441] [cursor=pointer]:
+                - /url: /returns
+            - listitem [ref=e442]:
+              - link "FAQ" [ref=e443] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e444]:
+              - link "Contact" [ref=e445] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e446]:
+          - heading "Follow" [level=2] [ref=e447]
+          - list [ref=e448]:
+            - listitem [ref=e449]:
+              - link "Instagram" [ref=e450] [cursor=pointer]:
+                - /url: https://instagram.com
+            - listitem [ref=e451]:
+              - link "Pinterest" [ref=e452] [cursor=pointer]:
+                - /url: https://pinterest.com
+            - listitem [ref=e453]:
+              - link "Newsletter" [ref=e454] [cursor=pointer]:
+                - /url: "#newsletter"
+        - generic [ref=e455]:
+          - heading "Studio" [level=2] [ref=e456]
+          - paragraph [ref=e457]:
+            - text: Made with care in
+            - link "Brussels" [ref=e458] [cursor=pointer]:
+              - /url: "#"
+            - text: and
+            - link "Berlin" [ref=e459] [cursor=pointer]:
+              - /url: "#"
+            - text: .
+          - paragraph [ref=e460]:
+            - text: Shipping worldwide from
+            - link "Antwerp" [ref=e461] [cursor=pointer]:
+              - /url: "#"
+            - text: .
+      - generic [ref=e462]:
+        - paragraph [ref=e463]: GhostMark
+        - generic [ref=e464]: GhostMark Studio
+      - generic [ref=e465]:
+        - generic [ref=e466]:
+          - figure "Climate Neutral certified" [ref=e467]:
+            - img [ref=e469]
+            - generic [ref=e471]: Climate Neutral certified
+            - generic [ref=e472]: Climate Neutral
+          - figure "1% For The Planet member" [ref=e473]:
+            - img [ref=e475]
+            - generic [ref=e478]: 1% For The Planet member
+            - generic [ref=e479]: 1% For The Planet
+          - figure "Certified B Corporation" [ref=e480]:
+            - img [ref=e482]
+            - generic [ref=e485]: Certified B Corporation
+            - generic [ref=e486]: B Corp
+          - figure "Carbon Neutral shipping" [ref=e487]:
+            - img [ref=e489]
+            - generic [ref=e491]: Carbon Neutral shipping
+            - generic [ref=e492]: Carbon Neutral
+        - generic [ref=e493]:
+          - paragraph [ref=e494]: Secure payments
+          - figure "Visa" [ref=e495]:
+            - img [ref=e496]
+            - generic [ref=e498]: Visa
+          - figure "Mastercard" [ref=e499]:
+            - img [ref=e500]
+            - generic [ref=e503]: Mastercard
+          - figure "American Express" [ref=e504]:
+            - img [ref=e505]
+            - generic [ref=e507]: American Express
+          - figure "PayPal" [ref=e508]:
+            - img [ref=e509]
+            - generic [ref=e511]: PayPal
+          - figure "Apple Pay" [ref=e512]:
+            - img [ref=e513]
+            - generic [ref=e515]: Apple Pay
+      - generic [ref=e516]:
+        - paragraph [ref=e517]:
+          - text: © 2026 GhostMark Studio. Made with care in
+          - link "Brussels" [ref=e518] [cursor=pointer]:
+            - /url: "#"
+          - text: and
+          - link "Berlin" [ref=e519] [cursor=pointer]:
+            - /url: "#"
+          - text: .
+        - list [ref=e520]:
+          - listitem [ref=e521]:
+            - link "Privacy" [ref=e522] [cursor=pointer]:
+              - /url: /privacy
+          - listitem [ref=e523]:
+            - link "Terms" [ref=e524] [cursor=pointer]:
+              - /url: /terms
+          - listitem [ref=e525]:
+            - link "Cookies" [ref=e526] [cursor=pointer]:
+              - /url: /cookies
+          - listitem "Locale" [ref=e527]: EN · EUR

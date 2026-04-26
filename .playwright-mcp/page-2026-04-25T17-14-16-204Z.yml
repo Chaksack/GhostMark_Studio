@@ -1,0 +1,520 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f86e2]:
+            - link "Trustpilot reviews" [ref=f86e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f86e4]: Excellent
+              - generic [ref=f86e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f86e9]
+            - generic [ref=f86e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f86e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /en-GB/about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /en-GB/work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /en-GB/club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /en-GB/contact
+          - listitem [ref=e16]:
+            - button "United Kingdom | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e30]: United Kingdom
+                - generic [ref=e31]: "|"
+                - generic [ref=e32]: English
+                - img [ref=e33]
+      - navigation [ref=e35]:
+        - link [ref=e37] [cursor=pointer]:
+          - /url: /en-GB
+          - img [ref=e38]
+        - generic [ref=e41]:
+          - textbox "search input" [ref=e42]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e43] [cursor=pointer]:
+            - img [ref=e45]
+        - generic [ref=e48]:
+          - generic "not logged in user account" [ref=e49] [cursor=pointer]:
+            - img [ref=e51]
+          - link "favorites" [ref=e56] [cursor=pointer]:
+            - /url: /en-GB/shop/c/favorites
+            - generic "favorites" [ref=e57]:
+              - img [ref=e58]
+          - link:
+            - /url: /en-GB/contact
+          - link "cart icon" [ref=e60] [cursor=pointer]:
+            - /url: /en-GB/checkout/cart
+            - button "cart icon" [ref=e62]:
+              - generic "cart icon" [ref=e64]:
+                - img [ref=e66]
+      - navigation [ref=e68]:
+        - list [ref=e69]:
+          - listitem [ref=e70]:
+            - link "Apparel" [ref=e71] [cursor=pointer]:
+              - /url: /en-GB/shop/c/apparel
+          - listitem [ref=e72]:
+            - link "Bags" [ref=e73] [cursor=pointer]:
+              - /url: /en-GB/shop/c/bags
+          - listitem [ref=e74]:
+            - link "Headwear" [ref=e75] [cursor=pointer]:
+              - /url: /en-GB/shop/c/headwear
+          - listitem [ref=e76]:
+            - link "Office" [ref=e77] [cursor=pointer]:
+              - /url: /en-GB/shop/c/office
+          - listitem [ref=e78]:
+            - link "Drinkware" [ref=e79] [cursor=pointer]:
+              - /url: /en-GB/shop/c/drinkware
+          - listitem [ref=e80]:
+            - link "Home" [ref=e81] [cursor=pointer]:
+              - /url: /en-GB/shop/c/home
+          - listitem [ref=e82]:
+            - link "Wellness" [ref=e83] [cursor=pointer]:
+              - /url: /en-GB/shop/c/wellness
+          - listitem [ref=e84]:
+            - link "Others" [ref=e85] [cursor=pointer]:
+              - /url: /en-GB/shop/c/others
+          - listitem [ref=e86]:
+            - link "Discover" [ref=e87] [cursor=pointer]:
+              - /url: /en-GB/shop/c/discover
+          - listitem [ref=e88]:
+            - link "Brands" [ref=e89] [cursor=pointer]:
+              - /url: /en-GB/shop/c/brands
+    - heading "You have a question? We might have the answer." [level=1] [ref=e90]
+    - generic [ref=e91]:
+      - list [ref=e93]:
+        - listitem [ref=e94] [cursor=pointer]: Ordering
+        - listitem [ref=e95] [cursor=pointer]: Pricing
+        - listitem [ref=e96] [cursor=pointer]: Customization
+        - listitem [ref=e97] [cursor=pointer]: Samples
+        - listitem [ref=e98] [cursor=pointer]: Products
+        - listitem [ref=e99] [cursor=pointer]: Payments
+        - listitem [ref=e100] [cursor=pointer]: After Sales
+        - listitem [ref=e101] [cursor=pointer]: Shipping
+        - listitem [ref=e102] [cursor=pointer]: Logistics
+        - listitem [ref=e103] [cursor=pointer]: Club
+        - listitem [ref=e104] [cursor=pointer]: Business for Good
+        - listitem [ref=e105] [cursor=pointer]: Terms and Conditions, Return Policy and Privacy Policy
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - heading "Ordering" [level=3] [ref=e108]
+          - heading "How does the ordering process work at Merchery?" [level=3] [ref=e110]:
+            - button "How does the ordering process work at Merchery?" [ref=e111] [cursor=pointer]:
+              - text: How does the ordering process work at Merchery?
+              - generic [ref=e112]:
+                - img [ref=e113]
+                - img [ref=e115]
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e118]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e119] [cursor=pointer]:
+              - text: What is the minimum order quantity (MOQ)?
+              - generic [ref=e120]:
+                - img [ref=e121]
+                - img [ref=e123]
+          - heading "Is it possible to order different sizes for textile?" [level=3] [ref=e126]:
+            - button "Is it possible to order different sizes for textile?" [ref=e127] [cursor=pointer]:
+              - text: Is it possible to order different sizes for textile?
+              - generic [ref=e128]:
+                - img [ref=e129]
+                - img [ref=e131]
+          - heading "Is it possible to see a product before ordering?" [level=3] [ref=e134]:
+            - button "Is it possible to see a product before ordering?" [ref=e135] [cursor=pointer]:
+              - text: Is it possible to see a product before ordering?
+              - generic [ref=e136]:
+                - img [ref=e137]
+                - img [ref=e139]
+        - generic [ref=e141]:
+          - heading "Pricing" [level=3] [ref=e142]
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e144]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e145] [cursor=pointer]:
+              - text: Why are your prices not fixed and vary within a range?
+              - generic [ref=e146]:
+                - img [ref=e147]
+                - img [ref=e149]
+          - heading "Why has the price of a product increased since my last order?" [level=3] [ref=e152]:
+            - button "Why has the price of a product increased since my last order?" [ref=e153] [cursor=pointer]:
+              - text: Why has the price of a product increased since my last order?
+              - generic [ref=e154]:
+                - img [ref=e155]
+                - img [ref=e157]
+          - heading "What is your average response time?" [level=3] [ref=e160]:
+            - button "What is your average response time?" [ref=e161] [cursor=pointer]:
+              - text: What is your average response time?
+              - generic [ref=e162]:
+                - img [ref=e163]
+                - img [ref=e165]
+          - heading "Is a discount possible for large volumes?" [level=3] [ref=e168]:
+            - button "Is a discount possible for large volumes?" [ref=e169] [cursor=pointer]:
+              - text: Is a discount possible for large volumes?
+              - generic [ref=e170]:
+                - img [ref=e171]
+                - img [ref=e173]
+        - generic [ref=e175]:
+          - heading "Customization" [level=3] [ref=e176]
+          - heading "What are the available color(s) for your products?" [level=3] [ref=e178]:
+            - button "What are the available color(s) for your products?" [ref=e179] [cursor=pointer]:
+              - text: What are the available color(s) for your products?
+              - generic [ref=e180]:
+                - img [ref=e181]
+                - img [ref=e183]
+          - heading "Is it possible to have more than one customization on a product?" [level=3] [ref=e186]:
+            - button "Is it possible to have more than one customization on a product?" [ref=e187] [cursor=pointer]:
+              - text: Is it possible to have more than one customization on a product?
+              - generic [ref=e188]:
+                - img [ref=e189]
+                - img [ref=e191]
+          - heading "Are there any constraints on the logos that can be put on merch?" [level=3] [ref=e194]:
+            - button "Are there any constraints on the logos that can be put on merch?" [ref=e195] [cursor=pointer]:
+              - text: Are there any constraints on the logos that can be put on merch?
+              - generic [ref=e196]:
+                - img [ref=e197]
+                - img [ref=e199]
+          - heading "What file format do you need for our company logo?" [level=3] [ref=e202]:
+            - button "What file format do you need for our company logo?" [ref=e203] [cursor=pointer]:
+              - text: What file format do you need for our company logo?
+              - generic [ref=e204]:
+                - img [ref=e205]
+                - img [ref=e207]
+          - heading "What colour system do you work with?" [level=3] [ref=e210]:
+            - button "What colour system do you work with?" [ref=e211] [cursor=pointer]:
+              - text: What colour system do you work with?
+              - generic [ref=e212]:
+                - img [ref=e213]
+                - img [ref=e215]
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e218]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e219] [cursor=pointer]:
+              - text: Will it be possible to see the e-proof before my order goes into production?
+              - generic [ref=e220]:
+                - img [ref=e221]
+                - img [ref=e223]
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e226]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e227] [cursor=pointer]:
+              - text: Is it possible to shorten the lead time for production?
+              - generic [ref=e228]:
+                - img [ref=e229]
+                - img [ref=e231]
+          - heading "Do you print on demand?" [level=3] [ref=e234]:
+            - button "Do you print on demand?" [ref=e235] [cursor=pointer]:
+              - text: Do you print on demand?
+              - generic [ref=e236]:
+                - img [ref=e237]
+                - img [ref=e239]
+          - heading "I would like my design bigger but the website is not allowing me." [level=3] [ref=e242]:
+            - button "I would like my design bigger but the website is not allowing me." [ref=e243] [cursor=pointer]:
+              - text: I would like my design bigger but the website is not allowing me.
+              - generic [ref=e244]:
+                - img [ref=e245]
+                - img [ref=e247]
+        - generic [ref=e249]:
+          - heading "Samples" [level=3] [ref=e250]
+          - heading "Can I create a branded sample?" [level=3] [ref=e252]:
+            - button "Can I create a branded sample?" [ref=e253] [cursor=pointer]:
+              - text: Can I create a branded sample?
+              - generic [ref=e254]:
+                - img [ref=e255]
+                - img [ref=e257]
+          - heading "How can I order a sample?" [level=3] [ref=e260]:
+            - button "How can I order a sample?" [ref=e261] [cursor=pointer]:
+              - text: How can I order a sample?
+              - generic [ref=e262]:
+                - img [ref=e263]
+                - img [ref=e265]
+          - heading "What is the lead time for a sample?" [level=3] [ref=e268]:
+            - button "What is the lead time for a sample?" [ref=e269] [cursor=pointer]:
+              - text: What is the lead time for a sample?
+              - generic [ref=e270]:
+                - img [ref=e271]
+                - img [ref=e273]
+          - heading "Can I return my samples?" [level=3] [ref=e276]:
+            - button "Can I return my samples?" [ref=e277] [cursor=pointer]:
+              - text: Can I return my samples?
+              - generic [ref=e278]:
+                - img [ref=e279]
+                - img [ref=e281]
+        - generic [ref=e283]:
+          - heading "Products" [level=3] [ref=e284]
+          - heading "How can I find out more about your products?" [level=3] [ref=e286]:
+            - button "How can I find out more about your products?" [ref=e287] [cursor=pointer]:
+              - text: How can I find out more about your products?
+              - generic [ref=e288]:
+                - img [ref=e289]
+                - img [ref=e291]
+          - heading "Which brands do you sell?" [level=3] [ref=e294]:
+            - button "Which brands do you sell?" [ref=e295] [cursor=pointer]:
+              - text: Which brands do you sell?
+              - generic [ref=e296]:
+                - img [ref=e297]
+                - img [ref=e299]
+          - heading "How long do food products last?" [level=3] [ref=e302]:
+            - button "How long do food products last?" [ref=e303] [cursor=pointer]:
+              - text: How long do food products last?
+              - generic [ref=e304]:
+                - img [ref=e305]
+                - img [ref=e307]
+          - heading "If I already have my products, can you customize them for me?" [level=3] [ref=e310]:
+            - button "If I already have my products, can you customize them for me?" [ref=e311] [cursor=pointer]:
+              - text: If I already have my products, can you customize them for me?
+              - generic [ref=e312]:
+                - img [ref=e313]
+                - img [ref=e315]
+          - heading "Is it possible to order a product that is not in your catalogue?" [level=3] [ref=e318]:
+            - button "Is it possible to order a product that is not in your catalogue?" [ref=e319] [cursor=pointer]:
+              - text: Is it possible to order a product that is not in your catalogue?
+              - generic [ref=e320]:
+                - img [ref=e321]
+                - img [ref=e323]
+          - heading "Can Merchery products be resold?" [level=3] [ref=e326]:
+            - button "Can Merchery products be resold?" [ref=e327] [cursor=pointer]:
+              - text: Can Merchery products be resold?
+              - generic [ref=e328]:
+                - img [ref=e329]
+                - img [ref=e331]
+          - heading "How can I suggest my products or brand to Merchery?" [level=3] [ref=e334]:
+            - button "How can I suggest my products or brand to Merchery?" [ref=e335] [cursor=pointer]:
+              - text: How can I suggest my products or brand to Merchery?
+              - generic [ref=e336]:
+                - img [ref=e337]
+                - img [ref=e339]
+        - generic [ref=e341]:
+          - heading "Payments" [level=3] [ref=e342]
+          - heading "Which types of payment do you accept?" [level=3] [ref=e344]:
+            - button "Which types of payment do you accept?" [ref=e345] [cursor=pointer]:
+              - text: Which types of payment do you accept?
+              - generic [ref=e346]:
+                - img [ref=e347]
+                - img [ref=e349]
+          - heading "When should I proceed with the payment?" [level=3] [ref=e352]:
+            - button "When should I proceed with the payment?" [ref=e353] [cursor=pointer]:
+              - text: When should I proceed with the payment?
+              - generic [ref=e354]:
+                - img [ref=e355]
+                - img [ref=e357]
+          - heading "Does the full amount have to be paid immediately?" [level=3] [ref=e360]:
+            - button "Does the full amount have to be paid immediately?" [ref=e361] [cursor=pointer]:
+              - text: Does the full amount have to be paid immediately?
+              - generic [ref=e362]:
+                - img [ref=e363]
+                - img [ref=e365]
+          - heading "¿Puedo pagar mediante factura?" [level=3] [ref=e368]:
+            - button "¿Puedo pagar mediante factura?" [ref=e369] [cursor=pointer]:
+              - text: ¿Puedo pagar mediante factura?
+              - generic [ref=e370]:
+                - img [ref=e371]
+                - img [ref=e373]
+        - generic [ref=e375]:
+          - heading "After Sales" [level=3] [ref=e376]
+          - heading "How can I check my order status?" [level=3] [ref=e378]:
+            - button "How can I check my order status?" [ref=e379] [cursor=pointer]:
+              - text: How can I check my order status?
+              - generic [ref=e380]:
+                - img [ref=e381]
+                - img [ref=e383]
+          - heading "How does your process work regarding a complaint?" [level=3] [ref=e386]:
+            - button "How does your process work regarding a complaint?" [ref=e387] [cursor=pointer]:
+              - text: How does your process work regarding a complaint?
+              - generic [ref=e388]:
+                - img [ref=e389]
+                - img [ref=e391]
+        - generic [ref=e393]:
+          - heading "Shipping" [level=3] [ref=e394]
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e396]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e397] [cursor=pointer]:
+              - text: Can you ship the merch to multiple addresses?
+              - generic [ref=e398]:
+                - img [ref=e399]
+                - img [ref=e401]
+          - heading "Where do you ship?" [level=3] [ref=e404]:
+            - button "Where do you ship?" [ref=e405] [cursor=pointer]:
+              - text: Where do you ship?
+              - generic [ref=e406]:
+                - img [ref=e407]
+                - img [ref=e409]
+          - heading "How long does it take to receive an order?" [level=3] [ref=e412]:
+            - button "How long does it take to receive an order?" [ref=e413] [cursor=pointer]:
+              - text: How long does it take to receive an order?
+              - generic [ref=e414]:
+                - img [ref=e415]
+                - img [ref=e417]
+          - heading "Is the lead time measured in working days or calendar days?" [level=3] [ref=e420]:
+            - button "Is the lead time measured in working days or calendar days?" [ref=e421] [cursor=pointer]:
+              - text: Is the lead time measured in working days or calendar days?
+              - generic [ref=e422]:
+                - img [ref=e423]
+                - img [ref=e425]
+          - heading "Do you offer an express shipping service?" [level=3] [ref=e428]:
+            - button "Do you offer an express shipping service?" [ref=e429] [cursor=pointer]:
+              - text: Do you offer an express shipping service?
+              - generic [ref=e430]:
+                - img [ref=e431]
+                - img [ref=e433]
+          - heading "Is there a possibility for Merchery to store my items?" [level=3] [ref=e436]:
+            - button "Is there a possibility for Merchery to store my items?" [ref=e437] [cursor=pointer]:
+              - text: Is there a possibility for Merchery to store my items?
+              - generic [ref=e438]:
+                - img [ref=e439]
+                - img [ref=e441]
+          - heading "Which are the costs associated to international shipment outside EU?" [level=3] [ref=e444]:
+            - button "Which are the costs associated to international shipment outside EU?" [ref=e445] [cursor=pointer]:
+              - text: Which are the costs associated to international shipment outside EU?
+              - generic [ref=e446]:
+                - img [ref=e447]
+                - img [ref=e449]
+          - heading "Do you offer dropshipping?" [level=3] [ref=e452]:
+            - button "Do you offer dropshipping?" [ref=e453] [cursor=pointer]:
+              - text: Do you offer dropshipping?
+              - generic [ref=e454]:
+                - img [ref=e455]
+                - img [ref=e457]
+          - heading "How can I estimate my shipping costs?" [level=3] [ref=e460]:
+            - button "How can I estimate my shipping costs?" [ref=e461] [cursor=pointer]:
+              - text: How can I estimate my shipping costs?
+              - generic [ref=e462]:
+                - img [ref=e463]
+                - img [ref=e465]
+          - heading "Where do you ship from?" [level=3] [ref=e468]:
+            - button "Where do you ship from?" [ref=e469] [cursor=pointer]:
+              - text: Where do you ship from?
+              - generic [ref=e470]:
+                - img [ref=e471]
+                - img [ref=e473]
+        - generic [ref=e475]:
+          - heading "Logistics" [level=3] [ref=e476]
+          - heading "Who can benefit from Merchery Logsitics?" [level=3] [ref=e478]:
+            - button "Who can benefit from Merchery Logsitics?" [ref=e479] [cursor=pointer]:
+              - text: Who can benefit from Merchery Logsitics?
+              - generic [ref=e480]:
+                - img [ref=e481]
+                - img [ref=e483]
+          - heading "What is the process to have access to Merchery Logistics?" [level=3] [ref=e486]:
+            - button "What is the process to have access to Merchery Logistics?" [ref=e487] [cursor=pointer]:
+              - text: What is the process to have access to Merchery Logistics?
+              - generic [ref=e488]:
+                - img [ref=e489]
+                - img [ref=e491]
+          - heading "How long does it take to create our company account on the Merchery Logistics platform?" [level=3] [ref=e494]:
+            - button "How long does it take to create our company account on the Merchery Logistics platform?" [ref=e495] [cursor=pointer]:
+              - text: How long does it take to create our company account on the Merchery Logistics platform?
+              - generic [ref=e496]:
+                - img [ref=e497]
+                - img [ref=e499]
+          - heading "Is there a minimum quantity in order for the products to be stored?" [level=3] [ref=e502]:
+            - button "Is there a minimum quantity in order for the products to be stored?" [ref=e503] [cursor=pointer]:
+              - text: Is there a minimum quantity in order for the products to be stored?
+              - generic [ref=e504]:
+                - img [ref=e505]
+                - img [ref=e507]
+          - heading "Where is your warehouse located?" [level=3] [ref=e510]:
+            - button "Where is your warehouse located?" [ref=e511] [cursor=pointer]:
+              - text: Where is your warehouse located?
+              - generic [ref=e512]:
+                - img [ref=e513]
+                - img [ref=e515]
+          - heading "How much does Merchery Logistics cost?" [level=3] [ref=e518]:
+            - button "How much does Merchery Logistics cost?" [ref=e519] [cursor=pointer]:
+              - text: How much does Merchery Logistics cost?
+              - generic [ref=e520]:
+                - img [ref=e521]
+                - img [ref=e523]
+        - generic [ref=e525]:
+          - heading "Club" [level=3] [ref=e526]
+          - heading "What exclusive benefits do Club members receive?" [level=3] [ref=e528]:
+            - button "What exclusive benefits do Club members receive?" [ref=e529] [cursor=pointer]:
+              - text: What exclusive benefits do Club members receive?
+              - generic [ref=e530]:
+                - img [ref=e531]
+                - img [ref=e533]
+          - heading "Is it possible to create a Bespoke product?" [level=3] [ref=e536]:
+            - button "Is it possible to create a Bespoke product?" [ref=e537] [cursor=pointer]:
+              - text: Is it possible to create a Bespoke product?
+              - generic [ref=e538]:
+                - img [ref=e539]
+                - img [ref=e541]
+          - heading "How much does it cost to become a Club member?" [level=3] [ref=e544]:
+            - button "How much does it cost to become a Club member?" [ref=e545] [cursor=pointer]:
+              - text: How much does it cost to become a Club member?
+              - generic [ref=e546]:
+                - img [ref=e547]
+                - img [ref=e549]
+          - heading "Who can join the Club?" [level=3] [ref=e552]:
+            - button "Who can join the Club?" [ref=e553] [cursor=pointer]:
+              - text: Who can join the Club?
+              - generic [ref=e554]:
+                - img [ref=e555]
+                - img [ref=e557]
+          - heading "Why should I become a Club member?" [level=3] [ref=e560]:
+            - button "Why should I become a Club member?" [ref=e561] [cursor=pointer]:
+              - text: Why should I become a Club member?
+              - generic [ref=e562]:
+                - img [ref=e563]
+                - img [ref=e565]
+          - heading "How can I become a member of the Club?" [level=3] [ref=e568]:
+            - button "How can I become a member of the Club?" [ref=e569] [cursor=pointer]:
+              - text: How can I become a member of the Club?
+              - generic [ref=e570]:
+                - img [ref=e571]
+                - img [ref=e573]
+        - generic [ref=e575]:
+          - heading "Business for Good" [level=3] [ref=e576]
+          - heading "What does it mean for Merchery to be committed for the planet?" [level=3] [ref=e578]:
+            - button "What does it mean for Merchery to be committed for the planet?" [ref=e579] [cursor=pointer]:
+              - text: What does it mean for Merchery to be committed for the planet?
+              - generic [ref=e580]:
+                - img [ref=e581]
+                - img [ref=e583]
+          - heading "How does Merchery source its products?" [level=3] [ref=e586]:
+            - button "How does Merchery source its products?" [ref=e587] [cursor=pointer]:
+              - text: How does Merchery source its products?
+              - generic [ref=e588]:
+                - img [ref=e589]
+                - img [ref=e591]
+        - generic [ref=e593]:
+          - heading "Terms and Conditions, Return Policy and Privacy Policy" [level=3] [ref=e594]
+          - heading "Where can I find your Terms & Conditions?" [level=3] [ref=e596]:
+            - button "Where can I find your Terms & Conditions?" [ref=e597] [cursor=pointer]:
+              - text: Where can I find your Terms & Conditions?
+              - generic [ref=e598]:
+                - img [ref=e599]
+                - img [ref=e601]
+          - heading "Do you have a Return Policy and where can I find it?" [level=3] [ref=e604]:
+            - button "Do you have a Return Policy and where can I find it?" [ref=e605] [cursor=pointer]:
+              - text: Do you have a Return Policy and where can I find it?
+              - generic [ref=e606]:
+                - img [ref=e607]
+                - img [ref=e609]
+          - heading "How do you manage the personal and private data?" [level=3] [ref=e612]:
+            - button "How do you manage the personal and private data?" [ref=e613] [cursor=pointer]:
+              - text: How do you manage the personal and private data?
+              - generic [ref=e614]:
+                - img [ref=e615]
+                - img [ref=e617]
+    - 'heading "Didn’t find an answer? Don’t hesitate to contact us by email at hello@merchery.co, or directly by phone: Europe: +32 2 808 59 06 UK: +44 20 3966 2632" [level=2] [ref=e620]':
+      - text: Didn’t find an answer? Don’t hesitate to contact us by email at
+      - link "hello@merchery.co" [ref=e621] [cursor=pointer]:
+        - /url: mailto:hello@merchery.co
+      - text: ", or directly by phone: Europe:"
+      - link "+32 2 808 59 06" [ref=e622] [cursor=pointer]:
+        - /url: tel:+3228085906
+      - text: "UK:"
+      - link "+44 20 3966 2632" [ref=e623] [cursor=pointer]:
+        - /url: tel:+442039662632
+    - generic [ref=e625]:
+      - heading "Personalised corporate gifts, made to last." [level=3] [ref=e626]
+      - link "Shop now" [ref=e627] [cursor=pointer]:
+        - /url: https://merchery.co/shop
+    - complementary [ref=e629]:
+      - generic [ref=e630]:
+        - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e631]
+        - generic [ref=e632]:
+          - textbox "Enter your email address" [ref=e634]
+          - button "Subscribe" [ref=e635] [cursor=pointer]
+  - alert [ref=e636]
+  - button "Open chat" [ref=e637] [cursor=pointer]:
+    - img [ref=e639]
+  - iframe [ref=e641]:
+    

@@ -1,0 +1,177 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - generic [ref=e8]:
+          - button "Search" [ref=e9] [cursor=pointer]:
+            - img [ref=e10]
+          - button "Wishlist" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - link "Cart" [ref=e18] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e19]
+          - button "Open account login modal" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+    - navigation "Categories" [ref=e29]:
+      - generic [ref=e30]:
+        - button "Apparel" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: Apparel
+          - img [ref=e34]
+        - button "Bags" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: Bags
+          - img [ref=e39]
+        - button "Headwear" [ref=e42] [cursor=pointer]:
+          - generic [ref=e43]: Headwear
+          - img [ref=e44]
+        - button "Office" [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]: Office
+          - img [ref=e49]
+        - button "Drinkware" [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]: Drinkware
+          - img [ref=e54]
+        - button "Home" [ref=e57] [cursor=pointer]:
+          - generic [ref=e58]: Home
+          - img [ref=e59]
+        - button "Wellness" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: Wellness
+          - img [ref=e64]
+        - button "Others" [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: Others
+          - img [ref=e69]
+        - button "Discover" [ref=e72] [cursor=pointer]:
+          - generic [ref=e73]: Discover
+          - img [ref=e74]
+        - button "Brands" [ref=e77] [cursor=pointer]:
+          - generic [ref=e78]: Brands
+          - img [ref=e79]
+    - main [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - navigation "breadcrumbs" [ref=e84]:
+            - list [ref=e85]:
+              - listitem [ref=e86]:
+                - link "Home" [ref=e87] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e88]: /
+              - listitem [ref=e89]: Accessibility
+          - heading "Accessibility" [level=1] [ref=e90]
+          - generic [ref=e91]:
+            - paragraph [ref=e92]: GhostMark Studio is committed to making this storefront usable by everyone, including people who rely on assistive technology. We aim to meet the WCAG 2.1 Level AA standard across the catalogue, the design editor, and the checkout flow.
+            - heading "What we're doing" [level=2] [ref=e93]
+            - list [ref=e94]:
+              - listitem [ref=e95]: Semantic HTML and ARIA roles on every interactive control.
+              - listitem [ref=e96]: Keyboard-reachable focus indicators on every clickable element.
+              - listitem [ref=e97]: Touch targets at the WCAG 44×44 minimum across all viewports.
+              - listitem [ref=e98]: Colour contrast tuned to AA against the warm offWhite palette.
+              - listitem [ref=e99]: Visible text alternatives for icon-only buttons.
+            - heading "Known gaps" [level=2] [ref=e100]
+            - list [ref=e101]:
+              - listitem [ref=e102]: The print-on-demand canvas editor's keyboard story is in active development.
+              - listitem [ref=e103]: Some product imagery is currently sourced from third parties and lacks brand-specific alt text.
+            - heading "Get in touch" [level=2] [ref=e104]
+            - paragraph [ref=e105]:
+              - text: If you hit a barrier, email
+              - link "hello@ghostmark.studio" [ref=e106] [cursor=pointer]:
+                - /url: mailto:hello@ghostmark.studio
+              - text: . We treat accessibility issues as bugs and route them straight to the team.
+        - complementary "Subscribe, and get access to exclusive news, sneak peeks on new launches." [ref=e108]:
+          - generic [ref=e109]:
+            - heading "Subscribe, and get access to exclusive news, sneak peeks on new launches." [level=2] [ref=e110]
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Enter your email address
+                  - textbox "Enter your email address" [ref=e115]
+                - button "Subscribe" [ref=e116] [cursor=pointer]
+              - paragraph [ref=e117]:
+                - text: By subscribing you agree to receive occasional emails from GhostMark Studio. Unsubscribe anytime — see our
+                - link "privacy policy" [ref=e118] [cursor=pointer]:
+                  - /url: /privacy
+                - text: .
+    - contentinfo [ref=e119]:
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - link "GhostMark — home" [ref=e123] [cursor=pointer]:
+            - /url: /
+            - text: GhostMark
+          - paragraph [ref=e124]: Branded objects for the kind of work people keep. Laser engraving, DTF print, and apparel finishing — one studio in Bordeaux.
+        - generic [ref=e125]:
+          - paragraph [ref=e126]: Get in touch
+          - link "hello@ghostmark.studio" [ref=e127] [cursor=pointer]:
+            - /url: mailto:hello@ghostmark.studio
+          - paragraph [ref=e128]: Studio · Bordeaux, France
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - group [ref=e131]:
+            - generic "Company" [ref=e132] [cursor=pointer]:
+              - generic [ref=e133]: Company
+              - img [ref=e134]
+          - group [ref=e136]:
+            - generic "Shop" [ref=e137] [cursor=pointer]:
+              - generic [ref=e138]: Shop
+              - img [ref=e139]
+          - group [ref=e141]:
+            - generic "Help" [ref=e142] [cursor=pointer]:
+              - generic [ref=e143]: Help
+              - img [ref=e144]
+          - group [ref=e146]:
+            - generic "Account" [ref=e147] [cursor=pointer]:
+              - generic [ref=e148]: Account
+              - img [ref=e149]
+          - group [ref=e151]:
+            - generic "Legal" [ref=e152] [cursor=pointer]:
+              - generic [ref=e153]: Legal
+              - img [ref=e154]
+        - generic [ref=e156]:
+          - link "Certified B Corporation — view our score" [ref=e157] [cursor=pointer]:
+            - /url: /sustainability#section-2
+            - text: Certified B
+          - link "1% for the Planet — read about our pledge" [ref=e158] [cursor=pointer]:
+            - /url: /sustainability#section-4
+            - text: 1% For the Planet
+          - generic [ref=e159]:
+            - generic [ref=e160]: Secure payments
+            - generic [ref=e161]: AMEX
+            - generic [ref=e162]: MC
+            - generic [ref=e163]: PayPal
+            - generic [ref=e164]: VISA
+        - generic [ref=e165]:
+          - generic [ref=e166]:
+            - paragraph [ref=e167]: © 2026 GhostMark Studio · Bordeaux, France
+            - link "Change region or currency" [ref=e168] [cursor=pointer]:
+              - /url: /?region=open
+              - img [ref=e169]
+              - generic [ref=e172]: Choose region
+          - generic [ref=e173]:
+            - generic [ref=e174]:
+              - link "Instagram" [ref=e175] [cursor=pointer]:
+                - /url: https://instagram.com/ghostmarkstudio
+                - img [ref=e176]
+              - link "LinkedIn" [ref=e179] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/ghostmarkstudio
+                - img [ref=e180]
+              - link "Pinterest" [ref=e182] [cursor=pointer]:
+                - /url: https://pinterest.com/ghostmarkstudio
+                - img [ref=e183]
+              - link "X (formerly Twitter)" [ref=e185] [cursor=pointer]:
+                - /url: https://x.com/ghostmarkstudio
+                - img [ref=e186]
+            - link "Privacy" [ref=e189] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e190] [cursor=pointer]:
+              - /url: /terms
+            - link "Cookies" [ref=e191] [cursor=pointer]:
+              - /url: /cookies
+  - generic:
+    - img
+  - generic [ref=e192]:
+    - button "Toggle Nuxt DevTools" [ref=e193] [cursor=pointer]:
+      - img [ref=e194]
+    - generic "Page load time" [ref=e197]:
+      - generic [ref=e198]: "31"
+      - generic [ref=e199]: ms
+    - button "Toggle Component Inspector" [ref=e201] [cursor=pointer]:
+      - img [ref=e202]

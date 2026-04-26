@@ -1,0 +1,280 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Excellent
+          - generic [ref=e9]: 4.8 out of 5
+          - generic [ref=e10]: ·
+          - generic [ref=e11]: Trustpilot
+        - generic [ref=e12]:
+          - link "About" [ref=e13] [cursor=pointer]:
+            - /url: /about
+          - link "Resources" [ref=e14] [cursor=pointer]:
+            - /url: /blog
+          - link "Integrations" [ref=e15] [cursor=pointer]:
+            - /url: /integrations
+          - link "Contact us" [ref=e16] [cursor=pointer]:
+            - /url: /contact
+          - button "Change region. Currently United Kingdom, GBP." [ref=e18] [cursor=pointer]: United Kingdom · English
+      - generic [ref=e20]:
+        - generic [ref=e22]:
+          - link "GhostMark — home" [ref=e23] [cursor=pointer]:
+            - /url: /
+            - text: GhostMark
+          - generic [ref=e24]: Studio
+        - generic [ref=e26]:
+          - generic [ref=e27]: Search for a product
+          - combobox "Search for a product" [ref=e28]
+          - button "Search" [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+        - generic [ref=e33]:
+          - button "Open wishlist" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+          - button "Open cart" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+            - generic [ref=e45]: "1"
+          - button "Open account login modal" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+      - navigation "Categories" [ref=e51]:
+        - generic [ref=e52]:
+          - button "Stationary & Business" [ref=e54] [cursor=pointer]:
+            - generic [ref=e55]: Stationary & Business
+            - img [ref=e56]
+          - button "Gifts" [ref=e59] [cursor=pointer]:
+            - generic [ref=e60]: Gifts
+            - img [ref=e61]
+          - button "Men Clothing" [ref=e64] [cursor=pointer]:
+            - generic [ref=e65]: Men Clothing
+            - img [ref=e66]
+          - button "Women clothing" [ref=e69] [cursor=pointer]:
+            - generic [ref=e70]: Women clothing
+            - img [ref=e71]
+          - button "Tote bags" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: Tote bags
+            - img [ref=e76]
+          - button "Mugs" [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: Mugs
+            - img [ref=e81]
+          - button "Hats" [ref=e84] [cursor=pointer]:
+            - generic [ref=e85]: Hats
+            - img [ref=e86]
+          - button "Cards" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]: Cards
+            - img [ref=e91]
+          - button "Notebooks" [ref=e94] [cursor=pointer]:
+            - generic [ref=e95]: Notebooks
+            - img [ref=e96]
+          - button "Kids & bay clothing" [ref=e99] [cursor=pointer]:
+            - generic [ref=e100]: Kids & bay clothing
+            - img [ref=e101]
+    - main [ref=e103]:
+      - generic [ref=e104]:
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]: "1"
+            - text: Cart
+          - generic [ref=e110]:
+            - generic [ref=e111]: "2"
+            - text: Login
+          - generic [ref=e113]:
+            - generic [ref=e114]: "3"
+            - text: Shipping
+          - generic [ref=e116]:
+            - generic [ref=e117]: "4"
+            - text: Payment
+        - generic [ref=e119]:
+          - generic [ref=e120]:
+            - heading "Your cart" [level=1] [ref=e121]
+            - paragraph [ref=e122]: 1 item
+            - generic [ref=e124]:
+              - img [ref=e127]
+              - generic [ref=e131]:
+                - generic [ref=e132]:
+                  - generic [ref=e133]:
+                    - generic [ref=e134]: Studio Tee — Cream
+                    - generic [ref=e135]: S
+                  - generic [ref=e136]: £35.00
+                - generic [ref=e137]:
+                  - generic [ref=e138]:
+                    - button "−" [disabled] [ref=e139]
+                    - generic [ref=e140]: "1"
+                    - button "+" [ref=e141] [cursor=pointer]
+                  - button "Remove" [ref=e142] [cursor=pointer]
+            - link "Continue shopping" [ref=e143] [cursor=pointer]:
+              - /url: /products
+              - img [ref=e144]
+              - text: Continue shopping
+          - complementary [ref=e146]:
+            - heading "Order summary" [level=2] [ref=e147]
+            - generic [ref=e148]:
+              - text: Discount code
+              - generic [ref=e149]:
+                - textbox "Discount code" [ref=e150]:
+                  - /placeholder: Enter code
+                - button "Apply" [ref=e151] [cursor=pointer]
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - generic [ref=e154]: Subtotal
+                - generic [ref=e155]: £35.00
+              - generic [ref=e156]:
+                - generic [ref=e157]: Shipping
+                - generic [ref=e158]: Calculated at next step
+              - generic [ref=e159]:
+                - generic [ref=e160]: Taxes
+                - generic [ref=e161]: Calculated at next step
+            - generic [ref=e162]:
+              - generic [ref=e163]: Total
+              - generic [ref=e164]: £35.00
+            - link "Go to checkout" [ref=e165] [cursor=pointer]:
+              - /url: /checkout
+    - contentinfo [ref=e166]:
+      - generic [ref=e167]:
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - heading "Shop" [level=2] [ref=e170]
+            - list [ref=e171]:
+              - listitem [ref=e172]:
+                - link "All products" [ref=e173] [cursor=pointer]:
+                  - /url: /products
+              - listitem [ref=e174]:
+                - link "Best sellers" [ref=e175] [cursor=pointer]:
+                  - /url: /products?sort=best-sellers
+              - listitem [ref=e176]:
+                - link "New arrivals" [ref=e177] [cursor=pointer]:
+                  - /url: /products?sort=new
+              - listitem [ref=e178]:
+                - link "Categories" [ref=e179] [cursor=pointer]:
+                  - /url: /categories
+          - generic [ref=e180]:
+            - heading "Company" [level=2] [ref=e181]
+            - list [ref=e182]:
+              - listitem [ref=e183]:
+                - link "About" [ref=e184] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e185]:
+                - link "Studio" [ref=e186] [cursor=pointer]:
+                  - /url: /studio
+              - listitem [ref=e187]:
+                - link "Customer stories" [ref=e188] [cursor=pointer]:
+                  - /url: /customer-stories
+              - listitem [ref=e189]:
+                - link "Sustainability" [ref=e190] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e191]:
+                - link "Press" [ref=e192] [cursor=pointer]:
+                  - /url: /press
+          - generic [ref=e193]:
+            - heading "Support" [level=2] [ref=e194]
+            - list [ref=e195]:
+              - listitem [ref=e196]:
+                - link "Help center" [ref=e197] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e198]:
+                - link "Shipping" [ref=e199] [cursor=pointer]:
+                  - /url: /shipping
+              - listitem [ref=e200]:
+                - link "Returns" [ref=e201] [cursor=pointer]:
+                  - /url: /returns
+              - listitem [ref=e202]:
+                - link "FAQ" [ref=e203] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e204]:
+                - link "Contact" [ref=e205] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e206]:
+            - heading "Follow" [level=2] [ref=e207]
+            - list [ref=e208]:
+              - listitem [ref=e209]:
+                - link "Instagram" [ref=e210] [cursor=pointer]:
+                  - /url: https://instagram.com
+              - listitem [ref=e211]:
+                - link "Pinterest" [ref=e212] [cursor=pointer]:
+                  - /url: https://pinterest.com
+              - listitem [ref=e213]:
+                - link "Newsletter" [ref=e214] [cursor=pointer]:
+                  - /url: "#newsletter"
+          - generic [ref=e215]:
+            - heading "Studio" [level=2] [ref=e216]
+            - paragraph [ref=e217]:
+              - text: Made with care in
+              - link "Brussels" [ref=e218] [cursor=pointer]:
+                - /url: "#"
+              - text: and
+              - link "Berlin" [ref=e219] [cursor=pointer]:
+                - /url: "#"
+              - text: .
+            - paragraph [ref=e220]:
+              - text: Shipping worldwide from
+              - link "Antwerp" [ref=e221] [cursor=pointer]:
+                - /url: "#"
+              - text: .
+        - generic [ref=e222]:
+          - paragraph [ref=e223]: GhostMark
+          - generic [ref=e224]: GhostMark Studio
+        - generic [ref=e225]:
+          - generic [ref=e226]:
+            - figure "Climate Neutral certified" [ref=e227]:
+              - img [ref=e229]
+              - generic [ref=e231]: Climate Neutral certified
+              - generic [ref=e232]: Climate Neutral
+            - figure "1% For The Planet member" [ref=e233]:
+              - img [ref=e235]
+              - generic [ref=e238]: 1% For The Planet member
+              - generic [ref=e239]: 1% For The Planet
+            - figure "Certified B Corporation" [ref=e240]:
+              - img [ref=e242]
+              - generic [ref=e245]: Certified B Corporation
+              - generic [ref=e246]: B Corp
+            - figure "Carbon Neutral shipping" [ref=e247]:
+              - img [ref=e249]
+              - generic [ref=e251]: Carbon Neutral shipping
+              - generic [ref=e252]: Carbon Neutral
+          - generic [ref=e253]:
+            - paragraph [ref=e254]: Secure payments
+            - figure "Visa" [ref=e255]:
+              - img [ref=e256]
+              - generic [ref=e258]: Visa
+            - figure "Mastercard" [ref=e259]:
+              - img [ref=e260]
+              - generic [ref=e263]: Mastercard
+            - figure "American Express" [ref=e264]:
+              - img [ref=e265]
+              - generic [ref=e267]: American Express
+            - figure "PayPal" [ref=e268]:
+              - img [ref=e269]
+              - generic [ref=e271]: PayPal
+            - figure "Apple Pay" [ref=e272]:
+              - img [ref=e273]
+              - generic [ref=e275]: Apple Pay
+        - generic [ref=e276]:
+          - paragraph [ref=e277]:
+            - text: © 2026 GhostMark Studio. Made with care in
+            - link "Brussels" [ref=e278] [cursor=pointer]:
+              - /url: "#"
+            - text: and
+            - link "Berlin" [ref=e279] [cursor=pointer]:
+              - /url: "#"
+            - text: .
+          - list [ref=e280]:
+            - listitem [ref=e281]:
+              - link "Privacy" [ref=e282] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e283]:
+              - link "Terms" [ref=e284] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e285]:
+              - link "Cookies" [ref=e286] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e287]:
+              - button "Change region. Currently United Kingdom, GBP." [ref=e288] [cursor=pointer]: EN · GBP
+  - generic:
+    - img
+  - generic [ref=e289]:
+    - button "Toggle Nuxt DevTools" [ref=e290] [cursor=pointer]:
+      - img [ref=e291]
+    - generic "Page load time" [ref=e294]:
+      - generic [ref=e295]: "31"
+      - generic [ref=e296]: ms
+    - button "Toggle Component Inspector" [ref=e298] [cursor=pointer]:
+      - img [ref=e299]

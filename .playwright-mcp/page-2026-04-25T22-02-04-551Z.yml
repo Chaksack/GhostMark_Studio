@@ -1,0 +1,507 @@
+- generic [active] [ref=e1]:
+  - banner "navigation desktop" [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - link "Shop all products" [ref=e8] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e10]:
+        - textbox "search input" [ref=e11]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e12] [cursor=pointer]:
+          - img [ref=e14]
+      - generic [ref=e17]:
+        - button "| English" [ref=e19] [cursor=pointer]:
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e146]: "|"
+            - generic [ref=e147]: English
+        - generic [ref=e148]:
+          - link "favorites" [ref=e149] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e150]:
+              - img [ref=e151]
+          - link "cart icon 1" [ref=e594] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon 1" [ref=e595]:
+              - generic [ref=e156]:
+                - generic "cart icon" [ref=e157]:
+                  - img [ref=e159]
+                - generic [ref=e596]: "1"
+          - link:
+            - /url: /contact
+          - generic "not logged in user account" [ref=e161] [cursor=pointer]:
+            - img [ref=e163]
+  - article [ref=e168]:
+    - generic "product customization container" [ref=e169]:
+      - generic [ref=e171]:
+        - navigation "breadcrumb" [ref=e173]:
+          - list [ref=e174]:
+            - listitem [ref=e175]:
+              - link "All products" [ref=e176] [cursor=pointer]:
+                - /url: /shop
+              - generic [ref=e177]: /
+            - listitem [ref=e178]:
+              - link "Discover" [ref=e179] [cursor=pointer]:
+                - /url: /shop/c/discover
+              - generic [ref=e180]: /
+            - listitem [ref=e181]:
+              - link "Holiday picks" [ref=e182] [cursor=pointer]:
+                - /url: /shop/c/discover/discover-holiday-picks
+        - generic [ref=e185]:
+          - button "Previous slide" [ref=e186]:
+            - generic [ref=e187]: Go to previous slide
+          - button "Next slide" [ref=e188]:
+            - generic [ref=e189]: Go to next slide
+          - generic [ref=e191]:
+            - group "5 / 5" [ref=e192]:
+              - generic [ref=e193]:
+                - figure
+            - group "1 / 5" [ref=e194]:
+              - generic [ref=e195]:
+                - figure
+            - group "2 / 5" [ref=e196]:
+              - generic [ref=e197]:
+                - figure
+            - group "3 / 5" [ref=e198]:
+              - generic [ref=e199]:
+                - figure
+            - group "4 / 5" [ref=e200]:
+              - generic [ref=e201]:
+                - figure
+            - group "5 / 5" [ref=e202]:
+              - generic [ref=e203]:
+                - figure
+            - group "1 / 5" [ref=e204]:
+              - generic [ref=e205]:
+                - figure
+          - generic [ref=e206]:
+            - button "Go to slide 1" [ref=e207] [cursor=pointer]
+            - button "Go to slide 2" [ref=e208] [cursor=pointer]
+            - button "Go to slide 3" [ref=e209] [cursor=pointer]
+            - button "Go to slide 4" [ref=e210] [cursor=pointer]
+            - button "Go to slide 5" [ref=e211] [cursor=pointer]
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - heading "AS Colour vintage hoodie" [level=1] [ref=e217]
+            - generic [ref=e218]:
+              - link "View product details" [ref=e219] [cursor=pointer]:
+                - /url: "#variant-specificities"
+                - text: View product details
+                - generic [ref=e220]:
+                  - img
+              - button "Buy a sample" [ref=e221] [cursor=pointer]:
+                - text: Buy a sample
+                - generic [ref=e222]:
+                  - img
+              - button [ref=e224] [cursor=pointer]:
+                - generic [ref=e225]:
+                  - img
+          - generic "product details for desktop" [ref=e226]:
+            - generic [ref=e227]:
+              - heading "1. Pick a product variant" [level=2] [ref=e228]
+              - generic [ref=e229]:
+                - generic "Select Gender" [ref=e230]: "Gender:"
+                - group "Select Gender" [ref=e231]:
+                  - button "Gender Men" [ref=e232] [cursor=pointer]: Men
+                  - button "Gender Women" [ref=e233] [cursor=pointer]: Women
+                - generic "Select Color" [ref=e234]: "Color:"
+                - group "Select Color" [ref=e235]:
+                  - button "Color Faded Powder" [ref=e236] [cursor=pointer]
+                  - button "Color Faded Bone" [ref=e237] [cursor=pointer]
+                  - button "Color Faded Grey" [ref=e238] [cursor=pointer]
+                  - button "Color Faded Black" [ref=e239] [cursor=pointer]
+            - generic [ref=e240]:
+              - heading "2. Upload your design" [level=2] [ref=e241]
+              - generic "Customization section" [ref=e242]:
+                - generic [ref=e243]:
+                  - tablist [ref=e244]:
+                    - tab "Select location Front" [selected] [ref=e245] [cursor=pointer]: Front
+                    - tab "Select location Back" [ref=e246] [cursor=pointer]: Back
+                  - tabpanel "Select location Front" [ref=e247]:
+                    - generic "Recently added logos" [ref=e597]:
+                      - generic [ref=e598]:
+                        - generic [ref=e599]:
+                          - text: Recently uploaded
+                          - generic [ref=e600]:
+                            - button "gm-logo.svg" [ref=e601] [cursor=pointer]:
+                              - img "gm-logo.svg" [ref=e602]
+                            - button "gm-logo.svg" [ref=e603] [cursor=pointer]:
+                              - img "gm-logo.svg" [ref=e604]
+                            - button "gm-logo.svg" [ref=e605] [cursor=pointer]:
+                              - img "gm-logo.svg" [ref=e606]
+                            - button "test-logo.svg" [ref=e607] [cursor=pointer]:
+                              - img "test-logo.svg" [ref=e608]
+                        - button "Upload new" [ref=e610] [cursor=pointer]:
+                          - text: Upload new
+                          - img
+                      - generic [ref=e612]:
+                        - generic [ref=e613]:
+                          - paragraph [ref=e614]: Save & access your full library
+                          - paragraph [ref=e615]: Login to reuse designs across all your orders
+                        - button "Login or Sign up" [ref=e616] [cursor=pointer]
+            - generic "Quantity selection" [ref=e256]:
+              - heading "3. Quantity" [level=2] [ref=e257]
+              - generic [ref=e258]:
+                - generic [ref=e259]:
+                  - generic [ref=e260]:
+                    - textbox "Quantity input" [ref=e262]: "30"
+                    - paragraph [ref=e263]: 32,45 €/piece
+                    - paragraph [ref=e265]: Save 10%
+                    - paragraph [ref=e266]: 973,50 €
+                  - paragraph [ref=e267]: Fill in the exact amount you need. The minimum quantity for this product is 15.
+                - generic [ref=e269] [cursor=pointer]:
+                  - paragraph [ref=e270]: 15 pieces
+                  - paragraph [ref=e271]: 36,02 €/piece
+                  - paragraph [ref=e272]: 540,30 €
+                - generic [ref=e274] [cursor=pointer]:
+                  - paragraph [ref=e275]: 25 pieces
+                  - paragraph [ref=e276]: 32,45 €/piece
+                  - paragraph [ref=e278]: Save 10%
+                  - paragraph [ref=e279]: 811,25 €
+                - generic [ref=e281] [cursor=pointer]:
+                  - paragraph [ref=e282]: 50 pieces
+                  - paragraph [ref=e283]: 31,27 €/piece
+                  - paragraph [ref=e285]: Save 13%
+                  - paragraph [ref=e286]: 1.563,50 €
+                - generic [ref=e288] [cursor=pointer]:
+                  - paragraph [ref=e289]: 100 pieces
+                  - paragraph [ref=e290]: 30,18 €/piece
+                  - paragraph [ref=e292]: Save 16%
+                  - paragraph [ref=e293]: 3.018,00 €
+                - generic [ref=e295] [cursor=pointer]:
+                  - paragraph [ref=e296]: 200 pieces
+                  - paragraph [ref=e297]: 28,20 €/piece
+                  - paragraph [ref=e299]: Save 22%
+                  - paragraph [ref=e300]: 5.640,00 €
+                - generic [ref=e302] [cursor=pointer]:
+                  - paragraph [ref=e303]: 300 pieces
+                  - paragraph [ref=e304]: 26,06 €/piece
+                  - paragraph [ref=e306]: Save 28%
+                  - paragraph [ref=e307]: 7.818,00 €
+                - generic [ref=e309] [cursor=pointer]:
+                  - paragraph [ref=e310]: 400 pieces
+                  - paragraph [ref=e311]: 25,29 €/piece
+                  - paragraph [ref=e313]: Save 30%
+                  - paragraph [ref=e314]: 10.116,00 €
+        - generic [ref=e315]:
+          - generic [ref=e316]:
+            - generic [ref=e317]:
+              - paragraph [ref=e318]: "Lead time:"
+              - paragraph [ref=e319]: Approximately 10-16 business days
+            - generic [ref=e320]:
+              - generic [ref=e321]:
+                - generic [ref=e322]: "Total:"
+                - generic "Total price" [ref=e323]:
+                  - text: 973,50 €
+                  - button [ref=e324]:
+                    - generic [ref=e326]:
+                      - img
+              - generic [ref=e327]:
+                - paragraph [ref=e328]: Upload your design to get your final price.
+                - img [ref=e332]
+          - button "Add to cart button" [ref=e339] [cursor=pointer]:
+            - text: Add to cart
+            - generic [ref=e340]:
+              - img
+    - generic [ref=e341]:
+      - link "Excellent | 4.8 out of 5" [ref=e342] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e343]:
+          - img [ref=e344]
+          - paragraph [ref=e350]: Excellent | 4.8 out of 5
+      - generic [ref=e351]:
+        - generic [ref=e352]:
+          - img [ref=e354]
+          - generic [ref=e359]: Worldwide delivery
+        - generic [ref=e360]: EU, UK and USA
+      - generic [ref=e361]:
+        - generic [ref=e362]:
+          - img [ref=e364]
+          - generic [ref=e370]: Quality control
+        - generic [ref=e371]: Each order is double checked before production
+      - generic [ref=e372]:
+        - generic [ref=e373]:
+          - img [ref=e375]
+          - generic [ref=e377]: They trust us!
+        - generic [ref=e378]: Trusted by 2.000+ customers
+    - generic [ref=e379]:
+      - heading "Product details" [level=1] [ref=e380]
+      - generic [ref=e381]:
+        - paragraph [ref=e382]: Stay comfortable and stylish with the AS Colour vintage hoodie. Crafted from a blend of cotton and recycled polyester, this mid-weight hoodie has a relaxed fit and an ultra-soft feel. The drop shoulder, kangaroo pocket, and garment-dyed finish create the perfect vintage look. Available for customisation in men’s and women’s versions for the perfect fit.
+        - generic [ref=e383]:
+          - heading "Size guide and measurements" [level=3] [ref=e618]:
+            - button "Size guide and measurements" [ref=e619] [cursor=pointer]:
+              - heading "Size guide and measurements" [level=1] [ref=e620]
+          - heading "Production" [level=3] [ref=e385]:
+            - button "Production" [ref=e386] [cursor=pointer]:
+              - heading "Production" [level=1] [ref=e387]
+          - heading "Product specificities" [level=3] [ref=e393]:
+            - button "Product specificities" [ref=e394] [cursor=pointer]:
+              - heading "Product specificities" [level=1] [ref=e395]
+          - heading "Customization" [level=3] [ref=e401]:
+            - button "Customization" [ref=e402] [cursor=pointer]:
+              - heading "Customization" [level=1] [ref=e403]
+    - generic [ref=e410]:
+      - generic [ref=e411]: The AS Colour vintage hoodie combines a relaxed fit with thoughtful details like a self-fabric lined hood, ribbed cuffs, and a kangaroo pocket. The garment-dyed finish adds a unique, worn-in feel, making it a timeless wardrobe staple.
+      - figure [ref=e413]
+    - generic [ref=e414]:
+      - heading "You might also like..." [level=2] [ref=e415]
+      - generic [ref=e417]:
+        - generic [ref=e419]: Go to previous slide
+        - generic [ref=e421]: Go to next slide
+        - generic [ref=e424]:
+          - group "1 / 6" [ref=e425]:
+            - link "Best sellers Hoodie heavy From 22.8 € Add to favorites" [ref=e426] [cursor=pointer]:
+              - /url: /shop/hoodie-heavy
+              - generic [ref=e427]:
+                - generic [ref=e428]:
+                  - generic [ref=e429]:
+                    - generic [ref=e431]: Best sellers
+                    - figure:
+                      - img "Hoodie heavy" [ref=e432]
+                    - figure:
+                      - img "Hoodie heavy" [ref=e433]
+                  - generic [ref=e434]:
+                    - generic [ref=e435]: Hoodie heavy
+                    - generic [ref=e436]: From 22.8 €
+                - button "Add to favorites" [ref=e438]:
+                  - img [ref=e440]
+          - group "2 / 6" [ref=e443]:
+            - link "Best sellers Oversized hoodie From 33.91 € Add to favorites" [ref=e444] [cursor=pointer]:
+              - /url: /shop/oversized-hoodie
+              - generic [ref=e445]:
+                - generic [ref=e446]:
+                  - generic [ref=e447]:
+                    - generic [ref=e449]: Best sellers
+                    - figure:
+                      - img "Oversized hoodie" [ref=e450]
+                    - figure:
+                      - img "Oversized hoodie" [ref=e451]
+                  - generic [ref=e452]:
+                    - generic [ref=e453]: Oversized hoodie
+                    - generic [ref=e454]: From 33.91 €
+                - button "Add to favorites" [ref=e456]:
+                  - img [ref=e458]
+          - group "3 / 6" [ref=e461]:
+            - link "Oversized soft hoodie From 27.59 € Add to favorites" [ref=e462] [cursor=pointer]:
+              - /url: /shop/oversized-soft-hoodie
+              - generic [ref=e463]:
+                - generic [ref=e464]:
+                  - generic [ref=e465]:
+                    - figure:
+                      - img "Oversized soft hoodie" [ref=e466]
+                    - figure:
+                      - img "Oversized soft hoodie" [ref=e467]
+                  - generic [ref=e468]:
+                    - generic [ref=e469]: Oversized soft hoodie
+                    - generic [ref=e470]: From 27.59 €
+                - button "Add to favorites" [ref=e472]:
+                  - img [ref=e474]
+          - group "4 / 6" [ref=e477]:
+            - link "Hoodie light From 18.47 € Add to favorites" [ref=e478] [cursor=pointer]:
+              - /url: /shop/hoodie-light
+              - generic [ref=e479]:
+                - generic [ref=e480]:
+                  - generic [ref=e481]:
+                    - figure:
+                      - img "Hoodie light" [ref=e482]
+                    - figure:
+                      - img "Hoodie light" [ref=e483]
+                  - generic [ref=e484]:
+                    - generic [ref=e485]: Hoodie light
+                    - generic [ref=e486]: From 18.47 €
+                - button "Add to favorites" [ref=e488]:
+                  - img [ref=e490]
+          - group "5 / 6" [ref=e493]:
+            - link "Vintage oversized crewneck From 25.18 € Add to favorites" [ref=e494] [cursor=pointer]:
+              - /url: /shop/vintage-oversized-crewneck
+              - generic [ref=e495]:
+                - generic [ref=e496]:
+                  - generic [ref=e497]:
+                    - figure:
+                      - img "Vintage oversized crewneck" [ref=e498]
+                    - figure:
+                      - img "Vintage oversized crewneck" [ref=e499]
+                  - generic [ref=e500]:
+                    - generic [ref=e501]: Vintage oversized crewneck
+                    - generic [ref=e502]: From 25.18 €
+                - button "Add to favorites" [ref=e504]:
+                  - img [ref=e506]
+          - group "6 / 6" [ref=e509]:
+            - link "Boxy recycled cotton hoodie From 26.28 € Add to favorites" [ref=e510] [cursor=pointer]:
+              - /url: /shop/boxy-recycled-cotton-hoodie
+              - generic [ref=e511]:
+                - generic [ref=e512]:
+                  - generic [ref=e513]:
+                    - figure:
+                      - img "Boxy recycled cotton hoodie" [ref=e514]
+                    - figure:
+                      - img "Boxy recycled cotton hoodie" [ref=e515]
+                  - generic [ref=e516]:
+                    - generic [ref=e517]: Boxy recycled cotton hoodie
+                    - generic [ref=e518]: From 26.28 €
+                - button "Add to favorites" [ref=e520]:
+                  - img [ref=e522]
+    - generic [ref=e525]:
+      - complementary "Frequently asked questions" [ref=e526]:
+        - generic [ref=e527]:
+          - heading "Frequently asked questions" [level=2] [ref=e528]
+          - paragraph [ref=e529]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e531] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e532]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e534]:
+            - button "How can I find out more about your products?" [ref=e535] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e541]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e542] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e548]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e549] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e555]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e556] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e562]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e563] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e569]:
+            - button "Where do you ship?" [ref=e570] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e576]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e577] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e582]:
+        - generic [ref=e583]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e584]
+          - generic [ref=e585]:
+            - textbox "Enter your email address" [ref=e587]
+            - button "Subscribe" [ref=e588] [cursor=pointer]
+  - alert [ref=e589]
+  - contentinfo [ref=e625]:
+    - generic [ref=e626]:
+      - generic "Social networks" [ref=e627]:
+        - generic [ref=e628]: "FOLLOW US:"
+        - list [ref=e629]:
+          - listitem [ref=e630]:
+            - link "Instagram" [ref=e631] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e632]:
+            - link "LinkedIn" [ref=e633] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e635]:
+        - text: Based in
+        - link "Brussels" [ref=e636] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e637] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e638] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - list [ref=e639]:
+      - listitem [ref=e640]:
+        - navigation "Primary pages" [ref=e641]:
+          - generic [ref=e642]: Company
+          - list [ref=e643]:
+            - listitem [ref=e644]:
+              - link "About us" [ref=e645] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e646]:
+              - link "Environmental footprint" [ref=e647] [cursor=pointer]:
+                - /url: /about/environmental-footprint
+            - listitem [ref=e648]:
+              - link "Value chain" [ref=e649] [cursor=pointer]:
+                - /url: /about/value-chain
+            - listitem [ref=e650]:
+              - link "People & culture" [ref=e651] [cursor=pointer]:
+                - /url: /about/people-and-culture
+      - listitem [ref=e652]:
+        - navigation "Primary pages" [ref=e653]:
+          - generic [ref=e654]: Services
+          - list [ref=e655]:
+            - listitem [ref=e656]:
+              - link "Shop all" [ref=e657] [cursor=pointer]:
+                - /url: /shop
+            - listitem [ref=e658]:
+              - link "Bespoke" [ref=e659] [cursor=pointer]:
+                - /url: /bespoke
+            - listitem [ref=e660]:
+              - link "Platform" [ref=e661] [cursor=pointer]:
+                - /url: /platform
+            - listitem [ref=e662]:
+              - link "Agencies" [ref=e663] [cursor=pointer]:
+                - /url: /club
+      - listitem [ref=e664]:
+        - navigation "Primary pages" [ref=e665]:
+          - generic [ref=e666]: Inspiration
+          - list [ref=e667]:
+            - listitem [ref=e668]:
+              - link "Blog" [ref=e669] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e670]:
+              - link "Cases" [ref=e671] [cursor=pointer]:
+                - /url: /work
+      - listitem [ref=e672]:
+        - navigation "Primary pages" [ref=e673]:
+          - generic [ref=e674]: Let us help
+          - list [ref=e675]:
+            - listitem [ref=e676]:
+              - link "FAQ" [ref=e677] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e678]:
+              - link "Terms & conditions" [ref=e679] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e680]:
+              - link "Privacy" [ref=e681] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e682]:
+              - link "Returns" [ref=e683] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e684]:
+              - link "Contact us" [ref=e685] [cursor=pointer]:
+                - /url: /contact
+      - listitem [ref=e686]:
+        - navigation "Primary pages" [ref=e687]:
+          - generic [ref=e688]: Account
+          - list [ref=e689]:
+            - listitem [ref=e690]:
+              - link "Orders" [ref=e691] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e692]:
+              - link "Preferences" [ref=e693] [cursor=pointer]:
+                - /url: /account/preferences/information
+            - listitem [ref=e694]:
+              - link "Saved projects" [ref=e695] [cursor=pointer]:
+                - /url: /account/projects
+            - listitem [ref=e696]:
+              - link "Invoices" [ref=e697] [cursor=pointer]:
+                - /url: /account/preferences/invoices
+    - generic [ref=e698]:
+      - list [ref=e699]:
+        - listitem [ref=e700]:
+          - figure [ref=e701]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e702]
+        - listitem [ref=e703]:
+          - figure [ref=e704]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e705]
+      - generic [ref=e706]:
+        - generic [ref=e707]: "Secure payments:"
+        - list [ref=e708]:
+          - listitem [ref=e709]:
+            - figure [ref=e710]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e711]
+          - listitem [ref=e712]:
+            - figure [ref=e713]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e714]
+          - listitem [ref=e715]:
+            - figure [ref=e716]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e717]
+          - listitem [ref=e718]:
+            - figure [ref=e719]:
+              - img "Visa_613308d9b9.svg" [ref=e720]
+          - listitem [ref=e721]:
+            - figure [ref=e722]:
+              - img "American_express_e0a23a5002.svg" [ref=e723]
+  - button "Open chat" [ref=e590] [cursor=pointer]:
+    - img [ref=e592]
+  - iframe [ref=e724]:
+    

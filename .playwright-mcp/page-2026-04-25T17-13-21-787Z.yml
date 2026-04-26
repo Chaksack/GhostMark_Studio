@@ -1,0 +1,479 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f36e2]:
+            - link "Trustpilot reviews" [ref=f36e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f36e4]: Excellent
+              - generic [ref=f36e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f36e9]
+            - generic [ref=f36e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f36e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /en-GB/about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /en-GB/work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /en-GB/club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /en-GB/contact
+          - listitem [ref=e16]:
+            - button "United Kingdom | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e30]: United Kingdom
+                - generic [ref=e31]: "|"
+                - generic [ref=e32]: English
+                - img [ref=e33]
+      - navigation [ref=e35]:
+        - link [ref=e37] [cursor=pointer]:
+          - /url: /en-GB
+          - img [ref=e38]
+        - generic [ref=e41]:
+          - textbox "search input" [ref=e42]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e43] [cursor=pointer]:
+            - img [ref=e45]
+        - generic [ref=e48]:
+          - generic "not logged in user account" [ref=e49] [cursor=pointer]:
+            - img [ref=e51]
+          - link "favorites" [ref=e56] [cursor=pointer]:
+            - /url: /en-GB/shop/c/favorites
+            - generic "favorites" [ref=e57]:
+              - img [ref=e58]
+          - link:
+            - /url: /en-GB/contact
+          - link "cart icon" [ref=e60] [cursor=pointer]:
+            - /url: /en-GB/checkout/cart
+            - button "cart icon" [ref=e62]:
+              - generic "cart icon" [ref=e64]:
+                - img [ref=e66]
+      - navigation [ref=e68]:
+        - list [ref=e69]:
+          - listitem [ref=e70]:
+            - link "Apparel" [ref=e71] [cursor=pointer]:
+              - /url: /en-GB/shop/c/apparel
+          - listitem [ref=e72]:
+            - link "Bags" [ref=e73] [cursor=pointer]:
+              - /url: /en-GB/shop/c/bags
+          - listitem [ref=e74]:
+            - link "Headwear" [ref=e75] [cursor=pointer]:
+              - /url: /en-GB/shop/c/headwear
+          - listitem [ref=e76]:
+            - link "Office" [ref=e77] [cursor=pointer]:
+              - /url: /en-GB/shop/c/office
+          - listitem [ref=e78]:
+            - link "Drinkware" [ref=e79] [cursor=pointer]:
+              - /url: /en-GB/shop/c/drinkware
+          - listitem [ref=e80]:
+            - link "Home" [ref=e81] [cursor=pointer]:
+              - /url: /en-GB/shop/c/home
+          - listitem [ref=e82]:
+            - link "Wellness" [ref=e83] [cursor=pointer]:
+              - /url: /en-GB/shop/c/wellness
+          - listitem [ref=e84]:
+            - link "Others" [ref=e85] [cursor=pointer]:
+              - /url: /en-GB/shop/c/others
+          - listitem [ref=e86]:
+            - link "Discover" [ref=e87] [cursor=pointer]:
+              - /url: /en-GB/shop/c/discover
+          - listitem [ref=e88]:
+            - link "Brands" [ref=e89] [cursor=pointer]:
+              - /url: /en-GB/shop/c/brands
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - heading "Are you a branding agency, an event agency, or a freelancer? Join our exclusive club designed just for you!" [level=1] [ref=e92]
+        - link "Become a member" [ref=e93] [cursor=pointer]:
+          - /url: "#club-form"
+      - list [ref=e95]:
+        - listitem [ref=e96]:
+          - figure [ref=e97]:
+            - img "highsnobeity_cropped_dac5b1660f.png" [ref=e98]
+        - listitem [ref=e99]:
+          - figure [ref=e100]:
+            - img "Base_cropped_b6cc493253.png" [ref=e101]
+        - listitem [ref=e102]:
+          - figure [ref=e103]:
+            - img "DEPT_a99d9d383c.png" [ref=e104]
+        - listitem [ref=e105]:
+          - figure [ref=e106]:
+            - img "Koto_dd66442cee.webp" [ref=e107]
+        - listitem [ref=e108]:
+          - figure [ref=e109]:
+            - img "drogo_cropped_c9300cdeff.png" [ref=e110]
+        - listitem [ref=e111]:
+          - figure [ref=e112]:
+            - img "pentagram_cropped_48b7952752.png" [ref=e113]
+        - listitem [ref=e114]:
+          - figure [ref=e115]:
+            - img "TBWA_cropped_293ef4303f.png" [ref=e116]
+        - listitem [ref=e117]:
+          - figure [ref=e118]:
+            - img "WO_cropped_47949781ce.png" [ref=e119]
+        - listitem [ref=e120]:
+          - figure [ref=e121]:
+            - img "highsnobeity_cropped_dac5b1660f.png" [ref=e122]
+        - listitem [ref=e123]:
+          - figure [ref=e124]:
+            - img "Base_cropped_b6cc493253.png" [ref=e125]
+        - listitem [ref=e126]:
+          - figure [ref=e127]:
+            - img "DEPT_a99d9d383c.png" [ref=e128]
+        - listitem [ref=e129]:
+          - figure [ref=e130]:
+            - img "Koto_dd66442cee.webp" [ref=e131]
+        - listitem [ref=e132]:
+          - figure [ref=e133]:
+            - img "drogo_cropped_c9300cdeff.png" [ref=e134]
+        - listitem [ref=e135]:
+          - figure [ref=e136]:
+            - img "pentagram_cropped_48b7952752.png" [ref=e137]
+        - listitem [ref=e138]:
+          - figure [ref=e139]:
+            - img "TBWA_cropped_293ef4303f.png" [ref=e140]
+        - listitem [ref=e141]:
+          - figure [ref=e142]:
+            - img "WO_cropped_47949781ce.png" [ref=e143]
+        - listitem [ref=e144]:
+          - figure [ref=e145]:
+            - img "highsnobeity_cropped_dac5b1660f.png" [ref=e146]
+        - listitem [ref=e147]:
+          - figure [ref=e148]:
+            - img "Base_cropped_b6cc493253.png" [ref=e149]
+        - listitem [ref=e150]:
+          - figure [ref=e151]:
+            - img "DEPT_a99d9d383c.png" [ref=e152]
+        - listitem [ref=e153]:
+          - figure [ref=e154]:
+            - img "Koto_dd66442cee.webp" [ref=e155]
+        - listitem [ref=e156]:
+          - figure [ref=e157]:
+            - img "drogo_cropped_c9300cdeff.png" [ref=e158]
+        - listitem [ref=e159]:
+          - figure [ref=e160]:
+            - img "pentagram_cropped_48b7952752.png" [ref=e161]
+        - listitem [ref=e162]:
+          - figure [ref=e163]:
+            - img "TBWA_cropped_293ef4303f.png" [ref=e164]
+        - listitem [ref=e165]:
+          - figure [ref=e166]:
+            - img "WO_cropped_47949781ce.png" [ref=e167]
+        - listitem [ref=e168]:
+          - figure [ref=e169]:
+            - img "highsnobeity_cropped_dac5b1660f.png" [ref=e170]
+        - listitem [ref=e171]:
+          - figure [ref=e172]:
+            - img "Base_cropped_b6cc493253.png" [ref=e173]
+        - listitem [ref=e174]:
+          - figure [ref=e175]:
+            - img "DEPT_a99d9d383c.png" [ref=e176]
+        - listitem [ref=e177]:
+          - figure [ref=e178]:
+            - img "Koto_dd66442cee.webp" [ref=e179]
+        - listitem [ref=e180]:
+          - figure [ref=e181]:
+            - img "drogo_cropped_c9300cdeff.png" [ref=e182]
+        - listitem [ref=e183]:
+          - figure [ref=e184]:
+            - img "pentagram_cropped_48b7952752.png" [ref=e185]
+        - listitem [ref=e186]:
+          - figure [ref=e187]:
+            - img "TBWA_cropped_293ef4303f.png" [ref=e188]
+        - listitem [ref=e189]:
+          - figure [ref=e190]:
+            - img "WO_cropped_47949781ce.png" [ref=e191]
+    - generic [ref=e193]:
+      - tablist [ref=e194]:
+        - list [ref=e195]:
+          - tab "A dedicated team" [selected] [ref=e196] [cursor=pointer]
+          - tab "Bespoke production" [ref=e197] [cursor=pointer]
+          - tab "A tailored service for agencies" [ref=e198] [cursor=pointer]
+          - tab "Our referral program" [ref=e199] [cursor=pointer]
+      - tabpanel [ref=e200]:
+        - generic [ref=e201]:
+          - heading "A dedicated team" [level=2] [ref=e202]
+          - paragraph [ref=e203]: Discover the power of a dedicated team at your fingertips. Fred & Michael are here to turn your wildest creative visions into reality. If you are a creative agency that needs merch for its clients and events, become a club member to enjoy more flexibility such as fast responses, express shipping, and exclusive products!
+          - link "Become a member" [ref=e204] [cursor=pointer]:
+            - /url: "#club-form"
+        - figure [ref=e205]
+    - generic [ref=e206]:
+      - generic [ref=e209]:
+        - heading "Love Supreme’s branding story through the eyes of Pentagram’s Partner & Creative Director Marina Willer." [level=2] [ref=e210]
+        - generic [ref=e211]:
+          - paragraph [ref=e212]: Marina Willer, Partner & Creative Director at Pentagram, joined us for a conversation about the meaning of creativity and how she finds inspiration in the unconventional.
+          - paragraph [ref=e213]: She revealed how she shaped the distinctive identity of Love Supreme Projects, a London-based yoga studio rooted in mindfulness and design thanks to unconventional and experimental approach.
+        - link "Read more" [ref=e214] [cursor=pointer]:
+          - /url: /en-GB/blog/marina-willer-pentagram-love-supreme-branding
+      - generic [ref=e217]:
+        - button "Previous slide" [ref=e218]:
+          - generic [ref=e219]: Go to previous slide
+        - button "Next slide" [ref=e220]:
+          - generic [ref=e221]: Go to next slide
+        - generic [ref=e223]:
+          - group "4 / 4" [ref=e224]:
+            - generic [ref=e225]:
+              - figure
+          - group "1 / 4" [ref=e226]:
+            - generic [ref=e227]:
+              - figure
+          - group "2 / 4" [ref=e228]:
+            - generic [ref=e229]:
+              - figure
+          - group "3 / 4" [ref=e230]:
+            - generic [ref=e231]:
+              - figure
+          - group "4 / 4" [ref=e232]:
+            - generic [ref=e233]:
+              - figure
+          - group "1 / 4" [ref=e234]:
+            - generic [ref=e235]:
+              - figure
+        - generic [ref=e236]:
+          - button "Go to slide 1" [ref=e237] [cursor=pointer]
+          - button "Go to slide 2" [ref=e238] [cursor=pointer]
+          - button "Go to slide 3" [ref=e239] [cursor=pointer]
+          - button "Go to slide 4" [ref=e240] [cursor=pointer]
+    - generic [ref=e241]:
+      - generic [ref=e244]:
+        - heading "Thierry Brunfaut, Founding Partner at Base Design dives into the vision behind the rebranding of L’Institut Français de la Mode." [level=2] [ref=e245]
+        - paragraph [ref=e247]: Discover how Thierry Brunfaut and the team at Base Design reimagined the branding of L’Institut Français de la Mode, one of the world’s top fashion school. Find out more about the creative process, challenges, and key strategies behind crafting a globally resonant brand identity.
+        - link "Read more" [ref=e248] [cursor=pointer]:
+          - /url: /en-GB/blog/base-design-s-thierry-brunfaut-on-the-rebranding-of-l-institut-francais-de-la-mode
+      - generic [ref=e251]:
+        - button "Previous slide" [ref=e252]:
+          - generic [ref=e253]: Go to previous slide
+        - button "Next slide" [ref=e254]:
+          - generic [ref=e255]: Go to next slide
+        - generic [ref=e257]:
+          - group "4 / 4" [ref=e258]:
+            - generic [ref=e259]:
+              - figure
+          - group "1 / 4" [ref=e260]:
+            - generic [ref=e261]:
+              - figure
+          - group "2 / 4" [ref=e262]:
+            - generic [ref=e263]:
+              - figure
+          - group "3 / 4" [ref=e264]:
+            - generic [ref=e265]:
+              - figure
+          - group "4 / 4" [ref=e266]:
+            - generic [ref=e267]:
+              - figure
+          - group "1 / 4" [ref=e268]:
+            - generic [ref=e269]:
+              - figure
+        - generic [ref=e270]:
+          - button "Go to slide 1" [ref=e271] [cursor=pointer]
+          - button "Go to slide 2" [ref=e272] [cursor=pointer]
+          - button "Go to slide 3" [ref=e273] [cursor=pointer]
+          - button "Go to slide 4" [ref=e274] [cursor=pointer]
+    - generic [ref=e276] [cursor=pointer]:
+      - heading "Meet our team" [level=2] [ref=e278]
+      - button "Play video" [ref=e279]:
+        - img [ref=e280]
+        - generic [ref=e282]: Play the video
+    - generic [ref=e283]:
+      - generic [ref=e284]:
+        - generic [ref=e285]:
+          - heading "Become a member" [level=2] [ref=e286]
+          - generic [ref=e287]:
+            - heading "Do you need to discuss your project in details? Let’s chat and make your dream merch a reality." [level=3] [ref=e288]
+            - paragraph [ref=e289]: Trusted by the world’s best agencies.
+          - generic [ref=e290]:
+            - figure [ref=e291]:
+              - img "client logo" [ref=e292]
+            - figure [ref=e293]:
+              - img "client logo" [ref=e294]
+            - figure [ref=e295]:
+              - img "client logo" [ref=e296]
+            - figure [ref=e297]:
+              - img "client logo" [ref=e298]
+        - generic [ref=e299]:
+          - text: Already plan a moment to discuss
+          - link "Book a Call" [ref=e300] [cursor=pointer]:
+            - /url: https://meetings.hubspot.com/team-merchery/-merchery
+      - generic [ref=e303]:
+        - generic [ref=e304]:
+          - generic [ref=e305]: Name*
+          - textbox "Name*" [ref=e306]:
+            - /placeholder: Your last name
+        - generic [ref=e307]:
+          - generic [ref=e308]: First name*
+          - textbox "First name*" [ref=e309]:
+            - /placeholder: Your first name
+        - generic [ref=e310]:
+          - generic [ref=e311]: Email*
+          - textbox "Email*" [ref=e312]:
+            - /placeholder: Enter your email
+        - generic [ref=e313]:
+          - text: Phone number
+          - generic [ref=e314]:
+            - button "🇧🇪 +32" [ref=e315] [cursor=pointer]:
+              - generic [ref=e316]: 🇧🇪
+              - generic [ref=e317]: "+32"
+              - img
+            - textbox "Phone number" [ref=e318]:
+              - /placeholder: Your phone number
+        - generic [ref=e319]:
+          - generic [ref=e320]: Agency name*
+          - textbox "Agency name*" [ref=e321]:
+            - /placeholder: The name of your agency
+        - generic [ref=e322]:
+          - generic [ref=e323]: Website URL*
+          - textbox "Website URL*" [ref=e324]:
+            - /placeholder: The URL of your company website
+        - generic [ref=e325]:
+          - generic [ref=e327]:
+            - checkbox "I agree to receive communications and updates" [ref=e328] [cursor=pointer]
+            - checkbox
+            - generic [ref=e329]: I agree to receive communications and updates
+          - generic [ref=e331]:
+            - checkbox "I agree to the processing of my personal data*" [ref=e332] [cursor=pointer]
+            - checkbox
+            - generic [ref=e334]: I agree to the processing of my personal data*
+        - button "Become a member" [disabled]
+    - complementary [ref=e336]:
+      - generic [ref=e337]:
+        - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e338]
+        - generic [ref=e339]:
+          - textbox "Enter your email address" [ref=e341]
+          - button "Subscribe" [ref=e342] [cursor=pointer]
+  - alert [ref=e343]
+  - contentinfo [ref=e344]:
+    - generic [ref=e345]:
+      - generic "Social networks" [ref=e346]:
+        - generic [ref=e347]: "FOLLOW US:"
+        - list [ref=e348]:
+          - listitem [ref=e349]:
+            - link "Instagram" [ref=e350] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e351]:
+            - link "LinkedIn" [ref=e352] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e354]:
+        - text: Based in
+        - link "Brussels" [ref=e355] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e356] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e357] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - list [ref=e358]:
+      - listitem [ref=e359]:
+        - navigation "Primary pages" [ref=e360]:
+          - generic [ref=e361]: Company
+          - list [ref=e362]:
+            - listitem [ref=e363]:
+              - link "About us" [ref=e364] [cursor=pointer]:
+                - /url: /en-GB/about
+            - listitem [ref=e365]:
+              - link "Environmental footprint" [ref=e366] [cursor=pointer]:
+                - /url: /en-GB/about/environmental-footprint
+            - listitem [ref=e367]:
+              - link "Value chain" [ref=e368] [cursor=pointer]:
+                - /url: /en-GB/about/value-chain
+            - listitem [ref=e369]:
+              - link "People & culture" [ref=e370] [cursor=pointer]:
+                - /url: /en-GB/about/people-and-culture
+      - listitem [ref=e371]:
+        - navigation "Primary pages" [ref=e372]:
+          - generic [ref=e373]: Services
+          - list [ref=e374]:
+            - listitem [ref=e375]:
+              - link "Shop all" [ref=e376] [cursor=pointer]:
+                - /url: /en-GB/shop
+            - listitem [ref=e377]:
+              - link "Bespoke" [ref=e378] [cursor=pointer]:
+                - /url: /en-GB/bespoke
+            - listitem [ref=e379]:
+              - link "Platform" [ref=e380] [cursor=pointer]:
+                - /url: /en-GB/platform
+            - listitem [ref=e381]:
+              - link "Agencies" [ref=e382] [cursor=pointer]:
+                - /url: /en-GB/club
+      - listitem [ref=e383]:
+        - navigation "Primary pages" [ref=e384]:
+          - generic [ref=e385]: Inspiration
+          - list [ref=e386]:
+            - listitem [ref=e387]:
+              - link "Blog" [ref=e388] [cursor=pointer]:
+                - /url: /en-GB/blog
+            - listitem [ref=e389]:
+              - link "Cases" [ref=e390] [cursor=pointer]:
+                - /url: /en-GB/work
+      - listitem [ref=e391]:
+        - navigation "Primary pages" [ref=e392]:
+          - generic [ref=e393]: Let us help
+          - list [ref=e394]:
+            - listitem [ref=e395]:
+              - link "FAQ" [ref=e396] [cursor=pointer]:
+                - /url: /en-GB/faq
+            - listitem [ref=e397]:
+              - link "Terms & conditions" [ref=e398] [cursor=pointer]:
+                - /url: /en-GB/terms
+            - listitem [ref=e399]:
+              - link "Privacy" [ref=e400] [cursor=pointer]:
+                - /url: /en-GB/privacy
+            - listitem [ref=e401]:
+              - link "Returns" [ref=e402] [cursor=pointer]:
+                - /url: /en-GB/terms
+            - listitem [ref=e403]:
+              - link "Contact us" [ref=e404] [cursor=pointer]:
+                - /url: /en-GB/contact
+      - listitem [ref=e405]:
+        - navigation "Primary pages" [ref=e406]:
+          - generic [ref=e407]: Account
+          - list [ref=e408]:
+            - listitem [ref=e409]:
+              - link "Orders" [ref=e410] [cursor=pointer]:
+                - /url: /en-GB/account/orders
+            - listitem [ref=e411]:
+              - link "Preferences" [ref=e412] [cursor=pointer]:
+                - /url: /en-GB/account/preferences/information
+            - listitem [ref=e413]:
+              - link "Saved projects" [ref=e414] [cursor=pointer]:
+                - /url: /en-GB/account/projects
+            - listitem [ref=e415]:
+              - link "Invoices" [ref=e416] [cursor=pointer]:
+                - /url: /en-GB/account/preferences/invoices
+    - generic [ref=e417]:
+      - list [ref=e418]:
+        - listitem [ref=e419]:
+          - figure [ref=e420]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e421]
+        - listitem [ref=e422]:
+          - figure [ref=e423]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e424]
+      - generic [ref=e425]:
+        - generic [ref=e426]: "Secure payments:"
+        - list [ref=e427]:
+          - listitem [ref=e428]:
+            - figure [ref=e429]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e430]
+          - listitem [ref=e431]:
+            - figure [ref=e432]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e433]
+          - listitem [ref=e434]:
+            - figure [ref=e435]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e436]
+          - listitem [ref=e437]:
+            - figure [ref=e438]:
+              - img "Visa_613308d9b9.svg" [ref=e439]
+          - listitem [ref=e440]:
+            - figure [ref=e441]:
+              - img "American_express_e0a23a5002.svg" [ref=e442]
+  - button "Open chat" [ref=e443] [cursor=pointer]:
+    - img [ref=e445]
+  - iframe [ref=e447]:
+    

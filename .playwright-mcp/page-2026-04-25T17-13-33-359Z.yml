@@ -1,0 +1,230 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - iframe [ref=e6]:
+          - generic [ref=f46e2]:
+            - link "Trustpilot reviews" [ref=f46e3] [cursor=pointer]:
+              - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+              - generic [ref=f46e4]: Excellent
+              - generic [ref=f46e5]: 4.8 out of 5
+              - img "Trustpilot" [ref=f46e9]
+            - generic [ref=f46e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+            - generic [ref=f46e14]: Click to view the company's Trustpilot profile
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "About" [ref=e9] [cursor=pointer]:
+              - /url: /en-GB/about
+          - listitem [ref=e10]:
+            - link "Cases" [ref=e11] [cursor=pointer]:
+              - /url: /en-GB/work
+          - listitem [ref=e12]:
+            - link "Agencies" [ref=e13] [cursor=pointer]:
+              - /url: /en-GB/club
+          - listitem [ref=e14]:
+            - link "Contact us" [ref=e15] [cursor=pointer]:
+              - /url: /en-GB/contact
+          - listitem [ref=e16]:
+            - button "United Kingdom | English" [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]:
+                - img [ref=e21]
+                - generic [ref=e30]: United Kingdom
+                - generic [ref=e31]: "|"
+                - generic [ref=e32]: English
+                - img [ref=e33]
+      - navigation [ref=e35]:
+        - link [ref=e37] [cursor=pointer]:
+          - /url: /en-GB
+          - img [ref=e38]
+        - generic [ref=e41]:
+          - textbox "search input" [ref=e42]:
+            - /placeholder: Search for a product
+          - generic "search icon" [ref=e43] [cursor=pointer]:
+            - img [ref=e45]
+        - generic [ref=e48]:
+          - generic "not logged in user account" [ref=e49] [cursor=pointer]:
+            - img [ref=e51]
+          - link "favorites" [ref=e56] [cursor=pointer]:
+            - /url: /en-GB/shop/c/favorites
+            - generic "favorites" [ref=e57]:
+              - img [ref=e58]
+          - link:
+            - /url: /en-GB/contact
+          - link "cart icon" [ref=e60] [cursor=pointer]:
+            - /url: /en-GB/checkout/cart
+            - button "cart icon" [ref=e62]:
+              - generic "cart icon" [ref=e64]:
+                - img [ref=e66]
+      - navigation [ref=e68]:
+        - list [ref=e69]:
+          - listitem [ref=e70]:
+            - link "Apparel" [ref=e71] [cursor=pointer]:
+              - /url: /en-GB/shop/c/apparel
+          - listitem [ref=e72]:
+            - link "Bags" [ref=e73] [cursor=pointer]:
+              - /url: /en-GB/shop/c/bags
+          - listitem [ref=e74]:
+            - link "Headwear" [ref=e75] [cursor=pointer]:
+              - /url: /en-GB/shop/c/headwear
+          - listitem [ref=e76]:
+            - link "Office" [ref=e77] [cursor=pointer]:
+              - /url: /en-GB/shop/c/office
+          - listitem [ref=e78]:
+            - link "Drinkware" [ref=e79] [cursor=pointer]:
+              - /url: /en-GB/shop/c/drinkware
+          - listitem [ref=e80]:
+            - link "Home" [ref=e81] [cursor=pointer]:
+              - /url: /en-GB/shop/c/home
+          - listitem [ref=e82]:
+            - link "Wellness" [ref=e83] [cursor=pointer]:
+              - /url: /en-GB/shop/c/wellness
+          - listitem [ref=e84]:
+            - link "Others" [ref=e85] [cursor=pointer]:
+              - /url: /en-GB/shop/c/others
+          - listitem [ref=e86]:
+            - link "Discover" [ref=e87] [cursor=pointer]:
+              - /url: /en-GB/shop/c/discover
+          - listitem [ref=e88]:
+            - link "Brands" [ref=e89] [cursor=pointer]:
+              - /url: /en-GB/shop/c/brands
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - heading "Let's make your dream merch a reality." [level=2] [ref=e94]
+            - generic [ref=e95]:
+              - heading "To discuss your project in details, fill in the form and we'll be back to you in just a few hours." [level=3] [ref=e96]
+              - paragraph [ref=e97]: Trusted by 5000+ customers
+            - generic [ref=e98]:
+              - figure [ref=e99]:
+                - img "client logo" [ref=e100]
+              - figure [ref=e101]:
+                - img "client logo" [ref=e102]
+              - figure [ref=e103]:
+                - img "client logo" [ref=e104]
+              - figure [ref=e105]:
+                - img "client logo" [ref=e106]
+          - generic [ref=e107]:
+            - text: Already plan a moment to discuss
+            - link "Book a Call" [ref=e108] [cursor=pointer]:
+              - /url: https://meetings.hubspot.com/team-merchery/-merchery
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - generic [ref=e113]: Name*
+            - textbox "Name*" [ref=e114]:
+              - /placeholder: Name
+          - generic [ref=e115]:
+            - generic [ref=e116]: First name*
+            - textbox "First name*" [ref=e117]:
+              - /placeholder: First name
+          - generic [ref=e118]:
+            - generic [ref=e119]: Company email*
+            - textbox "Company email*" [ref=e120]:
+              - /placeholder: Company email
+          - generic [ref=e121]:
+            - text: Phone number
+            - generic [ref=e122]:
+              - button "🇧🇪 +32" [ref=e123] [cursor=pointer]:
+                - generic [ref=e124]: 🇧🇪
+                - generic [ref=e125]: "+32"
+                - img
+              - textbox "Phone number" [ref=e126]
+          - generic [ref=e127]:
+            - generic [ref=e128]: Job title*
+            - combobox "Job title*" [ref=e129] [cursor=pointer]:
+              - generic: What's your role?
+              - img [ref=e130]
+            - combobox [ref=e132]
+          - generic [ref=e133]:
+            - generic [ref=e134]: How did you hear about us?*
+            - combobox "How did you hear about us?*" [ref=e135] [cursor=pointer]:
+              - generic: Make your selection
+              - img [ref=e136]
+            - combobox [ref=e138]
+          - generic [ref=e139]:
+            - text: What's your approximate budget?
+            - textbox "What's your approximate budget?" [ref=e140]:
+              - /placeholder: e.g. €5,000 - €10,000
+          - generic [ref=e141]:
+            - text: How many units are you looking to produce?
+            - spinbutton "How many units are you looking to produce?" [ref=e142]
+          - generic [ref=e143]:
+            - text: What is your deadline?
+            - textbox "What is your deadline?" [ref=e144]:
+              - /placeholder: DD/MM/YYYY
+            - generic [ref=e145]:
+              - checkbox "No specific deadline" [ref=e146] [cursor=pointer]
+              - checkbox
+              - generic [ref=e147] [cursor=pointer]: No specific deadline
+          - generic [ref=e148]:
+            - text: Where do you need to ship your merch?
+            - combobox "Where do you need to ship your merch?" [ref=e149]
+            - generic [ref=e150]:
+              - checkbox "Multiple addresses" [ref=e151] [cursor=pointer]
+              - checkbox
+              - generic [ref=e152] [cursor=pointer]: Multiple addresses
+          - generic [ref=e154]:
+            - generic [ref=e155]: Message*
+            - textbox "Message*" [ref=e156]:
+              - /placeholder: How can we help you?
+          - button "Send inquiry" [disabled]
+      - generic [ref=e157]:
+        - generic [ref=e159]:
+          - generic [ref=e162]:
+            - heading "Are you a creative agency?" [level=2] [ref=e163]
+            - generic [ref=e164]:
+              - heading "Discover our partnership program for creatives" [level=2] [ref=e165]
+              - list [ref=e166]:
+                - listitem [ref=e167]: – A dedicated team at your fingertips
+                - listitem [ref=e168]: – A referral program
+                - listitem [ref=e169]: – Bespoke development
+                - listitem [ref=e170]: – Access to our mockups library.
+            - link "Join the Club" [ref=e171] [cursor=pointer]:
+              - /url: /en-GB/club
+          - generic [ref=e172]:
+            - figure:
+              - img "Capture_d_ecran_2024_10_04_a_12_33_33_758f46fe67.png" [ref=e173]
+        - generic [ref=e175]:
+          - generic [ref=e178]:
+            - heading "Sending gifts, made easy." [level=2] [ref=e179]
+            - generic [ref=e180]:
+              - heading "Discover our platform" [level=2] [ref=e181]
+              - paragraph [ref=e182]: Manage and dispatch your stock of merch, wherever you are, whenever you want
+            - link "Discover our platform" [ref=e183] [cursor=pointer]:
+              - /url: /en-GB/platform
+          - generic [ref=e184]:
+            - figure:
+              - img "Logistics_Warehouse (1).jpg" [ref=e185]
+    - generic [ref=e186]:
+      - complementary "Frequently asked questions" [ref=e187]:
+        - generic [ref=e188]:
+          - heading "Frequently asked questions" [level=2] [ref=e189]
+          - paragraph [ref=e190]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e192] [cursor=pointer]:
+            - /url: /en-GB/faq
+        - generic [ref=e193]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e195]:
+            - button "How can I find out more about your products?" [ref=e196] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e202]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e203] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e209]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e210] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e216]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e217] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e223]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e224] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e230]:
+            - button "Where do you ship?" [ref=e231] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e237]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e238] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e243]:
+        - generic [ref=e244]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e245]
+          - generic [ref=e246]:
+            - textbox "Enter your email address" [ref=e248]
+            - button "Subscribe" [ref=e249] [cursor=pointer]
+  - alert [ref=e250]
+  - button "Open chat" [ref=e251] [cursor=pointer]:
+    - img [ref=e253]
+  - iframe [ref=e255]:
+    

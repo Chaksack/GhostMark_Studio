@@ -1,0 +1,509 @@
+- generic [active] [ref=e1]:
+  - banner "navigation desktop" [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - link "Shop all products" [ref=e8] [cursor=pointer]:
+          - /url: /shop
+      - generic [ref=e10]:
+        - textbox "search input" [ref=e11]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e12] [cursor=pointer]:
+          - img [ref=e14]
+      - generic [ref=e17]:
+        - button "| English" [ref=e19] [cursor=pointer]:
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e146]: "|"
+            - generic [ref=e147]: English
+        - generic [ref=e148]:
+          - link "favorites" [ref=e149] [cursor=pointer]:
+            - /url: /shop/c/favorites
+            - generic "favorites" [ref=e150]:
+              - img [ref=e151]
+          - link "cart icon 1" [ref=e610] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon 1" [ref=e612]:
+              - generic [ref=e613]:
+                - generic "cart icon" [ref=e614]:
+                  - img [ref=e616]
+                - generic [ref=e618]: "1"
+          - link:
+            - /url: /contact
+          - generic "not logged in user account" [ref=e158] [cursor=pointer]:
+            - img [ref=e160]
+  - article [ref=e165]:
+    - generic "product customization container" [ref=e166]:
+      - generic [ref=e168]:
+        - navigation "breadcrumb" [ref=e170]:
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "All products" [ref=e173] [cursor=pointer]:
+                - /url: /shop
+              - generic [ref=e174]: /
+            - listitem [ref=e175]:
+              - link "Discover" [ref=e176] [cursor=pointer]:
+                - /url: /shop/c/discover
+              - generic [ref=e177]: /
+            - listitem [ref=e178]:
+              - link "Travel" [ref=e179] [cursor=pointer]:
+                - /url: /shop/c/discover/discover-travel
+        - generic [ref=e182]:
+          - button "Previous slide" [ref=e183]:
+            - generic [ref=e184]: Go to previous slide
+          - button "Next slide" [ref=e185]:
+            - generic [ref=e186]: Go to next slide
+          - generic [ref=e188]:
+            - group "5 / 5" [ref=e189]:
+              - generic [ref=e190]:
+                - figure
+            - group "1 / 5" [ref=e191]:
+              - generic [ref=e192]:
+                - figure
+            - group "2 / 5" [ref=e193]:
+              - generic [ref=e194]:
+                - figure
+            - group "3 / 5" [ref=e195]:
+              - generic [ref=e196]:
+                - figure
+            - group "4 / 5" [ref=e197]:
+              - generic [ref=e198]:
+                - figure
+            - group "5 / 5" [ref=e199]:
+              - generic [ref=e200]:
+                - figure
+            - group "1 / 5" [ref=e201]:
+              - generic [ref=e202]:
+                - figure
+          - generic [ref=e203]:
+            - button "Go to slide 1" [ref=e204] [cursor=pointer]
+            - button "Go to slide 2" [ref=e205] [cursor=pointer]
+            - button "Go to slide 3" [ref=e206] [cursor=pointer]
+            - button "Go to slide 4" [ref=e207] [cursor=pointer]
+            - button "Go to slide 5" [ref=e208] [cursor=pointer]
+      - generic [ref=e209]:
+        - generic [ref=e210]:
+          - generic [ref=e211]:
+            - heading "Recycled canvas tote" [level=1] [ref=e214]
+            - generic [ref=e215]:
+              - link "View product details" [ref=e216] [cursor=pointer]:
+                - /url: "#variant-specificities"
+                - text: View product details
+                - generic [ref=e217]:
+                  - img
+              - button "Buy a sample" [ref=e218] [cursor=pointer]:
+                - text: Buy a sample
+                - generic [ref=e219]:
+                  - img
+              - button [ref=e619] [cursor=pointer]:
+                - generic [ref=e620]:
+                  - img
+          - generic "product details for desktop" [ref=e223]:
+            - generic [ref=e224]:
+              - heading "1. Pick a product variant" [level=2] [ref=e225]
+              - generic [ref=e226]:
+                - generic "Select Color" [ref=e227]: "Color:"
+                - group "Select Color" [ref=e228]:
+                  - button "Color Navy" [ref=e229] [cursor=pointer]
+                  - button "Color Black" [ref=e230] [cursor=pointer]
+                  - button "Color Off white" [ref=e231] [cursor=pointer]
+            - generic [ref=e232]:
+              - heading "2. Upload your design" [level=2] [ref=e233]
+              - generic "Customization section" [ref=e234]:
+                - generic [ref=e235]:
+                  - tablist [ref=e236]:
+                    - tab "Select location Center front" [selected] [ref=e237] [cursor=pointer]: Center front
+                    - tab "Select location Center back" [ref=e238] [cursor=pointer]: Center back
+                  - tabpanel [ref=e239]:
+                    - generic "Recently added logos" [ref=e241]:
+                      - generic [ref=e242]:
+                        - generic [ref=e243]:
+                          - text: Recently uploaded
+                          - generic [ref=e244]:
+                            - button "gm-logo.svg" [ref=e245] [cursor=pointer]:
+                              - img "gm-logo.svg" [ref=e246]
+                            - button "gm-logo.svg" [ref=e247] [cursor=pointer]:
+                              - img "gm-logo.svg" [ref=e248]
+                            - button "test-logo.svg" [ref=e249] [cursor=pointer]:
+                              - img "test-logo.svg" [ref=e250]
+                            - button "test-logo.svg" [ref=e251] [cursor=pointer]:
+                              - img "test-logo.svg" [ref=e252]
+                        - button "Upload new" [ref=e254] [cursor=pointer]:
+                          - text: Upload new
+                          - img
+                      - generic [ref=e256]:
+                        - generic [ref=e257]:
+                          - paragraph [ref=e258]: Save & access your full library
+                          - paragraph [ref=e259]: Login to reuse designs across all your orders
+                        - button "Login or Sign up" [ref=e260] [cursor=pointer]
+            - generic "Quantity selection" [ref=e261]:
+              - heading "3. Quantity" [level=2] [ref=e262]
+              - generic [ref=e263]:
+                - generic [ref=e264]:
+                  - generic [ref=e265]:
+                    - textbox "Quantity input" [ref=e267]: "30"
+                    - paragraph [ref=e268]: 17,00 €/piece
+                    - paragraph [ref=e270]: 510,00 €
+                  - paragraph [ref=e271]: Fill in the exact amount you need. The minimum quantity for this product is 15.
+                - generic [ref=e273] [cursor=pointer]:
+                  - paragraph [ref=e274]: 15 pieces
+                  - paragraph [ref=e275]: 17,00 €/piece
+                  - paragraph [ref=e276]: 255,00 €
+                - generic [ref=e278] [cursor=pointer]:
+                  - paragraph [ref=e279]: 50 pieces
+                  - paragraph [ref=e280]: 16,67 €/piece
+                  - paragraph [ref=e282]: Save 2%
+                  - paragraph [ref=e283]: 833,50 €
+                - generic [ref=e285] [cursor=pointer]:
+                  - paragraph [ref=e286]: 100 pieces
+                  - paragraph [ref=e287]: 16,23 €/piece
+                  - paragraph [ref=e289]: Save 5%
+                  - paragraph [ref=e290]: 1.623,00 €
+                - generic [ref=e292] [cursor=pointer]:
+                  - paragraph [ref=e293]: 500 pieces
+                  - paragraph [ref=e294]: 15,04 €/piece
+                  - paragraph [ref=e296]: Save 12%
+                  - paragraph [ref=e297]: 7.520,00 €
+                - generic [ref=e299] [cursor=pointer]:
+                  - paragraph [ref=e300]: 1.000 pieces
+                  - paragraph [ref=e301]: 14,48 €/piece
+                  - paragraph [ref=e303]: Save 15%
+                  - paragraph [ref=e304]: 14.480,00 €
+                - generic [ref=e306] [cursor=pointer]:
+                  - paragraph [ref=e307]: 1.500 pieces
+                  - paragraph [ref=e308]: 14,20 €/piece
+                  - paragraph [ref=e310]: Save 16%
+                  - paragraph [ref=e311]: 21.300,00 €
+        - generic [ref=e312]:
+          - generic [ref=e313]:
+            - generic [ref=e314]:
+              - paragraph [ref=e315]: "Lead time:"
+              - paragraph [ref=e316]: Approximately 6-15 business days
+            - generic [ref=e317]:
+              - generic [ref=e318]:
+                - generic [ref=e319]: "Total:"
+                - generic "Total price" [ref=e320]:
+                  - text: 510,00 €
+                  - button [ref=e321]:
+                    - generic [ref=e323]:
+                      - img
+              - generic [ref=e324]:
+                - paragraph [ref=e325]: Upload your design to get your final price.
+                - img [ref=e329]
+          - button "Add to cart button" [ref=e336] [cursor=pointer]:
+            - text: Add to cart
+            - generic [ref=e337]:
+              - img
+    - generic [ref=e338]:
+      - link "Excellent | 4.8 out of 5" [ref=e339] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e340]:
+          - img [ref=e341]
+          - paragraph [ref=e347]: Excellent | 4.8 out of 5
+      - generic [ref=e348]:
+        - generic [ref=e349]:
+          - img [ref=e351]
+          - generic [ref=e356]: Worldwide delivery
+        - generic [ref=e357]: EU, UK and USA
+      - generic [ref=e358]:
+        - generic [ref=e359]:
+          - img [ref=e361]
+          - generic [ref=e367]: Quality control
+        - generic [ref=e368]: Each order is double checked before production
+      - generic [ref=e369]:
+        - generic [ref=e370]:
+          - img [ref=e372]
+          - generic [ref=e374]: They trust us!
+        - generic [ref=e375]: Trusted by 2.000+ customers
+    - generic [ref=e376]:
+      - heading "Product details" [level=1] [ref=e377]
+      - generic [ref=e378]:
+        - paragraph [ref=e379]: The Recycled canvas tote allows you to carry your essentials sustainably. Made from recycled materials, it offers plenty of space for all your belongings and features snap button closures, along with a secure zip pocket to keep them safe. Customise it with your own design.
+        - generic [ref=e380]:
+          - heading "Customization" [level=3] [ref=e382]:
+            - button "Customization" [ref=e383] [cursor=pointer]:
+              - heading "Customization" [level=1] [ref=e384]
+          - heading "Production" [level=3] [ref=e390]:
+            - button "Production" [ref=e391] [cursor=pointer]:
+              - heading "Production" [level=1] [ref=e392]
+          - heading "Product specificities" [level=3] [ref=e398]:
+            - button "Product specificities" [ref=e399] [cursor=pointer]:
+              - heading "Product specificities" [level=1] [ref=e400]
+    - generic [ref=e407]:
+      - generic [ref=e408]: Made from undyed, raw recycled canvas, this bag highlights the beauty of natural materials and the unique character of recycled yarns.
+      - figure [ref=e410]
+    - generic [ref=e411]:
+      - heading "You might also like..." [level=2] [ref=e412]
+      - generic [ref=e414]:
+        - generic [ref=e416]: Go to previous slide
+        - generic [ref=e418]: Go to next slide
+        - generic [ref=e421]:
+          - group "1 / 7" [ref=e422]:
+            - link "Square tote bag From 6.02 € Add to favorites" [ref=e423] [cursor=pointer]:
+              - /url: /shop/square-tote-bag
+              - generic [ref=e424]:
+                - generic [ref=e425]:
+                  - generic [ref=e426]:
+                    - figure:
+                      - img "MERCHERY_Square tote_Navy_1 1.jpg" [ref=e427]
+                    - figure:
+                      - img "Square tote bag" [ref=e428]
+                  - generic [ref=e429]:
+                    - generic [ref=e430]: Square tote bag
+                    - generic [ref=e431]: From 6.02 €
+                - button "Add to favorites" [ref=e433]:
+                  - img [ref=e435]
+          - group "2 / 7" [ref=e438]:
+            - link "Best sellers Tote bag heavy From 4 € Add to favorites" [ref=e439] [cursor=pointer]:
+              - /url: /shop/tote-bag-heavy
+              - generic [ref=e440]:
+                - generic [ref=e441]:
+                  - generic [ref=e442]:
+                    - generic [ref=e444]: Best sellers
+                    - figure:
+                      - img "Tote bag heavy" [ref=e445]
+                    - figure:
+                      - img "Tote bag heavy" [ref=e446]
+                  - generic [ref=e447]:
+                    - generic [ref=e448]: Tote bag heavy
+                    - generic [ref=e449]: From 4 €
+                - button "Add to favorites" [ref=e451]:
+                  - img [ref=e453]
+          - group "3 / 7" [ref=e456]:
+            - link "Fast shipping Weekend tote From 9.79 € Add to favorites" [ref=e457] [cursor=pointer]:
+              - /url: /shop/weekend-tote
+              - generic [ref=e458]:
+                - generic [ref=e459]:
+                  - generic [ref=e460]:
+                    - generic [ref=e462]: Fast shipping
+                    - figure:
+                      - img "Weekend tote" [ref=e463]
+                    - figure:
+                      - img "Weekend tote" [ref=e464]
+                  - generic [ref=e465]:
+                    - generic [ref=e466]: Weekend tote
+                    - generic [ref=e467]: From 9.79 €
+                - button "Add to favorites" [ref=e469]:
+                  - img [ref=e471]
+          - group "4 / 7" [ref=e474]:
+            - link "Light tote From 2.23 € Add to favorites" [ref=e475] [cursor=pointer]:
+              - /url: /shop/light-tote
+              - generic [ref=e476]:
+                - generic [ref=e477]:
+                  - generic [ref=e478]:
+                    - figure:
+                      - img "Light tote" [ref=e479]
+                    - figure:
+                      - img "Light tote" [ref=e480]
+                  - generic [ref=e481]:
+                    - generic [ref=e482]: Light tote
+                    - generic [ref=e483]: From 2.23 €
+                - button "Add to favorites" [ref=e485]:
+                  - img [ref=e487]
+          - group "5 / 7" [ref=e490]:
+            - link "Midweight tote From 3.58 € Add to favorites" [ref=e491] [cursor=pointer]:
+              - /url: /shop/midweight-tote
+              - generic [ref=e492]:
+                - generic [ref=e493]:
+                  - generic [ref=e494]:
+                    - figure:
+                      - img "Midweight tote" [ref=e495]
+                    - figure:
+                      - img "Midweight tote" [ref=e496]
+                  - generic [ref=e497]:
+                    - generic [ref=e498]: Midweight tote
+                    - generic [ref=e499]: From 3.58 €
+                - button "Add to favorites" [ref=e501]:
+                  - img [ref=e503]
+          - group "6 / 7" [ref=e506]:
+            - link "B Corp Db Journey weekender From 60 € Add to favorites" [ref=e507] [cursor=pointer]:
+              - /url: /shop/db-journey-weekender
+              - generic [ref=e508]:
+                - generic [ref=e509]:
+                  - generic [ref=e510]:
+                    - generic [ref=e512]: B Corp
+                    - figure:
+                      - img "Db Journey weekender" [ref=e513]
+                    - figure:
+                      - img "Db Journey weekender" [ref=e514]
+                  - generic [ref=e515]:
+                    - generic [ref=e516]: Db Journey weekender
+                    - generic [ref=e517]: From 60 €
+                - button "Add to favorites" [ref=e519]:
+                  - img [ref=e521]
+          - group "7 / 7" [ref=e524]:
+            - link "Heavy cabas bag From 6.3 € Add to favorites" [ref=e525] [cursor=pointer]:
+              - /url: /shop/heavy-cabas-bag
+              - generic [ref=e526]:
+                - generic [ref=e527]:
+                  - generic [ref=e528]:
+                    - figure:
+                      - img "Heavy cabas bag" [ref=e529]
+                    - figure:
+                      - img "Heavy cabas bag" [ref=e530]
+                  - generic [ref=e531]:
+                    - generic [ref=e532]: Heavy cabas bag
+                    - generic [ref=e533]: From 6.3 €
+                - button "Add to favorites" [ref=e535]:
+                  - img [ref=e537]
+    - generic [ref=e540]:
+      - complementary "Frequently asked questions" [ref=e541]:
+        - generic [ref=e542]:
+          - heading "Frequently asked questions" [level=2] [ref=e543]
+          - paragraph [ref=e544]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e546] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e547]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e549]:
+            - button "How can I find out more about your products?" [ref=e550] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e556]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e557] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e563]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e564] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e570]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e571] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e577]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e578] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e584]:
+            - button "Where do you ship?" [ref=e585] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e591]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e592] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e597]:
+        - generic [ref=e598]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e599]
+          - generic [ref=e600]:
+            - textbox "Enter your email address" [ref=e602]
+            - button "Subscribe" [ref=e603] [cursor=pointer]
+  - alert [ref=e604]
+  - contentinfo [ref=e621]:
+    - generic [ref=e622]:
+      - generic "Social networks" [ref=e623]:
+        - generic [ref=e624]: "FOLLOW US:"
+        - list [ref=e625]:
+          - listitem [ref=e626]:
+            - link "Instagram" [ref=e627] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e628]:
+            - link "LinkedIn" [ref=e629] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e631]:
+        - text: Based in
+        - link "Brussels" [ref=e632] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e633] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e634] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - list [ref=e635]:
+      - listitem [ref=e636]:
+        - navigation "Primary pages" [ref=e637]:
+          - generic [ref=e638]: Company
+          - list [ref=e639]:
+            - listitem [ref=e640]:
+              - link "About us" [ref=e641] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e642]:
+              - link "Environmental footprint" [ref=e643] [cursor=pointer]:
+                - /url: /about/environmental-footprint
+            - listitem [ref=e644]:
+              - link "Value chain" [ref=e645] [cursor=pointer]:
+                - /url: /about/value-chain
+            - listitem [ref=e646]:
+              - link "People & culture" [ref=e647] [cursor=pointer]:
+                - /url: /about/people-and-culture
+      - listitem [ref=e648]:
+        - navigation "Primary pages" [ref=e649]:
+          - generic [ref=e650]: Services
+          - list [ref=e651]:
+            - listitem [ref=e652]:
+              - link "Shop all" [ref=e653] [cursor=pointer]:
+                - /url: /shop
+            - listitem [ref=e654]:
+              - link "Bespoke" [ref=e655] [cursor=pointer]:
+                - /url: /bespoke
+            - listitem [ref=e656]:
+              - link "Platform" [ref=e657] [cursor=pointer]:
+                - /url: /platform
+            - listitem [ref=e658]:
+              - link "Agencies" [ref=e659] [cursor=pointer]:
+                - /url: /club
+      - listitem [ref=e660]:
+        - navigation "Primary pages" [ref=e661]:
+          - generic [ref=e662]: Inspiration
+          - list [ref=e663]:
+            - listitem [ref=e664]:
+              - link "Blog" [ref=e665] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e666]:
+              - link "Cases" [ref=e667] [cursor=pointer]:
+                - /url: /work
+      - listitem [ref=e668]:
+        - navigation "Primary pages" [ref=e669]:
+          - generic [ref=e670]: Let us help
+          - list [ref=e671]:
+            - listitem [ref=e672]:
+              - link "FAQ" [ref=e673] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e674]:
+              - link "Terms & conditions" [ref=e675] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e676]:
+              - link "Privacy" [ref=e677] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e678]:
+              - link "Returns" [ref=e679] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e680]:
+              - link "Contact us" [ref=e681] [cursor=pointer]:
+                - /url: /contact
+      - listitem [ref=e682]:
+        - navigation "Primary pages" [ref=e683]:
+          - generic [ref=e684]: Account
+          - list [ref=e685]:
+            - listitem [ref=e686]:
+              - link "Orders" [ref=e687] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e688]:
+              - link "Preferences" [ref=e689] [cursor=pointer]:
+                - /url: /account/preferences/information
+            - listitem [ref=e690]:
+              - link "Saved projects" [ref=e691] [cursor=pointer]:
+                - /url: /account/projects
+            - listitem [ref=e692]:
+              - link "Invoices" [ref=e693] [cursor=pointer]:
+                - /url: /account/preferences/invoices
+    - generic [ref=e694]:
+      - list [ref=e695]:
+        - listitem [ref=e696]:
+          - figure [ref=e697]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e698]
+        - listitem [ref=e699]:
+          - figure [ref=e700]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e701]
+      - generic [ref=e702]:
+        - generic [ref=e703]: "Secure payments:"
+        - list [ref=e704]:
+          - listitem [ref=e705]:
+            - figure [ref=e706]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e707]
+          - listitem [ref=e708]:
+            - figure [ref=e709]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e710]
+          - listitem [ref=e711]:
+            - figure [ref=e712]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e713]
+          - listitem [ref=e714]:
+            - figure [ref=e715]:
+              - img "Visa_613308d9b9.svg" [ref=e716]
+          - listitem [ref=e717]:
+            - figure [ref=e718]:
+              - img "American_express_e0a23a5002.svg" [ref=e719]
+  - button "Open chat" [ref=e605] [cursor=pointer]:
+    - img [ref=e607]
+  - iframe [ref=e609]:
+    

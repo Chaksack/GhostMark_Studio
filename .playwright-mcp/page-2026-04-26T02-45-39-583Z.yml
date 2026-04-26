@@ -1,0 +1,454 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner "navigation desktop" [ref=e4]:
+      - navigation [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - generic [ref=e7]:
+          - generic [ref=e8]: Search for a product
+          - searchbox "Search for a product" [ref=e9]
+          - button "Search" [ref=e10] [cursor=pointer]:
+            - img [ref=e11]
+        - generic [ref=e14]:
+          - button "Wishlist" [ref=e16] [cursor=pointer]:
+            - img [ref=e17]
+          - link "Cart" [ref=e20] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e21]
+          - button "Open account login modal" [ref=e27] [cursor=pointer]:
+            - img [ref=e28]
+    - navigation "Categories" [ref=e31]:
+      - generic [ref=e32]:
+        - button "Apparel" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: Apparel
+          - img [ref=e36]
+        - button "Bags" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: Bags
+          - img [ref=e41]
+        - button "Headwear" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: Headwear
+          - img [ref=e46]
+        - button "Office" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: Office
+          - img [ref=e51]
+        - button "Drinkware" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: Drinkware
+          - img [ref=e56]
+        - button "Home" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]: Home
+          - img [ref=e61]
+        - button "Wellness" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: Wellness
+          - img [ref=e66]
+        - button "Others" [ref=e69] [cursor=pointer]:
+          - generic [ref=e70]: Others
+          - img [ref=e71]
+        - button "Discover" [ref=e74] [cursor=pointer]:
+          - generic [ref=e75]: Discover
+          - img [ref=e76]
+        - button "Brands" [ref=e79] [cursor=pointer]:
+          - generic [ref=e80]: Brands
+          - img [ref=e81]
+    - main [ref=e83]:
+      - generic [ref=e84]:
+        - generic "product customization container" [ref=e85]:
+          - generic [ref=e87]:
+            - navigation "breadcrumb" [ref=e89]:
+              - list [ref=e90]:
+                - listitem [ref=e91]:
+                  - link "All products" [ref=e92] [cursor=pointer]:
+                    - /url: /products
+                - listitem [ref=e93]: /
+                - listitem [ref=e94]: Atelier Hoodie
+            - img "Atelier Hoodie" [ref=e96]
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]:
+                - heading "Atelier Hoodie" [level=1] [ref=e102]
+                - paragraph [ref=e103]: From £89.00 / piece
+              - generic [ref=e104]:
+                - link "View product details" [ref=e105] [cursor=pointer]:
+                  - /url: "#variant-specificities"
+                - button "Buy a sample" [ref=e106] [cursor=pointer]
+                - button "Share" [ref=e107] [cursor=pointer]:
+                  - img [ref=e108]
+            - generic [ref=e111]:
+              - heading "1. Pick a product variant" [level=2] [ref=e112]
+              - generic [ref=e113]:
+                - generic [ref=e114]:
+                  - paragraph [ref=e115]: Gender
+                  - radiogroup "Gender" [ref=e116]:
+                    - text: Gender
+                    - radio "Men" [checked] [ref=e117] [cursor=pointer]
+                    - radio "Women" [ref=e118] [cursor=pointer]
+                - generic [ref=e119]:
+                  - generic [ref=e120]:
+                    - paragraph [ref=e121]: "Color:"
+                    - paragraph [ref=e122]: Faded Black
+                  - radiogroup "Color" [ref=e123]:
+                    - text: Color
+                    - 'radio "Color: Faded Black" [checked] [ref=e124] [cursor=pointer]':
+                      - generic [ref=e125]: Faded Black
+                    - 'radio "Color: Bone" [ref=e126] [cursor=pointer]':
+                      - generic [ref=e127]: Bone
+                    - 'radio "Color: Sage" [ref=e128] [cursor=pointer]':
+                      - generic [ref=e129]: Sage
+                    - 'radio "Color: Faded Powder" [ref=e130] [cursor=pointer]':
+                      - generic [ref=e131]: Faded Powder
+                - generic [ref=e132]:
+                  - paragraph [ref=e133]: Size
+                  - radiogroup "Size" [ref=e134]:
+                    - text: Size
+                    - radio "S" [checked] [ref=e135] [cursor=pointer]
+                    - radio "M" [ref=e136] [cursor=pointer]
+                    - radio "L" [ref=e137] [cursor=pointer]
+                    - radio "XL" [ref=e138] [cursor=pointer]
+            - generic [ref=e139]:
+              - heading "2. Upload your design" [level=2] [ref=e140]
+              - generic [ref=e144]:
+                - paragraph [ref=e151]: Drag, pinch the corners, or rotate to position your design within the dashed area.
+                - generic [ref=e152]:
+                  - generic [ref=e153]:
+                    - tablist "Design location" [ref=e154]:
+                      - tab "Front (chest) no design uploaded" [selected] [ref=e155] [cursor=pointer]:
+                        - generic [ref=e157]: Front (chest)
+                        - generic [ref=e158]: no design uploaded
+                      - tab "Back (full) no design uploaded" [ref=e159] [cursor=pointer]:
+                        - generic [ref=e161]: Back (full)
+                        - generic [ref=e162]: no design uploaded
+                    - button "Upload design — click or drag and drop" [ref=e163] [cursor=pointer]:
+                      - generic [ref=e164]:
+                        - img [ref=e165]
+                        - generic [ref=e168]: Drop your front (chest) logo here, or click to browse
+                      - generic [ref=e169]: PNG, JPG, WebP up to 10 MB
+                    - paragraph [ref=e170]: Free vectorisation included. We can convert raster art if your logo needs it.
+                  - generic [ref=e171]:
+                    - paragraph [ref=e172]: Adjust
+                    - generic [ref=e173]:
+                      - generic [ref=e174]:
+                        - text: "Scale: 100%"
+                        - slider "Design scale" [disabled] [ref=e175]: "100"
+                      - generic [ref=e176]:
+                        - text: "Rotation: 0°"
+                        - slider "Design rotation" [disabled] [ref=e177]: "0"
+                      - button "Reset position" [disabled] [ref=e178]:
+                        - generic [ref=e179]: Reset position
+                  - button "Add customised item" [disabled] [ref=e181]:
+                    - generic [ref=e182]: Add customised item
+            - generic [ref=e183]:
+              - heading "3. Quantity" [level=2] [ref=e184]
+              - paragraph [ref=e185]: "Minimum order: 15 pieces"
+              - radiogroup "Quantity tiers" [ref=e186]:
+                - radio "15 pieces £89.00/piece" [checked] [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]: 15 pieces
+                  - generic [ref=e189]: £89.00/piece
+                - radio "25 pieces £84.55/piece Save 5%" [ref=e190] [cursor=pointer]:
+                  - generic [ref=e191]: 25 pieces
+                  - generic [ref=e192]: £84.55/piece
+                  - generic [ref=e194]: Save 5%
+                - radio "50 pieces £78.32/piece Save 12%" [ref=e195] [cursor=pointer]:
+                  - generic [ref=e196]: 50 pieces
+                  - generic [ref=e197]: £78.32/piece
+                  - generic [ref=e199]: Save 12%
+                - radio "100 pieces £71.20/piece Save 20%" [ref=e200] [cursor=pointer]:
+                  - generic [ref=e201]: 100 pieces
+                  - generic [ref=e202]: £71.20/piece
+                  - generic [ref=e204]: Save 20%
+                - radio "200 pieces £66.75/piece Save 25%" [ref=e205] [cursor=pointer]:
+                  - generic [ref=e206]: 200 pieces
+                  - generic [ref=e207]: £66.75/piece
+                  - generic [ref=e209]: Save 25%
+                - radio "300 pieces £62.30/piece Save 30%" [ref=e210] [cursor=pointer]:
+                  - generic [ref=e211]: 300 pieces
+                  - generic [ref=e212]: £62.30/piece
+                  - generic [ref=e214]: Save 30%
+                - radio "400 pieces £59.63/piece Save 33%" [ref=e215] [cursor=pointer]:
+                  - generic [ref=e216]: 400 pieces
+                  - generic [ref=e217]: £59.63/piece
+                  - generic [ref=e219]: Save 33%
+              - generic [ref=e220]:
+                - generic [ref=e221]:
+                  - generic [ref=e222]: Quantity
+                  - generic [ref=e223]:
+                    - button "Decrease quantity" [disabled] [ref=e224]: −
+                    - spinbutton "Quantity" [ref=e225]: "15"
+                    - button "Increase quantity" [ref=e226] [cursor=pointer]: +
+                - generic [ref=e227]:
+                  - generic [ref=e228]: Total
+                  - generic [ref=e229]: £1,335.00
+              - generic [ref=e230]:
+                - button "Add to cart" [ref=e231] [cursor=pointer]
+                - button "Add to favorites" [ref=e232] [cursor=pointer]:
+                  - img [ref=e233]
+        - generic [ref=e235]:
+          - link "Excellent | 4.8 out of 5" [ref=e236] [cursor=pointer]:
+            - /url: https://trustpilot.com
+            - generic [ref=e237]:
+              - img [ref=e238]
+              - img [ref=e240]
+              - img [ref=e242]
+              - img [ref=e244]
+              - img [ref=e246]
+            - generic [ref=e248]: Excellent | 4.8 out of 5
+          - generic [ref=e249]:
+            - generic [ref=e250]:
+              - img [ref=e251]
+              - generic [ref=e256]: Worldwide delivery
+            - generic [ref=e257]: EU, UK and USA
+          - generic [ref=e258]:
+            - generic [ref=e259]:
+              - img [ref=e260]
+              - generic [ref=e262]: Quality control
+            - generic [ref=e263]: Each order is double checked before production
+          - generic [ref=e264]:
+            - generic [ref=e265]:
+              - img [ref=e266]
+              - generic [ref=e271]: They trust us!
+            - generic [ref=e272]: Trusted by 2.000+ customers
+        - generic [ref=e274]:
+          - button "Product details" [ref=e276] [cursor=pointer]:
+            - generic [ref=e277]: Product details
+            - img [ref=e278]
+          - button "Size guide and measurements" [ref=e281] [cursor=pointer]:
+            - generic [ref=e282]: Size guide and measurements
+            - img [ref=e283]
+          - button "Production" [ref=e286] [cursor=pointer]:
+            - generic [ref=e287]: Production
+            - img [ref=e288]
+          - button "Customization" [ref=e291] [cursor=pointer]:
+            - generic [ref=e292]: Customization
+            - img [ref=e293]
+          - button "Product specificities" [ref=e296] [cursor=pointer]:
+            - generic [ref=e297]: Product specificities
+            - img [ref=e298]
+        - generic [ref=e300]:
+          - heading "You might also like…" [level=2] [ref=e301]
+          - list [ref=e303]:
+            - listitem [ref=e304]:
+              - generic [ref=e305]:
+                - link [ref=e306] [cursor=pointer]:
+                  - /url: /products/workshop-tote
+                  - figure [ref=e307]:
+                    - img "Workshop Tote" [ref=e308]
+                  - figure [ref=e309]:
+                    - img "Workshop Tote" [ref=e310]
+                - generic [ref=e311]:
+                  - generic [ref=e312]:
+                    - link "Workshop Tote" [ref=e313] [cursor=pointer]:
+                      - /url: /products/workshop-tote
+                      - paragraph [ref=e314]: Workshop Tote
+                    - paragraph [ref=e315]: From £22.00
+                  - button "Add Workshop Tote to favorites" [ref=e316] [cursor=pointer]:
+                    - img [ref=e318]
+            - listitem [ref=e320]:
+              - generic [ref=e321]:
+                - link [ref=e322] [cursor=pointer]:
+                  - /url: /products/studio-tee-charcoal
+                  - figure [ref=e323]:
+                    - img "Studio Tee — Charcoal" [ref=e324]
+                  - figure [ref=e325]:
+                    - img "Studio Tee — Charcoal" [ref=e326]
+                - generic [ref=e327]:
+                  - generic [ref=e328]:
+                    - link "Studio Tee — Charcoal" [ref=e329] [cursor=pointer]:
+                      - /url: /products/studio-tee-charcoal
+                      - paragraph [ref=e330]: Studio Tee — Charcoal
+                    - paragraph [ref=e331]: From £35.00
+                  - button "Add Studio Tee — Charcoal to favorites" [ref=e332] [cursor=pointer]:
+                    - img [ref=e334]
+            - listitem [ref=e336]:
+              - generic [ref=e337]:
+                - link [ref=e338] [cursor=pointer]:
+                  - /url: /products/studio-tee-cream
+                  - figure [ref=e339]:
+                    - img "Studio Tee — Cream" [ref=e340]
+                  - figure [ref=e341]:
+                    - img "Studio Tee — Cream" [ref=e342]
+                - generic [ref=e343]:
+                  - generic [ref=e344]:
+                    - link "Studio Tee — Cream" [ref=e345] [cursor=pointer]:
+                      - /url: /products/studio-tee-cream
+                      - paragraph [ref=e346]: Studio Tee — Cream
+                    - paragraph [ref=e347]: From £35.00
+                  - button "Add Studio Tee — Cream to favorites" [ref=e348] [cursor=pointer]:
+                    - img [ref=e350]
+            - listitem [ref=e352]:
+              - generic [ref=e353]:
+                - link [ref=e354] [cursor=pointer]:
+                  - /url: /products/ghostmark-cap
+                  - figure [ref=e355]:
+                    - img "GhostMark Cap" [ref=e356]
+                  - figure [ref=e357]:
+                    - img "GhostMark Cap" [ref=e358]
+                - generic [ref=e359]:
+                  - generic [ref=e360]:
+                    - link "GhostMark Cap" [ref=e361] [cursor=pointer]:
+                      - /url: /products/ghostmark-cap
+                      - paragraph [ref=e362]: GhostMark Cap
+                    - paragraph [ref=e363]: From £28.00
+                  - button "Add GhostMark Cap to favorites" [ref=e364] [cursor=pointer]:
+                    - img [ref=e366]
+        - generic [ref=e368]:
+          - complementary "Frequently asked questions" [ref=e369]:
+            - generic [ref=e370]:
+              - heading "Frequently asked questions" [level=2] [ref=e371]
+              - paragraph [ref=e372]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+              - link "View more" [ref=e374] [cursor=pointer]:
+                - /url: /faq
+            - generic [ref=e375]:
+              - heading "Is it possible to put different items into gift boxes?" [level=3] [ref=e377]:
+                - button "Is it possible to put different items into gift boxes?" [ref=e378] [cursor=pointer]:
+                  - generic [ref=e379]: Is it possible to put different items into gift boxes?
+              - heading "How can I find out more about your products?" [level=3] [ref=e385]:
+                - button "How can I find out more about your products?" [ref=e386] [cursor=pointer]:
+                  - generic [ref=e387]: How can I find out more about your products?
+              - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e393]:
+                - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e394] [cursor=pointer]:
+                  - generic [ref=e395]: Will it be possible to see the e-proof before my order goes into production?
+              - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e401]:
+                - button "Is it possible to shorten the lead time for production?" [ref=e402] [cursor=pointer]:
+                  - generic [ref=e403]: Is it possible to shorten the lead time for production?
+              - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e409]:
+                - button "Why are your prices not fixed and vary within a range?" [ref=e410] [cursor=pointer]:
+                  - generic [ref=e411]: Why are your prices not fixed and vary within a range?
+              - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e417]:
+                - button "Can you ship the merch to multiple addresses?" [ref=e418] [cursor=pointer]:
+                  - generic [ref=e419]: Can you ship the merch to multiple addresses?
+              - heading "Where do you ship?" [level=3] [ref=e425]:
+                - button "Where do you ship?" [ref=e426] [cursor=pointer]:
+                  - generic [ref=e427]: Where do you ship?
+              - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e433]:
+                - button "What is the minimum order quantity (MOQ)?" [ref=e434] [cursor=pointer]:
+                  - generic [ref=e435]: What is the minimum order quantity (MOQ)?
+          - complementary "Subscribe, and get access to exclusive news, sneak peeks on new launches." [ref=e440]:
+            - generic [ref=e441]:
+              - heading "Subscribe, and get access to exclusive news, sneak peeks on new launches." [level=2] [ref=e442]
+              - generic [ref=e443]:
+                - generic [ref=e444]:
+                  - generic [ref=e445]: Enter your email address
+                  - textbox "Enter your email address" [ref=e446]
+                - button "Subscribe" [ref=e447] [cursor=pointer]
+    - contentinfo [ref=e448]:
+      - generic [ref=e449]:
+        - navigation "Footer" [ref=e450]:
+          - generic [ref=e451]:
+            - heading "Company" [level=4] [ref=e452]
+            - list [ref=e453]:
+              - listitem [ref=e454]:
+                - link "About us" [ref=e455] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e456]:
+                - link "Sustainability" [ref=e457] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e458]:
+                - link "Value chain" [ref=e459] [cursor=pointer]:
+                  - /url: /about/value-chain
+              - listitem [ref=e460]:
+                - link "People & culture" [ref=e461] [cursor=pointer]:
+                  - /url: /about/people-and-culture
+              - listitem [ref=e462]:
+                - link "Press" [ref=e463] [cursor=pointer]:
+                  - /url: /press
+          - generic [ref=e464]:
+            - heading "Shop" [level=4] [ref=e465]
+            - list [ref=e466]:
+              - listitem [ref=e467]:
+                - link "Shop all" [ref=e468] [cursor=pointer]:
+                  - /url: /products
+              - listitem [ref=e469]:
+                - link "Bespoke studio" [ref=e470] [cursor=pointer]:
+                  - /url: /studio
+              - listitem [ref=e471]:
+                - link "Platform" [ref=e472] [cursor=pointer]:
+                  - /url: /platform
+              - listitem [ref=e473]:
+                - link "Club & agencies" [ref=e474] [cursor=pointer]:
+                  - /url: /club
+              - listitem [ref=e475]:
+                - link "Journal" [ref=e476] [cursor=pointer]:
+                  - /url: /blog
+          - generic [ref=e477]:
+            - heading "Help" [level=4] [ref=e478]
+            - list [ref=e479]:
+              - listitem [ref=e480]:
+                - link "Help center" [ref=e481] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e482]:
+                - link "FAQ" [ref=e483] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e484]:
+                - link "Shipping" [ref=e485] [cursor=pointer]:
+                  - /url: /shipping
+              - listitem [ref=e486]:
+                - link "Returns" [ref=e487] [cursor=pointer]:
+                  - /url: /returns
+              - listitem [ref=e488]:
+                - link "Contact us" [ref=e489] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e490]:
+            - heading "Account" [level=4] [ref=e491]
+            - list [ref=e492]:
+              - listitem [ref=e493]:
+                - link "Preferences" [ref=e494] [cursor=pointer]:
+                  - /url: /account
+              - listitem [ref=e495]:
+                - link "Orders" [ref=e496] [cursor=pointer]:
+                  - /url: /account/orders
+              - listitem [ref=e497]:
+                - link "Invoices" [ref=e498] [cursor=pointer]:
+                  - /url: /account/orders
+              - listitem [ref=e499]:
+                - link "Saved projects" [ref=e500] [cursor=pointer]:
+                  - /url: /wishlist
+          - generic [ref=e501]:
+            - heading "Legal" [level=4] [ref=e502]
+            - list [ref=e503]:
+              - listitem [ref=e504]:
+                - link "Terms & conditions" [ref=e505] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e506]:
+                - link "Privacy policy" [ref=e507] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e508]:
+                - link "Cookies" [ref=e509] [cursor=pointer]:
+                  - /url: /cookies
+              - listitem [ref=e510]:
+                - link "Accessibility" [ref=e511] [cursor=pointer]:
+                  - /url: /accessibility
+        - generic [ref=e512]:
+          - link "Certified B Corporation — view our score" [ref=e513] [cursor=pointer]:
+            - /url: /sustainability#section-2
+            - text: Certified B
+          - link "1% for the Planet — read about our pledge" [ref=e514] [cursor=pointer]:
+            - /url: /sustainability#section-4
+            - text: 1% For the Planet
+          - generic [ref=e515]:
+            - generic [ref=e516]: Secure payments
+            - generic [ref=e517]: AMEX
+            - generic [ref=e518]: MC
+            - generic [ref=e519]: PayPal
+            - generic [ref=e520]: VISA
+        - generic [ref=e521]:
+          - paragraph [ref=e522]: © 2026 GhostMark Studio · London, United Kingdom
+          - generic [ref=e523]:
+            - link "Instagram" [ref=e524] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+            - link "LinkedIn" [ref=e525] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+            - link "Privacy" [ref=e527] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e528] [cursor=pointer]:
+              - /url: /terms
+            - link "Cookies" [ref=e529] [cursor=pointer]:
+              - /url: /cookies
+  - generic:
+    - img
+  - generic [ref=e530]:
+    - button "Toggle Nuxt DevTools" [ref=e531] [cursor=pointer]:
+      - img [ref=e532]
+    - generic "Page load time" [ref=e535]:
+      - generic [ref=e536]: "53"
+      - generic [ref=e537]: ms
+    - button "Toggle Component Inspector" [ref=e539] [cursor=pointer]:
+      - img [ref=e540]

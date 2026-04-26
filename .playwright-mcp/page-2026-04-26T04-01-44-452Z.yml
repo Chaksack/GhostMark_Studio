@@ -1,0 +1,327 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner "navigation desktop" [ref=e4]:
+      - navigation [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - generic [ref=e7]:
+          - generic [ref=e8]: Search for a product
+          - searchbox "Search for a product" [ref=e9]
+          - button "Search" [ref=e10] [cursor=pointer]:
+            - img [ref=e11]
+        - generic [ref=e14]:
+          - button "Wishlist" [ref=e16] [cursor=pointer]:
+            - img [ref=e17]
+          - link "Cart" [ref=e20] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e21]
+          - button "Open account login modal" [ref=e27] [cursor=pointer]:
+            - img [ref=e28]
+    - navigation "Categories" [ref=e31]:
+      - generic [ref=e32]:
+        - button "Apparel" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: Apparel
+          - img [ref=e36]
+        - button "Bags" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: Bags
+          - img [ref=e41]
+        - button "Headwear" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: Headwear
+          - img [ref=e46]
+        - button "Office" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: Office
+          - img [ref=e51]
+        - button "Drinkware" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: Drinkware
+          - img [ref=e56]
+        - button "Home" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]: Home
+          - img [ref=e61]
+        - button "Wellness" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: Wellness
+          - img [ref=e66]
+        - button "Others" [ref=e69] [cursor=pointer]:
+          - generic [ref=e70]: Others
+          - img [ref=e71]
+        - button "Discover" [ref=e74] [cursor=pointer]:
+          - generic [ref=e75]: Discover
+          - img [ref=e76]
+        - button "Brands" [ref=e79] [cursor=pointer]:
+          - generic [ref=e80]: Brands
+          - img [ref=e81]
+    - main [ref=e83]:
+      - generic [ref=e84]:
+        - region "One bench, three crafts." [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - paragraph [ref=e88]: Our story
+              - heading "One bench, three crafts." [level=1] [ref=e89]:
+                - text: One bench,
+                - text: three crafts.
+              - paragraph [ref=e90]: "Laser engraving, DTF print and apparel finishing — side by side, eight pairs of hands, one shared board. Small on purpose: the person who answers your email is usually the person who'll cut, press or thread your order."
+              - generic [ref=e91]:
+                - link "Visit the studio" [ref=e92] [cursor=pointer]:
+                  - /url: /contact
+                  - generic [ref=e93]: Visit the studio
+                - link "About the company" [ref=e94] [cursor=pointer]:
+                  - /url: /about
+                  - generic [ref=e95]: About the company
+            - generic "Image placeholder" [ref=e98]: Image — the print room at golden hour
+        - region "Brief, sample, production." [ref=e99]:
+          - generic [ref=e100]:
+            - generic [ref=e101]:
+              - paragraph [ref=e102]: How we work
+              - heading "Brief, sample, production." [level=2] [ref=e103]
+              - paragraph [ref=e104]: Three steps, no surprises. We name the inks, the threads and the substrates up front, send a physical sample before any volume is committed, and finish every piece in the workshop closest to where it's heading.
+            - list [ref=e105]:
+              - listitem [ref=e106]:
+                - generic [ref=e107]: "01"
+                - heading "Brief" [level=3] [ref=e108]
+                - paragraph [ref=e109]: A fifteen-minute call, a shared mood board, a single PDF — whatever's easiest for you. We translate it into a printable spec the same week.
+              - listitem [ref=e110]:
+                - generic [ref=e111]: "02"
+                - heading "Sample" [level=3] [ref=e112]
+                - paragraph [ref=e113]: One physical sample, posted to your door, with the inks, threads and substrates we'd run in production. Approve or iterate before any volume is committed.
+              - listitem [ref=e114]:
+                - generic [ref=e115]: "03"
+                - heading "Production" [level=3] [ref=e116]
+                - paragraph [ref=e117]: Small runs printed and finished by hand in the workshop closest to your destination market. Folded, polybagged and tracked end-to-end.
+        - region "Eight people, three rooms." [ref=e118]:
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - paragraph [ref=e121]: The team
+              - heading "Eight people, three rooms." [level=2] [ref=e122]
+            - list [ref=e123]:
+              - listitem [ref=e124]:
+                - generic "Portrait placeholder" [ref=e127]: Portrait
+                - generic [ref=e128]:
+                  - generic [ref=e129]: Mira Lefevre
+                  - generic [ref=e130]: Founder, creative direction · Brussels
+              - listitem [ref=e131]:
+                - generic "Portrait placeholder" [ref=e134]: Portrait
+                - generic [ref=e135]:
+                  - generic [ref=e136]: Tomás Costa
+                  - generic [ref=e137]: Print lead, screen + DTG · Brussels
+              - listitem [ref=e138]:
+                - generic "Portrait placeholder" [ref=e141]: Portrait
+                - generic [ref=e142]:
+                  - generic [ref=e143]: Hannah Wexler
+                  - generic [ref=e144]: Studio manager · Berlin
+              - listitem [ref=e145]:
+                - generic "Portrait placeholder" [ref=e148]: Portrait
+                - generic [ref=e149]:
+                  - generic [ref=e150]: Yusuf Demir
+                  - generic [ref=e151]: Embroidery + finishing · Berlin
+              - listitem [ref=e152]:
+                - generic "Portrait placeholder" [ref=e155]: Portrait
+                - generic [ref=e156]:
+                  - generic [ref=e157]: Priya Banerjee
+                  - generic [ref=e158]: Production lead · London
+              - listitem [ref=e159]:
+                - generic "Portrait placeholder" [ref=e162]: Portrait
+                - generic [ref=e163]:
+                  - generic [ref=e164]: Rowan Faulkner
+                  - generic [ref=e165]: Customer + dispatch · London
+              - listitem [ref=e166]:
+                - generic "Portrait placeholder" [ref=e169]: Portrait
+                - generic [ref=e170]:
+                  - generic [ref=e171]: Esma Karim
+                  - generic [ref=e172]: Sustainability + sourcing · Brussels
+              - listitem [ref=e173]:
+                - generic "Portrait placeholder" [ref=e176]: Portrait
+                - generic [ref=e177]:
+                  - generic [ref=e178]: Leo Marchetti
+                  - generic [ref=e179]: Bindery + paper goods · Berlin
+        - region "Drop in, we'll put the kettle on." [ref=e180]:
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: Visit us
+              - heading "Drop in, we'll put the kettle on." [level=2] [ref=e184]
+              - paragraph [ref=e185]:
+                - text: All three workshops are open to clients by appointment. Email
+                - link "hello@ghostmark.studio" [ref=e186] [cursor=pointer]:
+                  - /url: mailto:hello@ghostmark.studio
+                - text: a couple of days ahead and we'll block the room.
+            - list [ref=e187]:
+              - listitem [ref=e188]:
+                - heading "Brussels" [level=3] [ref=e189]
+                - link "14 Rue du Page 1050 Ixelles" [ref=e191] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=14%20Rue%20du%20Page%2C%201050%20Ixelles%2C%20Brussels
+                  - text: 14 Rue du Page
+                  - text: 1050 Ixelles
+                - paragraph [ref=e192]: Mon–Fri, 09:00–18:00
+              - listitem [ref=e193]:
+                - heading "Berlin" [level=3] [ref=e194]
+                - link "Manteuffelstraße 77 10999 Kreuzberg" [ref=e196] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Manteuffelstra%C3%9Fe%2077%2C%2010999%20Kreuzberg%2C%20Berlin
+                  - text: Manteuffelstraße 77
+                  - text: 10999 Kreuzberg
+                - paragraph [ref=e197]: Mon–Fri, 10:00–18:00
+              - listitem [ref=e198]:
+                - heading "London" [level=3] [ref=e199]
+                - link "Unit 4, Hackney Downs Studios E8 2BT" [ref=e201] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Unit%204%2C%20Hackney%20Downs%20Studios%2C%20E8%202BT%2C%20London
+                  - text: Unit 4, Hackney Downs Studios
+                  - text: E8 2BT
+                - paragraph [ref=e202]: Tue–Sat, 10:00–18:00
+        - region "Want to come and see how we make things?" [ref=e203]:
+          - generic [ref=e205]:
+            - generic [ref=e206]:
+              - heading "Want to come and see how we make things?" [level=2] [ref=e207]
+              - paragraph [ref=e208]: Studio tours run on Thursdays at our Brussels and Berlin workshops. Bring a friend, bring a brief, bring nothing — we'll still put the espresso machine on.
+            - generic [ref=e209]:
+              - link "Book a visit" [ref=e210] [cursor=pointer]:
+                - /url: /contact
+                - generic [ref=e211]: Book a visit
+              - link "How we make it" [ref=e212] [cursor=pointer]:
+                - /url: /sustainability
+                - generic [ref=e213]: How we make it
+    - contentinfo [ref=e214]:
+      - generic [ref=e216]:
+        - generic [ref=e217]:
+          - link "GhostMark — home" [ref=e218] [cursor=pointer]:
+            - /url: /
+            - text: GhostMark
+          - paragraph [ref=e219]: Branded objects for the kind of work people keep. Laser engraving, DTF print, and apparel finishing — one studio in Bordeaux.
+        - generic [ref=e220]:
+          - paragraph [ref=e221]: Get in touch
+          - link "hello@ghostmark.studio" [ref=e222] [cursor=pointer]:
+            - /url: mailto:hello@ghostmark.studio
+          - paragraph [ref=e223]: Studio · Bordeaux, France
+      - generic [ref=e224]:
+        - navigation "Footer" [ref=e225]:
+          - generic [ref=e226]:
+            - heading "Company" [level=4] [ref=e227]
+            - list [ref=e228]:
+              - listitem [ref=e229]:
+                - link "About us" [ref=e230] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e231]:
+                - link "Sustainability" [ref=e232] [cursor=pointer]:
+                  - /url: /sustainability
+              - listitem [ref=e233]:
+                - link "Value chain" [ref=e234] [cursor=pointer]:
+                  - /url: /about/value-chain
+              - listitem [ref=e235]:
+                - link "People & culture" [ref=e236] [cursor=pointer]:
+                  - /url: /about/people-and-culture
+              - listitem [ref=e237]:
+                - link "Press" [ref=e238] [cursor=pointer]:
+                  - /url: /press
+          - generic [ref=e239]:
+            - heading "Shop" [level=4] [ref=e240]
+            - list [ref=e241]:
+              - listitem [ref=e242]:
+                - link "Shop all" [ref=e243] [cursor=pointer]:
+                  - /url: /products
+              - listitem [ref=e244]:
+                - link "Bespoke studio" [ref=e245] [cursor=pointer]:
+                  - /url: /studio
+              - listitem [ref=e246]:
+                - link "Platform" [ref=e247] [cursor=pointer]:
+                  - /url: /platform
+              - listitem [ref=e248]:
+                - link "Club & agencies" [ref=e249] [cursor=pointer]:
+                  - /url: /club
+              - listitem [ref=e250]:
+                - link "Journal" [ref=e251] [cursor=pointer]:
+                  - /url: /blog
+          - generic [ref=e252]:
+            - heading "Help" [level=4] [ref=e253]
+            - list [ref=e254]:
+              - listitem [ref=e255]:
+                - link "Help center" [ref=e256] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e257]:
+                - link "FAQ" [ref=e258] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e259]:
+                - link "Shipping" [ref=e260] [cursor=pointer]:
+                  - /url: /shipping
+              - listitem [ref=e261]:
+                - link "Returns" [ref=e262] [cursor=pointer]:
+                  - /url: /returns
+              - listitem [ref=e263]:
+                - link "Contact us" [ref=e264] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e265]:
+            - heading "Account" [level=4] [ref=e266]
+            - list [ref=e267]:
+              - listitem [ref=e268]:
+                - link "Preferences" [ref=e269] [cursor=pointer]:
+                  - /url: /account
+              - listitem [ref=e270]:
+                - link "Orders" [ref=e271] [cursor=pointer]:
+                  - /url: /account/orders
+              - listitem [ref=e272]:
+                - link "Invoices" [ref=e273] [cursor=pointer]:
+                  - /url: /account/orders
+              - listitem [ref=e274]:
+                - link "Saved projects" [ref=e275] [cursor=pointer]:
+                  - /url: /wishlist
+          - generic [ref=e276]:
+            - heading "Legal" [level=4] [ref=e277]
+            - list [ref=e278]:
+              - listitem [ref=e279]:
+                - link "Terms & conditions" [ref=e280] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e281]:
+                - link "Privacy policy" [ref=e282] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e283]:
+                - link "Cookies" [ref=e284] [cursor=pointer]:
+                  - /url: /cookies
+              - listitem [ref=e285]:
+                - link "Accessibility" [ref=e286] [cursor=pointer]:
+                  - /url: /accessibility
+        - generic [ref=e287]:
+          - link "Certified B Corporation — view our score" [ref=e288] [cursor=pointer]:
+            - /url: /sustainability#section-2
+            - text: Certified B
+          - link "1% for the Planet — read about our pledge" [ref=e289] [cursor=pointer]:
+            - /url: /sustainability#section-4
+            - text: 1% For the Planet
+          - generic [ref=e290]:
+            - generic [ref=e291]: Secure payments
+            - generic [ref=e292]: AMEX
+            - generic [ref=e293]: MC
+            - generic [ref=e294]: PayPal
+            - generic [ref=e295]: VISA
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - paragraph [ref=e298]: © 2026 GhostMark Studio · Bordeaux, France
+            - link "Change region or currency" [ref=e300] [cursor=pointer]:
+              - /url: /?region=open
+              - img [ref=e301]
+              - generic [ref=e304]: EN · GBP
+          - generic [ref=e305]:
+            - generic [ref=e306]:
+              - link "Instagram" [ref=e307] [cursor=pointer]:
+                - /url: https://instagram.com/ghostmarkstudio
+                - img [ref=e308]
+              - link "LinkedIn" [ref=e311] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/ghostmarkstudio
+                - img [ref=e312]
+              - link "Pinterest" [ref=e314] [cursor=pointer]:
+                - /url: https://pinterest.com/ghostmarkstudio
+                - img [ref=e315]
+              - link "X (formerly Twitter)" [ref=e317] [cursor=pointer]:
+                - /url: https://x.com/ghostmarkstudio
+                - img [ref=e318]
+            - link "Privacy" [ref=e321] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e322] [cursor=pointer]:
+              - /url: /terms
+            - link "Cookies" [ref=e323] [cursor=pointer]:
+              - /url: /cookies
+  - generic:
+    - img
+  - generic [ref=e324]:
+    - button "Toggle Nuxt DevTools" [ref=e325] [cursor=pointer]:
+      - img [ref=e326]
+    - generic "Page load time" [ref=e329]:
+      - generic [ref=e330]: "36"
+      - generic [ref=e331]: ms
+    - button "Toggle Component Inspector" [ref=e333] [cursor=pointer]:
+      - img [ref=e334]

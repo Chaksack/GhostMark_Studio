@@ -1,0 +1,349 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - iframe [ref=e5]:
+        - generic [ref=f80e2]:
+          - link "Trustpilot reviews" [ref=f80e3] [cursor=pointer]:
+            - /url: https://www.trustpilot.com/review/merchery.co?utm_medium=trustbox&utm_source=MicroTrustScore
+            - generic [ref=f80e4]: Excellent
+            - generic [ref=f80e5]: 4.8 out of 5
+            - img "Trustpilot" [ref=f80e9]
+          - generic [ref=f80e13]: Rated Excellent. 4.8 out of 5 on Trustpilot
+          - generic [ref=f80e14]: Click to view the company's Trustpilot profile
+    - navigation [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - img [ref=e11] [cursor=pointer]
+          - link [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+        - generic [ref=e16]:
+          - generic "not logged in user account" [ref=e17] [cursor=pointer]:
+            - img [ref=e19]
+          - link:
+            - /url: /shop/c/favorites
+          - link "contact" [ref=e24] [cursor=pointer]:
+            - /url: /contact
+            - generic "contact" [ref=e25]:
+              - img [ref=e26]
+          - link "cart icon 1" [ref=e351] [cursor=pointer]:
+            - /url: /checkout/cart
+            - button "cart icon 1" [ref=e353]:
+              - generic [ref=e354]:
+                - generic "cart icon" [ref=e355]:
+                  - img [ref=e357]
+                - generic [ref=e359]: "1"
+      - generic [ref=e35]:
+        - textbox "search input" [ref=e36]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e37] [cursor=pointer]:
+          - img [ref=e39]
+  - article [ref=e42]:
+    - generic "product customization container" [ref=e43]:
+      - generic [ref=e45]:
+        - button [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]:
+            - img
+        - generic [ref=e445]:
+          - generic [ref=e448]:
+            - button [ref=e449] [cursor=pointer]:
+              - img [ref=e451]
+            - button [ref=e452] [cursor=pointer]:
+              - img [ref=e454]
+          - generic [ref=e457]:
+            - button [ref=e458] [cursor=pointer]:
+              - img [ref=e460]
+            - button [ref=e463] [cursor=pointer]:
+              - img [ref=e465]
+            - button [ref=e470] [cursor=pointer]:
+              - img [ref=e472]
+          - generic [ref=e475]:
+            - button "Remove background" [ref=e476] [cursor=pointer]:
+              - img [ref=e478]
+              - generic: Remove background
+            - button "Edit colors" [ref=e486] [cursor=pointer]:
+              - img [ref=e488]
+              - generic [ref=e490]: Edit colors
+          - generic [ref=e491]:
+            - button "Front" [ref=e492] [cursor=pointer]
+            - button "Back" [ref=e493] [cursor=pointer]
+      - generic [ref=e75]:
+        - generic [ref=e77]:
+          - heading "AS Colour vintage hoodie" [level=1] [ref=e79]
+          - paragraph [ref=e80]: Stay comfortable and stylish with the AS Colour vintage hoodie. Crafted from a blend of cotton and recycled polyester, this mid-weight hoodie has a relaxed fit and an ultra-soft feel. The drop shoulder, kangaroo pocket, and garment-dyed finish create the perfect vintage look. Available for customisation in men’s and women’s versions for the perfect fit.
+        - generic "product details for mobile" [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e85]: "Item price:"
+              - text: 25.29 - €43.78
+            - generic [ref=e86]:
+              - generic [ref=e87]: "Lead time:"
+              - text: 10-16 days
+          - generic [ref=e88]:
+            - generic "Select Gender" [ref=e89]: "Gender:"
+            - group "Select Gender" [ref=e90]:
+              - button "Gender Men" [ref=e91] [cursor=pointer]: Men
+              - button "Gender Women, currently selected" [pressed] [ref=e494] [cursor=pointer]: Women
+            - generic "Select Color" [ref=e93]: "Color:"
+            - group "Select Color" [ref=e94]:
+              - button "Color Faded Powder, will change other selections" [ref=e495] [cursor=pointer]
+              - button "Color Faded Bone" [ref=e96] [cursor=pointer]
+              - button "Color Faded Grey" [ref=e97] [cursor=pointer]
+              - button "Color Faded Black, currently selected" [pressed] [ref=e496] [cursor=pointer]
+          - generic [ref=e99]:
+            - heading "Customize this product" [level=2] [ref=e100]
+            - paragraph [ref=e101]: Unlock our full product customization experience on desktop. Our advanced tools are designed for larger screens.
+            - paragraph [ref=e102]: Save this product to your favorites and continue customizing later on desktop.
+          - generic [ref=e104]:
+            - button "Add to favorites" [ref=e105] [cursor=pointer]:
+              - text: Add to favorites
+              - generic [ref=e106]:
+                - img
+            - button "Buy a sample" [ref=e107] [cursor=pointer]:
+              - text: Buy a sample
+              - generic [ref=e108]:
+                - img
+    - generic [ref=e109]:
+      - link "Excellent | 4.8 out of 5" [ref=e110] [cursor=pointer]:
+        - /url: https://trustpilot.com/review/merchery.co
+        - generic [ref=e111]:
+          - img [ref=e112]
+          - paragraph [ref=e118]: Excellent | 4.8 out of 5
+      - generic [ref=e119]:
+        - generic [ref=e120]:
+          - img [ref=e122]
+          - generic [ref=e127]: Worldwide delivery
+        - generic [ref=e128]: EU, UK and USA
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - img [ref=e132]
+          - generic [ref=e138]: Quality control
+        - generic [ref=e139]: Each order is double checked before production
+      - generic [ref=e140]:
+        - generic [ref=e141]:
+          - img [ref=e143]
+          - generic [ref=e145]: They trust us!
+        - generic [ref=e146]: Trusted by 2.000+ customers
+    - generic [ref=e147]:
+      - heading "Product details" [level=1] [ref=e148]
+      - generic [ref=e150]:
+        - heading "Size guide and measurements" [level=3] [ref=e361]:
+          - button "Size guide and measurements" [ref=e362] [cursor=pointer]:
+            - heading "Size guide and measurements" [level=1] [ref=e363]
+        - heading "Production" [level=3] [ref=e152]:
+          - button "Production" [ref=e153] [cursor=pointer]:
+            - heading "Production" [level=1] [ref=e154]
+        - heading "Product specificities" [level=3] [ref=e160]:
+          - button "Product specificities" [ref=e161] [cursor=pointer]:
+            - heading "Product specificities" [level=1] [ref=e162]
+        - heading "Customization" [level=3] [ref=e168]:
+          - button "Customization" [ref=e169] [cursor=pointer]:
+            - heading "Customization" [level=1] [ref=e170]
+    - generic [ref=e177]:
+      - generic [ref=e178]: The AS Colour vintage hoodie combines a relaxed fit with thoughtful details like a self-fabric lined hood, ribbed cuffs, and a kangaroo pocket. The garment-dyed finish adds a unique, worn-in feel, making it a timeless wardrobe staple.
+      - figure [ref=e180]
+    - generic [ref=e181]:
+      - heading "You might also like..." [level=2] [ref=e182]
+      - generic [ref=e187]:
+        - group "1 / 6" [ref=e188]:
+          - link "Best sellers Hoodie heavy From 22.8 € Add to favorites" [ref=e189] [cursor=pointer]:
+            - /url: /shop/hoodie-heavy
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e194]: Best sellers
+                  - figure:
+                    - img "Hoodie heavy" [ref=e195]
+                  - figure:
+                    - img "Hoodie heavy"
+                - generic [ref=e196]:
+                  - generic [ref=e197]: Hoodie heavy
+                  - generic [ref=e198]: From 22.8 €
+              - button "Add to favorites" [ref=e200]:
+                - img [ref=e202]
+        - group "2 / 6" [ref=e205]:
+          - link "Best sellers Oversized hoodie From 33.91 € Add to favorites" [ref=e206] [cursor=pointer]:
+            - /url: /shop/oversized-hoodie
+            - generic [ref=e207]:
+              - generic [ref=e208]:
+                - generic [ref=e209]:
+                  - generic [ref=e211]: Best sellers
+                  - figure:
+                    - img "Oversized hoodie" [ref=e212]
+                  - figure:
+                    - img "Oversized hoodie"
+                - generic [ref=e213]:
+                  - generic [ref=e214]: Oversized hoodie
+                  - generic [ref=e215]: From 33.91 €
+              - button "Add to favorites" [ref=e217]:
+                - img [ref=e219]
+        - group "3 / 6" [ref=e222]:
+          - link "Oversized soft hoodie From 27.59 € Add to favorites" [ref=e223] [cursor=pointer]:
+            - /url: /shop/oversized-soft-hoodie
+            - generic [ref=e224]:
+              - generic [ref=e225]:
+                - generic [ref=e226]:
+                  - figure:
+                    - img "Oversized soft hoodie" [ref=e227]
+                  - figure:
+                    - img "Oversized soft hoodie"
+                - generic [ref=e228]:
+                  - generic [ref=e229]: Oversized soft hoodie
+                  - generic [ref=e230]: From 27.59 €
+              - button "Add to favorites" [ref=e232]:
+                - img [ref=e234]
+        - group "4 / 6" [ref=e237]:
+          - link "Hoodie light From 18.47 € Add to favorites" [ref=e238] [cursor=pointer]:
+            - /url: /shop/hoodie-light
+            - generic [ref=e239]:
+              - generic [ref=e240]:
+                - generic [ref=e241]:
+                  - figure:
+                    - img "Hoodie light" [ref=e242]
+                  - figure:
+                    - img "Hoodie light"
+                - generic [ref=e243]:
+                  - generic [ref=e244]: Hoodie light
+                  - generic [ref=e245]: From 18.47 €
+              - button "Add to favorites" [ref=e247]:
+                - img [ref=e249]
+        - group "5 / 6" [ref=e252]:
+          - link "Vintage oversized crewneck From 25.18 € Add to favorites" [ref=e253] [cursor=pointer]:
+            - /url: /shop/vintage-oversized-crewneck
+            - generic [ref=e254]:
+              - generic [ref=e255]:
+                - generic [ref=e256]:
+                  - figure:
+                    - img "Vintage oversized crewneck" [ref=e257]
+                  - figure:
+                    - img "Vintage oversized crewneck"
+                - generic [ref=e258]:
+                  - generic [ref=e259]: Vintage oversized crewneck
+                  - generic [ref=e260]: From 25.18 €
+              - button "Add to favorites" [ref=e262]:
+                - img [ref=e264]
+        - group "6 / 6" [ref=e267]:
+          - link "Boxy recycled cotton hoodie From 26.28 € Add to favorites" [ref=e268] [cursor=pointer]:
+            - /url: /shop/boxy-recycled-cotton-hoodie
+            - generic [ref=e269]:
+              - generic [ref=e270]:
+                - generic [ref=e271]:
+                  - figure:
+                    - img "Boxy recycled cotton hoodie" [ref=e272]
+                  - figure:
+                    - img "Boxy recycled cotton hoodie"
+                - generic [ref=e273]:
+                  - generic [ref=e274]: Boxy recycled cotton hoodie
+                  - generic [ref=e275]: From 26.28 €
+              - button "Add to favorites" [ref=e277]:
+                - img [ref=e279]
+    - generic [ref=e282]:
+      - complementary "Frequently asked questions" [ref=e283]:
+        - generic [ref=e284]:
+          - heading "Frequently asked questions" [level=2] [ref=e285]
+          - paragraph [ref=e286]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e288] [cursor=pointer]:
+            - /url: /faq
+        - generic [ref=e289]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e291]:
+            - button "How can I find out more about your products?" [ref=e292] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e298]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e299] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e305]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e306] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e312]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e313] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e319]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e320] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e326]:
+            - button "Where do you ship?" [ref=e327] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e333]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e334] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e339]:
+        - generic [ref=e340]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e341]
+          - generic [ref=e342]:
+            - textbox "Enter your email address" [ref=e344]
+            - button "Subscribe" [ref=e345] [cursor=pointer]
+  - alert [ref=e346]
+  - contentinfo [ref=e368]:
+    - generic [ref=e369]:
+      - generic "Social networks" [ref=e370]:
+        - generic [ref=e371]: "FOLLOW US:"
+        - list [ref=e372]:
+          - listitem [ref=e373]:
+            - link "Instagram" [ref=e374] [cursor=pointer]:
+              - /url: https://www.instagram.com/merchery.co/
+          - listitem [ref=e375]:
+            - link "LinkedIn" [ref=e376] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/merchery/
+      - generic [ref=e378]:
+        - text: Based in
+        - link "Brussels" [ref=e379] [cursor=pointer]:
+          - /url: https://merchery.co/
+        - text: ","
+        - link "New York" [ref=e380] [cursor=pointer]:
+          - /url: https://us.merchery.co/
+        - text: and
+        - link "London" [ref=e381] [cursor=pointer]:
+          - /url: https://merchery.co/en-GB
+        - text: . Available worldwide.
+    - generic [ref=e382]:
+      - heading "Company" [level=3] [ref=e384]:
+        - button "Company" [ref=e385] [cursor=pointer]: Company
+      - heading "Services" [level=3] [ref=e391]:
+        - button "Services" [ref=e392] [cursor=pointer]: Services
+      - heading "Inspiration" [level=3] [ref=e398]:
+        - button "Inspiration" [ref=e399] [cursor=pointer]: Inspiration
+      - heading "Let us help" [level=3] [ref=e405]:
+        - button "Let us help" [ref=e406] [cursor=pointer]: Let us help
+      - heading "Account" [level=3] [ref=e412]:
+        - button "Account" [ref=e413] [cursor=pointer]: Account
+    - generic [ref=e418]:
+      - list [ref=e419]:
+        - listitem [ref=e420]:
+          - figure [ref=e421]:
+            - img "B-Corp-Logo-Black-RGB.svg" [ref=e422]
+        - listitem [ref=e423]:
+          - figure [ref=e424]:
+            - img "1_fortheplanetgood_785c18faf0.svg" [ref=e425]
+      - generic [ref=e426]:
+        - generic [ref=e427]: "Secure payments:"
+        - list [ref=e428]:
+          - listitem [ref=e429]:
+            - figure [ref=e430]:
+              - img "Bank_transfer_6487c38fd0.svg" [ref=e431]
+          - listitem [ref=e432]:
+            - figure [ref=e433]:
+              - img "Mastercard_9fdba5940f.svg" [ref=e434]
+          - listitem [ref=e435]:
+            - figure [ref=e436]:
+              - img "Paypal_7a6aaccf5e.svg" [ref=e437]
+          - listitem [ref=e438]:
+            - figure [ref=e439]:
+              - img "Visa_613308d9b9.svg" [ref=e440]
+          - listitem [ref=e441]:
+            - figure [ref=e442]:
+              - img "American_express_e0a23a5002.svg" [ref=e443]
+  - button "Open chat" [ref=e347] [cursor=pointer]:
+    - img [ref=e349]
+  - iframe [ref=e444]:
+    
+  - iframe [ref=e510]:
+    - generic [active] [ref=f89e1]:
+      - generic "Intercom":
+        - region "Intercom messenger":
+          - group "1 notification":
+            - listbox "Notification stack":
+              - option "message notification from Merchery, 12h. Hello there 👋 If you need any help, don't hesitate to chat with us!" [ref=f89e2]:
+                - article "message notification from Merchery, 12h. Hello there 👋 If you need any help, don't hesitate to chat with us!" [ref=f89e4]:
+                  - generic [ref=f89e5]:
+                    - img "Profile image for Merchery" [ref=f89e8]
+                    - generic [ref=f89e9]:
+                      - region "Message content" [ref=f89e10]:
+                        - generic [ref=f89e15]:
+                          - text: Hello there 👋
+                          - text: If you need any help, don't hesitate to chat with us!
+                      - paragraph [ref=f89e16]: Merchery • 12h
+                    - button "Dismiss notification" [ref=f89e17] [cursor=pointer]:
+                      - img [ref=f89e19]

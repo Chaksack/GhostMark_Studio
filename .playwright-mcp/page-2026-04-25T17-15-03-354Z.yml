@@ -1,0 +1,354 @@
+- generic [active] [ref=e1]:
+  - banner "navigation desktop" [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /en-GB/
+          - img [ref=e6]
+        - link "Shop all products" [ref=e8] [cursor=pointer]:
+          - /url: /en-GB/shop
+      - generic [ref=e10]:
+        - textbox "search input" [ref=e11]:
+          - /placeholder: Search for a product
+        - generic "search icon" [ref=e12] [cursor=pointer]:
+          - img [ref=e14]
+      - generic [ref=e17]:
+        - button "| English" [ref=e19] [cursor=pointer]:
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e32]: "|"
+            - generic [ref=e33]: English
+        - generic [ref=e34]:
+          - link "favorites" [ref=e35] [cursor=pointer]:
+            - /url: /en-GB/shop/c/favorites
+            - generic "favorites" [ref=e36]:
+              - img [ref=e37]
+          - img [ref=e42]
+          - link:
+            - /url: /en-GB/contact
+          - generic "not logged in user account" [ref=e44] [cursor=pointer]:
+            - img [ref=e46]
+  - article [ref=e51]:
+    - generic "product customization container" [ref=e52]:
+      - generic [ref=e54]:
+        - navigation "breadcrumb" [ref=e56]:
+          - list [ref=e57]:
+            - listitem [ref=e58]:
+              - link "All products" [ref=e59] [cursor=pointer]:
+                - /url: /en-GB/shop
+              - generic [ref=e60]: /
+            - listitem [ref=e61]:
+              - link "Discover" [ref=e62] [cursor=pointer]:
+                - /url: /en-GB/shop/c/discover
+              - generic [ref=e63]: /
+            - listitem [ref=e64]:
+              - link "Holiday picks" [ref=e65] [cursor=pointer]:
+                - /url: /en-GB/shop/c/discover/discover-holiday-picks
+        - generic [ref=e68]:
+          - button "Previous slide" [ref=e69]:
+            - generic [ref=e70]: Go to previous slide
+          - button "Next slide" [ref=e71]:
+            - generic [ref=e72]: Go to next slide
+          - generic [ref=e74]:
+            - group "5 / 5" [ref=e75]:
+              - generic [ref=e76]:
+                - figure
+            - group "1 / 5" [ref=e77]:
+              - generic [ref=e78]:
+                - figure
+            - group "2 / 5" [ref=e79]:
+              - generic [ref=e80]:
+                - figure
+            - group "3 / 5" [ref=e81]:
+              - generic [ref=e82]:
+                - figure
+            - group "4 / 5" [ref=e83]:
+              - generic [ref=e84]:
+                - figure
+            - group "5 / 5" [ref=e85]:
+              - generic [ref=e86]:
+                - figure
+            - group "1 / 5" [ref=e87]:
+              - generic [ref=e88]:
+                - figure
+          - generic [ref=e89]:
+            - button "Go to slide 1" [ref=e90] [cursor=pointer]
+            - button "Go to slide 2" [ref=e91] [cursor=pointer]
+            - button "Go to slide 3" [ref=e92] [cursor=pointer]
+            - button "Go to slide 4" [ref=e93] [cursor=pointer]
+            - button "Go to slide 5" [ref=e94] [cursor=pointer]
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - heading "AS Colour vintage hoodie" [level=1] [ref=e100]
+            - generic [ref=e101]:
+              - link "View product details" [ref=e102] [cursor=pointer]:
+                - /url: "#variant-specificities"
+                - text: View product details
+                - generic [ref=e103]:
+                  - img
+              - button "Buy a sample" [ref=e104] [cursor=pointer]:
+                - text: Buy a sample
+                - generic [ref=e105]:
+                  - img
+              - button [ref=e107] [cursor=pointer]:
+                - generic [ref=e108]:
+                  - img
+          - generic "product details for desktop" [ref=e109]:
+            - generic [ref=e110]:
+              - heading "1. Pick a product variant" [level=2] [ref=e111]
+              - generic [ref=e112]:
+                - generic "Select Gender" [ref=e113]: "Gender:"
+                - group "Select Gender" [ref=e114]:
+                  - button "Gender Men" [ref=e115] [cursor=pointer]: Men
+                  - button "Gender Women" [ref=e116] [cursor=pointer]: Women
+                - generic "Select Color" [ref=e117]: "Color:"
+                - group "Select Color" [ref=e118]:
+                  - button "Color Faded Powder" [ref=e119] [cursor=pointer]
+                  - button "Color Faded Bone" [ref=e120] [cursor=pointer]
+                  - button "Color Faded Grey" [ref=e121] [cursor=pointer]
+                  - button "Color Faded Black" [ref=e122] [cursor=pointer]
+            - generic [ref=e123]:
+              - heading "2. Upload your design" [level=2] [ref=e124]
+              - generic "Customization section" [ref=e125]:
+                - generic [ref=e126]:
+                  - tablist [ref=e127]:
+                    - tab "Select location Front" [selected] [ref=e128] [cursor=pointer]: Front
+                    - tab "Select location Back" [ref=e129] [cursor=pointer]: Back
+                  - tabpanel "Select location Front" [ref=e130]:
+                    - button "Upload logo" [ref=e132] [cursor=pointer]:
+                      - generic [ref=e133]:
+                        - img [ref=e134]
+                        - generic [ref=e137]: Click to upload or drag & drop
+                      - paragraph [ref=e138]: Maximum file size 10Mb. For best results please upload an EPS, ai. or PDF file. We can vectorize your artwork if necessary.
+            - generic "Quantity selection" [ref=e139]:
+              - heading "3. Quantity" [level=2] [ref=e140]
+              - generic [ref=e141]:
+                - generic [ref=e142]:
+                  - generic [ref=e143]:
+                    - textbox "Quantity input" [ref=e145]: "30"
+                    - paragraph [ref=e146]: £29.86/piece
+                    - paragraph [ref=e148]: Save 10%
+                    - paragraph [ref=e149]: £895.80
+                  - paragraph [ref=e150]: Fill in the exact amount you need. The minimum quantity for this product is 15.
+                - generic [ref=e152] [cursor=pointer]:
+                  - paragraph [ref=e153]: 15 pieces
+                  - paragraph [ref=e154]: £33.14/piece
+                  - paragraph [ref=e155]: £497.10
+                - generic [ref=e157] [cursor=pointer]:
+                  - paragraph [ref=e158]: 25 pieces
+                  - paragraph [ref=e159]: £29.86/piece
+                  - paragraph [ref=e161]: Save 10%
+                  - paragraph [ref=e162]: £746.50
+                - generic [ref=e164] [cursor=pointer]:
+                  - paragraph [ref=e165]: 50 pieces
+                  - paragraph [ref=e166]: £28.77/piece
+                  - paragraph [ref=e168]: Save 13%
+                  - paragraph [ref=e169]: £1,438.50
+                - generic [ref=e171] [cursor=pointer]:
+                  - paragraph [ref=e172]: 100 pieces
+                  - paragraph [ref=e173]: £27.76/piece
+                  - paragraph [ref=e175]: Save 16%
+                  - paragraph [ref=e176]: £2,776.00
+                - generic [ref=e178] [cursor=pointer]:
+                  - paragraph [ref=e179]: 200 pieces
+                  - paragraph [ref=e180]: £25.94/piece
+                  - paragraph [ref=e182]: Save 22%
+                  - paragraph [ref=e183]: £5,188.00
+                - generic [ref=e185] [cursor=pointer]:
+                  - paragraph [ref=e186]: 300 pieces
+                  - paragraph [ref=e187]: £23.98/piece
+                  - paragraph [ref=e189]: Save 28%
+                  - paragraph [ref=e190]: £7,194.00
+                - generic [ref=e192] [cursor=pointer]:
+                  - paragraph [ref=e193]: 400 pieces
+                  - paragraph [ref=e194]: £23.27/piece
+                  - paragraph [ref=e196]: Save 30%
+                  - paragraph [ref=e197]: £9,308.00
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]:
+              - paragraph [ref=e201]: "Lead time:"
+              - paragraph [ref=e202]: Approximately 10-16 business days
+            - generic [ref=e203]:
+              - generic [ref=e204]:
+                - generic [ref=e205]: "Total:"
+                - generic "Total price" [ref=e206]:
+                  - text: £895.80
+                  - button [ref=e207]:
+                    - generic [ref=e209]:
+                      - img
+              - generic [ref=e210]:
+                - paragraph [ref=e211]: Upload your design to get your final price.
+                - img [ref=e215]
+          - button "Add to cart button" [ref=e222] [cursor=pointer]:
+            - text: Add to cart
+            - generic [ref=e223]:
+              - img
+    - generic [ref=e224]:
+      - link "Excellent | 4.8 out of 5" [ref=e225] [cursor=pointer]:
+        - /url: https://uk.trustpilot.com/review/merchery.co
+        - generic [ref=e226]:
+          - img [ref=e227]
+          - paragraph [ref=e233]: Excellent | 4.8 out of 5
+      - generic [ref=e234]:
+        - generic [ref=e235]:
+          - img [ref=e237]
+          - generic [ref=e242]: Worldwide delivery
+        - generic [ref=e243]: EU, UK and USA
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - img [ref=e247]
+          - generic [ref=e253]: Quality control
+        - generic [ref=e254]: Each order is double checked before production
+      - generic [ref=e255]:
+        - generic [ref=e256]:
+          - img [ref=e258]
+          - generic [ref=e260]: They trust us!
+        - generic [ref=e261]: Trusted by 2.000+ customers
+    - generic [ref=e262]:
+      - heading "Product details" [level=1] [ref=e263]
+      - generic [ref=e264]:
+        - paragraph [ref=e265]: Stay comfortable and stylish with the AS Colour vintage hoodie. Crafted from a blend of cotton and recycled polyester, this mid-weight hoodie has a relaxed fit and an ultra-soft feel. The drop shoulder, kangaroo pocket, and garment-dyed finish create the perfect vintage look. Available for customisation in men’s and women’s versions for the perfect fit.
+        - generic [ref=e266]:
+          - heading "Production" [level=3] [ref=e268]:
+            - button "Production" [ref=e269] [cursor=pointer]:
+              - heading "Production" [level=1] [ref=e270]
+          - heading "Product specificities" [level=3] [ref=e276]:
+            - button "Product specificities" [ref=e277] [cursor=pointer]:
+              - heading "Product specificities" [level=1] [ref=e278]
+          - heading "Customization" [level=3] [ref=e284]:
+            - button "Customization" [ref=e285] [cursor=pointer]:
+              - heading "Customization" [level=1] [ref=e286]
+    - generic [ref=e293]:
+      - generic [ref=e294]: The AS Colour vintage hoodie combines a relaxed fit with thoughtful details like a self-fabric lined hood, ribbed cuffs, and a kangaroo pocket. The garment-dyed finish adds a unique, worn-in feel, making it a timeless wardrobe staple.
+      - figure [ref=e296]
+    - generic [ref=e297]:
+      - heading "You might also like..." [level=2] [ref=e298]
+      - generic [ref=e300]:
+        - generic [ref=e302]: Go to previous slide
+        - generic [ref=e304]: Go to next slide
+        - generic [ref=e307]:
+          - group "1 / 6" [ref=e308]:
+            - link "Best sellers Hoodie heavy From 20.98 £ Add to favorites" [ref=e309] [cursor=pointer]:
+              - /url: /en-GB/shop/hoodie-heavy
+              - generic [ref=e310]:
+                - generic [ref=e311]:
+                  - generic [ref=e312]:
+                    - generic [ref=e314]: Best sellers
+                    - figure:
+                      - img "Hoodie heavy" [ref=e315]
+                    - figure:
+                      - img "Hoodie heavy" [ref=e316]
+                  - generic [ref=e317]:
+                    - generic [ref=e318]: Hoodie heavy
+                    - generic [ref=e319]: From 20.98 £
+                - button "Add to favorites" [ref=e321]:
+                  - img [ref=e323]
+          - group "2 / 6" [ref=e326]:
+            - link "Best sellers Oversized hoodie From 31.2 £ Add to favorites" [ref=e327] [cursor=pointer]:
+              - /url: /en-GB/shop/oversized-hoodie
+              - generic [ref=e328]:
+                - generic [ref=e329]:
+                  - generic [ref=e330]:
+                    - generic [ref=e332]: Best sellers
+                    - figure:
+                      - img "Oversized hoodie" [ref=e333]
+                    - figure:
+                      - img "Oversized hoodie" [ref=e334]
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: Oversized hoodie
+                    - generic [ref=e337]: From 31.2 £
+                - button "Add to favorites" [ref=e339]:
+                  - img [ref=e341]
+          - group "3 / 6" [ref=e344]:
+            - link "Oversized soft hoodie From 25.39 £ Add to favorites" [ref=e345] [cursor=pointer]:
+              - /url: /en-GB/shop/oversized-soft-hoodie
+              - generic [ref=e346]:
+                - generic [ref=e347]:
+                  - generic [ref=e348]:
+                    - figure:
+                      - img "Oversized soft hoodie" [ref=e349]
+                    - figure:
+                      - img "Oversized soft hoodie" [ref=e350]
+                  - generic [ref=e351]:
+                    - generic [ref=e352]: Oversized soft hoodie
+                    - generic [ref=e353]: From 25.39 £
+                - button "Add to favorites" [ref=e355]:
+                  - img [ref=e357]
+          - group "4 / 6" [ref=e360]:
+            - link "Hoodie light From 16.99 £ Add to favorites" [ref=e361] [cursor=pointer]:
+              - /url: /en-GB/shop/hoodie-light
+              - generic [ref=e362]:
+                - generic [ref=e363]:
+                  - generic [ref=e364]:
+                    - figure:
+                      - img "Hoodie light" [ref=e365]
+                    - figure:
+                      - img "Hoodie light" [ref=e366]
+                  - generic [ref=e367]:
+                    - generic [ref=e368]: Hoodie light
+                    - generic [ref=e369]: From 16.99 £
+                - button "Add to favorites" [ref=e371]:
+                  - img [ref=e373]
+          - group "5 / 6" [ref=e376]:
+            - link "Vintage oversized crewneck From 23.17 £ Add to favorites" [ref=e377] [cursor=pointer]:
+              - /url: /en-GB/shop/vintage-oversized-crewneck
+              - generic [ref=e378]:
+                - generic [ref=e379]:
+                  - generic [ref=e380]:
+                    - figure:
+                      - img "Vintage oversized crewneck" [ref=e381]
+                    - figure:
+                      - img "Vintage oversized crewneck" [ref=e382]
+                  - generic [ref=e383]:
+                    - generic [ref=e384]: Vintage oversized crewneck
+                    - generic [ref=e385]: From 23.17 £
+                - button "Add to favorites" [ref=e387]:
+                  - img [ref=e389]
+          - group "6 / 6" [ref=e392]:
+            - link "Boxy recycled cotton hoodie From 22.81 £ Add to favorites" [ref=e393] [cursor=pointer]:
+              - /url: /en-GB/shop/boxy-recycled-cotton-hoodie
+              - generic [ref=e394]:
+                - generic [ref=e395]:
+                  - generic [ref=e396]:
+                    - figure:
+                      - img "Boxy recycled cotton hoodie" [ref=e397]
+                    - figure:
+                      - img "Boxy recycled cotton hoodie" [ref=e398]
+                  - generic [ref=e399]:
+                    - generic [ref=e400]: Boxy recycled cotton hoodie
+                    - generic [ref=e401]: From 22.81 £
+                - button "Add to favorites" [ref=e403]:
+                  - img [ref=e405]
+    - generic [ref=e408]:
+      - complementary "Frequently asked questions" [ref=e409]:
+        - generic [ref=e410]:
+          - heading "Frequently asked questions" [level=2] [ref=e411]
+          - paragraph [ref=e412]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+          - link "View more" [ref=e414] [cursor=pointer]:
+            - /url: /en-GB/faq
+        - generic [ref=e415]:
+          - heading "How can I find out more about your products?" [level=3] [ref=e417]:
+            - button "How can I find out more about your products?" [ref=e418] [cursor=pointer]: How can I find out more about your products?
+          - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e424]:
+            - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e425] [cursor=pointer]: Will it be possible to see the e-proof before my order goes into production?
+          - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e431]:
+            - button "Is it possible to shorten the lead time for production?" [ref=e432] [cursor=pointer]: Is it possible to shorten the lead time for production?
+          - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e438]:
+            - button "Why are your prices not fixed and vary within a range?" [ref=e439] [cursor=pointer]: Why are your prices not fixed and vary within a range?
+          - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e445]:
+            - button "Can you ship the merch to multiple addresses?" [ref=e446] [cursor=pointer]: Can you ship the merch to multiple addresses?
+          - heading "Where do you ship?" [level=3] [ref=e452]:
+            - button "Where do you ship?" [ref=e453] [cursor=pointer]: Where do you ship?
+          - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e459]:
+            - button "What is the minimum order quantity (MOQ)?" [ref=e460] [cursor=pointer]: What is the minimum order quantity (MOQ)?
+      - complementary [ref=e465]:
+        - generic [ref=e466]:
+          - heading "Subscribe, and get access to exclusive news, sneak peaks on new launches" [level=2] [ref=e467]
+          - generic [ref=e468]:
+            - textbox "Enter your email address" [ref=e470]
+            - button "Subscribe" [ref=e471] [cursor=pointer]
+  - alert [ref=e472]
+  - button "Open chat" [ref=e473] [cursor=pointer]:
+    - img [ref=e475]
