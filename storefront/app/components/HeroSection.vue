@@ -66,9 +66,15 @@
           custom &middot; POD on the rest.
         </p>
         <div class="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+          <!--
+            Primary CTA — D2C apparel catalogue. White-filled per design-system
+            CTA hierarchy: high-emphasis for the buy-as-is path that converts
+            today, no upload step required.
+          -->
           <NuxtLink
             to="/shop"
             class="group inline-flex h-12 min-w-[200px] items-center justify-center gap-2 rounded-[0.25rem] bg-white px-6 text-[14px] font-medium uppercase tracking-[0.04em] text-ink-950 transition-colors duration-fast ease-emphasis hover:bg-cream-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
+            aria-label="Shop the Studio Canon — apparel sold as-is"
           >
             Shop the Studio Canon
             <svg
@@ -84,18 +90,28 @@
               <path d="M2 8h12M9 3l5 5-5 5" />
             </svg>
           </NuxtLink>
+          <!--
+            Secondary CTA — POD-type catalogue. Object syntax preferred over a
+            string href so Nuxt's router builds the URL deterministically and
+            we don't have to think about encoding edge cases. Lands on
+            /products?type=pod — the PLP filters by product.type.value === 'pod'.
+          -->
           <NuxtLink
-            to="/studio"
+            :to="{ path: '/products', query: { type: 'pod' } }"
             class="inline-flex h-12 min-w-[200px] items-center justify-center gap-2 rounded-[0.25rem] border border-white/80 bg-white/0 px-6 text-[14px] font-medium uppercase tracking-[0.04em] text-white transition-colors duration-fast ease-emphasis hover:bg-white hover:text-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
+            aria-label="Customise and print on demand — upload your artwork"
           >
             Customise &amp; POD
           </NuxtLink>
         </div>
 
         <!--
-          Mini value-prop strip — works for both paths (D2C + B2B/POD).
+          Mini value-prop strip — names BOTH product-type flows so the dual-mode
+          storefront is legible at a glance.
           Mobile (≤sm): collapsed to 2 props to avoid one-per-line wrap at 360px.
-          sm+: full 3-prop strip surfaces.
+            Both modes still get a mention via the "Apparel from £18" /
+            "Custom from MOQ 25" pair.
+          sm+: full 3-prop strip surfaces with the e-proof reassurance.
           Sizes meet WCAG 2.1 AA body floor (≥13px) on small screens.
         -->
         <div
@@ -103,10 +119,12 @@
         >
           <span>Designed in Bordeaux</span>
           <span aria-hidden="true">&middot;</span>
-          <span class="sm:hidden">From 25 &middot; POD available</span>
-          <span class="hidden sm:inline">Per-unit or MOQ 25</span>
+          <span>Apparel from &pound;18</span>
+          <span aria-hidden="true">&middot;</span>
+          <span class="sm:hidden">Custom MOQ 25</span>
+          <span class="hidden sm:inline">Custom from MOQ 25</span>
           <span class="hidden sm:inline" aria-hidden="true">&middot;</span>
-          <span class="hidden sm:inline">E-proof in 48h on custom</span>
+          <span class="hidden sm:inline">E-proof in 48h</span>
         </div>
       </div>
 

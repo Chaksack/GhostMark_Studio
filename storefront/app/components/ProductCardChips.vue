@@ -7,7 +7,9 @@
 // a typed `Chip[]` (see `~/utils/chips`). The parent (`ProductCard`) is now
 // responsible for:
 //   1. Resolving raw badge keys from product metadata.
-//   2. Filtering them to the active commerce mode (`/shop` vs `/studio`).
+//   2. Filtering them to the active commerce mode — derived primarily from
+//      `product.type.value` (`'apparel'` -> D2C chips, `'pod'` -> B2B/POD
+//      chips), with the explicit `mode` prop as a fallback.
 //   3. Capping the count for the target breakpoint.
 // All this component does is paint each chip with the right surface treatment.
 //

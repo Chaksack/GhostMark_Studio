@@ -48,7 +48,7 @@ const { data: products } = await useAsyncData<StoreProduct[]>(
     try {
       const res = await sdk.store.product.list({
         collection_id: [collection.value.id],
-        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
+        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
         limit: 24,
         ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
       })

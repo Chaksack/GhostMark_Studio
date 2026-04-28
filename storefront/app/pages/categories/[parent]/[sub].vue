@@ -55,7 +55,7 @@ const { data: products } = await useAsyncData(
       const res = await sdk.store.product.list({
         category_id: [category.value.id],
         region_id: region.value?.id,
-        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
+        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
         limit: 24,
       } as any)
       return (res as any).products ?? []

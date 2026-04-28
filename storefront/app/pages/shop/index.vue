@@ -105,13 +105,18 @@
       <ul v-else-if="sortedProducts.length" class="grid grid-cols-2 gap-[1.6rem] md:grid-cols-3 lg:grid-cols-4 lg:gap-[3rem]">
         <ProductCard v-for="p in sortedProducts" :key="p.id" :product="p" mode="shop" />
       </ul>
-      <div v-else class="py-12 text-center">
-        <p class="mx-auto max-w-[44rem] font-body text-body text-ink-500">
-          The shelf is empty right now.
-          <NuxtLink to="/products" class="ml-1 text-ink-950 underline decoration-dashed underline-offset-4 hover:decoration-solid">
-            Browse the full catalogue
-          </NuxtLink>
-          or check back after the next drop.
+      <!-- Empty state — friendly copy explicitly framed for the apparel-only
+           filter on /shop. If `type_id` resolution fails AND the harvest
+           fallback returns 0 apparel rows, this is the only thing the visitor
+           sees, so it has to point them somewhere useful (the unified PLP, or
+           a quote request). -->
+      <div v-else class="py-12 text-center max-w-[60rem] mx-auto">
+        <p class="text-[1.5rem] text-ink-700 mb-4">The Studio Canon is being stocked.</p>
+        <p class="text-[1.4rem] text-greyText mb-6">
+          In the meantime, browse our custom &amp; POD catalogue at
+          <NuxtLink to="/products" class="underline hover:text-ink-950">/products</NuxtLink>
+          or
+          <NuxtLink to="/contact" class="underline hover:text-ink-950">request a quote</NuxtLink>.
         </p>
       </div>
 
@@ -159,7 +164,7 @@
 <script setup lang="ts">
 import FilterPill from '~/components/ui/FilterPill.vue'
 import MobileFilterSheet from '~/components/ui/MobileFilterSheet.vue'
-import { applySort, filterOptions } from '~/utils/filters'
+import { applySort, filterOptions, useProductTypeIds } from '~/utils/filters'
 
 useHead({
   title: 'Shop · GhostMark Studio',
@@ -198,19 +203,28 @@ function onClearFilters() {
 
 await regionState.ensureRegion()
 
+// Resolve product-type IDs so we can pass `type_id` to the Store API and let
+// the backend narrow to apparel-only — /shop is the Studio Canon D2C surface,
+// not the unified catalogue. If the lookup fails (endpoint not exposed,
+// network blip), `apparelTypeId` stays null and the computed below falls back
+// to client-side filtering on `product.type.value`.
+const { typeIds, ensureTypeIds } = useProductTypeIds()
+await ensureTypeIds()
+const apparelTypeId = computed(() => typeIds.value['apparel'] ?? null)
+
 const { data, pending, error } = await useAsyncData(
-  () => `shop-${currentPage.value}-${regionState.regionId.value ?? 'no-region'}`,
+  () => `shop-${apparelTypeId.value ?? 'all'}-${currentPage.value}-${regionState.regionId.value ?? 'no-region'}`,
   async () => {
-    // TODO when backend has `studio_canon: true` metadata or `shop` sales channel,
-    // filter by it. For now fetch all products as placeholder data.
-    return sdk.store.product.list({
+    const args: Record<string, unknown> = {
       limit: PAGE_SIZE,
       offset: (currentPage.value - 1) * PAGE_SIZE,
-      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
-      ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
-    } as any)
+      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
+    }
+    if (regionState.regionId.value) args.region_id = regionState.regionId.value
+    if (apparelTypeId.value) args.type_id = [apparelTypeId.value]
+    return sdk.store.product.list(args as any)
   },
-  { watch: [() => currentPage.value, () => regionState.regionId.value] },
+  { watch: [() => currentPage.value, () => regionState.regionId.value, apparelTypeId] },
 )
 
 const products = computed(() => (data.value as any)?.products ?? [])
@@ -224,5 +238,13 @@ const visiblePages = computed(() => {
   if (cur >= tot - 3) return [1, '…', tot-4, tot-3, tot-2, tot-1, tot]
   return [1, '…', cur-1, cur, cur+1, '…', tot]
 })
-const sortedProducts = computed(() => applySort(products.value, sortBy.value))
+// Defensive client-side filter — if we couldn't resolve a type_id (backend
+// didn't expose `productType.list` AND the harvest fallback returned 0 types,
+// or the seed hasn't run yet), narrow the grid by `product.type.value` so
+// /shop never accidentally renders POD/custom products.
+const sortedProducts = computed(() => {
+  const sorted = applySort(products.value, sortBy.value)
+  if (apparelTypeId.value) return sorted // server already filtered
+  return sorted.filter((p: any) => String(p?.type?.value ?? '').toLowerCase() === 'apparel')
+})
 </script>

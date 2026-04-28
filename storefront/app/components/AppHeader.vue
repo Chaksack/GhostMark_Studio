@@ -175,6 +175,38 @@
     aria-label="Categories"
   >
       <div class="mx-auto flex w-full max-w-screen-2xl flex-nowrap items-center justify-start gap-[20px] overflow-x-auto px-5 py-3 sm:px-6 lg:h-full lg:justify-center lg:py-0 lg:px-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <!--
+          Mode entries — the storefront's two product-type axes.
+          Rendered font-medium with default ink-950 colour to outweigh
+          the zinc-500 category links that follow. These are primary
+          entry points (what KIND of product); categories below are
+          filters WITHIN those modes.
+          Active state explicit:
+            - "Shop" highlights for /shop and any /shop/* sub-route
+            - "Studio (POD)" highlights only when ?type=pod is set
+        -->
+        <NuxtLink
+          to="/shop"
+          :class="[
+            'inline-flex min-h-[44px] items-center gap-2 border-b px-0.5 py-1.5 font-medium transition shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2',
+            isShopActive ? 'border-zinc-950 text-zinc-950' : 'border-transparent text-zinc-950 hover:border-zinc-950',
+          ]"
+        >
+          Shop
+        </NuxtLink>
+        <NuxtLink
+          to="/products?type=pod"
+          :class="[
+            'inline-flex min-h-[44px] items-center gap-2 border-b px-0.5 py-1.5 font-medium transition shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2',
+            isPodActive ? 'border-zinc-950 text-zinc-950' : 'border-transparent text-zinc-950 hover:border-zinc-950',
+          ]"
+        >
+          Studio (POD)
+        </NuxtLink>
+
+        <!-- Visual separator between primary modes and category filters -->
+        <span class="hidden lg:inline-block h-4 w-px bg-greyLines mx-2 shrink-0" aria-hidden="true" />
+
         <div
           v-for="c in categories"
           :key="c.key"
@@ -328,6 +360,14 @@ const { categories } = defineProps<{
 }>()
 
 const route = useRoute()
+
+// Active-state for the two top-tier mode entries in the desktop category
+// nav. NuxtLink's default `router-link-active` can't express either rule:
+//   - "Shop" must light up for /shop AND any /shop/* sub-route
+//   - "Studio (POD)" must light up only when ?type=pod is set
+const isShopActive = computed(() => route.path.startsWith('/shop'))
+const isPodActive = computed(() => route.path === '/products' && route.query.type === 'pod')
+
 const { customer, logout, refresh } = useCustomer()
 const isAuthModalOpen = ref(false)
 const isLoggingOut = ref(false)

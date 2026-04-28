@@ -1,0 +1,706 @@
+- generic [ref=e3]:
+  - banner "navigation desktop" [ref=e4]:
+    - navigation [ref=e5]:
+      - link "Home" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - text: GhostMark
+      - generic [ref=e7]:
+        - generic [ref=e8]: Search for a product
+        - searchbox "Search for a product" [ref=e9]
+        - button "Search" [ref=e10] [cursor=pointer]:
+          - img [ref=e11]
+      - generic [ref=e15]:
+        - button "Wishlist" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - link "Cart" [ref=e21] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e22]
+        - button "Open account login modal" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+  - navigation "Categories" [ref=e32]:
+    - generic [ref=e33]:
+      - button "Apparel" [ref=e35] [cursor=pointer]:
+        - generic [ref=e36]: Apparel
+        - img [ref=e38]
+      - button "Bags" [ref=e41] [cursor=pointer]:
+        - generic [ref=e42]: Bags
+        - img [ref=e44]
+      - button "Headwear" [ref=e47] [cursor=pointer]:
+        - generic [ref=e48]: Headwear
+        - img [ref=e50]
+      - button "Office" [ref=e53] [cursor=pointer]:
+        - generic [ref=e54]: Office
+        - img [ref=e56]
+      - button "Drinkware" [ref=e59] [cursor=pointer]:
+        - generic [ref=e60]: Drinkware
+        - img [ref=e62]
+      - button "Home" [ref=e65] [cursor=pointer]:
+        - generic [ref=e66]: Home
+        - img [ref=e68]
+      - button "Wellness" [ref=e71] [cursor=pointer]:
+        - generic [ref=e72]: Wellness
+        - img [ref=e74]
+      - button "Others" [ref=e77] [cursor=pointer]:
+        - generic [ref=e78]: Others
+        - img [ref=e80]
+      - button "Discover" [ref=e83] [cursor=pointer]:
+        - generic [ref=e84]: Discover
+        - img [ref=e86]
+      - button "Brands" [ref=e89] [cursor=pointer]:
+        - generic [ref=e90]: Brands
+        - img [ref=e92]
+  - main [ref=e94]:
+    - generic [ref=e95]:
+      - generic [ref=e96]:
+        - navigation "breadcrumbs" [ref=e97]:
+          - list [ref=e98]:
+            - listitem [ref=e99]:
+              - link "Home" [ref=e100] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e101]: /
+            - listitem [ref=e102]: All products
+        - heading "Branded objects for studios & teams" [level=1] [ref=e103]
+        - paragraph [ref=e104]: A working catalogue of laser-engraved, DTF-printed and apparel-finished pieces — produced in Bordeaux for the studios, agencies and teams that take taste seriously. Order from 25 pieces. E-proof in 48 hours.
+        - navigation [ref=e105]:
+          - generic [ref=e106]:
+            - button "Category" [ref=e108] [cursor=pointer]:
+              - generic [ref=e109]: Category
+              - img [ref=e110]
+            - button "Price range" [ref=e113] [cursor=pointer]:
+              - generic [ref=e114]: Price range
+              - img [ref=e115]
+            - button "Quantity" [ref=e118] [cursor=pointer]:
+              - generic [ref=e119]: Quantity
+              - img [ref=e120]
+            - button "Lead time" [ref=e123] [cursor=pointer]:
+              - generic [ref=e124]: Lead time
+              - img [ref=e125]
+            - button "Color" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129]: Color
+              - img [ref=e130]
+            - button "Brands" [ref=e133] [cursor=pointer]:
+              - generic [ref=e134]: Brands
+              - img [ref=e135]
+            - generic [ref=e137] [cursor=pointer]:
+              - checkbox "Fast shipping only" [ref=e138]
+              - generic [ref=e139]: Fast shipping only
+          - button "Sort by, 1 selected" [ref=e141] [cursor=pointer]:
+            - generic [ref=e142]: Sort by (1)
+            - img [ref=e143]
+        - paragraph [ref=e146]: Showing 24 of 24 products
+        - list [ref=e147]:
+          - listitem [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e150]: STUDIO CANON
+              - link [ref=e151] [cursor=pointer]:
+                - /url: /products/workshop-tote
+                - figure [ref=e152]:
+                  - img "Workshop Tote" [ref=e153]
+                - figure [ref=e154]:
+                  - img "Workshop Tote" [ref=e155]
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - link "Workshop Tote" [ref=e158] [cursor=pointer]:
+                    - /url: /products/workshop-tote
+                    - paragraph [ref=e159]: Workshop Tote
+                  - paragraph [ref=e160]: From £22.00
+                - button "Add Workshop Tote to favorites" [ref=e161] [cursor=pointer]:
+                  - img [ref=e162]
+          - listitem [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]: STUDIO CANON
+              - link [ref=e167] [cursor=pointer]:
+                - /url: /products/studio-tee-charcoal
+                - figure [ref=e168]:
+                  - img "Studio Tee — Charcoal" [ref=e169]
+                - figure [ref=e170]:
+                  - img "Studio Tee — Charcoal" [ref=e171]
+              - generic [ref=e172]:
+                - generic [ref=e173]:
+                  - link "Studio Tee — Charcoal" [ref=e174] [cursor=pointer]:
+                    - /url: /products/studio-tee-charcoal
+                    - paragraph [ref=e175]: Studio Tee — Charcoal
+                  - paragraph [ref=e176]: From £35.00
+                - button "Add Studio Tee — Charcoal to favorites" [ref=e177] [cursor=pointer]:
+                  - img [ref=e178]
+          - listitem [ref=e180]:
+            - generic [ref=e181]:
+              - generic [ref=e182]: STUDIO CANON
+              - link [ref=e183] [cursor=pointer]:
+                - /url: /products/studio-tee-cream
+                - figure [ref=e184]:
+                  - img "Studio Tee — Cream" [ref=e185]
+                - figure [ref=e186]:
+                  - img "Studio Tee — Cream" [ref=e187]
+              - generic [ref=e188]:
+                - generic [ref=e189]:
+                  - link "Studio Tee — Cream" [ref=e190] [cursor=pointer]:
+                    - /url: /products/studio-tee-cream
+                    - paragraph [ref=e191]: Studio Tee — Cream
+                  - paragraph [ref=e192]: From £35.00
+                - button "Add Studio Tee — Cream to favorites" [ref=e193] [cursor=pointer]:
+                  - img [ref=e194]
+          - listitem [ref=e196]:
+            - generic [ref=e197]:
+              - generic [ref=e198]: STUDIO CANON
+              - link [ref=e199] [cursor=pointer]:
+                - /url: /products/atelier-hoodie
+                - figure [ref=e200]:
+                  - img "Atelier Hoodie" [ref=e201]
+                - figure [ref=e202]:
+                  - img "Atelier Hoodie" [ref=e203]
+              - generic [ref=e204]:
+                - generic [ref=e205]:
+                  - link "Atelier Hoodie" [ref=e206] [cursor=pointer]:
+                    - /url: /products/atelier-hoodie
+                    - paragraph [ref=e207]: Atelier Hoodie
+                  - paragraph [ref=e208]: From £89.00
+                - button "Add Atelier Hoodie to favorites" [ref=e209] [cursor=pointer]:
+                  - img [ref=e210]
+          - listitem [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]: STUDIO CANON
+              - link [ref=e215] [cursor=pointer]:
+                - /url: /products/ghostmark-cap
+                - figure [ref=e216]:
+                  - img "GhostMark Cap" [ref=e217]
+                - figure [ref=e218]:
+                  - img "GhostMark Cap" [ref=e219]
+              - generic [ref=e220]:
+                - generic [ref=e221]:
+                  - link "GhostMark Cap" [ref=e222] [cursor=pointer]:
+                    - /url: /products/ghostmark-cap
+                    - paragraph [ref=e223]: GhostMark Cap
+                  - paragraph [ref=e224]: From £28.00
+                - button "Add GhostMark Cap to favorites" [ref=e225] [cursor=pointer]:
+                  - img [ref=e226]
+          - listitem [ref=e228]:
+            - generic [ref=e229]:
+              - generic [ref=e230]: POD READY
+              - link [ref=e231] [cursor=pointer]:
+                - /url: /products/studio-sticker-pack
+                - figure [ref=e232]:
+                  - img "Studio Sticker Pack" [ref=e233]
+                - figure [ref=e234]:
+                  - img "Studio Sticker Pack" [ref=e235]
+              - generic [ref=e236]:
+                - generic [ref=e237]:
+                  - link "Studio Sticker Pack" [ref=e238] [cursor=pointer]:
+                    - /url: /products/studio-sticker-pack
+                    - paragraph [ref=e239]: Studio Sticker Pack
+                  - paragraph [ref=e240]: From £8.00
+                - button "Add Studio Sticker Pack to favorites" [ref=e241] [cursor=pointer]:
+                  - img [ref=e242]
+          - listitem [ref=e244]:
+            - generic [ref=e245]:
+              - generic [ref=e246]: BEST SELLER
+              - link [ref=e247] [cursor=pointer]:
+                - /url: /products/studio-notebook-a5
+                - figure [ref=e248]:
+                  - img "Studio Notebook - A5" [ref=e249]
+                - figure [ref=e250]:
+                  - img "Studio Notebook - A5" [ref=e251]
+              - generic [ref=e252]:
+                - generic [ref=e253]:
+                  - link "Studio Notebook - A5" [ref=e254] [cursor=pointer]:
+                    - /url: /products/studio-notebook-a5
+                    - paragraph [ref=e255]: Studio Notebook - A5
+                  - paragraph [ref=e256]: From £14.00
+                - button "Add Studio Notebook - A5 to favorites" [ref=e257] [cursor=pointer]:
+                  - img [ref=e258]
+          - listitem [ref=e260]:
+            - generic [ref=e261]:
+              - generic [ref=e262]: MADE IN EUROPE
+              - link [ref=e263] [cursor=pointer]:
+                - /url: /products/ceramic-mug-sage
+                - figure [ref=e264]:
+                  - img "Ceramic Mug - Sage" [ref=e265]
+                - figure [ref=e266]:
+                  - img "Ceramic Mug - Sage" [ref=e267]
+              - generic [ref=e268]:
+                - generic [ref=e269]:
+                  - link "Ceramic Mug - Sage" [ref=e270] [cursor=pointer]:
+                    - /url: /products/ceramic-mug-sage
+                    - paragraph [ref=e271]: Ceramic Mug - Sage
+                  - paragraph [ref=e272]: From £18.00
+                - button "Add Ceramic Mug - Sage to favorites" [ref=e273] [cursor=pointer]:
+                  - img [ref=e274]
+          - listitem [ref=e276]:
+            - generic [ref=e277]:
+              - generic [ref=e278]: NEW DROP
+              - link [ref=e279] [cursor=pointer]:
+                - /url: /products/studio-notebook-a6
+                - figure [ref=e280]:
+                  - img "Studio Notebook - A6" [ref=e281]
+                - figure [ref=e282]:
+                  - img "Studio Notebook - A6" [ref=e283]
+              - generic [ref=e284]:
+                - generic [ref=e285]:
+                  - link "Studio Notebook - A6" [ref=e286] [cursor=pointer]:
+                    - /url: /products/studio-notebook-a6
+                    - paragraph [ref=e287]: Studio Notebook - A6
+                  - paragraph [ref=e288]: From £12.00
+                - button "Add Studio Notebook - A6 to favorites" [ref=e289] [cursor=pointer]:
+                  - img [ref=e290]
+          - listitem [ref=e292]:
+            - generic [ref=e293]:
+              - generic [ref=e294]: BEST SELLER
+              - link [ref=e295] [cursor=pointer]:
+                - /url: /products/ceramic-mug-cream
+                - figure [ref=e296]:
+                  - img "Ceramic Mug - Cream" [ref=e297]
+                - figure [ref=e298]:
+                  - img "Ceramic Mug - Cream" [ref=e299]
+              - generic [ref=e300]:
+                - generic [ref=e301]:
+                  - link "Ceramic Mug - Cream" [ref=e302] [cursor=pointer]:
+                    - /url: /products/ceramic-mug-cream
+                    - paragraph [ref=e303]: Ceramic Mug - Cream
+                  - paragraph [ref=e304]: From £18.00
+                - button "Add Ceramic Mug - Cream to favorites" [ref=e305] [cursor=pointer]:
+                  - img [ref=e306]
+          - listitem [ref=e308]:
+            - generic [ref=e309]:
+              - generic [ref=e310]: POD READY
+              - link [ref=e311] [cursor=pointer]:
+                - /url: /products/logo-sticker-sheet
+                - figure [ref=e312]:
+                  - img "Logo Sticker Sheet" [ref=e313]
+                - figure [ref=e314]:
+                  - img "Logo Sticker Sheet" [ref=e315]
+              - generic [ref=e316]:
+                - generic [ref=e317]:
+                  - link "Logo Sticker Sheet" [ref=e318] [cursor=pointer]:
+                    - /url: /products/logo-sticker-sheet
+                    - paragraph [ref=e319]: Logo Sticker Sheet
+                  - paragraph [ref=e320]: From £6.00
+                - button "Add Logo Sticker Sheet to favorites" [ref=e321] [cursor=pointer]:
+                  - img [ref=e322]
+          - listitem [ref=e324]:
+            - generic [ref=e325]:
+              - generic [ref=e326]: MADE IN EUROPE
+              - link [ref=e327] [cursor=pointer]:
+                - /url: /products/heavyweight-sweatshirt-black
+                - figure [ref=e328]:
+                  - img "Heavyweight Sweatshirt - Black" [ref=e329]
+                - figure [ref=e330]:
+                  - img "Heavyweight Sweatshirt - Black" [ref=e331]
+              - generic [ref=e332]:
+                - generic [ref=e333]:
+                  - link "Heavyweight Sweatshirt - Black" [ref=e334] [cursor=pointer]:
+                    - /url: /products/heavyweight-sweatshirt-black
+                    - paragraph [ref=e335]: Heavyweight Sweatshirt - Black
+                  - paragraph [ref=e336]: From £75.00
+                - button "Add Heavyweight Sweatshirt - Black to favorites" [ref=e337] [cursor=pointer]:
+                  - img [ref=e338]
+          - listitem [ref=e340]:
+            - generic [ref=e341]:
+              - generic [ref=e342]: MADE IN EUROPE
+              - link [ref=e343] [cursor=pointer]:
+                - /url: /products/insulated-tumbler-black
+                - figure [ref=e344]:
+                  - img "Insulated Tumbler - Black" [ref=e345]
+                - figure [ref=e346]:
+                  - img "Insulated Tumbler - Black" [ref=e347]
+              - generic [ref=e348]:
+                - generic [ref=e349]:
+                  - link "Insulated Tumbler - Black" [ref=e350] [cursor=pointer]:
+                    - /url: /products/insulated-tumbler-black
+                    - paragraph [ref=e351]: Insulated Tumbler - Black
+                  - paragraph [ref=e352]: From £24.00
+                - button "Add Insulated Tumbler - Black to favorites" [ref=e353] [cursor=pointer]:
+                  - img [ref=e354]
+          - listitem [ref=e356]:
+            - generic [ref=e357]:
+              - generic [ref=e358]: MADE IN EUROPE
+              - link [ref=e359] [cursor=pointer]:
+                - /url: /products/insulated-tumbler-cream
+                - figure [ref=e360]:
+                  - img "Insulated Tumbler - Cream" [ref=e361]
+                - figure [ref=e362]:
+                  - img "Insulated Tumbler - Cream" [ref=e363]
+              - generic [ref=e364]:
+                - generic [ref=e365]:
+                  - link "Insulated Tumbler - Cream" [ref=e366] [cursor=pointer]:
+                    - /url: /products/insulated-tumbler-cream
+                    - paragraph [ref=e367]: Insulated Tumbler - Cream
+                  - paragraph [ref=e368]: From £24.00
+                - button "Add Insulated Tumbler - Cream to favorites" [ref=e369] [cursor=pointer]:
+                  - img [ref=e370]
+          - listitem [ref=e372]:
+            - generic [ref=e373]:
+              - generic [ref=e374]: B CORP
+              - link [ref=e375] [cursor=pointer]:
+                - /url: /products/heavyweight-sweatshirt-cream
+                - figure [ref=e376]:
+                  - img "Heavyweight Sweatshirt - Cream" [ref=e377]
+                - figure [ref=e378]:
+                  - img "Heavyweight Sweatshirt - Cream" [ref=e379]
+              - generic [ref=e380]:
+                - generic [ref=e381]:
+                  - link "Heavyweight Sweatshirt - Cream" [ref=e382] [cursor=pointer]:
+                    - /url: /products/heavyweight-sweatshirt-cream
+                    - paragraph [ref=e383]: Heavyweight Sweatshirt - Cream
+                  - paragraph [ref=e384]: From £75.00
+                - button "Add Heavyweight Sweatshirt - Cream to favorites" [ref=e385] [cursor=pointer]:
+                  - img [ref=e386]
+          - listitem [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: NEW DROP
+              - link [ref=e391] [cursor=pointer]:
+                - /url: /products/steel-bottle-750
+                - figure [ref=e392]:
+                  - img "Steel Bottle - 750ml" [ref=e393]
+                - figure [ref=e394]:
+                  - img "Steel Bottle - 750ml" [ref=e395]
+              - generic [ref=e396]:
+                - generic [ref=e397]:
+                  - link "Steel Bottle - 750ml" [ref=e398] [cursor=pointer]:
+                    - /url: /products/steel-bottle-750
+                    - paragraph [ref=e399]: Steel Bottle - 750ml
+                  - paragraph [ref=e400]: From £32.00
+                - button "Add Steel Bottle - 750ml to favorites" [ref=e401] [cursor=pointer]:
+                  - img [ref=e402]
+          - listitem [ref=e404]:
+            - generic [ref=e405]:
+              - generic [ref=e406]: BEST SELLER
+              - link [ref=e407] [cursor=pointer]:
+                - /url: /products/steel-bottle-500
+                - figure [ref=e408]:
+                  - img "Steel Bottle - 500ml" [ref=e409]
+                - figure [ref=e410]:
+                  - img "Steel Bottle - 500ml" [ref=e411]
+              - generic [ref=e412]:
+                - generic [ref=e413]:
+                  - link "Steel Bottle - 500ml" [ref=e414] [cursor=pointer]:
+                    - /url: /products/steel-bottle-500
+                    - paragraph [ref=e415]: Steel Bottle - 500ml
+                  - paragraph [ref=e416]: From £28.00
+                - button "Add Steel Bottle - 500ml to favorites" [ref=e417] [cursor=pointer]:
+                  - img [ref=e418]
+          - listitem [ref=e420]:
+            - generic [ref=e421]:
+              - generic [ref=e422]: FROM 25 UNITS
+              - link [ref=e423] [cursor=pointer]:
+                - /url: /products/cable-organiser
+                - figure [ref=e424]:
+                  - img "Cable Organiser" [ref=e425]
+                - figure [ref=e426]:
+                  - img "Cable Organiser" [ref=e427]
+              - generic [ref=e428]:
+                - generic [ref=e429]:
+                  - link "Cable Organiser" [ref=e430] [cursor=pointer]:
+                    - /url: /products/cable-organiser
+                    - paragraph [ref=e431]: Cable Organiser
+                  - paragraph [ref=e432]: From £18.00
+                - button "Add Cable Organiser to favorites" [ref=e433] [cursor=pointer]:
+                  - img [ref=e434]
+          - listitem [ref=e436]:
+            - generic [ref=e437]:
+              - generic [ref=e438]: MADE IN EUROPE
+              - link [ref=e439] [cursor=pointer]:
+                - /url: /products/linen-tea-towel
+                - figure [ref=e440]:
+                  - img "Linen Tea Towel" [ref=e441]
+                - figure [ref=e442]:
+                  - img "Linen Tea Towel" [ref=e443]
+              - generic [ref=e444]:
+                - generic [ref=e445]:
+                  - link "Linen Tea Towel" [ref=e446] [cursor=pointer]:
+                    - /url: /products/linen-tea-towel
+                    - paragraph [ref=e447]: Linen Tea Towel
+                  - paragraph [ref=e448]: From £18.00
+                - button "Add Linen Tea Towel to favorites" [ref=e449] [cursor=pointer]:
+                  - img [ref=e450]
+          - listitem [ref=e452]:
+            - generic [ref=e453]:
+              - generic [ref=e454]: FROM 25 UNITS
+              - link [ref=e455] [cursor=pointer]:
+                - /url: /products/tech-pouch
+                - figure [ref=e456]:
+                  - img "Tech Pouch" [ref=e457]
+                - figure [ref=e458]:
+                  - img "Tech Pouch" [ref=e459]
+              - generic [ref=e460]:
+                - generic [ref=e461]:
+                  - link "Tech Pouch" [ref=e462] [cursor=pointer]:
+                    - /url: /products/tech-pouch
+                    - paragraph [ref=e463]: Tech Pouch
+                  - paragraph [ref=e464]: From £32.00
+                - button "Add Tech Pouch to favorites" [ref=e465] [cursor=pointer]:
+                  - img [ref=e466]
+          - listitem [ref=e468]:
+            - generic [ref=e469]:
+              - generic [ref=e470]: MADE IN EUROPE
+              - link [ref=e471] [cursor=pointer]:
+                - /url: /products/studio-candle
+                - figure [ref=e472]:
+                  - img "Studio Candle" [ref=e473]
+                - figure [ref=e474]:
+                  - img "Studio Candle" [ref=e475]
+              - generic [ref=e476]:
+                - generic [ref=e477]:
+                  - link "Studio Candle" [ref=e478] [cursor=pointer]:
+                    - /url: /products/studio-candle
+                    - paragraph [ref=e479]: Studio Candle
+                  - paragraph [ref=e480]: From £28.00
+                - button "Add Studio Candle to favorites" [ref=e481] [cursor=pointer]:
+                  - img [ref=e482]
+          - listitem [ref=e484]:
+            - generic [ref=e485]:
+              - generic [ref=e486]: NEW DROP
+              - link [ref=e487] [cursor=pointer]:
+                - /url: /products/market-tote-oat
+                - figure [ref=e488]:
+                  - img "Market Tote - Oat" [ref=e489]
+                - figure [ref=e490]:
+                  - img "Market Tote - Oat" [ref=e491]
+              - generic [ref=e492]:
+                - generic [ref=e493]:
+                  - link "Market Tote - Oat" [ref=e494] [cursor=pointer]:
+                    - /url: /products/market-tote-oat
+                    - paragraph [ref=e495]: Market Tote - Oat
+                  - paragraph [ref=e496]: From £24.00
+                - button "Add Market Tote - Oat to favorites" [ref=e497] [cursor=pointer]:
+                  - img [ref=e498]
+          - listitem [ref=e500]:
+            - generic [ref=e501]:
+              - generic [ref=e502]: NEW DROP
+              - link [ref=e503] [cursor=pointer]:
+                - /url: /products/panel-cap-black
+                - figure [ref=e504]:
+                  - img "Panel Cap - Black" [ref=e505]
+                - figure [ref=e506]:
+                  - img "Panel Cap - Black" [ref=e507]
+              - generic [ref=e508]:
+                - generic [ref=e509]:
+                  - link "Panel Cap - Black" [ref=e510] [cursor=pointer]:
+                    - /url: /products/panel-cap-black
+                    - paragraph [ref=e511]: Panel Cap - Black
+                  - paragraph [ref=e512]: From £28.00
+                - button "Add Panel Cap - Black to favorites" [ref=e513] [cursor=pointer]:
+                  - img [ref=e514]
+          - listitem [ref=e516]:
+            - generic [ref=e517]:
+              - generic [ref=e518]: STUDIO CANON
+              - link [ref=e519] [cursor=pointer]:
+                - /url: /products/atelier-hoodie-charcoal
+                - figure [ref=e520]:
+                  - img "Atelier Hoodie - Charcoal" [ref=e521]
+                - figure [ref=e522]:
+                  - img "Atelier Hoodie - Charcoal" [ref=e523]
+              - generic [ref=e524]:
+                - generic [ref=e525]:
+                  - link "Atelier Hoodie - Charcoal" [ref=e526] [cursor=pointer]:
+                    - /url: /products/atelier-hoodie-charcoal
+                    - paragraph [ref=e527]: Atelier Hoodie - Charcoal
+                  - paragraph [ref=e528]: From £89.00
+                - button "Add Atelier Hoodie - Charcoal to favorites" [ref=e529] [cursor=pointer]:
+                  - img [ref=e530]
+      - generic [ref=e532]:
+        - complementary "Frequently asked questions" [ref=e533]:
+          - generic [ref=e534]:
+            - heading "Frequently asked questions" [level=2] [ref=e535]
+            - paragraph [ref=e536]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+            - link "View more" [ref=e538] [cursor=pointer]:
+              - /url: /faq
+          - generic [ref=e539]:
+            - heading "Is it possible to put different items into gift boxes?" [level=3] [ref=e541]:
+              - button "Is it possible to put different items into gift boxes?" [ref=e542] [cursor=pointer]:
+                - generic [ref=e543]: Is it possible to put different items into gift boxes?
+            - heading "How can I find out more about your products?" [level=3] [ref=e549]:
+              - button "How can I find out more about your products?" [ref=e550] [cursor=pointer]:
+                - generic [ref=e551]: How can I find out more about your products?
+            - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e557]:
+              - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e558] [cursor=pointer]:
+                - generic [ref=e559]: Will it be possible to see the e-proof before my order goes into production?
+            - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e565]:
+              - button "Is it possible to shorten the lead time for production?" [ref=e566] [cursor=pointer]:
+                - generic [ref=e567]: Is it possible to shorten the lead time for production?
+            - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e573]:
+              - button "Why are your prices not fixed and vary within a range?" [ref=e574] [cursor=pointer]:
+                - generic [ref=e575]: Why are your prices not fixed and vary within a range?
+            - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e581]:
+              - button "Can you ship the merch to multiple addresses?" [ref=e582] [cursor=pointer]:
+                - generic [ref=e583]: Can you ship the merch to multiple addresses?
+            - heading "Where do you ship?" [level=3] [ref=e589]:
+              - button "Where do you ship?" [ref=e590] [cursor=pointer]:
+                - generic [ref=e591]: Where do you ship?
+            - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e597]:
+              - button "What is the minimum order quantity (MOQ)?" [ref=e598] [cursor=pointer]:
+                - generic [ref=e599]: What is the minimum order quantity (MOQ)?
+        - complementary "Subscribe, and get access to exclusive news, sneak peeks on new launches." [ref=e604]:
+          - generic [ref=e605]:
+            - heading "Subscribe, and get access to exclusive news, sneak peeks on new launches." [level=2] [ref=e606]
+            - generic [ref=e607]:
+              - generic [ref=e608]:
+                - generic [ref=e609]:
+                  - generic [ref=e610]: Enter your email address
+                  - textbox "Enter your email address" [ref=e611]
+                - button "Subscribe" [ref=e612] [cursor=pointer]
+              - paragraph [ref=e613]:
+                - text: By subscribing you agree to receive occasional emails from GhostMark Studio. Unsubscribe anytime — see our
+                - link "privacy policy" [ref=e614] [cursor=pointer]:
+                  - /url: /privacy
+                - text: .
+  - contentinfo [ref=e615]:
+    - generic [ref=e617]:
+      - generic [ref=e618]:
+        - link "GhostMark — home" [ref=e619] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - paragraph [ref=e620]: Branded objects for the kind of work people keep. Laser engraving, DTF print, and apparel finishing — one studio in Bordeaux.
+      - generic [ref=e621]:
+        - paragraph [ref=e622]: Get in touch
+        - link "hello@ghostmark.studio" [ref=e623] [cursor=pointer]:
+          - /url: mailto:hello@ghostmark.studio
+        - paragraph [ref=e624]: Studio · Bordeaux, France
+    - generic [ref=e626]:
+      - generic [ref=e627]:
+        - generic [ref=e628]: Follow us
+        - list [ref=e629]:
+          - listitem [ref=e630]:
+            - link "Instagram" [ref=e631] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+              - img [ref=e632]
+          - listitem [ref=e636]:
+            - link "LinkedIn" [ref=e637] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+              - img [ref=e638]
+          - listitem [ref=e640]:
+            - link "Pinterest" [ref=e641] [cursor=pointer]:
+              - /url: https://pinterest.com/ghostmarkstudio
+              - img [ref=e642]
+      - paragraph [ref=e644]: Based in Bordeaux. Designs shipped worldwide.
+    - generic [ref=e645]:
+      - navigation "Footer" [ref=e646]:
+        - generic [ref=e647]:
+          - heading "Company" [level=4] [ref=e648]
+          - list [ref=e649]:
+            - listitem [ref=e650]:
+              - link "About us" [ref=e651] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e652]:
+              - link "Sustainability" [ref=e653] [cursor=pointer]:
+                - /url: /sustainability
+            - listitem [ref=e654]:
+              - link "Value chain" [ref=e655] [cursor=pointer]:
+                - /url: /about/value-chain
+            - listitem [ref=e656]:
+              - link "People & culture" [ref=e657] [cursor=pointer]:
+                - /url: /about/people-and-culture
+            - listitem [ref=e658]:
+              - link "Press" [ref=e659] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e660]:
+          - heading "Shop" [level=4] [ref=e661]
+          - list [ref=e662]:
+            - listitem [ref=e663]:
+              - link "Shop all" [ref=e664] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e665]:
+              - link "Bespoke studio" [ref=e666] [cursor=pointer]:
+                - /url: /studio
+            - listitem [ref=e667]:
+              - link "Platform" [ref=e668] [cursor=pointer]:
+                - /url: /platform
+            - listitem [ref=e669]:
+              - link "Club & agencies" [ref=e670] [cursor=pointer]:
+                - /url: /club
+            - listitem [ref=e671]:
+              - link "Journal" [ref=e672] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e673]:
+          - heading "Help" [level=4] [ref=e674]
+          - list [ref=e675]:
+            - listitem [ref=e676]:
+              - link "Help center" [ref=e677] [cursor=pointer]:
+                - /url: /help
+            - listitem [ref=e678]:
+              - link "FAQ" [ref=e679] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e680]:
+              - link "Shipping" [ref=e681] [cursor=pointer]:
+                - /url: /shipping
+            - listitem [ref=e682]:
+              - link "Returns" [ref=e683] [cursor=pointer]:
+                - /url: /returns
+            - listitem [ref=e684]:
+              - link "Contact us" [ref=e685] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e686]:
+          - heading "Account" [level=4] [ref=e687]
+          - list [ref=e688]:
+            - listitem [ref=e689]:
+              - link "Preferences" [ref=e690] [cursor=pointer]:
+                - /url: /account
+            - listitem [ref=e691]:
+              - link "Orders" [ref=e692] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e693]:
+              - link "Invoices" [ref=e694] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e695]:
+              - link "Saved projects" [ref=e696] [cursor=pointer]:
+                - /url: /wishlist
+        - generic [ref=e697]:
+          - heading "Legal" [level=4] [ref=e698]
+          - list [ref=e699]:
+            - listitem [ref=e700]:
+              - link "Terms & conditions" [ref=e701] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e702]:
+              - link "Privacy policy" [ref=e703] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e704]:
+              - link "Cookies" [ref=e705] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e706]:
+              - link "Accessibility" [ref=e707] [cursor=pointer]:
+                - /url: /accessibility
+      - generic [ref=e708]:
+        - generic [ref=e709]:
+          - generic "Made in Europe" [ref=e710]:
+            - img [ref=e711]
+            - text: Made in Europe
+          - generic "Family-owned in Bordeaux" [ref=e714]:
+            - img [ref=e715]
+            - text: Family-owned in Bordeaux
+          - generic "Carbon-aware shipping" [ref=e718]:
+            - img [ref=e719]
+            - text: Carbon-aware shipping
+        - generic [ref=e721]:
+          - generic [ref=e722]: Secure payments
+          - list "Accepted payment methods" [ref=e723]:
+            - listitem [ref=e724]: VISA
+            - listitem [ref=e725]: MC
+            - listitem [ref=e726]: AMEX
+            - listitem [ref=e727]: PAYPAL
+            - listitem [ref=e728]: APPLE PAY
+      - generic [ref=e729]:
+        - generic [ref=e730]:
+          - paragraph [ref=e731]: © 2026 GhostMark Studio · Bordeaux, France
+          - link "Change region or currency" [ref=e733] [cursor=pointer]:
+            - /url: /?region=open
+            - img [ref=e734]
+            - generic [ref=e737]: EN · GBP
+        - generic [ref=e738]:
+          - generic [ref=e739]:
+            - link "Instagram" [ref=e740] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+              - img [ref=e741]
+            - link "LinkedIn" [ref=e744] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+              - img [ref=e745]
+            - link "Pinterest" [ref=e747] [cursor=pointer]:
+              - /url: https://pinterest.com/ghostmarkstudio
+              - img [ref=e748]
+            - link "X (formerly Twitter)" [ref=e750] [cursor=pointer]:
+              - /url: https://x.com/ghostmarkstudio
+              - img [ref=e751]
+          - link "Privacy" [ref=e754] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e755] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookies" [ref=e756] [cursor=pointer]:
+            - /url: /cookies

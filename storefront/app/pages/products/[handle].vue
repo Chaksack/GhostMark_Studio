@@ -82,7 +82,21 @@
                 <div class="flex items-center justify-between">
                   <h1 class="text-[2.4rem] leading-[2.8rem] mb-0 mt-0">{{ product.title }}</h1>
                 </div>
-                <div v-if="fromPrice !== null" class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[1.4rem] leading-[2rem] text-greyText" data-test="from-price">
+                <!--
+                  Price label, branched on product flow:
+                  - POD (B2B bulk): "From £X / piece · MOQ Y · E-proof in 48h"
+                    surfaces the cheapest tier price, the MOQ, and the
+                    e-proof reassurance — all expectations of a quote-led
+                    workflow.
+                  - Apparel (D2C): single per-unit price, no MOQ wording,
+                    no e-proof copy. The customer is buying one ready-made
+                    SKU at the listed price; nothing else belongs here.
+                -->
+                <div
+                  v-if="isPOD && fromPrice !== null"
+                  class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[1.4rem] leading-[2rem] text-greyText"
+                  data-test="from-price"
+                >
                   <span>
                     From <span class="text-[1.6rem] font-medium text-ink-950">{{ formatMoney(fromPrice) }}</span> / piece
                   </span>
@@ -91,6 +105,13 @@
                   <span class="opacity-50" aria-hidden="true">·</span>
                   <span>E-proof in 48h</span>
                 </div>
+                <p
+                  v-else-if="isApparel && unitPrice !== null"
+                  class="text-[1.8rem] leading-[2.4rem] text-ink-950 font-medium"
+                  data-test="apparel-price"
+                >
+                  {{ formatMoney(unitPrice) }}
+                </p>
                 <p v-if="product.description" class="lg:hidden">{{ product.description }}</p>
               </div>
               <!--
@@ -100,6 +121,14 @@
                 inline-flex + min-h-[44px] keeps the visual size identical
                 while satisfying the touch-target rule.
               -->
+              <!--
+                Aux row, branched. "View product details" and "Share" are
+                shared between both flows. "Buy a sample" + "Request a
+                quote" are POD-only B2B affordances and disappear on
+                apparel — a D2C buyer either buys the unit on the spot or
+                doesn't buy at all; quote/sample requests pollute the
+                decision space and depress conversion.
+              -->
               <div class="hidden md:flex items-center gap-[1rem] flex-wrap">
                 <a
                   href="#variant-specificities"
@@ -108,6 +137,7 @@
                   View product details
                 </a>
                 <button
+                  v-if="isPOD"
                   type="button"
                   data-test="buy-sample"
                   class="inline-flex items-center min-h-[44px] bg-offWhite hover:bg-uiGrey py-[1rem] px-[1.4rem] lg:py-[1.2rem] lg:px-[1.6rem] rounded-[0.5rem] text-[14px] lg:text-base leading-[2rem]"
@@ -116,6 +146,7 @@
                   Buy a sample
                 </button>
                 <NuxtLink
+                  v-if="isPOD"
                   :to="`/contact?intent=quote&product=${product.handle}`"
                   class="inline-flex items-center min-h-[44px] bg-offWhite hover:bg-uiGrey px-[1.6rem] py-[1.2rem] rounded-[0.5rem] text-base leading-[2rem]"
                 >
@@ -273,13 +304,14 @@
 
             <!--
               Customisation step.
-              Invariant #1: print_locations.length === 0 OR is_customizable===false
-                → no editor, no upload UI; render a simple non-customisable
-                hint (the actual Add-to-cart lives below).
+              Gated on `isPOD` — apparel never renders the editor since
+              it's a buy-as-is D2C SKU. POD products with zero
+              print_locations also skip the editor (the merchant's way
+              of saying "this POD SKU is not customisable today").
               Invariant #2 + #3: 1 vs N locations is decided inside DesignEditor.
             -->
             <div
-              v-if="isCustomizable && printLocations.length"
+              v-if="isPOD && printLocations.length"
               class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
               data-test="design-editor-section"
             >
@@ -390,8 +422,15 @@
               </div>
             </div>
 
+            <!--
+              "Not customisable" hint — POD-only. Surfaces only when the
+              merchant has explicitly flagged a POD SKU as not-customisable
+              (so the buyer understands why the editor is missing).
+              Apparel never shows this — for D2C the absence of an editor
+              is the default, not an exception worth narrating.
+            -->
             <div
-              v-else-if="!isCustomizable"
+              v-else-if="isPOD && !isCustomizable"
               class="mt-[1.8rem] rounded-[0.5rem] border border-greyLines bg-uiGrey/40 px-4 py-3 text-[13px] text-zinc-600"
               data-test="not-customisable"
             >
@@ -399,11 +438,14 @@
             </div>
 
             <!--
-              Quantity step.
+              Quantity step — POD branch.
               Invariant #5: tiers.length <= 1 → flat price + qty stepper, no ladder.
               Invariant #6: tiers.length >= 2 → full ladder.
+              The MOQ caption, tier ladder and discount badges are all
+              B2B affordances and never render on apparel.
             -->
             <div
+              v-if="isPOD"
               class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
               data-test="quantity-section"
             >
@@ -553,6 +595,87 @@
               >{{ addError }}</p>
               <p v-if="addSuccess" class="mt-3 text-[13px] text-ink-700">Added to cart!</p>
             </div>
+
+            <!--
+              Quantity step — Apparel (D2C) branch.
+              MOQ is hard-coded to 1, no tier ladder, no discount badges,
+              no MOQ caption. The qty stepper sits next to a live total
+              line, then the single primary ATC button. Copy stays
+              conversational ("Add to cart") rather than B2B-laden.
+              Same `onAddToCart` handler is reused (the gate inside it
+              is now scoped to POD).
+            -->
+            <div
+              v-else-if="isApparel"
+              ref="primaryAtcRow"
+              class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
+              data-test="apparel-add-to-cart"
+            >
+              <h2 class="text-[2rem] leading-[2.4rem] md:text-[2.4rem] md:leading-[2.8rem] whitespace-pre-wrap mb-[2rem] md:mb-[3rem]">{{ stepNumber('quantity') }}. Quantity</h2>
+
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                  <span class="text-[12px] uppercase tracking-wider text-zinc-500">Quantity</span>
+                  <div class="flex items-center">
+                    <button
+                      class="flex h-[44px] w-[44px] items-center justify-center border border-zinc-200 bg-white text-zinc-950 hover:bg-zinc-50 disabled:opacity-40"
+                      :disabled="qty <= 1"
+                      data-test="apparel-qty-decrease"
+                      @click="qty = Math.max(1, qty - 1)"
+                      type="button"
+                      aria-label="Decrease quantity"
+                    >&minus;</button>
+                    <input
+                      v-model.number="qty"
+                      type="number"
+                      :min="1"
+                      data-test="apparel-qty-input"
+                      aria-label="Quantity"
+                      class="h-[44px] w-[64px] border-y border-zinc-200 bg-white px-2 text-center text-[14px] font-medium text-zinc-950 tabular-nums [appearance:textfield] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-zinc-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      @blur="qty = (!Number.isFinite(qty) || qty < 1) ? 1 : qty"
+                    />
+                    <button
+                      class="flex h-[44px] w-[44px] items-center justify-center border border-zinc-200 bg-white text-zinc-950 hover:bg-zinc-50"
+                      data-test="apparel-qty-increase"
+                      @click="qty = qty + 1"
+                      type="button"
+                      aria-label="Increase quantity"
+                    >+</button>
+                  </div>
+                </div>
+                <p class="text-[2rem] font-medium text-ink-950 tabular-nums" data-test="apparel-total">
+                  {{ formatMoney(effectiveTotal) }}
+                </p>
+              </div>
+
+              <div class="mt-6 flex flex-nowrap items-stretch gap-3">
+                <button
+                  class="inline-flex h-[5.6rem] flex-1 min-w-0 items-center justify-center rounded-[0.5rem] bg-ink-950 px-7 text-[1.5rem] font-medium uppercase tracking-[0.02em] text-cream-50 transition-colors duration-fast hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+                  :disabled="!finalVariantId || adding"
+                  @click="onAddToCart"
+                  type="button"
+                  data-test="primary-add-to-cart"
+                >
+                  {{ adding ? 'Adding&hellip;' : 'Add to cart' }}
+                </button>
+                <button
+                  class="inline-flex h-[5.6rem] w-[5.6rem] shrink-0 items-center justify-center rounded-[0.5rem] border border-greyLines bg-white text-zinc-400 hover:border-zinc-300 hover:text-zinc-950"
+                  type="button"
+                  aria-label="Add to favorites"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
+                </button>
+              </div>
+
+              <p
+                v-if="addError"
+                role="alert"
+                aria-live="assertive"
+                data-test="add-to-cart-error"
+                class="mt-3 text-[13px] text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded"
+              >{{ addError }}</p>
+              <p v-if="addSuccess" class="mt-3 text-[13px] text-ink-700">Added to cart!</p>
+            </div>
           </div>
 
           <!--
@@ -568,15 +691,28 @@
               in lockstep with the inline qty card. ATC delegates to the same
               `onAddToCart` handler — no duplicated cart logic.
           -->
+          <!--
+            Desktop sticky bar — shared across flows but with branched
+            messaging in the LEFT info column:
+            - POD: "Lead time: ~10-15 business days" (production wait)
+            - Apparel: "In stock · ships in 1-2 days" (D2C ship promise)
+            The total figure is driven by `effectiveTotal`, which itself
+            branches inside (apparel reads `unitPrice * qty`, POD reads
+            tier-aware `effectiveUnit * qty`).
+          -->
           <div
             v-if="product"
             class="hidden lg:block lg:sticky lg:bottom-0 z-20 mx-[-1.5rem] px-[1.5rem] py-[1.2rem] bg-white border-t border-greyLines mt-6"
             data-test="desktop-sticky-atc"
           >
             <div class="flex items-center justify-between gap-4">
-              <div class="flex flex-col text-[12px] text-greyText">
+              <div v-if="isPOD" class="flex flex-col text-[12px] text-greyText">
                 <span>Lead time:</span>
                 <span class="text-[13px] font-medium text-ink-950">~{{ leadTime }} business days</span>
+              </div>
+              <div v-else-if="isApparel" class="flex flex-col text-[12px] text-greyText">
+                <span>In stock</span>
+                <span class="text-[13px] font-medium text-ink-950">Ships in 1-2 days</span>
               </div>
               <div class="flex flex-col text-right text-[12px] text-greyText">
                 <span>Total:</span>
@@ -865,6 +1001,7 @@ interface ProductVariant {
   prices?: { amount: number }[]
 }
 interface ProductImage { id?: string; url: string }
+interface ProductTypeRef { id?: string; value?: string | null }
 interface Product {
   id: string
   title: string
@@ -875,6 +1012,8 @@ interface Product {
   options?: ProductOption[]
   variants?: ProductVariant[]
   metadata?: Record<string, unknown> | null
+  type?: ProductTypeRef | null
+  type_id?: string | null
 }
 
 // --- Print metadata shapes (mirror DesignEditor's exported types) --------
@@ -909,7 +1048,7 @@ const { data, pending } = await useAsyncData<Product | null>(
   `product:${handle.value}`,
   async () => {
     const regionId = regionState.regionId.value
-    const fields = 'id,title,subtitle,handle,description,thumbnail,*variants.calculated_price,*variants.options,*options,*images,metadata'
+    const fields = 'id,title,subtitle,handle,description,thumbnail,*variants.calculated_price,*variants.options,*options,*images,metadata,*type,type_id,*tags'
     try {
       const res = await sdk.store.product.list({
         handle: handle.value,
@@ -1024,6 +1163,36 @@ const printLocations = computed<PrintLocation[]>(() => {
   return []
 })
 
+// =========================================================================
+// Product flow discriminator (POD vs Apparel/D2C).
+//
+// `product.type.value` is Medusa's product-type relation, populated via
+// `fields: '...,*type'` above. We branch the entire PDP on this single
+// string discriminator so the same template renders two distinct
+// experiences without forking the route:
+//
+//   'pod'     — B2B print-on-demand. Variant + design upload + tier ladder
+//                + MOQ messaging + e-proof copy. The original PDP.
+//   'apparel' — D2C ready-to-ship apparel. Variant + simple qty stepper +
+//                single ATC. No upload step, no MOQ, no e-proof copy.
+//
+// Fallback: if a product has no `type` set (legacy SKUs in the DB before
+// the type seed runs), fall back to the existing `isCustomizable` +
+// `printLocations.length` signal — i.e. anything customisable is treated
+// as POD, anything else is treated as apparel. This keeps the v18/v19
+// behaviour intact for un-typed products.
+type ProductFlow = 'pod' | 'apparel'
+
+const productType = computed<ProductFlow>(() => {
+  const raw = (product.value?.type?.value as string | undefined)?.toLowerCase()
+  if (raw === 'pod') return 'pod'
+  if (raw === 'apparel') return 'apparel'
+  return isCustomizable.value && printLocations.value.length ? 'pod' : 'apparel'
+})
+
+const isPOD = computed(() => productType.value === 'pod')
+const isApparel = computed(() => productType.value === 'apparel')
+
 // techniques — empty array if the merchant hasn't set any. DesignEditor
 // hides the pill row when this is empty.
 const techniques = computed<Technique[]>(() => {
@@ -1106,7 +1275,8 @@ type StepName = 'variant' | 'customise' | 'quantity'
 const stepNumber = (name: StepName): number => {
   const order: StepName[] = []
   if (hasVariantAxes.value) order.push('variant')
-  if (isCustomizable.value && printLocations.value.length) order.push('customise')
+  // Customise step belongs to POD only — apparel skips upload entirely.
+  if (isPOD.value && printLocations.value.length) order.push('customise')
   order.push('quantity')
   return order.indexOf(name) + 1
 }
@@ -1416,6 +1586,16 @@ const fromPrice = computed<number | null>(() => {
   return typeof amt === 'number' ? amt : null
 })
 
+// Apparel D2C: price the *currently selected* variant at its calculated
+// per-unit amount — no tier discount, no MOQ multiplier. Falls through
+// to the first variant's amount when nothing is selected yet (initial
+// SSR paint before the v-model resolves).
+const unitPrice = computed<number | null>(() => {
+  const v = selectedVariant.value ?? variants.value?.[0]
+  const amt = v?.calculated_price?.calculated_amount ?? v?.prices?.[0]?.amount
+  return typeof amt === 'number' ? amt : null
+})
+
 const qty = ref<number>(1)
 watchEffect(() => {
   if (qty.value < moq.value) qty.value = moq.value
@@ -1436,7 +1616,15 @@ const activeTierIndex = computed(() => {
   }
   return idx
 })
-const effectiveUnit = computed(() => tiers.value[activeTierIndex.value]?.unitAmount ?? 0)
+const effectiveUnit = computed(() => {
+  // Apparel: per-unit amount comes straight from the selected variant —
+  // tier discounts only apply to POD (B2B bulk pricing). Without this
+  // branch, an apparel product with zero tiers would still try to read
+  // `tiers[0].unitAmount` (which falls back to the first variant's
+  // calculated amount) — correct numerically but semantically misleading.
+  if (isApparel.value) return unitPrice.value ?? 0
+  return tiers.value[activeTierIndex.value]?.unitAmount ?? 0
+})
 const effectiveTotal = computed(() => effectiveUnit.value * qty.value)
 
 const adding = ref(false)
@@ -1481,11 +1669,13 @@ function onMobileUploadClick() {
 const onAddToCart = async () => {
   if (!finalVariantId.value) return
 
-  // Block ATC when the product is customisable, has print zones, and the
-  // user hasn't uploaded a design. Previously the button just no-op'd and
-  // the user got zero feedback — a P0 abandonment funnel.
+  // Block ATC when the product is POD, has print zones, and the user
+  // hasn't uploaded a design. Apparel (D2C) products skip this gate
+  // entirely — they never require a design upload because they're
+  // sold ready-to-ship as-is. Previously the button just no-op'd
+  // and the user got zero feedback — a P0 abandonment funnel.
   if (
-    isCustomizable.value
+    isPOD.value
     && printLocations.value.length > 0
     && !anyDesignUploaded.value
   ) {

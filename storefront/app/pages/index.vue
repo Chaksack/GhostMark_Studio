@@ -12,8 +12,14 @@
       phone user to scroll past 100vh of dead space between bands.
     -->
     <div class="mt-8 flex flex-col gap-10 sm:mt-10 sm:gap-12 md:mt-12 md:gap-14 lg:mt-14 lg:gap-16">
-      <!-- 3. Best sellers -->
-      <BestSellers :products="bestSellers" />
+      <!--
+        3. Best sellers — D2C flavour.
+        Filtered to product.type.value === 'apparel' so the band that follows
+        the "Shop the Studio Canon" primary CTA stays consistent with what
+        that CTA delivers (buy-as-is, no upload step). POD items still surface
+        below in RecentlyAdded and via the secondary CTA.
+      -->
+      <BestSellers :products="bestSellersApparel" />
 
       <!--
         4. Case-study mosaic — the editorial centrepiece. Sits between
@@ -36,10 +42,21 @@
       -->
       <DiscoverSection :products="bestSellers" />
 
+      <!--
+        Discover intentionally consumes the full bestSellers list (mixed types)
+        — it's a curated landing rail, not a D2C-only band, so cross-mode
+        exposure is desirable here.
+      -->
+
       <!-- 5. Testimonials -->
       <TestimonialCarousel />
 
-      <!-- 6. Recently added -->
+      <!--
+        6. Recently added — mixed feed.
+        Intentionally NOT type-filtered: this is a "what's new" rail across
+        the whole catalogue, so both apparel and POD items are welcome. The
+        chronological lens does the merchandising work.
+      -->
       <RecentlyAdded :products="recentProducts" />
 
       <!--
@@ -67,11 +84,17 @@ const regionState = useRegion()
 // RecentlyAdded grids on the homepage. Same fix as `/products`.
 await regionState.ensureRegion()
 
+// `*type` is appended to the field selection so `product.type.value` is
+// hydrated client-side. Without it, the apparel/pod split below silently
+// returns empty arrays and the BestSellers band collapses. Same shape the
+// PLP uses, kept aligned on purpose.
+const PRODUCT_LIST_FIELDS = 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags,*type'
+
 const { data: bestSellerData } = await useAsyncData(
   'home:best-sellers',
   async () => sdk.store.product.list({
     limit: 10,
-    fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
+    fields: PRODUCT_LIST_FIELDS,
     ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
   } as any),
   { watch: [() => regionState.regionId.value] },
@@ -82,7 +105,7 @@ const { data: recentData } = await useAsyncData(
   async () => sdk.store.product.list({
     limit: 10,
     order: '-created_at',
-    fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
+    fields: PRODUCT_LIST_FIELDS,
     ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
   } as any),
   { watch: [() => regionState.regionId.value] },
@@ -90,6 +113,18 @@ const { data: recentData } = await useAsyncData(
 
 const bestSellers = computed(() => ((bestSellerData.value as any)?.products ?? []) as any[])
 const recentProducts = computed(() => ((recentData.value as any)?.products ?? []) as any[])
+
+/**
+ * Type-narrowing helper. Backend taxonomy (see project_product_taxonomy memo)
+ * uses `product.type.value` of either 'apparel' (D2C buy-as-is) or 'pod'
+ * (upload + MOQ flow). We branch on the explicit value rather than guessing
+ * by handle/title heuristics. Lower-cased for tolerance against admin-side
+ * casing drift.
+ */
+const apparelOnly = (list: any[]) =>
+  list.filter((p) => p?.type?.value?.toLowerCase() === 'apparel')
+
+const bestSellersApparel = computed(() => apparelOnly(bestSellers.value))
 
 onMounted(() => {
   useCart().ensureCart()

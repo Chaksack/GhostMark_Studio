@@ -98,7 +98,12 @@
 
 <script setup lang="ts">
 import Icon from '~/components/ui/Icon.vue'
-import { visibleChipsForMode, type Chip, type CommerceMode } from '~/utils/chips'
+import {
+  modeFromProductType,
+  visibleChipsForMode,
+  type Chip,
+  type CommerceMode,
+} from '~/utils/chips'
 
 interface VariantCalculatedPrice {
   calculated_amount?: number | null
@@ -117,6 +122,11 @@ interface ProductImageLike {
   url?: string | null
 }
 
+interface ProductTypeLike {
+  /** Medusa StoreProductType — `value` is the human-readable label (e.g. `'apparel'`, `'pod'`). */
+  value?: string | null
+}
+
 const props = withDefaults(defineProps<{
   product: {
     id: string
@@ -127,14 +137,28 @@ const props = withDefaults(defineProps<{
     variants?: VariantLike[]
     metadata?: Record<string, unknown> | null
     tags?: ProductTagLike[] | null
+    /**
+     * Medusa product type — when present we derive the chip mode from
+     * `type.value` (`'apparel'` -> D2C chips, `'pod'` -> B2B/POD chips). PLP
+     * fetchers should include `*type` in the `fields` arg of
+     * `sdk.store.product.list` for this to be populated.
+     */
+    type?: ProductTypeLike | null
   }
   /**
    * Commerce surface this card is rendered on. Drives which chip taxonomy is
    * visible (see `~/utils/chips`):
-   *   - `shop`   -> D2C own-brand (Studio Canon) chips only.
-   *   - `studio` -> B2B custom + POD chips only.
-   *   - `pod`    -> POD-first surface; siblings with `studio`.
-   *   - `auto`   -> render every resolvable chip (search / discover surfaces).
+   *   - `apparel` -> D2C own-brand (Studio Canon) chips only. Canonical
+   *                  product-type-derived value.
+   *   - `shop`    -> Sibling of `apparel` (legacy alias).
+   *   - `pod`     -> B2B / POD chips only. Canonical product-type-derived value.
+   *   - `studio`  -> Sibling of `pod` (legacy alias).
+   *   - `auto`    -> Render every resolvable chip (search / discover surfaces).
+   *
+   * NOTE: When `product.type.value` is present and resolvable
+   * (`'apparel'` | `'pod'`) it overrides this prop. The prop is therefore the
+   * fallback used only when the product feed lacks the type expansion.
+   *
    * Defaults to `auto` so existing callers (BestSellers, RecentlyAdded,
    * DiscoverSection, search) keep their current behaviour without changes.
    */
@@ -183,12 +207,26 @@ const chipKeys = computed<string[]>(() => {
   return Array.from(new Set([...fromChips, ...fromBadges, ...fromTags]))
 })
 
+// Resolve the effective chip mode. Priority order:
+//   1. `product.type.value` from Medusa (canonical source — `'apparel'` or
+//      `'pod'`). This survives PLP/PDP/Discover surfaces uniformly because
+//      it travels with the product itself.
+//   2. The explicit `mode` prop passed by the caller (legacy `'shop'` /
+//      `'studio'` / `'auto'`).
+// We fall back to the prop only when `product.type` is missing or the value
+// doesn't map to a known mode, so existing callers (Discover, search) that
+// pass `mode="auto"` continue to render every resolvable chip.
+const productMode = computed<CommerceMode>(() => {
+  const fromType = modeFromProductType(props.product?.type?.value)
+  return fromType ?? props.mode
+})
+
 // Bug 21 fix (P1) preserved: the PLP thumbnail can only carry a single
 // editorial chip without competing with the product photo. We slice to one
 // chip here rather than in the child so any future variant (e.g. PDP recap)
 // can still consume the full chip list via a different wrapper.
 const visibleChips = computed<Chip[]>(() =>
-  visibleChipsForMode(chipKeys.value, props.mode).slice(0, 1),
+  visibleChipsForMode(chipKeys.value, productMode.value).slice(0, 1),
 )
 
 // Medusa V2: read `calculated_price.calculated_amount` (region-aware), with

@@ -102,13 +102,49 @@
         </div>
 
         <!--
-          Category list. Scrollable middle region.
-          Native <details>/<summary> chosen over HeadlessUI Disclosure
-          here because the markup is leaner, expansion is keyboard-
-          accessible by default, and we don't need controlled state
-          for sub-sections (each user expand is independent).
+          Scrollable middle region. Hosts THREE tiers in priority order:
+            Tier 1 — Mode entries (D2C Studio Canon vs B2B POD). These
+            are the two product-type axes the storefront pivots on, so
+            they get top placement, large type, and full-width cards.
+            Tier 2 — Category list (existing). Native <details>/<summary>
+            chosen over HeadlessUI Disclosure because the markup is
+            leaner, expansion is keyboard-accessible by default, and we
+            don't need controlled state for sub-sections (each user
+            expand is independent).
         -->
         <nav class="flex-1 overflow-y-auto" aria-label="Mobile categories">
+          <!-- TIER 1: Mode entries — primary axes (product type) -->
+          <div class="border-b border-greyLines">
+            <NuxtLink
+              to="/shop"
+              :class="[
+                'block px-5 py-5 border-b border-greyLines transition-colors hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2',
+                isShopActive ? 'bg-uiGrey' : '',
+              ]"
+              @click="closeOverlay"
+            >
+              <p class="text-[11px] uppercase tracking-[0.16em] text-greyText mb-1">D2C · Studio Canon</p>
+              <p class="text-[18px] leading-[22px] font-medium text-zinc-950">Shop the Studio Canon</p>
+              <p class="text-[13px] leading-[16px] text-greyText mt-1">Apparel sold as-is. Per-unit, in stock.</p>
+            </NuxtLink>
+            <NuxtLink
+              to="/products?type=pod"
+              :class="[
+                'block px-5 py-5 transition-colors hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2',
+                isPodActive ? 'bg-uiGrey' : '',
+              ]"
+              @click="closeOverlay"
+            >
+              <p class="text-[11px] uppercase tracking-[0.16em] text-greyText mb-1">B2B · Custom &amp; POD</p>
+              <p class="text-[18px] leading-[22px] font-medium text-zinc-950">Customise &amp; print on demand</p>
+              <p class="text-[13px] leading-[16px] text-greyText mt-1">Upload your artwork. From 25 pieces. E-proof in 48h.</p>
+            </NuxtLink>
+          </div>
+
+          <!-- TIER 2: Categories — filters within the modes above -->
+          <div class="px-5 pt-5 pb-2">
+            <p class="text-[11px] uppercase tracking-[0.16em] text-greyText">Browse by category</p>
+          </div>
           <ul class="divide-y divide-greyLines">
             <li v-for="c in categories" :key="c.key">
               <details v-if="c.menu && c.menu.sections.length" class="group">
@@ -262,6 +298,14 @@ watch(
     if (props.open) closeOverlay()
   },
 )
+
+// Active-state for the two top-tier mode entries. We can't rely on
+// NuxtLink's default `router-link-active` because:
+//   - "Shop" must light up for /shop AND /shop/canon (any /shop/*)
+//   - "POD" must light up only when the query string includes type=pod
+// Both rules need explicit route inspection.
+const isShopActive = computed(() => route.path.startsWith('/shop'))
+const isPodActive = computed(() => route.path === '/products' && route.query.type === 'pod')
 
 // Escape key handler. Attached/detached with the component lifecycle so
 // the listener never leaks and cannot run during SSR.

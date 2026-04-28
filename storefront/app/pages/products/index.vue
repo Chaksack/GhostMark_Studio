@@ -304,7 +304,7 @@ const { data, pending, error } = await useAsyncData(
   async () => sdk.store.product.list({
     limit: PAGE_SIZE,
     offset: (currentPage.value - 1) * PAGE_SIZE,
-    fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
+    fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
     ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
   } as any),
   { watch: [() => currentPage.value, () => regionState.regionId.value] },
