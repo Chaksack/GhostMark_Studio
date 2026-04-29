@@ -16,7 +16,7 @@ export const useCart = () => {
 
     if (cartId.value) {
       try {
-        const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*region' } as any)
+        const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*items.variant.product.type,*region' } as any)
         cart.value = (res as any).cart
         isReady.value = true
         return cart.value
@@ -34,34 +34,34 @@ export const useCart = () => {
 
   const refresh = async () => {
     if (!cartId.value) return await ensureCart()
-    const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*region' } as any)
+    const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value
   }
 
   const addItem = async (variantId: string, quantity = 1) => {
     const c = await ensureCart()
-    const res = await sdk.store.cart.createLineItem(c.id, { variant_id: variantId, quantity } as any, { fields: '*items,*region' } as any)
+    const res = await sdk.store.cart.createLineItem(c.id, { variant_id: variantId, quantity } as any, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value
   }
 
   const updateItem = async (lineItemId: string, quantity: number) => {
     const c = await ensureCart()
-    const res = await sdk.store.cart.updateLineItem(c.id, lineItemId, { quantity } as any, { fields: '*items,*region' } as any)
+    const res = await sdk.store.cart.updateLineItem(c.id, lineItemId, { quantity } as any, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value
   }
 
   const removeItem = async (lineItemId: string) => {
     const c = await ensureCart()
-    await sdk.store.cart.deleteLineItem(c.id, lineItemId, { fields: '*items,*region' } as any)
+    await sdk.store.cart.deleteLineItem(c.id, lineItemId, { fields: '*items,*items.variant.product.type,*region' } as any)
     return await refresh()
   }
 
   const updateCart = async (body: Record<string, any>) => {
     const c = await ensureCart()
-    const res = await sdk.store.cart.update(c.id, body as any, { fields: '*items,*region' } as any)
+    const res = await sdk.store.cart.update(c.id, body as any, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value
   }
@@ -74,7 +74,7 @@ export const useCart = () => {
 
   const addShippingMethod = async (optionId: string) => {
     const c = await ensureCart()
-    const res = await sdk.store.cart.addShippingMethod(c.id, { option_id: optionId } as any, { fields: '*items,*region' } as any)
+    const res = await sdk.store.cart.addShippingMethod(c.id, { option_id: optionId } as any, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value
   }

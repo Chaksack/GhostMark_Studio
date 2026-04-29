@@ -50,14 +50,14 @@
         </div>
 
         <div v-else class="max-h-[400px] overflow-y-auto">
-          <!-- Studio Canon (D2C own-brand, instant ATC) -->
-          <section v-if="groupedItems.shop.length" class="border-b border-zinc-100">
+          <!-- Studio Canon (D2C own-brand apparel, ships fast) — impulse path first -->
+          <section v-if="apparelItems.length" class="border-b border-zinc-100">
             <header class="flex items-baseline justify-between px-4 pt-3 pb-1">
               <h4 class="text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-700">Studio Canon</h4>
-              <span class="text-[11px] text-zinc-500">{{ shopSubtotal }}</span>
+              <span class="text-[11px] text-zinc-500">Ships in 1-2 days</span>
             </header>
             <ul class="divide-y divide-zinc-100">
-              <li v-for="item in groupedItems.shop" :key="item.id" class="flex items-start gap-3 px-4 py-3">
+              <li v-for="item in apparelItems" :key="item.id" class="flex items-start gap-3 px-4 py-3">
                 <div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
                   <img
                     v-if="item.thumbnail"
@@ -88,16 +88,20 @@
                 </button>
               </li>
             </ul>
+            <div v-if="apparelSubtotal" class="flex items-center justify-between px-4 pb-3 pt-1 text-[12px] text-zinc-700">
+              <span>Section subtotal</span>
+              <span class="font-medium text-zinc-950">{{ formatPrice(apparelSubtotal, currency) }}</span>
+            </div>
           </section>
 
-          <!-- Custom & POD (B2B + per-unit POD, e-proof / quote required) -->
-          <section v-if="groupedItems.studio.length" class="border-b border-zinc-100">
+          <!-- Custom & POD (per-unit POD + B2B, requires e-proof) — considered path second -->
+          <section v-if="podItems.length" class="border-b border-zinc-100">
             <header class="flex items-baseline justify-between px-4 pt-3 pb-1">
               <h4 class="text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-700">Custom &amp; POD</h4>
-              <span class="text-[11px] text-zinc-500">{{ studioSubtotal }}</span>
+              <span class="text-[11px] text-zinc-500">E-proof in 48h</span>
             </header>
             <ul class="divide-y divide-zinc-100">
-              <li v-for="item in groupedItems.studio" :key="item.id" class="flex items-start gap-3 px-4 py-3">
+              <li v-for="item in podItems" :key="item.id" class="flex items-start gap-3 px-4 py-3">
                 <div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
                   <img
                     v-if="item.metadata?.preview_url || item.thumbnail"
@@ -118,7 +122,6 @@
                     <span class="text-sm font-semibold text-zinc-950">{{ formatPrice(item.unit_price, item.currency_code) }}</span>
                   </div>
                   <span
-                    v-if="isPodLine(item)"
                     class="mt-1 inline-block rounded bg-zinc-200 px-[6px] py-[2px] text-[10px] font-medium uppercase tracking-[0.06em] text-zinc-950"
                   >
                     POD
@@ -146,6 +149,10 @@
                 </button>
               </li>
             </ul>
+            <div v-if="podSubtotal" class="flex items-center justify-between px-4 pb-3 pt-1 text-[12px] text-zinc-700">
+              <span>Section subtotal</span>
+              <span class="font-medium text-zinc-950">{{ formatPrice(podSubtotal, currency) }}</span>
+            </div>
           </section>
         </div>
 
@@ -155,7 +162,7 @@
             <span class="text-sm font-bold text-zinc-950">{{ subtotal }}</span>
           </div>
           <p
-            v-if="groupedItems.studio.length"
+            v-if="podItems.length"
             class="mb-3 text-[11px] leading-relaxed text-zinc-500"
           >
             Custom &amp; POD lines require e-proof confirmation before production. You'll receive a proof within 48h after placing your order.
@@ -178,8 +185,9 @@ const { cart, ensureCart, removeItem } = useCart()
 const open = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
 
-// MOQ tier that triggers Custom & POD treatment when no explicit metadata is present.
-const STUDIO_MOQ = 25
+// MOQ heuristic — only consulted as the final fallback when no explicit
+// product.type / metadata signal is present on the line item.
+const POD_MOQ_FALLBACK = 25
 
 function onBlur() {
   // Defer so document.activeElement reflects the new focus target
@@ -195,40 +203,47 @@ const cartItems = computed(() => cart.value?.items || [])
 const cartCount = computed(
   () => cartItems.value.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0),
 )
+const currency = computed(() => cart.value?.currency_code || 'usd')
 
-type CommerceMode = 'shop' | 'studio' | 'pod'
+type CartLineMode = 'pod' | 'apparel'
 
-function inferMode(item: any): CommerceMode {
-  // 1. Explicit line metadata (most authoritative — set by backend taxonomy / PDP add-to-cart)
-  const lineMode = item?.metadata?.commerce_mode
-  if (lineMode === 'shop' || lineMode === 'studio' || lineMode === 'pod') {
-    return lineMode
-  }
+/**
+ * 5-tier resolution chain. Aligned to the v3 backend taxonomy:
+ *   product.type.value === 'pod' | 'apparel' is the canonical signal.
+ * Every fallback below exists for backwards compatibility while the seed
+ * runs through the catalog. Defensive optional chaining: each level may be
+ * undefined on legacy data or partial cart fetches.
+ */
+function inferMode(item: any): CartLineMode {
+  // 1. Source of truth — product.type.value (backend taxonomy)
+  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
+  if (productType === 'pod') return 'pod'
+  if (productType === 'apparel') return 'apparel'
 
-  // 2. Variant.product metadata fallback (if SDK includes nested product data)
-  const productMode = item?.variant?.product?.metadata?.commerce_mode
-  if (productMode === 'shop' || productMode === 'studio' || productMode === 'pod') {
-    return productMode
-  }
+  // 2. Line-level metadata override (legacy / explicit per-line classification)
+  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (lineMode === 'pod') return 'pod'
+  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
 
-  // 3. Custom-design signals are deterministic (always studio mode)
-  if (item?.metadata?.design_data) return 'studio'
-  if (item?.metadata?.preview_url) return 'studio'
+  // 3. Variant-level metadata fallback
+  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (variantMode === 'pod') return 'pod'
+  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
 
-  // 4. Last-resort heuristic — only used when no metadata is present.
-  // KNOWN LIMITATION: misclassifies high-quantity D2C bulk-pack SKUs as B2B/studio.
-  // Once backend taxonomy reliably populates metadata.commerce_mode on every product,
-  // this branch should become a dev-time warning rather than a silent bucket.
-  if ((item?.quantity || 0) >= STUDIO_MOQ) return 'studio'
+  // 4. Product-level metadata fallback
+  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (productMeta === 'pod') return 'pod'
+  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
 
-  // 5. Default to D2C shop
-  return 'shop'
-}
+  // 5a. Custom-design signals — uploaded designs are POD by definition
+  if (item?.metadata?.design_data) return 'pod'
+  if (item?.metadata?.preview_url) return 'pod'
 
-function isPodLine(item: any): boolean {
-  const lineMode = item?.metadata?.commerce_mode
-  if (lineMode === 'pod') return true
-  return item?.variant?.product?.metadata?.commerce_mode === 'pod'
+  // 5b. MOQ heuristic — final fallback for legacy lines with zero metadata
+  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
+
+  // 6. Default — treat as in-stock apparel (D2C path)
+  return 'apparel'
 }
 
 function needsProof(item: any): boolean {
@@ -238,40 +253,25 @@ function needsProof(item: any): boolean {
 
 function needsQuote(item: any): boolean {
   const meta = item?.metadata || {}
-  return Boolean(meta.requires_quote) || (item?.quantity || 0) >= STUDIO_MOQ
+  return Boolean(meta.requires_quote) || (item?.quantity ?? 0) >= POD_MOQ_FALLBACK
 }
 
-const groupedItems = computed(() => {
-  const shop: any[] = []
-  const studio: any[] = []  // includes both 'studio' and 'pod' modes per v2 IA (2-section drawer)
-  for (const item of cartItems.value) {
-    const mode = inferMode(item)
-    if (mode === 'studio' || mode === 'pod') studio.push(item)
-    else shop.push(item)
-  }
-  return { shop, studio }
-})
-
-function sumGroup(items: any[]) {
+function sumLines(items: any[]) {
   return items.reduce(
-    (sum: number, item: any) => sum + (item.unit_price || 0) * (item.quantity || 0),
+    (sum: number, item: any) => sum + (item.unit_price ?? 0) * (item.quantity ?? 0),
     0,
   )
 }
 
-function formatGroup(items: any[]) {
-  if (!items.length) return ''
-  const currency = cart.value?.currency_code || 'usd'
-  return formatPrice(sumGroup(items), currency)
-}
+const apparelItems = computed(() => cartItems.value.filter((item: any) => inferMode(item) === 'apparel'))
+const podItems = computed(() => cartItems.value.filter((item: any) => inferMode(item) === 'pod'))
 
-const shopSubtotal = computed(() => formatGroup(groupedItems.value.shop))
-const studioSubtotal = computed(() => formatGroup(groupedItems.value.studio))
+const apparelSubtotal = computed(() => sumLines(apparelItems.value))
+const podSubtotal = computed(() => sumLines(podItems.value))
 
 const subtotal = computed(() => {
   if (!cart.value) return ''
-  const currency = cart.value.currency_code || 'usd'
-  return formatPrice(sumGroup(cartItems.value), currency)
+  return formatPrice(sumLines(cartItems.value), currency.value)
 })
 
 function formatPrice(amount: number, currency: string) {

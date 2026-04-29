@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { applySort } from '~/utils/filters'
+import { applySort, useProductTypeIds } from '~/utils/filters'
 
 useHead({
   title: 'The Studio Canon · GhostMark Studio',
@@ -56,18 +56,32 @@ const sdk = useMedusaClient()
 const regionState = useRegion()
 await regionState.ensureRegion()
 
+// Resolve apparel type_id once — Studio Canon is the curated apparel drop, so
+// the canon page is even stricter than /shop (only apparel products, never
+// POD). Falls back to client-side filter on `product.type.value` if the
+// backend doesn't expose the type-id lookup yet.
+const { typeIds, ensureTypeIds } = useProductTypeIds()
+await ensureTypeIds()
+const apparelTypeId = computed(() => typeIds.value['apparel'] ?? null)
+
 const { data, pending } = await useAsyncData(
-  () => `shop-canon-${regionState.regionId.value ?? 'no-region'}`,
+  () => `shop-canon-${apparelTypeId.value ?? 'all'}-${regionState.regionId.value ?? 'no-region'}`,
   async () => {
-    // TODO when backend has `studio_canon: true` metadata, filter by it
-    return sdk.store.product.list({
+    const args: Record<string, unknown> = {
       limit: 12,
-      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
-      ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
-    } as any)
+      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
+    }
+    if (regionState.regionId.value) args.region_id = regionState.regionId.value
+    if (apparelTypeId.value) args.type_id = [apparelTypeId.value]
+    return sdk.store.product.list(args as any)
   },
+  { watch: [() => regionState.regionId.value, apparelTypeId] },
 )
 
 const products = computed(() => (data.value as any)?.products ?? [])
-const sortedProducts = computed(() => applySort(products.value, 'newest'))
+const sortedProducts = computed(() => {
+  const sorted = applySort(products.value, 'newest')
+  if (apparelTypeId.value) return sorted // server already filtered
+  return sorted.filter((p: any) => String(p?.type?.value ?? '').toLowerCase() === 'apparel')
+})
 </script>
