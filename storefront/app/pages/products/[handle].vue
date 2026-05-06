@@ -1,5 +1,17 @@
 <template>
   <div>
+    <!--
+      JSON-LD Product structured data. Headless component — renders no DOM,
+      pushes a <script type="application/ld+json"> into <head> via useHead.
+      Sits at the top of the page wrapper (outside the pending/not-found
+      branches) so it emits as soon as product data resolves, on both POD
+      (AggregateOffer) and apparel (single Offer) flows. The `v-if`
+      hydration-guards SSR and avoids emitting a stale schema during the
+      pending state — useProductSchema returns null on missing product
+      anyway, but skipping the mount keeps the head graph cleaner.
+    -->
+    <ProductSchemaScript v-if="product" :product="product" :url="canonicalUrl" />
+
     <div v-if="pending" class="py-20 text-center text-zinc-500">Loading product&hellip;</div>
     <div v-else-if="!product" class="py-20 text-center text-zinc-500">Product not found.</div>
 
@@ -986,6 +998,12 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/vue'
+// Explicit import: Nuxt auto-imports nested-component dirs with a path
+// prefix (`SeoProductSchemaScript`), which is awkward for an SEO concern
+// that should read like a plain tag. Importing directly preserves the
+// `<ProductSchemaScript>` name and keeps the dependency obvious to anyone
+// auditing what the PDP emits to <head>.
+import ProductSchemaScript from '~/components/seo/ProductSchemaScript.vue'
 
 // --- Types ---------------------------------------------------------------
 interface ProductOptionValue { id: string; value: string }
@@ -1079,6 +1097,33 @@ useHead({
     product.value?.title
       ? `${product.value.title} · GhostMark Studio`
       : 'Product · GhostMark Studio',
+})
+
+// Canonical URL for JSON-LD `Product.url` and `Offer.url`. Schema.org
+// REQUIRES absolute URLs — relative paths are silently ignored by Google's
+// rich-results parser, leaving the product unindexed for shopping cards.
+//
+// Resolution order:
+//   1. Browser   — `window.location.origin` is the truth on the client and
+//                  also matches whatever proxy/CDN host the user actually
+//                  reached (so local, staging, prod all "just work").
+//   2. SSR       — `runtimeConfig.public.siteUrl` if the operator set one.
+//   3. Fallback  — localhost; harmless in dev, and since the schema only
+//                  matters for crawlers (which hit the prod host), a wrong
+//                  base in dev never reaches Search Console.
+//
+// `runtimeConfig.public.siteUrl` is read defensively because nuxt.config
+// does not yet declare it; reading an undefined key would tighten the
+// coupling between this file and infra config we don't own.
+const canonicalUrl = computed<string>(() => {
+  const path = `/products/${handle.value}`
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return `${window.location.origin}${path}`
+  }
+  const config = useRuntimeConfig()
+  const base = ((config.public as Record<string, unknown>)?.siteUrl as string)
+    || 'http://localhost:3000'
+  return `${base.replace(/\/$/, '')}${path}`
 })
 
 // =========================================================================

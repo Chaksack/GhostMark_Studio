@@ -14,20 +14,16 @@
             /
           </li>
           <li>
-            <span class="text-sm text-ink-950" aria-current="page">All products</span>
+            <span class="text-sm text-ink-950" aria-current="page">{{ typeFilter === 'pod' ? 'Customise & POD' : 'All products' }}</span>
           </li>
         </ol>
       </nav>
 
       <h1 class="relative mb-[3rem] max-w-[110rem] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[4rem] sm:text-[4.4rem] lg:text-[8rem] leading-[4.4rem] sm:leading-[4.8rem] lg:leading-[8.8rem] tracking-[-0.01em]">
-        Branded objects for studios &amp; teams
+        {{ pageTitle }}
       </h1>
 
-      <p class="mb-[6rem] max-w-[56rem]">
-        A working catalogue of laser-engraved, DTF-printed and apparel-finished pieces &mdash;
-        produced in Bordeaux for the studios, agencies and teams that take taste seriously.
-        Order from 25 pieces. E-proof in 48 hours.
-      </p>
+      <p class="mb-[6rem] max-w-[56rem]">{{ pageIntro }}</p>
 
       <!-- Desktop filter bar — wired FilterPill instances backed by local refs.
            State is presentational only (no backend facet wiring yet); only the
@@ -220,7 +216,6 @@ import FilterPill from '~/components/ui/FilterPill.vue'
 import MobileFilterSheet from '~/components/ui/MobileFilterSheet.vue'
 import { applySort, filterOptions } from '~/utils/filters'
 
-useHead({ title: 'Shop' })
 const sdk = useMedusaClient()
 const regionState = useRegion()
 const route = useRoute()
@@ -326,9 +321,47 @@ const visiblePages = computed<(number | string)[]>(() => {
   return [1, '...', cur - 1, cur, cur + 1, '...', tot]
 })
 
-// Client-side sort. `applySort` always returns a new array so `:key="p.id"`
-// reordering forces ProductCard to flip into the new slot rather than tear.
-// NOTE: this only sorts the CURRENT page — true sort-across-all-pages needs
-// a server-side `order` param wired through the SDK call above.
-const sortedProducts = computed(() => applySort(products.value, sortBy.value))
+// `?type=pod` filter — entry point for the B2B / POD catalogue from the
+// hero CTA, mobile burger, and desktop nav. Filter is client-side because
+// resolving `type_id` from the storefront SDK requires a separate round
+// trip; the page is paged at PAGE_SIZE=24 so the slice cost is bounded.
+// Apparel filter is symmetric (?type=apparel) for completeness, though the
+// `/shop` route is the canonical apparel surface.
+const typeFilter = computed<'pod' | 'apparel' | null>(() => {
+  const raw = route.query.type
+  const v = (Array.isArray(raw) ? raw[0] : raw)?.toString().toLowerCase() ?? ''
+  if (v === 'pod' || v === 'apparel') return v
+  return null
+})
+
+// Filter THEN sort so sort applies to the type-narrowed list.
+const sortedProducts = computed(() => {
+  const filtered = typeFilter.value
+    ? products.value.filter((p: any) => (p?.type?.value as string | undefined)?.toLowerCase() === typeFilter.value)
+    : products.value
+  return applySort(filtered, sortBy.value)
+})
+
+// H1 + intro flip when in POD-mode so the page reads as the B2B catalogue.
+const pageTitle = computed(() => {
+  if (typeFilter.value === 'pod') return 'Customise & print on demand'
+  return 'Branded objects for studios & teams'
+})
+const pageIntro = computed(() => {
+  if (typeFilter.value === 'pod') {
+    return 'Pick a base product and upload your artwork. Tier-priced from MOQ 25 with an e-proof in 48 hours.'
+  }
+  return 'A working catalogue of laser-engraved, DTF-printed and apparel-finished pieces — produced in Bordeaux for the studios, agencies and teams that take taste seriously. Order from 25 pieces. E-proof in 48 hours.'
+})
+
+// Keep the page <title> reactive to typeFilter without using useHead's
+// function-form (which trips a "dispose" error in the @unhead/vue version
+// pinned in package.json). useHead with a `title: computed(...)` pattern
+// dodges the lifecycle bug while still updating the document title on
+// query-string change.
+useHead({
+  title: computed(() => (typeFilter.value === 'pod'
+    ? 'Customise & POD · GhostMark Studio'
+    : 'Shop · GhostMark Studio')),
+})
 </script>

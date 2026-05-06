@@ -1,30 +1,10 @@
-<!--
-  ProductSchemaScript.vue
-  -----------------------
-  Headless JSON-LD injector for PDPs. Renders no DOM — instead it pushes a
-  `<script type="application/ld+json">` tag through Nuxt's `useHead` so the
-  payload lands inside <head> (where Google expects structured data) without
-  depending on a parent slot.
-
-  Integration (deferred — PDP file is owned by another agent):
-
-      <script setup lang="ts">
-      import ProductSchemaScript from '~/components/seo/ProductSchemaScript.vue'
-      const canonicalUrl = computed(() =>
-        `${useRuntimeConfig().public.siteUrl || ''}/products/${product.value.handle}`,
-      )
-      </script>
-      <template>
-        <ProductSchemaScript :product="product" :url="canonicalUrl" />
-        <!-- ...rest of PDP... -->
-      </template>
-
-  The `key` on the script entry is per-product, so route changes between PDPs
-  replace (rather than stack) the JSON-LD tag.
--->
-
 <template>
-  <!-- Headless: useHead handles the actual injection. -->
+  <!--
+    Headless JSON-LD injector for PDPs. Renders no DOM — useHead pushes a
+    `script type="application/ld+json"` tag into head so Google's rich-results
+    parser indexes the Product schema. Per-product key dedupes on route change.
+    Integration example lives in pages/products/[handle].vue.
+  -->
 </template>
 
 <script setup lang="ts">

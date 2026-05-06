@@ -1,0 +1,18 @@
+{
+  "//": "Standalone tsconfig for the Playwright E2E suite. The Nuxt-managed root tsconfig.json delegates to .nuxt/* configs that don't include tests/, so this file gives type-checkers and `tsc --noEmit` a self-contained project to walk over.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "types": ["@playwright/test", "node"]
+  },
+  "include": ["**/*.ts"]
+}
