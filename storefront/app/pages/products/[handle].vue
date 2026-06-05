@@ -117,6 +117,22 @@
                   <span class="opacity-50" aria-hidden="true">·</span>
                   <span>E-proof in 48h</span>
                 </div>
+                <!--
+                  Gift card: denomination variants are the offering, so we
+                  surface the cheapest "From £X" rather than a single
+                  selected-variant unit price. Caption lines up the two
+                  reassurances buyers actually care about — instant email
+                  delivery and no expiry — without the MOQ/e-proof copy
+                  that only applies to bulk POD.
+                -->
+                <p
+                  v-else-if="isGiftCard && minVariantPrice !== null"
+                  class="text-[1.8rem] leading-[2.4rem] text-ink-950 font-medium"
+                  data-test="giftcard-price"
+                >
+                  From {{ formatMoney(minVariantPrice) }}
+                  <span class="block text-[1.3rem] leading-[1.8rem] font-normal text-greyText mt-1">Email-delivered &middot; Codes don&rsquo;t expire</span>
+                </p>
                 <p
                   v-else-if="isApparel && unitPrice !== null"
                   class="text-[1.8rem] leading-[2.4rem] text-ink-950 font-medium"
@@ -135,14 +151,18 @@
               -->
               <!--
                 Aux row, branched. "View product details" and "Share" are
-                shared between both flows. "Buy a sample" + "Request a
-                quote" are POD-only B2B affordances and disappear on
-                apparel — a D2C buyer either buys the unit on the spot or
-                doesn't buy at all; quote/sample requests pollute the
-                decision space and depress conversion.
+                shared between POD + apparel flows. "Buy a sample" +
+                "Request a quote" are POD-only B2B affordances and
+                disappear on apparel — a D2C buyer either buys the unit
+                on the spot or doesn't buy at all; quote/sample requests
+                pollute the decision space and depress conversion.
+                Gift cards hide the entire details/sample/quote trio —
+                there are no physical specs to view, no sample to ship,
+                and no bulk quote to request for a digital code.
               -->
               <div class="hidden md:flex items-center gap-[1rem] flex-wrap">
                 <a
+                  v-if="!isGiftCard"
                   href="#variant-specificities"
                   class="inline-flex items-center min-h-[44px] bg-uiGrey border border-transparent hover:border-black py-[1rem] px-[1.4rem] lg:py-[1.2rem] lg:px-[1.6rem] text-[14px] lg:text-base leading-[2rem] rounded-[0.5rem]"
                 >
@@ -435,11 +455,40 @@
             </div>
 
             <!--
+              POD product with no print_locations seeded yet — render an
+              "email-us-the-artwork" affordance so the page doesn't
+              silently skip Step 2. Without this branch, a POD SKU
+              missing metadata.print_locations falls through the
+              `v-if="isPOD && printLocations.length"` gate above and the
+              user sees MOQ/e-proof copy with no way to act on it.
+              The CTA hands off to /contact?intent=pod-artwork, where
+              ops will mock up the design against the proof in 48 hours
+              (matching the e-proof reassurance copy above).
+            -->
+            <div
+              v-else-if="isPODWithoutLocations"
+              data-test="pod-no-locations"
+              class="mt-[1.8rem] flex flex-col bg-uiHighlight shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] border border-greyLines"
+            >
+              <h2 class="text-[2rem] leading-[2.4rem] md:text-[2.4rem] md:leading-[2.8rem] whitespace-pre-wrap mb-[1.5rem]">{{ stepNumber('customise') }}. Upload your design</h2>
+              <p class="text-[1.4rem] leading-[2rem] md:text-[1.5rem] md:leading-[2.4rem] text-ink-700 mb-[2rem] max-w-[55ch]">
+                Print zones haven&rsquo;t been published for this product yet. Email us your artwork after checkout and our team will mock it up against the proof in 48 hours.
+              </p>
+              <NuxtLink
+                to="/contact?intent=pod-artwork"
+                class="inline-flex items-center justify-center self-start min-h-[44px] px-[1.6rem] py-[1.2rem] rounded-[0.5rem] border border-ink-950 text-[14px] font-medium text-ink-950 hover:bg-ink-950 hover:text-cream-50 transition-colors duration-fast focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ink-950 motion-reduce:transition-none"
+              >
+                Email artwork brief &rarr;
+              </NuxtLink>
+            </div>
+
+            <!--
               "Not customisable" hint — POD-only. Surfaces only when the
               merchant has explicitly flagged a POD SKU as not-customisable
               (so the buyer understands why the editor is missing).
-              Apparel never shows this — for D2C the absence of an editor
-              is the default, not an exception worth narrating.
+              Apparel/gift-card never show this — for D2C/digital the
+              absence of an editor is the default, not an exception worth
+              narrating.
             -->
             <div
               v-else-if="isPOD && !isCustomizable"
@@ -609,16 +658,21 @@
             </div>
 
             <!--
-              Quantity step — Apparel (D2C) branch.
+              Quantity step — Apparel (D2C) / Gift-card branch.
               MOQ is hard-coded to 1, no tier ladder, no discount badges,
               no MOQ caption. The qty stepper sits next to a live total
               line, then the single primary ATC button. Copy stays
               conversational ("Add to cart") rather than B2B-laden.
               Same `onAddToCart` handler is reused (the gate inside it
               is now scoped to POD).
+              Gift cards reuse this card verbatim — buying a digital code
+              is functionally the same as buying an apparel SKU: pick a
+              variant (denomination), set qty, ATC. The buyer-facing
+              copy upstream (price label + caption) already narrates
+              the gift-card-specific reassurance.
             -->
             <div
-              v-else-if="isApparel"
+              v-else-if="isApparel || isGiftCard"
               ref="primaryAtcRow"
               class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
               data-test="apparel-add-to-cart"
@@ -708,6 +762,9 @@
             messaging in the LEFT info column:
             - POD: "Lead time: ~10-15 business days" (production wait)
             - Apparel: "In stock · ships in 1-2 days" (D2C ship promise)
+            - Gift-card: "Delivered instantly · Sent by email" (no
+              physical fulfilment, no shipping window to communicate;
+              omitting the lead-time block keeps the bar honest).
             The total figure is driven by `effectiveTotal`, which itself
             branches inside (apparel reads `unitPrice * qty`, POD reads
             tier-aware `effectiveUnit * qty`).
@@ -721,6 +778,10 @@
               <div v-if="isPOD" class="flex flex-col text-[12px] text-greyText">
                 <span>Lead time:</span>
                 <span class="text-[13px] font-medium text-ink-950">~{{ leadTime }} business days</span>
+              </div>
+              <div v-else-if="isGiftCard" class="flex flex-col text-[12px] text-greyText" data-test="sticky-giftcard-meta">
+                <span>Delivered instantly</span>
+                <span class="text-[13px] font-medium text-ink-950">Sent by email</span>
               </div>
               <div v-else-if="isApparel" class="flex flex-col text-[12px] text-greyText">
                 <span>In stock</span>
@@ -1209,34 +1270,66 @@ const printLocations = computed<PrintLocation[]>(() => {
 })
 
 // =========================================================================
-// Product flow discriminator (POD vs Apparel/D2C).
+// Product flow discriminator (POD vs Apparel/D2C vs Gift-Card).
 //
 // `product.type.value` is Medusa's product-type relation, populated via
 // `fields: '...,*type'` above. We branch the entire PDP on this single
-// string discriminator so the same template renders two distinct
+// string discriminator so the same template renders three distinct
 // experiences without forking the route:
 //
-//   'pod'     — B2B print-on-demand. Variant + design upload + tier ladder
-//                + MOQ messaging + e-proof copy. The original PDP.
-//   'apparel' — D2C ready-to-ship apparel. Variant + simple qty stepper +
-//                single ATC. No upload step, no MOQ, no e-proof copy.
+//   'pod'        — B2B print-on-demand. Variant + design upload + tier ladder
+//                  + MOQ messaging + e-proof copy. The original PDP.
+//   'apparel'    — D2C ready-to-ship apparel. Variant + simple qty stepper +
+//                  single ATC. No upload step, no MOQ, no e-proof copy.
+//   'gift-card'  — Digital code, instantly email-delivered. Functionally
+//                  buy-as-is (reuses the apparel ATC card visually), but
+//                  surfaces an explicit "Email-delivered · Codes don't
+//                  expire" caption and suppresses B2B affordances (sample,
+//                  quote, lead-time) plus the upload step.
 //
 // Fallback: if a product has no `type` set (legacy SKUs in the DB before
 // the type seed runs), fall back to the existing `isCustomizable` +
 // `printLocations.length` signal — i.e. anything customisable is treated
 // as POD, anything else is treated as apparel. This keeps the v18/v19
 // behaviour intact for un-typed products.
-type ProductFlow = 'pod' | 'apparel'
+type ProductFlow = 'pod' | 'apparel' | 'gift-card'
 
 const productType = computed<ProductFlow>(() => {
   const raw = (product.value?.type?.value as string | undefined)?.toLowerCase()
   if (raw === 'pod') return 'pod'
+  if (raw === 'gift-card' || raw === 'giftcard') return 'gift-card'
   if (raw === 'apparel') return 'apparel'
   return isCustomizable.value && printLocations.value.length ? 'pod' : 'apparel'
 })
 
 const isPOD = computed(() => productType.value === 'pod')
 const isApparel = computed(() => productType.value === 'apparel')
+const isGiftCard = computed(() => productType.value === 'gift-card')
+
+// POD product that was typed 'pod' upstream but the merchant hasn't seeded
+// any print_locations metadata yet. Without this discriminator the
+// customisation step silently disappears (`v-if="isPOD && printLocations.length"`
+// drops to false), leaving the user staring at MOQ/e-proof copy with no
+// upload affordance to act on. We surface an "email artwork brief" CTA
+// instead so the page narrates the gap rather than hiding it.
+//
+// Explicitly excludes the `is_customizable=false` case — that path already
+// has its own "not customisable" hint card and shouldn't be hijacked by
+// the email-artwork CTA (the merchant has actively flagged the SKU as
+// not customisable, so prompting for artwork would mislead the buyer).
+const isPODWithoutLocations = computed(
+  () => isPOD.value && isCustomizable.value && printLocations.value.length === 0,
+)
+
+// Cheapest variant price across the product's catalogued variants. Used by
+// the gift-card "From £X" label (denomination variants ARE the offering),
+// independent of which variant the v-model has selected.
+const minVariantPrice = computed<number | null>(() => {
+  const prices = (variants.value || [])
+    .map((v) => v?.calculated_price?.calculated_amount ?? v?.prices?.[0]?.amount ?? null)
+    .filter((n): n is number => typeof n === 'number')
+  return prices.length ? Math.min(...prices) : null
+})
 
 // techniques — empty array if the merchant hasn't set any. DesignEditor
 // hides the pill row when this is empty.
@@ -1320,8 +1413,16 @@ type StepName = 'variant' | 'customise' | 'quantity'
 const stepNumber = (name: StepName): number => {
   const order: StepName[] = []
   if (hasVariantAxes.value) order.push('variant')
-  // Customise step belongs to POD only — apparel skips upload entirely.
-  if (isPOD.value && printLocations.value.length) order.push('customise')
+  // Customise step belongs to POD only — apparel + gift-card skip upload
+  // entirely. Count the step for BOTH the full-editor branch AND the
+  // "no print zones seeded" affordance, so a POD product without
+  // locations still gets a numbered Step 2 heading on its email-artwork
+  // card. Non-customisable PODs (where the merchant has explicitly opted
+  // out of artwork upload) skip the slot — the "not customisable" hint
+  // renders without a step heading, and quantity stays at Step 2.
+  if (isPOD.value && (printLocations.value.length > 0 || isPODWithoutLocations.value)) {
+    order.push('customise')
+  }
   order.push('quantity')
   return order.indexOf(name) + 1
 }

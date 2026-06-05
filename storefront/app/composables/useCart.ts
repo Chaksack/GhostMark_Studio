@@ -12,6 +12,59 @@ export const useCart = () => {
   const cartId = useCookie<string | null>('gms_cart_id', { sameSite: 'lax' })
   const cart = useState<any | null>('gms_cart', () => null)
   const isReady = useState<boolean>('gms_cart_ready', () => false)
+  // Sidecar cookie tracking when the current `gms_cart_id` was minted.
+  // The Medusa cart id itself carries no timestamp, so we mirror creation
+  // time here to support a dev-mode staleness check (24h cutoff). Lifetime
+  // tracks the 30-day cart cookie horizon so legitimate long-lived carts
+  // still surface a usable timestamp.
+  const cartCreatedAtCookie = useCookie<string | null>('gms_cart_created_at', { sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 })
+
+  // Dev-mode auto-clear: cart cookies that survive more than 24h between
+  // sessions are almost always stale fixtures from a prior debugging run
+  // (e.g. the persistent Workshop Tote qty 15 surfaced by the e2e suite).
+  // Clearing in development saves manual cookie-wipes; production paths
+  // must NEVER auto-clear because real customers expect their carts to
+  // survive the full 30 days. Runs synchronously before any reactive
+  // state setup so downstream `ensureCart()` sees a clean slate.
+  if (import.meta.dev && import.meta.client && cartId.value && cartCreatedAtCookie.value) {
+    const createdAt = new Date(cartCreatedAtCookie.value).getTime()
+    const ageHours = (Date.now() - createdAt) / (1000 * 60 * 60)
+    if (ageHours > 24) {
+      // Inline the wipe because `clearCart()` is declared later in this
+      // closure and isn't hoisted — calling it here would be a TDZ error.
+      cartId.value = null
+      cart.value = null
+      isReady.value = false
+      cartCreatedAtCookie.value = null
+      if (typeof localStorage !== 'undefined') {
+        try { localStorage.removeItem('gms_cart_id') } catch {}
+      }
+      console.info('[useCart] auto-cleared stale dev cart aged %d hours', Math.round(ageHours))
+    }
+  }
+
+  // Developer escape hatch: ?clearCart=1 wipes cart state on first run.
+  // Strips the query param afterwards so a refresh or component remount
+  // doesn't re-trigger the clear and so deep links remain idempotent.
+  // Dev-only to avoid handing customers a foot-gun via a shared URL.
+  if (import.meta.client && import.meta.dev) {
+    const route = useRoute()
+    if (route.query.clearCart === '1') {
+      cartId.value = null
+      cart.value = null
+      isReady.value = false
+      cartCreatedAtCookie.value = null
+      if (typeof localStorage !== 'undefined') {
+        try { localStorage.removeItem('gms_cart_id') } catch {}
+      }
+      // Remove the param so a refresh doesn't re-trigger.
+      const router = useRouter()
+      const next = { ...route.query }
+      delete next.clearCart
+      void router.replace({ path: route.path, query: next })
+      console.info('[useCart] cleared cart via ?clearCart=1')
+    }
+  }
 
   const sdk = useMedusaClient()
   const regionState = useRegion()
@@ -38,6 +91,11 @@ export const useCart = () => {
     const created = await sdk.store.cart.create({ region_id: regionState.regionId.value as any } as any)
     cart.value = (created as any).cart
     cartId.value = cart.value.id
+    // Stamp creation time so the dev-mode 24h staleness check has a
+    // reference point. Only writes on actual cart mints (not on cookie
+    // retrieve) so the timestamp reflects when the backend cart was
+    // born, not when this composable last hydrated it.
+    cartCreatedAtCookie.value = new Date().toISOString()
     isReady.value = true
     return cart.value
   }
@@ -110,6 +168,11 @@ export const useCart = () => {
     cartId.value = null
     cart.value = null
     isReady.value = false
+    // Drop the sidecar timestamp too — otherwise a manual clearCart()
+    // followed by a fresh mint would inherit an obsolete creation time
+    // and the dev-mode staleness check could fire incorrectly on the
+    // next session.
+    cartCreatedAtCookie.value = null
     if (import.meta.client) {
       try {
         localStorage.removeItem('gms_cart_id')
