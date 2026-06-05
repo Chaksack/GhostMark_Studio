@@ -99,11 +99,12 @@ export default defineNuxtConfig({
   //   "does not provide an export named 'stringify'"
   // and every SDK call fails silently — which strips every product price
   // from every consumer (PDP, BestSellers, RecentlyAdded, search results).
-  // `axios` is a hard runtime dep of `@nuxtjs/medusa`. `vue-konva` is the
-  // canvas runtime for the PDP design editor.
+  // `vue-konva` is the canvas runtime for the PDP design editor.
+  // Note: Do not list packages here unless they are direct dependencies,
+  // otherwise Vite will warn that the entry is unresolvable during prebundle.
   vite: {
     optimizeDeps: {
-      include: ['qs', 'axios', 'vue-konva'],
+      include: ['qs', 'vue-konva'],
     },
   },
 

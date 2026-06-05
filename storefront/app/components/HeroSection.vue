@@ -1,21 +1,21 @@
-<template>
-  <!--
-    Full-bleed image-led hero, merchery.co cadence.
-    Photo is the LCP; copy overlays as caption + sans H1 + CTAs.
-    Dark gradient guarantees WCAG contrast for white text.
-    Figcaption visible at every breakpoint — only branded mark on the photo.
-  -->
-  <!--
-    Hero stacking: the section is the figcaption's containing block.
-    `isolate` opens a fresh stacking context so the absolutely-positioned
-    figcaption (z-10) cannot bleed past the section bounds and over the
-    sticky/fixed AppHeader bands (mobile z-50, desktop z-20).
-  -->
-  <section class="relative isolate z-0 w-full overflow-hidden bg-ink-950">
-    <div
-      class="relative h-[640px] min-h-[640px] w-full md:h-[700px] lg:h-[calc(100vh-118px)] lg:min-h-[640px]"
-    >
-      <NuxtPicture
+      <template>
+        <!--
+          Full-bleed image-led hero, merchery.co cadence.
+          Photo is the LCP; copy overlays as caption + sans H1 + CTAs.
+          Dark gradient guarantees WCAG contrast for white text.
+          Figcaption visible at every breakpoint — only branded mark on the photo.
+        -->
+        <!--
+          Hero stacking: the section is the figcaption's containing block.
+          `isolate` opens a fresh stacking context so the absolutely-positioned
+          figcaption (z-10) cannot bleed past the section bounds and over the
+          sticky/fixed AppHeader bands (mobile z-50, desktop z-20).
+        -->
+        <section class="relative isolate z-0 w-full overflow-hidden bg-ink-950">
+          <figure
+            class="relative h-[640px] min-h-[640px] w-full md:h-[700px] lg:h-[calc(100vh-118px)] lg:min-h-[640px]"
+          >
+            <NuxtPicture
         src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1600&q=85&fit=crop&crop=entropy&auto=format"
         alt="Model wearing the Atelier Hoodie in cream — GhostMark Studio editorial hero"
         preset="hero"
@@ -139,7 +139,7 @@
         <span class="h-1 w-1 rounded-full bg-accent-terracotta" aria-hidden="true" />
         Studio Canon &middot; 2026
       </figcaption>
-    </div>
+    </figure>
   </section>
 </template>
 
