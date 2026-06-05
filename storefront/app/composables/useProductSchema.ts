@@ -15,6 +15,26 @@
 // Medusa returns in the smallest currency unit (pence/cents). We divide by
 // 100 and format to 2dp for schema compliance.
 //
+// Schema spec coverage (verified against schema.org 2025 + Google rich
+// results requirements):
+//   - `name`, `description`, `image[]` — REQUIRED. `image` is always emitted
+//     as an array even if the product only has a `thumbnail`, because
+//     Google's product snippet validator silently degrades a string-typed
+//     `image` to "not eligible for rich results".
+//   - `sku` — REQUIRED. Falls back to handle when no variant SKU exists.
+//   - `brand: { @type: 'Brand', name }` — REQUIRED. Brand-as-Organization is
+//     also valid per schema.org but Brand is the recommended shape for retail.
+//   - `offers.priceCurrency` — REQUIRED and must be ISO 4217 (uppercased).
+//   - `offers.price` (Offer) / `offers.lowPrice` + `highPrice` (AggregateOffer)
+//     — REQUIRED, two decimal places, currency-unit (not minor unit).
+//   - `offers.availability` — REQUIRED. Mapped inventory-aware:
+//     any variant with `inventory_quantity > 0` OR `allow_backorder` =>
+//     InStock, otherwise OutOfStock. If inventory data isn't expanded on
+//     the product payload we default to InStock — Google prefers this to
+//     an omitted property and the PDP CTA already gates real availability.
+//   - `aggregateRating` / `review` — intentionally omitted until ratings
+//     ship from the backend; Google treats them as optional.
+//
 // Empty/edge cases
 //   - no variants or no prices  → emit Product without `offers`
 //   - single price + isPOD       → still single Offer (AggregateOffer needs ≥2)
@@ -76,6 +96,25 @@ export function useProductSchema(input: UseProductSchemaInput): {
       (variants[0]?.calculated_price?.currency_code as string) || 'GBP'
     ).toUpperCase()
 
+    // Inventory-aware availability. Schema.org requires one of InStock /
+    // OutOfStock / PreOrder / BackOrder. We treat any variant with positive
+    // inventory OR `allow_backorder` as in-stock. POD products without
+    // inventory tracking (manage_inventory === false) are always considered
+    // in-stock because supply is made-to-order. If the payload doesn't carry
+    // inventory fields at all we optimistically return InStock — omitting
+    // the field disqualifies the product from Google's rich snippet.
+    const anyVariantAvailable = variants.length === 0
+      ? true
+      : variants.some((v: any) => {
+        if (v?.allow_backorder === true) return true
+        if (v?.manage_inventory === false) return true
+        const qty = v?.inventory_quantity
+        return typeof qty === 'number' ? qty > 0 : true
+      })
+    const availability = anyVariantAvailable
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock'
+
     let offers: ProductOffer | ProductAggregateOffer | undefined
     if (isPOD && prices.length > 1 && lowPrice !== null && highPrice !== null) {
       offers = {
@@ -84,14 +123,14 @@ export function useProductSchema(input: UseProductSchemaInput): {
         highPrice: (highPrice / 100).toFixed(2),
         priceCurrency: currency,
         offerCount: variants.length,
-        availability: 'https://schema.org/InStock',
+        availability,
       }
     } else if (prices.length && lowPrice !== null) {
       offers = {
         '@type': 'Offer',
         price: (lowPrice / 100).toFixed(2),
         priceCurrency: currency,
-        availability: 'https://schema.org/InStock',
+        availability,
         url: input.url,
       }
     }

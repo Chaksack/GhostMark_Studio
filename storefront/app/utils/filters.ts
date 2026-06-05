@@ -120,69 +120,38 @@ export function sortLabel(value: string): string {
 }
 
 /**
- * Resolve product-type IDs (e.g. `apparel`, `pod`) once per session and cache
- * them in `useState` so every PLP that needs to filter by `type_id` shares
- * the same lookup. Medusa's Store API exposes `type_id` as the canonical
- * filter param (per Context7 docs), but `type.value` is the human-friendly
- * slug we author against in seed data + chip taxonomy. This bridges the two.
+ * Legacy shim — the canonical implementation now lives in
+ * {@link useProductTypes} (`~/composables/useProductTypes`). This wrapper
+ * preserves the original `{ typeIds, ensureTypeIds, ready }` contract used
+ * by `/shop` and `/shop/canon` so they continue to compile while the next
+ * round of refactor migrates them to call `useProducts({ type: 'apparel' })`
+ * directly.
  *
- * Strategy:
- *   1. Try the dedicated product-types endpoint (`sdk.store.productType.list`).
- *      Some Medusa builds expose it on the Store API, others gate it to admin.
- *   2. Fallback: page through products with `*type` expanded and harvest the
- *      types from the response. Capped at one round-trip (50 products) so we
- *      don't blow the SSR budget — the catalogue's only 2 types today.
- *   3. If both fail, leave the cache empty. Callers that depend on a specific
- *      type ID should defensively client-side filter by `type.value` instead.
+ * The returned `typeIds` is a `ComputedRef<Record<string, string | null>>`
+ * that mirrors the new map. Legacy callers reading `typeIds.value['apparel']`
+ * still work — they just get the value from the new state container.
  *
- * The cache key is a plain object (`{ apparel: 'ptyp_…', pod: 'ptyp_…' }`)
- * because Medusa's type catalog is tiny — a Map would be overkill. Lookups
- * are case-insensitive (key is always lowercased on write).
+ * Do not add new callers — use `useProductTypes` (or, better, `useProducts`)
+ * for new code.
+ *
+ * @deprecated use `useProductTypes` from `~/composables/useProductTypes`
  */
 export function useProductTypeIds() {
-  const typeIds = useState<Record<string, string | null>>('gms_product_type_ids', () => ({}))
+  const inner = useProductTypes()
   const ready = useState<boolean>('gms_product_type_ids_ready', () => false)
 
+  const typeIds = computed<Record<string, string | null>>(() => {
+    const m = inner.map.value
+    return {
+      apparel: m.apparel ?? null,
+      pod: m.pod ?? null,
+    }
+  })
+
   async function ensureTypeIds(): Promise<Record<string, string | null>> {
-    if (ready.value) return typeIds.value
-    const sdk: any = useMedusaClient()
-
-    // 1. Preferred path: the dedicated product-types endpoint.
-    try {
-      if (sdk?.store?.productType?.list) {
-        const res: any = await sdk.store.productType.list({ limit: 50 })
-        const types: any[] = res?.product_types ?? []
-        const map: Record<string, string | null> = {}
-        for (const t of types) {
-          if (t?.value && t?.id) map[String(t.value).toLowerCase()] = t.id as string
-        }
-        if (Object.keys(map).length) {
-          typeIds.value = map
-          ready.value = true
-          return map
-        }
-      }
-    }
-    catch {
-      // Endpoint not exposed on Store API — fall through to harvest.
-    }
-
-    // 2. Fallback: harvest types from the product list itself.
-    try {
-      const res: any = await sdk.store.product.list({ limit: 50, fields: 'id,*type' })
-      const map: Record<string, string | null> = {}
-      for (const p of res?.products ?? []) {
-        const t = p?.type
-        if (t?.value && t?.id) map[String(t.value).toLowerCase()] = t.id as string
-      }
-      typeIds.value = map
-      ready.value = true
-      return map
-    }
-    catch {
-      ready.value = true
-      return typeIds.value
-    }
+    await inner.ensureResolved()
+    ready.value = true
+    return typeIds.value
   }
 
   return { typeIds, ensureTypeIds, ready }

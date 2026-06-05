@@ -231,6 +231,9 @@
         <aside v-if="step < 3" class="rounded-2xl border border-zinc-200 bg-white p-6 lg:sticky lg:top-28">
           <h2 class="text-[18px] font-semibold text-zinc-950">Order summary</h2>
 
+          <!-- Mixed-mode delivery banner — renders only when the cart spans POD + apparel -->
+          <CartModeBanner :items="cartItems" class="mt-4 mb-0" />
+
           <div class="mt-4 max-h-[300px] divide-y divide-zinc-100 overflow-y-auto">
             <div v-for="item in cartItems" :key="item.id" class="flex gap-3 py-3">
               <div class="h-[56px] w-[56px] flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100">
@@ -262,6 +265,11 @@
               <span class="text-zinc-500">Taxes</span>
               <span class="text-zinc-500">{{ cartTax || 'Included' }}</span>
             </div>
+            <!-- Estimated delivery — copy branches on cart mode (all-apparel / all-pod / mixed) -->
+            <div v-if="cartItems.length" class="flex items-baseline justify-between gap-3 text-[14px]">
+              <span class="text-zinc-500">Estimated delivery</span>
+              <span class="text-right text-zinc-700">{{ estimatedDeliveryText }}</span>
+            </div>
           </div>
 
           <div class="mt-3 flex items-baseline justify-between border-t border-zinc-200 pt-3">
@@ -283,6 +291,7 @@ import type {
   StripeCardElementChangeEvent,
 } from '@stripe/stripe-js'
 import UiSpinner from '~/components/ui/UiSpinner.vue'
+import CartModeBanner from '~/components/cart/CartModeBanner.vue'
 
 useHead({ title: 'Checkout' })
 const sdk = useMedusaClient()
@@ -344,6 +353,59 @@ const cartSubtotal = computed(() => formatMoney((cart.value as any)?.subtotal) |
 const cartShipping = computed(() => formatMoney((cart.value as any)?.shipping_total) || null)
 const cartTax = computed(() => formatMoney((cart.value as any)?.tax_total) || null)
 const cartTotal = computed(() => formatMoney((cart.value as any)?.total) || cartSubtotal.value)
+
+// ---------------------------------------------------------------------------
+// Cart mode classification (mirrors CartDropdown.inferMode + CartModeBanner).
+// Drives the estimated-delivery copy below: all-apparel cart shows the fast
+// D2C ETA, all-POD cart shows the e-proof + production ETA, mixed defers to
+// the banner above the line items so we don't double-narrate.
+// ---------------------------------------------------------------------------
+const POD_MOQ_FALLBACK = 25
+type CartLineMode = 'pod' | 'apparel'
+
+const inferMode = (item: any): CartLineMode => {
+  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
+  if (productType === 'pod') return 'pod'
+  if (productType === 'apparel') return 'apparel'
+
+  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (lineMode === 'pod') return 'pod'
+  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
+
+  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (variantMode === 'pod') return 'pod'
+  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
+
+  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
+  if (productMeta === 'pod') return 'pod'
+  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
+
+  if (item?.metadata?.design_data) return 'pod'
+  if (item?.metadata?.preview_url) return 'pod'
+  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
+
+  return 'apparel'
+}
+
+const cartMode = computed<'pod' | 'apparel' | 'mixed' | 'empty'>(() => {
+  if (!cartItems.value.length) return 'empty'
+  const modes = new Set(cartItems.value.map(inferMode))
+  if (modes.size >= 2) return 'mixed'
+  return modes.has('pod') ? 'pod' : 'apparel'
+})
+
+const estimatedDeliveryText = computed(() => {
+  switch (cartMode.value) {
+    case 'apparel':
+      return '2-5 business days'
+    case 'pod':
+      return '3-5 weeks (48h e-proof + 2-4 weeks production)'
+    case 'mixed':
+      return 'Two delivery tracks - see banner above'
+    default:
+      return ''
+  }
+})
 
 // Shipping
 const savingShip = ref(false)

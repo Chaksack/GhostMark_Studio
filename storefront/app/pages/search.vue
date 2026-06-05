@@ -1,14 +1,24 @@
 <script setup lang="ts">
 /**
- * /search — full-page search results, fed by `?q=`.
+ * /search — full-page search results, fed by `?q=` and (v22) `?type=`.
  *
- * Reads the `q` query param reactively (so the same page handles
- * navigation between successive searches without remount) and calls
- * `sdk.store.product.list({ q, limit: 24 })`. Failures collapse to
- * an empty result set so the page never throws — the empty state
- * handles "no match" and "backend down" identically.
+ * Reads the `q` query param reactively (so the same page handles navigation
+ * between successive searches without remount) and calls
+ * `sdk.store.product.list({ q, limit: 24 })`. Failures collapse to an empty
+ * result set so the page never throws — the empty state handles "no match"
+ * and "backend down" identically.
  *
  * The header form posts to /search?q=... so URLs are shareable.
+ *
+ * v22 — Type-aware narrowing:
+ *   `?type=pod` and `?type=apparel` mirror the `/products` PLP scoping so
+ *   /search?q=tee&type=apparel returns only the D2C own-brand tees, and
+ *   /search?q=tote&type=pod returns only the custom-print catalog. Slug →
+ *   type_id resolution goes through `useProductTypes`. When the resolver
+ *   hasn't returned an id yet (cold cache, endpoint not exposed), we fall
+ *   back to a client-side `product.type.value` filter so the page never
+ *   accidentally renders mixed types. The `q` parameter is OR-combined by
+ *   the SDK with `type_id`, so the two filters compose additively.
  */
 defineOptions({ name: 'PageSearch' })
 
@@ -31,6 +41,26 @@ const queryParam = computed<string>(() => {
   return (raw ?? '').toString().trim()
 })
 
+// `?type=pod|apparel` — symmetric with the /products PLP. Anything else is
+// treated as no filter so a typo doesn't collapse the result set to zero.
+const typeFilter = computed<'pod' | 'apparel' | null>(() => {
+  const raw = route.query.type
+  const v = (Array.isArray(raw) ? raw[0] : raw)?.toString().toLowerCase() ?? ''
+  if (v === 'pod' || v === 'apparel') return v
+  return null
+})
+
+// Resolve slug → type_id once. Same pattern as /products/index.vue so the
+// two surfaces share the cached resolution and never double-fetch.
+const typeRes = useProductTypes()
+await typeRes.ensureResolved()
+
+const activeTypeId = computed<string | undefined>(() => {
+  if (typeFilter.value === 'pod') return typeRes.podId.value
+  if (typeFilter.value === 'apparel') return typeRes.apparelId.value
+  return undefined
+})
+
 useHead(() => ({
   title: queryParam.value
     ? `Search · ${queryParam.value} · GhostMark Studio`
@@ -48,33 +78,58 @@ useHead(() => ({
   ],
 }))
 
-// Reactive fetch keyed by the query string. `useAsyncData`'s third-arg
-// `watch` re-runs the handler whenever `queryParam` changes, so client-side
-// navigation /search?q=tee -> /search?q=hat refreshes results without an
-// SSR round-trip.
+// Reactive fetch keyed by the query string + type filter. `useAsyncData`'s
+// `watch` re-runs the handler whenever queryParam OR typeFilter OR the
+// resolved type_id changes, so client-side navigation
+// /search?q=tee -> /search?q=tee&type=pod refreshes results without an SSR
+// round-trip. `*type` is added to `fields` so the resulting ProductCard
+// chip overlay (which reads product.type.value) renders correctly without
+// a second fetch.
 const { data, pending, error } = await useAsyncData(
   'search-results',
   async () => {
     const q = queryParam.value
     if (!q) return { products: [] as any[] }
     try {
-      const res = await sdk.store.product.list({
+      const args: Record<string, unknown> = {
         q,
         limit: 24,
-        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags',
-        ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
-      } as any)
+        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
+      }
+      if (regionState.regionId.value) args.region_id = regionState.regionId.value
+      if (activeTypeId.value) args.type_id = [activeTypeId.value]
+      const res = await sdk.store.product.list(args as any)
       return { products: res.products ?? [] }
     }
     catch {
       return { products: [] as any[] }
     }
   },
-  { watch: [queryParam, () => regionState.regionId.value] },
+  { watch: [queryParam, () => regionState.regionId.value, typeFilter, activeTypeId] },
 )
 
-const products = computed(() => (data.value?.products ?? []) as any[])
+// Defensive client-side narrowing for the case where ?type= is set but the
+// type-id resolver hasn't returned yet (cold cache / endpoint unavailable).
+// Mirrors the fallback in /products/index.vue so search never leaks mixed
+// types just because the lookup is unresolved.
+const products = computed(() => {
+  const list = (data.value?.products ?? []) as any[]
+  if (typeFilter.value && !activeTypeId.value) {
+    return list.filter(
+      p => (p?.type?.value as string | undefined)?.toLowerCase() === typeFilter.value,
+    )
+  }
+  return list
+})
 const count = computed<number>(() => products.value.length)
+
+// Headline suffix so users can tell at-a-glance whether they're searching
+// inside a type-narrowed scope or the full catalogue.
+const scopeLabel = computed(() => {
+  if (typeFilter.value === 'pod') return ' in Customise & POD'
+  if (typeFilter.value === 'apparel') return ' in Studio Canon'
+  return ''
+})
 </script>
 
 <template>
@@ -88,14 +143,14 @@ const count = computed<number>(() => products.value.length)
     >
       <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
-          Search
+          Search{{ scopeLabel }}
         </p>
         <h1
           id="search-hero-heading"
           class="font-display text-display-lg font-normal text-ink-950"
         >
           <template v-if="queryParam">
-            Search results for &lsquo;{{ queryParam }}&rsquo;
+            Search results for &lsquo;{{ queryParam }}&rsquo;{{ scopeLabel }}
             &middot; {{ count }} {{ count === 1 ? 'product' : 'products' }}
           </template>
           <template v-else>
@@ -149,7 +204,7 @@ const count = computed<number>(() => products.value.length)
             No matches
           </p>
           <h3 class="font-display text-display-md font-normal text-ink-950">
-            No products match &lsquo;{{ queryParam }}&rsquo;.
+            No products match &lsquo;{{ queryParam }}&rsquo;{{ scopeLabel }}.
           </h3>
           <p class="font-body text-body text-ink-700">
             Try different keywords, or browse the full catalog.

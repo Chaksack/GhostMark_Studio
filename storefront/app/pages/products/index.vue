@@ -291,18 +291,54 @@ function onClearFilters() {
 // silently strips every price tag from the grid.
 await regionState.ensureRegion()
 
-// Keyed per (page, region) so navigating pages or switching region triggers
-// a fresh fetch instead of replaying a stale cached payload. Medusa returns
-// `count` as the unfiltered total — we lean on it for `totalPages`.
+// `?type=pod` filter — entry point for the B2B / POD catalogue from the
+// hero CTA, mobile burger, and desktop nav. Filter is server-side via
+// `type_id` so pagination math (count + offset) lines up. Apparel filter
+// is symmetric (?type=apparel) for completeness, though the `/shop` route
+// is the canonical apparel surface. Declared BEFORE the SDK call so its
+// reactive value can be folded into the cache key + watcher list.
+const typeFilter = computed<'pod' | 'apparel' | null>(() => {
+  const raw = route.query.type
+  const v = (Array.isArray(raw) ? raw[0] : raw)?.toString().toLowerCase() ?? ''
+  if (v === 'pod' || v === 'apparel') return v
+  return null
+})
+
+// Resolve the slug→type_id map ONCE so the SDK call below can pass
+// `type_id: [id]` and let Medusa narrow the page server-side. If the
+// resolver fails (endpoint not exposed, harvest empty), `apparelId` /
+// `podId` stay undefined and we fall back to a client-side filter on
+// `product.type.value` so the page never accidentally renders mixed types.
+const typeRes = useProductTypes()
+await typeRes.ensureResolved()
+
+// Active type_id for the current `?type=...` query — undefined when either
+// the URL has no filter OR the resolver couldn't map the slug. The
+// computed feeds both the cache key (so navigation between modes refetches)
+// and the SDK args below.
+const activeTypeId = computed<string | undefined>(() => {
+  if (typeFilter.value === 'pod') return typeRes.podId.value
+  if (typeFilter.value === 'apparel') return typeRes.apparelId.value
+  return undefined
+})
+
+// Keyed per (page, type, region) so navigating pages OR switching the type
+// query OR switching region all trigger a fresh fetch instead of replaying
+// a stale cached payload. When a `type_id` is included on the request,
+// Medusa's `count` is the filtered total — so `totalPages` stays correct.
 const { data, pending, error } = await useAsyncData(
-  () => `products-${currentPage.value}-${regionState.regionId.value ?? 'no-region'}`,
-  async () => sdk.store.product.list({
-    limit: PAGE_SIZE,
-    offset: (currentPage.value - 1) * PAGE_SIZE,
-    fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
-    ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
-  } as any),
-  { watch: [() => currentPage.value, () => regionState.regionId.value] },
+  () => `products-${currentPage.value}-${typeFilter.value ?? 'all'}-${activeTypeId.value ?? 'unresolved'}-${regionState.regionId.value ?? 'no-region'}`,
+  async () => {
+    const args: Record<string, unknown> = {
+      limit: PAGE_SIZE,
+      offset: (currentPage.value - 1) * PAGE_SIZE,
+      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
+    }
+    if (regionState.regionId.value) args.region_id = regionState.regionId.value
+    if (activeTypeId.value) args.type_id = [activeTypeId.value]
+    return sdk.store.product.list(args as any)
+  },
+  { watch: [() => currentPage.value, () => regionState.regionId.value, typeFilter, activeTypeId] },
 )
 
 const products = computed(() => (data.value as any)?.products ?? [])
@@ -321,25 +357,16 @@ const visiblePages = computed<(number | string)[]>(() => {
   return [1, '...', cur - 1, cur, cur + 1, '...', tot]
 })
 
-// `?type=pod` filter — entry point for the B2B / POD catalogue from the
-// hero CTA, mobile burger, and desktop nav. Filter is client-side because
-// resolving `type_id` from the storefront SDK requires a separate round
-// trip; the page is paged at PAGE_SIZE=24 so the slice cost is bounded.
-// Apparel filter is symmetric (?type=apparel) for completeness, though the
-// `/shop` route is the canonical apparel surface.
-const typeFilter = computed<'pod' | 'apparel' | null>(() => {
-  const raw = route.query.type
-  const v = (Array.isArray(raw) ? raw[0] : raw)?.toString().toLowerCase() ?? ''
-  if (v === 'pod' || v === 'apparel') return v
-  return null
-})
-
-// Filter THEN sort so sort applies to the type-narrowed list.
+// Sort is the only client-side step now — `type_id` is applied server-side
+// above when the resolver maps the slug. Defensive fallback: if the slug→id
+// lookup failed (resolver couldn't reach the backend, harvest came back
+// empty), narrow client-side on `product.type.value` so the page never
+// accidentally renders mixed types just because the lookup is unresolved.
 const sortedProducts = computed(() => {
-  const filtered = typeFilter.value
+  const list = (typeFilter.value && !activeTypeId.value)
     ? products.value.filter((p: any) => (p?.type?.value as string | undefined)?.toLowerCase() === typeFilter.value)
     : products.value
-  return applySort(filtered, sortBy.value)
+  return applySort(list, sortBy.value)
 })
 
 // H1 + intro flip when in POD-mode so the page reads as the B2B catalogue.

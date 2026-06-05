@@ -84,20 +84,37 @@ const regionState = useRegion()
 // RecentlyAdded grids on the homepage. Same fix as `/products`.
 await regionState.ensureRegion()
 
+// Resolve the apparel type_id so BestSellers can be server-narrowed. The
+// band only renders D2C-flavoured pieces (per the section comment above),
+// so server-side filtering keeps the response tight (10 apparel items vs
+// 10 mixed-then-filtered-to-maybe-3). If the resolver can't map the slug
+// (endpoint not exposed, harvest empty), `apparelId` stays undefined and
+// we fall back to the existing client-side `apparelOnly` filter below.
+const typeRes = useProductTypes()
+await typeRes.ensureResolved()
+const apparelTypeId = computed<string | undefined>(() => typeRes.apparelId.value)
+
 // `*type` is appended to the field selection so `product.type.value` is
 // hydrated client-side. Without it, the apparel/pod split below silently
 // returns empty arrays and the BestSellers band collapses. Same shape the
 // PLP uses, kept aligned on purpose.
 const PRODUCT_LIST_FIELDS = 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags,*type'
 
+// BestSellers band is apparel-only — pass `type_id` so the backend does
+// the narrowing. Cache key includes `apparelTypeId` so the request refetches
+// if the resolver lands its result after first render (SSR vs CSR drift).
 const { data: bestSellerData } = await useAsyncData(
-  'home:best-sellers',
-  async () => sdk.store.product.list({
-    limit: 10,
-    fields: PRODUCT_LIST_FIELDS,
-    ...(regionState.regionId.value ? { region_id: regionState.regionId.value } : {}),
-  } as any),
-  { watch: [() => regionState.regionId.value] },
+  () => `home:best-sellers-${apparelTypeId.value ?? 'unresolved'}-${regionState.regionId.value ?? 'no-region'}`,
+  async () => {
+    const args: Record<string, unknown> = {
+      limit: 10,
+      fields: PRODUCT_LIST_FIELDS,
+    }
+    if (regionState.regionId.value) args.region_id = regionState.regionId.value
+    if (apparelTypeId.value) args.type_id = [apparelTypeId.value]
+    return sdk.store.product.list(args as any)
+  },
+  { watch: [() => regionState.regionId.value, apparelTypeId] },
 )
 
 const { data: recentData } = await useAsyncData(
@@ -115,16 +132,21 @@ const bestSellers = computed(() => ((bestSellerData.value as any)?.products ?? [
 const recentProducts = computed(() => ((recentData.value as any)?.products ?? []) as any[])
 
 /**
- * Type-narrowing helper. Backend taxonomy (see project_product_taxonomy memo)
- * uses `product.type.value` of either 'apparel' (D2C buy-as-is) or 'pod'
- * (upload + MOQ flow). We branch on the explicit value rather than guessing
- * by handle/title heuristics. Lower-cased for tolerance against admin-side
- * casing drift.
+ * Defensive client-side narrowing. Backend taxonomy (see
+ * project_product_taxonomy memo) uses `product.type.value` of either
+ * 'apparel' (D2C buy-as-is) or 'pod' (upload + MOQ flow). When the
+ * `type_id` lookup resolves, Medusa has already filtered — `apparelOnly`
+ * is a no-op. When the lookup fails, this keeps the BestSellers band
+ * accurate instead of leaking POD items into the D2C rail.
  */
 const apparelOnly = (list: any[]) =>
   list.filter((p) => p?.type?.value?.toLowerCase() === 'apparel')
 
-const bestSellersApparel = computed(() => apparelOnly(bestSellers.value))
+// If the SDK was filtered server-side, the list is already apparel-only and
+// the client filter is a cheap pass-through. If unresolved, this narrows.
+const bestSellersApparel = computed(() => (
+  apparelTypeId.value ? bestSellers.value : apparelOnly(bestSellers.value)
+))
 
 onMounted(() => {
   useCart().ensureCart()
