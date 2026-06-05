@@ -56,3 +56,4 @@ crash.log
 
 # Pre-rename leftover (delete folder once migration is finalized)
 /ghostmark/
+.yarn/*

@@ -1,0 +1,437 @@
+- generic [ref=e3]:
+  - banner "navigation desktop" [ref=e4]:
+    - navigation [ref=e5]:
+      - link "Home" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - text: GhostMark
+      - generic [ref=e7]:
+        - generic [ref=e8]: Search for a product
+        - searchbox "Search for a product" [ref=e9]
+        - button "Search" [ref=e10] [cursor=pointer]:
+          - img [ref=e11]
+      - generic [ref=e15]:
+        - button "Wishlist" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - link "Cart" [ref=e21] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e22]
+        - button "Open account login modal" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+  - navigation "Categories" [ref=e32]:
+    - generic [ref=e33]:
+      - link "Shop" [ref=e34] [cursor=pointer]:
+        - /url: /shop
+      - link "Studio (POD)" [ref=e35] [cursor=pointer]:
+        - /url: /products?type=pod
+      - button "Apparel" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: Apparel
+        - img [ref=e41]
+      - button "Bags" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: Bags
+        - img [ref=e47]
+      - button "Headwear" [ref=e50] [cursor=pointer]:
+        - generic [ref=e51]: Headwear
+        - img [ref=e53]
+      - button "Office" [ref=e56] [cursor=pointer]:
+        - generic [ref=e57]: Office
+        - img [ref=e59]
+      - button "Drinkware" [ref=e62] [cursor=pointer]:
+        - generic [ref=e63]: Drinkware
+        - img [ref=e65]
+      - button "Home" [ref=e68] [cursor=pointer]:
+        - generic [ref=e69]: Home
+        - img [ref=e71]
+      - button "Wellness" [ref=e74] [cursor=pointer]:
+        - generic [ref=e75]: Wellness
+        - img [ref=e77]
+      - button "Others" [ref=e80] [cursor=pointer]:
+        - generic [ref=e81]: Others
+        - img [ref=e83]
+      - button "Discover" [ref=e86] [cursor=pointer]:
+        - generic [ref=e87]: Discover
+        - img [ref=e89]
+      - button "Brands" [ref=e92] [cursor=pointer]:
+        - generic [ref=e93]: Brands
+        - img [ref=e95]
+  - main [ref=e97]:
+    - generic [ref=e98]:
+      - generic [ref=e100]:
+        - img "Model wearing the Atelier Hoodie in cream — GhostMark Studio editorial hero" [ref=e101]
+        - generic [ref=e102]: Studio — est. Bordeaux
+        - generic [ref=e103]:
+          - heading "Objects we design. Objects we make for you." [level=1] [ref=e104]
+          - paragraph [ref=e105]: Shop the Studio Canon — or bring your artwork. From £18 / piece, MOQ 25 on custom · POD on the rest.
+          - generic [ref=e106]:
+            - link "Shop the Studio Canon — apparel sold as-is" [ref=e107] [cursor=pointer]:
+              - /url: /shop
+              - text: Shop the Studio Canon
+              - img [ref=e108]
+            - link "Customise and print on demand — upload your artwork" [ref=e110] [cursor=pointer]:
+              - /url: /products?type=pod
+              - text: Customise & POD
+          - generic [ref=e111]:
+            - generic [ref=e112]: Designed in Bordeaux
+            - generic [ref=e113]: ·
+            - generic [ref=e114]: Apparel from £18
+            - generic [ref=e115]: ·
+            - generic [ref=e116]: Custom from MOQ 25
+            - generic [ref=e117]: ·
+            - generic [ref=e118]: E-proof in 48h
+        - generic: Studio Canon · 2026
+      - generic [ref=e120]:
+        - img "WeTransfer logo" [ref=e121]
+        - img "Deliveroo logo" [ref=e122]
+        - img "Spotify logo" [ref=e123]
+        - img "Oatly logo" [ref=e124]
+        - img "Highsnobiety logo" [ref=e125]
+        - img "Dior logo" [ref=e126]
+        - img "Accenture logo" [ref=e127]
+        - img "Bain & Company logo" [ref=e128]
+        - img "Caudalie logo" [ref=e129]
+        - img "Deloitte logo" [ref=e130]
+        - img "WeTransfer logo" [ref=e131]
+        - img "Deliveroo logo" [ref=e132]
+        - img "Spotify logo" [ref=e133]
+        - img "Oatly logo" [ref=e134]
+        - img "Highsnobiety logo" [ref=e135]
+        - img "Dior logo" [ref=e136]
+        - img "Accenture logo" [ref=e137]
+        - img "Bain & Company logo" [ref=e138]
+        - img "Caudalie logo" [ref=e139]
+        - img "Deloitte logo" [ref=e140]
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - heading "Our best sellers" [level=2] [ref=e144]
+            - link "View all" [ref=e145] [cursor=pointer]:
+              - /url: /products
+          - list
+          - list [ref=e146]:
+            - listitem [ref=e147]
+            - listitem [ref=e151]
+            - listitem [ref=e155]
+            - listitem [ref=e159]
+            - listitem [ref=e163]
+            - listitem [ref=e167]
+            - listitem [ref=e171]
+            - listitem [ref=e175]
+            - listitem [ref=e179]
+            - listitem [ref=e183]
+            - listitem [ref=e187]
+            - listitem [ref=e191]
+        - region "As real as it gets." [ref=e195]:
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - paragraph [ref=e198]: Our products in real life
+              - heading "As real as it gets." [level=2] [ref=e199]
+              - paragraph [ref=e200]: Studios, agencies and teams send us their marks. We send them objects that outlast the campaign. A small selection from the canon.
+            - generic [ref=e201]:
+              - article [ref=e202]:
+                - 'link "View case study: Onboarding kit for 200 new hires" [ref=e203] [cursor=pointer]':
+                  - /url: /case-studies/fielddesk-onboarding
+                - img "Folded charcoal tee with embroidered logo, on a desk with notebook and pen" [ref=e204]
+                - generic [ref=e205]:
+                  - paragraph [ref=e206]: FieldDesk
+                  - heading "Onboarding kit for 200 new hires" [level=3] [ref=e207]
+              - article [ref=e208]:
+                - 'link "View case study: Launch totes for SS26" [ref=e209] [cursor=pointer]':
+                  - /url: /case-studies/opal-launch
+                - img "Cream canvas tote bag with screen-printed crest" [ref=e210]
+                - generic [ref=e211]:
+                  - paragraph [ref=e212]: Opal Studio
+                  - heading "Launch totes for SS26" [level=3] [ref=e213]
+              - article [ref=e214]:
+                - 'link "View case study: Event kit · 3 cities, 3 weeks" [ref=e215] [cursor=pointer]':
+                  - /url: /case-studies/thirdspace-events
+                - img "Hooded sweatshirt with embroidered chest hit" [ref=e216]
+                - generic [ref=e217]:
+                  - paragraph [ref=e218]: Thirdspace
+                  - heading "Event kit · 3 cities, 3 weeks" [level=3] [ref=e219]
+              - article [ref=e220]:
+                - 'link "View case study: Press-week mini drops" [ref=e221] [cursor=pointer]':
+                  - /url: /case-studies/parallel-press
+                - img "Five-panel cap with woven label" [ref=e222]
+                - generic [ref=e223]:
+                  - paragraph [ref=e224]: Parallel
+                  - heading "Press-week mini drops" [level=3] [ref=e225]
+              - article [ref=e226]:
+                - 'link "View case study: Recruit-week welcome packs" [ref=e227] [cursor=pointer]':
+                  - /url: /case-studies/mortara-recruit
+                - img "Sticker pack with embossed seal" [ref=e228]
+                - generic [ref=e229]:
+                  - paragraph [ref=e230]: Mortara
+                  - heading "Recruit-week welcome packs" [level=3] [ref=e231]
+              - article [ref=e232]:
+                - 'link "View case study: Quarterly merch for subscribers" [ref=e233] [cursor=pointer]':
+                  - /url: /case-studies/kew-quarterly
+                - img "Cream-coloured short-sleeve tee on hanger" [ref=e234]
+                - generic [ref=e235]:
+                  - paragraph [ref=e236]: Kew Quarterly
+                  - heading "Quarterly merch for subscribers" [level=3] [ref=e237]
+        - region "Discover" [ref=e238]:
+          - generic [ref=e239]:
+            - generic [ref=e240]:
+              - heading "Discover" [level=2] [ref=e241]
+              - paragraph [ref=e242]: Curated shelves
+            - link "All shelves →" [ref=e243] [cursor=pointer]:
+              - /url: /discover
+          - generic [ref=e244]:
+            - link "Best sellers Ranked by re-buy rate, not by margin. Explore the shelf →" [ref=e245] [cursor=pointer]:
+              - /url: /discover/best-sellers
+              - generic [ref=e247]:
+                - heading "Best sellers" [level=3] [ref=e248]
+                - paragraph [ref=e249]: Ranked by re-buy rate, not by margin.
+                - generic [ref=e250]: Explore the shelf →
+            - link "New hires kit A tee, a mug, a notebook, a tote — proportioned as a set. Explore the shelf →" [ref=e251] [cursor=pointer]:
+              - /url: /discover/new-hires
+              - generic [ref=e253]:
+                - heading "New hires kit" [level=3] [ref=e254]
+                - paragraph [ref=e255]: A tee, a mug, a notebook, a tote — proportioned as a set.
+                - generic [ref=e256]: Explore the shelf →
+            - link "Holiday picks Order by mid-November to hit doormats before December 24. Explore the shelf →" [ref=e257] [cursor=pointer]:
+              - /url: /discover/holiday
+              - generic [ref=e259]:
+                - heading "Holiday picks" [level=3] [ref=e260]
+                - paragraph [ref=e261]: Order by mid-November to hit doormats before December 24.
+                - generic [ref=e262]: Explore the shelf →
+        - generic [ref=e264]:
+          - generic [ref=e265]:
+            - figure "Studio team · Internal beta tester" [ref=e267]:
+              - blockquote [ref=e268]: “Built to spec, on time, every time. The print quality is exactly what our team needed for the launch event.”
+              - generic [ref=e269]: Studio team · Internal beta tester
+            - figure "Studio team · Internal beta tester" [ref=e271]:
+              - blockquote [ref=e272]: “The level of finish is unusual at this price point. We've ordered four runs and the quality has been consistent.”
+              - generic [ref=e273]: Studio team · Internal beta tester
+            - figure "Studio team · Internal beta tester" [ref=e275]:
+              - blockquote [ref=e276]: “From file upload to delivery, the process was simple. The mockup preview matched what showed up in the box.”
+              - generic [ref=e277]: Studio team · Internal beta tester
+          - generic [ref=e278]:
+            - button "Go to testimonial 1" [ref=e279] [cursor=pointer]
+            - button "Go to testimonial 2" [ref=e281] [cursor=pointer]
+            - button "Go to testimonial 3" [ref=e283] [cursor=pointer]
+        - generic [ref=e285]:
+          - generic [ref=e286]:
+            - heading "Recently added" [level=2] [ref=e287]
+            - link "View all" [ref=e288] [cursor=pointer]:
+              - /url: /products
+          - list
+          - list [ref=e289]:
+            - listitem [ref=e290]
+            - listitem [ref=e294]
+            - listitem [ref=e298]
+            - listitem [ref=e302]
+            - listitem [ref=e306]
+            - listitem [ref=e310]
+            - listitem [ref=e314]
+            - listitem [ref=e318]
+            - listitem [ref=e322]
+            - listitem [ref=e326]
+            - listitem [ref=e330]
+            - listitem [ref=e334]
+        - generic [ref=e338]:
+          - complementary "Frequently asked questions" [ref=e339]:
+            - generic [ref=e340]:
+              - heading "Frequently asked questions" [level=2] [ref=e341]
+              - paragraph [ref=e342]: Need some help? Browse through our summary of the most frequently asked questions about shipping, returns, samples, sourcing, pricing, and many more!
+              - link "View more" [ref=e344] [cursor=pointer]:
+                - /url: /faq
+            - generic [ref=e345]:
+              - heading "Is it possible to put different items into gift boxes?" [level=3] [ref=e347]:
+                - button "Is it possible to put different items into gift boxes?" [ref=e348] [cursor=pointer]:
+                  - generic [ref=e349]: Is it possible to put different items into gift boxes?
+              - heading "How can I find out more about your products?" [level=3] [ref=e355]:
+                - button "How can I find out more about your products?" [ref=e356] [cursor=pointer]:
+                  - generic [ref=e357]: How can I find out more about your products?
+              - heading "Will it be possible to see the e-proof before my order goes into production?" [level=3] [ref=e363]:
+                - button "Will it be possible to see the e-proof before my order goes into production?" [ref=e364] [cursor=pointer]:
+                  - generic [ref=e365]: Will it be possible to see the e-proof before my order goes into production?
+              - heading "Is it possible to shorten the lead time for production?" [level=3] [ref=e371]:
+                - button "Is it possible to shorten the lead time for production?" [ref=e372] [cursor=pointer]:
+                  - generic [ref=e373]: Is it possible to shorten the lead time for production?
+              - heading "Why are your prices not fixed and vary within a range?" [level=3] [ref=e379]:
+                - button "Why are your prices not fixed and vary within a range?" [ref=e380] [cursor=pointer]:
+                  - generic [ref=e381]: Why are your prices not fixed and vary within a range?
+              - heading "Can you ship the merch to multiple addresses?" [level=3] [ref=e387]:
+                - button "Can you ship the merch to multiple addresses?" [ref=e388] [cursor=pointer]:
+                  - generic [ref=e389]: Can you ship the merch to multiple addresses?
+              - heading "Where do you ship?" [level=3] [ref=e395]:
+                - button "Where do you ship?" [ref=e396] [cursor=pointer]:
+                  - generic [ref=e397]: Where do you ship?
+              - heading "What is the minimum order quantity (MOQ)?" [level=3] [ref=e403]:
+                - button "What is the minimum order quantity (MOQ)?" [ref=e404] [cursor=pointer]:
+                  - generic [ref=e405]: What is the minimum order quantity (MOQ)?
+          - complementary "Subscribe, and get access to exclusive news, sneak peeks on new launches." [ref=e410]:
+            - generic [ref=e411]:
+              - heading "Subscribe, and get access to exclusive news, sneak peeks on new launches." [level=2] [ref=e412]
+              - generic [ref=e413]:
+                - generic [ref=e414]:
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: Enter your email address
+                    - textbox "Enter your email address" [ref=e417]
+                  - button "Subscribe" [ref=e418] [cursor=pointer]
+                - paragraph [ref=e419]:
+                  - text: By subscribing you agree to receive occasional emails from GhostMark Studio. Unsubscribe anytime — see our
+                  - link "privacy policy" [ref=e420] [cursor=pointer]:
+                    - /url: /privacy
+                  - text: .
+  - contentinfo [ref=e421]:
+    - generic [ref=e423]:
+      - generic [ref=e424]:
+        - link "GhostMark — home" [ref=e425] [cursor=pointer]:
+          - /url: /
+          - text: GhostMark
+        - paragraph [ref=e426]: Branded objects for the kind of work people keep. Laser engraving, DTF print, and apparel finishing — one studio in Bordeaux.
+      - generic [ref=e427]:
+        - paragraph [ref=e428]: Get in touch
+        - link "hello@ghostmark.studio" [ref=e429] [cursor=pointer]:
+          - /url: mailto:hello@ghostmark.studio
+        - paragraph [ref=e430]: Studio · Bordeaux, France
+    - generic [ref=e432]:
+      - generic [ref=e433]:
+        - generic [ref=e434]: Follow us
+        - list [ref=e435]:
+          - listitem [ref=e436]:
+            - link "Instagram" [ref=e437] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+              - img [ref=e438]
+          - listitem [ref=e442]:
+            - link "LinkedIn" [ref=e443] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+              - img [ref=e444]
+          - listitem [ref=e446]:
+            - link "Pinterest" [ref=e447] [cursor=pointer]:
+              - /url: https://pinterest.com/ghostmarkstudio
+              - img [ref=e448]
+      - paragraph [ref=e450]: Based in Bordeaux. Designs shipped worldwide.
+    - generic [ref=e451]:
+      - navigation "Footer" [ref=e452]:
+        - generic [ref=e453]:
+          - heading "Company" [level=4] [ref=e454]
+          - list [ref=e455]:
+            - listitem [ref=e456]:
+              - link "About us" [ref=e457] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e458]:
+              - link "Sustainability" [ref=e459] [cursor=pointer]:
+                - /url: /sustainability
+            - listitem [ref=e460]:
+              - link "Value chain" [ref=e461] [cursor=pointer]:
+                - /url: /about/value-chain
+            - listitem [ref=e462]:
+              - link "People & culture" [ref=e463] [cursor=pointer]:
+                - /url: /about/people-and-culture
+            - listitem [ref=e464]:
+              - link "Press" [ref=e465] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e466]:
+          - heading "Shop" [level=4] [ref=e467]
+          - list [ref=e468]:
+            - listitem [ref=e469]:
+              - link "Shop all" [ref=e470] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e471]:
+              - link "Bespoke studio" [ref=e472] [cursor=pointer]:
+                - /url: /studio
+            - listitem [ref=e473]:
+              - link "Platform" [ref=e474] [cursor=pointer]:
+                - /url: /platform
+            - listitem [ref=e475]:
+              - link "Club & agencies" [ref=e476] [cursor=pointer]:
+                - /url: /club
+            - listitem [ref=e477]:
+              - link "Journal" [ref=e478] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e479]:
+          - heading "Help" [level=4] [ref=e480]
+          - list [ref=e481]:
+            - listitem [ref=e482]:
+              - link "Help center" [ref=e483] [cursor=pointer]:
+                - /url: /help
+            - listitem [ref=e484]:
+              - link "FAQ" [ref=e485] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e486]:
+              - link "Shipping" [ref=e487] [cursor=pointer]:
+                - /url: /shipping
+            - listitem [ref=e488]:
+              - link "Returns" [ref=e489] [cursor=pointer]:
+                - /url: /returns
+            - listitem [ref=e490]:
+              - link "Contact us" [ref=e491] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e492]:
+          - heading "Account" [level=4] [ref=e493]
+          - list [ref=e494]:
+            - listitem [ref=e495]:
+              - link "Preferences" [ref=e496] [cursor=pointer]:
+                - /url: /account
+            - listitem [ref=e497]:
+              - link "Orders" [ref=e498] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e499]:
+              - link "Invoices" [ref=e500] [cursor=pointer]:
+                - /url: /account/orders
+            - listitem [ref=e501]:
+              - link "Saved projects" [ref=e502] [cursor=pointer]:
+                - /url: /wishlist
+        - generic [ref=e503]:
+          - heading "Legal" [level=4] [ref=e504]
+          - list [ref=e505]:
+            - listitem [ref=e506]:
+              - link "Terms & conditions" [ref=e507] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e508]:
+              - link "Privacy policy" [ref=e509] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e510]:
+              - link "Cookies" [ref=e511] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e512]:
+              - link "Accessibility" [ref=e513] [cursor=pointer]:
+                - /url: /accessibility
+      - generic [ref=e514]:
+        - generic [ref=e515]:
+          - generic "Made in Europe" [ref=e516]:
+            - img [ref=e517]
+            - text: Made in Europe
+          - generic "Family-owned in Bordeaux" [ref=e520]:
+            - img [ref=e521]
+            - text: Family-owned in Bordeaux
+          - generic "Carbon-aware shipping" [ref=e524]:
+            - img [ref=e525]
+            - text: Carbon-aware shipping
+        - generic [ref=e527]:
+          - generic [ref=e528]: Secure payments
+          - list "Accepted payment methods" [ref=e529]:
+            - listitem [ref=e530]: VISA
+            - listitem [ref=e531]: MC
+            - listitem [ref=e532]: AMEX
+            - listitem [ref=e533]: PAYPAL
+            - listitem [ref=e534]: APPLE PAY
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - paragraph [ref=e537]: © 2026 GhostMark Studio · Bordeaux, France
+          - link "Change region or currency" [ref=e539] [cursor=pointer]:
+            - /url: /?region=open
+            - img [ref=e540]
+            - generic [ref=e543]: Choose region
+        - generic [ref=e544]:
+          - generic [ref=e545]:
+            - link "Instagram" [ref=e546] [cursor=pointer]:
+              - /url: https://instagram.com/ghostmarkstudio
+              - img [ref=e547]
+            - link "LinkedIn" [ref=e550] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/ghostmarkstudio
+              - img [ref=e551]
+            - link "Pinterest" [ref=e553] [cursor=pointer]:
+              - /url: https://pinterest.com/ghostmarkstudio
+              - img [ref=e554]
+            - link "X (formerly Twitter)" [ref=e556] [cursor=pointer]:
+              - /url: https://x.com/ghostmarkstudio
+              - img [ref=e557]
+          - link "Privacy" [ref=e560] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e561] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookies" [ref=e562] [cursor=pointer]:
+            - /url: /cookies

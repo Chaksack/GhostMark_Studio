@@ -1,0 +1,136 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - heading "500" [level=1] [ref=e5]
+    - heading "Server Error" [level=2] [ref=e6]
+    - paragraph [ref=e7]: IPC connection closed
+  - status [ref=e8]
+  - iframe [ref=e9]:
+    - generic [ref=f1e2]:
+      - banner [ref=f1e3]:
+        - generic [ref=f1e5]:
+          - checkbox [ref=f1e6]
+          - generic "Light mode" [ref=f1e8] [cursor=pointer]:
+            - img [ref=f1e9]
+      - generic [ref=f1e13]:
+        - heading "Error" [level=4] [ref=f1e14]
+        - heading "An error has occurred" [level=1] [ref=f1e15]
+      - heading "IPC connection closed Copy error with stack trace to clipboard" [level=2] [ref=f1e19]:
+        - img [ref=f1e21]
+        - generic [ref=f1e23]: IPC connection closed
+        - button "Copy error with stack trace to clipboard" [ref=f1e24] [cursor=pointer]:
+          - img [ref=f1e25]
+      - generic [ref=f1e30]:
+        - heading "Stack Trace" [level=3] [ref=f1e33]
+        - generic [ref=f1e35]:
+          - generic [ref=f1e36]:
+            - generic [ref=f1e38]:
+              - checkbox "View All Frames" [ref=f1e39]
+              - generic [ref=f1e40]: View All Frames
+            - generic [ref=f1e42]:
+              - button "Pretty" [ref=f1e43]
+              - button "Raw" [ref=f1e44]
+          - list [ref=f1e47]:
+            - listitem [ref=f1e48]:
+              - generic [ref=f1e49]:
+                - button "node_modules/.pnpm/@nuxt+vite-builder@4.4.2_@babel+plugin-syntax-jsx@7.28.6_@babel+core@7.29.0__@types+nod_5cc38cf284f513df955fa62bb21deeb0/node_modules/@nuxt/vite-builder/dist/vite-node.mjs in Socket.onClose at line 140:101" [ref=f1e50]:
+                  - link "node_modules/.pnpm/@nuxt+vite-builder@4.4.2_@babel+plugin-syntax-jsx@7.28.6_@babel+core@7.29.0__@types+nod_5cc38cf284f513df955fa62bb21deeb0/node_modules/@nuxt/vite-builder/dist/vite-node.mjs" [ref=f1e51] [cursor=pointer]:
+                    - /url: vscode://file//Users/ybk/GolandProjects/GhostMark_Studio/storefront/node_modules/.pnpm/@nuxt+vite-builder@4.4.2_@babel+plugin-syntax-jsx@7.28.6_@babel+core@7.29.0__@types+nod_5cc38cf284f513df955fa62bb21deeb0/node_modules/@nuxt/vite-builder/dist/vite-node.mjs:140
+                  - generic [ref=f1e52]:
+                    - text: in
+                    - code [ref=f1e53]: Socket.onClose
+                  - generic [ref=f1e54]:
+                    - text: at line
+                    - code [ref=f1e55]: 140:101
+                - button [ref=f1e57]:
+                  - img [ref=f1e58]
+              - code [ref=f1e62]:
+                - generic [ref=f1e76]: "} }; const onClose = () => { cleanup(); resetBuffer(); for (const { reject: rejectRequest } of pendingRequests.values()) rejectRequest(/* @__PURE__ */ new Error(\"IPC connection closed\")); pendingRequests.clear(); if (clientSocket === socket) clientSocket = void 0; if (currentConnectPromise === thisPromise) currentConnectPromise = void 0; }; socket.on(\"connect\", onConnect);"
+      - generic [ref=f1e78]:
+        - heading "Error Cause" [level=3] [ref=f1e81]
+        - code [ref=f1e86]:
+          - generic [ref=f1e87]:
+            - text: "Error {"
+            - button "▼" [ref=f1e88]:
+              - generic [ref=f1e89]: ▼
+            - text: "}"
+      - generic [ref=f1e91]:
+        - heading "Request" [level=3] [ref=f1e93]
+        - generic [ref=f1e94]:
+          - generic [ref=f1e95]:
+            - heading "url" [level=4] [ref=f1e96]
+            - text: http://localhost:3000/products/studio-tee-charcoal
+          - generic [ref=f1e97]:
+            - heading "method" [level=4] [ref=f1e98]
+            - text: GET
+          - generic [ref=f1e99]:
+            - heading "headers" [level=4] [ref=f1e100]
+            - table [ref=f1e101]:
+              - rowgroup [ref=f1e102]:
+                - row "host localhost:3000" [ref=f1e103]:
+                  - cell "host" [ref=f1e104]
+                  - cell "localhost:3000" [ref=f1e105]
+                - row "connection close" [ref=f1e106]:
+                  - cell "connection" [ref=f1e107]
+                  - cell "close" [ref=f1e108]
+                - row "sec-ch-ua \"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"" [ref=f1e109]:
+                  - cell "sec-ch-ua" [ref=f1e110]
+                  - cell "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"" [ref=f1e111]
+                - row "sec-ch-ua-mobile ?0" [ref=f1e112]:
+                  - cell "sec-ch-ua-mobile" [ref=f1e113]
+                  - cell "?0" [ref=f1e114]
+                - row "sec-ch-ua-platform \"macOS\"" [ref=f1e115]:
+                  - cell "sec-ch-ua-platform" [ref=f1e116]
+                  - cell "\"macOS\"" [ref=f1e117]
+                - row "upgrade-insecure-requests 1" [ref=f1e118]:
+                  - cell "upgrade-insecure-requests" [ref=f1e119]
+                  - cell "1" [ref=f1e120]
+                - row "user-agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=f1e121]:
+                  - cell "user-agent" [ref=f1e122]
+                  - cell "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=f1e123]
+                - row "accept text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=f1e124]:
+                  - cell "accept" [ref=f1e125]
+                  - cell "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=f1e126]
+                - row "sec-fetch-site none" [ref=f1e127]:
+                  - cell "sec-fetch-site" [ref=f1e128]
+                  - cell "none" [ref=f1e129]
+                - row "sec-fetch-mode navigate" [ref=f1e130]:
+                  - cell "sec-fetch-mode" [ref=f1e131]
+                  - cell "navigate" [ref=f1e132]
+                - row "sec-fetch-user ?1" [ref=f1e133]:
+                  - cell "sec-fetch-user" [ref=f1e134]
+                  - cell "?1" [ref=f1e135]
+                - row "sec-fetch-dest document" [ref=f1e136]:
+                  - cell "sec-fetch-dest" [ref=f1e137]
+                  - cell "document" [ref=f1e138]
+                - row "accept-encoding gzip, deflate, br, zstd" [ref=f1e139]:
+                  - cell "accept-encoding" [ref=f1e140]
+                  - cell "gzip, deflate, br, zstd" [ref=f1e141]
+                - row "accept-language en-GB,en-US;q=0.9,en;q=0.8" [ref=f1e142]:
+                  - cell "accept-language" [ref=f1e143]
+                  - cell "en-GB,en-US;q=0.9,en;q=0.8" [ref=f1e144]
+                - 'row "cookie Object { ▼ }" [ref=f1e145]':
+                  - cell "cookie" [ref=f1e146]
+                  - 'cell "Object { ▼ }" [ref=f1e147]':
+                    - code [ref=f1e150]:
+                      - generic [ref=f1e151]:
+                        - text: "Object {"
+                        - button "▼" [ref=f1e152]:
+                          - generic [ref=f1e153]: ▼
+                        - text: "}"
+                - row "x-forwarded-for ::1" [ref=f1e154]:
+                  - cell "x-forwarded-for" [ref=f1e155]
+                  - cell "::1" [ref=f1e156]
+                - row "x-forwarded-port 3000" [ref=f1e157]:
+                  - cell "x-forwarded-port" [ref=f1e158]
+                  - cell "3000" [ref=f1e159]
+                - row "x-forwarded-proto http" [ref=f1e160]:
+                  - cell "x-forwarded-proto" [ref=f1e161]
+                  - cell "http" [ref=f1e162]
+  - iframe [ref=e10]:
+    - generic [ref=f2e4]:
+      - heading "500" [level=1] [ref=f2e5]
+      - heading "Server Error" [level=2] [ref=f2e6]
+      - paragraph [ref=f2e7]: IPC connection closed
+  - button "Toggle detailed error view Hide error page preview" [expanded] [ref=e11]:
+    - generic [ref=e12]: Toggle detailed error view
+    - button "Hide error page preview" [ref=e13] [cursor=pointer]: ×
