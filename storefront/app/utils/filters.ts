@@ -1,16 +1,44 @@
 /**
  * Shared filter taxonomy for the merchery PLP filter bar.
  *
- * The lists are intentionally hard-coded placeholders — the live backend
- * doesn't yet expose facet taxonomies (no category-tree endpoint, no
- * price/quantity bucket facets, no brand vocabulary). This file exists so
- * every PLP page (`/products`, `/categories/*`, `/collections/*`) renders the
- * same merchery-style pill set without each page redeclaring the same arrays.
+ * STATIC + LIVE COEXISTENCE
+ * -------------------------
+ * Two exports live in this file and they are intentionally NOT redundant:
  *
- * When backend facet support lands the shape `{ value, label }` is the same
- * one Medusa's product-tags + custom facet endpoint returns, so the swap is
- * a one-line `import { filterOptions } from '~/utils/filters'` ->
- * `import { useFilterOptions } from '~/composables/useFilterOptions'` rename.
+ *   1. `filterOptions` — the original static lists. These are still imported
+ *      directly by every PLP (`/products`, `/categories/*`, `/collections/*`,
+ *      `/shop`). The values are the hard-coded baseline / fallback used when
+ *      the backend has nothing to say (e.g. SSR before `ensureResolved()`,
+ *      a Medusa outage, or an empty catalogue).
+ *
+ *   2. `useFilterOptions()` — the live composable. Wraps `useFilterFacets`
+ *      and returns the same `{ category, price, quantity, leadTime, color,
+ *      brand, sort }` shape, but with `category | color | brand` populated
+ *      from Medusa when data exists. Pages can migrate at their own pace by
+ *      switching:
+ *        - import { filterOptions }  from '~/utils/filters'
+ *        + const { liveOptions, ensureResolved } = useFilterOptions()
+ *        + await ensureResolved()
+ *
+ * CATALOG-DERIVED vs DOMAIN-SPECIFIC
+ * ----------------------------------
+ *  - Catalog-derived (live-eligible):
+ *      category  → `sdk.store.category.list` (root tier)
+ *      color     → unique values of variant option titled /colou?r/i
+ *      brand     → `product.metadata.brand` or title-case `tags[].value`
+ *
+ *  - Domain-specific (ALWAYS STATIC — these are commerce decisions, not
+ *    catalog data, and changing them requires merchandising sign-off, not a
+ *    schema migration):
+ *      price     → bucket UX (£0-25 / £25-50 / £50-100 / £100+). A
+ *                  min/max slider was rejected for the merchery pill bar;
+ *                  buckets keep the visual rhythm consistent with the other
+ *                  pills.
+ *      quantity  → MOQ / bulk tier bands (1-50, 50-100, 100-500, 500+).
+ *                  Driven by the pod commerce model, not catalogue data.
+ *      leadTime  → SLA promise (within 1w / 2w / 4w). A merchandising
+ *                  commitment, not derived from product fields.
+ *      sort      → algorithmic sort keys, hand-curated.
  */
 export interface FilterOption {
   value: string
@@ -117,6 +145,54 @@ export function applySort<T extends { created_at?: string | Date | null }>(
  */
 export function sortLabel(value: string): string {
   return filterOptions.sort.find(o => o.value === value)?.label ?? 'Relevance'
+}
+
+/**
+ * Live filter options bound to the active Medusa catalogue. Composable form
+ * so it can lean on `useFilterFacets`'s SSR-safe `useState` cache — the
+ * first PLP to call `ensureResolved()` pays the round-trip, every subsequent
+ * caller reads the cached payload.
+ *
+ * Migration path for PLP pages:
+ *
+ *   <script setup lang="ts">
+ *   const { liveOptions, ensureResolved } = useFilterOptions()
+ *   await ensureResolved()  // SSR-friendly; promise resolves before render
+ *   </script>
+ *
+ *   <FilterPill :options="liveOptions.category" ... />
+ *
+ * The branch logic is "live where we have it, static otherwise":
+ *   - category / color / brand are catalog-derived and swap in once the
+ *     backend returns a non-empty set.
+ *   - price / quantity / leadTime / sort are domain-specific (see header
+ *     docblock) and ALWAYS read from the static `filterOptions`.
+ *
+ * `liveOptions` is a `ComputedRef` so consumers stay reactive: if the facet
+ * cache invalidates and re-resolves (future: webhook-driven refresh), the
+ * pills update without the page having to re-mount.
+ */
+export function useFilterOptions() {
+  const { facets, ensureResolved, error } = useFilterFacets()
+
+  const liveOptions = computed(() => {
+    const f = facets.value
+    return {
+      // Live with static fallback — once Medusa returns at least one entry
+      // we trust the live set entirely. Mixing live + static would risk
+      // showing a category that doesn't exist in the catalogue.
+      category: f.category.length ? f.category : filterOptions.category,
+      color: f.color.length ? f.color : filterOptions.color,
+      brand: f.brand.length ? f.brand : filterOptions.brand,
+      // Domain-specific — always static (see header docblock for rationale).
+      price: filterOptions.price,
+      quantity: filterOptions.quantity,
+      leadTime: filterOptions.leadTime,
+      sort: filterOptions.sort,
+    }
+  })
+
+  return { liveOptions, ensureResolved, error }
 }
 
 /**

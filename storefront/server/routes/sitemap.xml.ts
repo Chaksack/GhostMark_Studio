@@ -31,6 +31,15 @@ interface MedusaProductListResponse {
   products?: MedusaProduct[]
 }
 
+interface MedusaCollection {
+  handle?: string
+  updated_at?: string
+}
+
+interface MedusaCollectionListResponse {
+  collections?: MedusaCollection[]
+}
+
 const STATIC_PATHS: Array<{ loc: string; changefreq: string; priority: number }> = [
   { loc: '/', changefreq: 'daily', priority: 1.0 },
   { loc: '/shop', changefreq: 'daily', priority: 0.9 },
@@ -38,6 +47,7 @@ const STATIC_PATHS: Array<{ loc: string; changefreq: string; priority: number }>
   { loc: '/products', changefreq: 'daily', priority: 0.9 },
   { loc: '/products?type=pod', changefreq: 'weekly', priority: 0.7 },
   { loc: '/categories', changefreq: 'weekly', priority: 0.6 },
+  { loc: '/collections', changefreq: 'weekly', priority: 0.6 },
   { loc: '/about', changefreq: 'monthly', priority: 0.5 },
   { loc: '/contact', changefreq: 'monthly', priority: 0.5 },
   { loc: '/accessibility', changefreq: 'yearly', priority: 0.3 },
@@ -79,6 +89,21 @@ export default defineEventHandler(async (event) => {
     products = []
   }
 
+  // Live collections — surfaces curated PLP URLs (e.g. /collections/dtf,
+  // /collections/hot-deals) so crawlers discover the merchandised shelves
+  // without a manual feed. Same failure posture as products: degrade to
+  // static-only on backend failure.
+  let collections: MedusaCollection[] = []
+  try {
+    const res = await $fetch<MedusaCollectionListResponse>(`${medusaUrl}/store/collections`, {
+      headers: apiKey ? { 'x-publishable-api-key': apiKey } : undefined,
+      query: { limit: 100, fields: 'handle,updated_at' },
+    })
+    collections = Array.isArray(res?.collections) ? res.collections : []
+  } catch {
+    collections = []
+  }
+
   const urls: string[] = []
 
   for (const sp of STATIC_PATHS) {
@@ -87,6 +112,21 @@ export default defineEventHandler(async (event) => {
   <loc>${xmlEscape(`${origin}${sp.loc}`)}</loc>
   <changefreq>${sp.changefreq}</changefreq>
   <priority>${sp.priority.toFixed(1)}</priority>
+</url>`,
+    )
+  }
+
+  for (const c of collections) {
+    if (!c?.handle) continue
+    const lastmod = c.updated_at
+      ? new Date(c.updated_at).toISOString().slice(0, 10)
+      : undefined
+    urls.push(
+      `<url>
+  <loc>${xmlEscape(`${origin}/collections/${c.handle}`)}</loc>${lastmod ? `
+  <lastmod>${lastmod}</lastmod>` : ''}
+  <changefreq>weekly</changefreq>
+  <priority>0.5</priority>
 </url>`,
     )
   }

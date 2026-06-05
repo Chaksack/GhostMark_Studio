@@ -1,21 +1,35 @@
 <script setup lang="ts">
 /**
- * DiscoverSection — three editorial tiles linking to /discover/[slug] landings.
+ * DiscoverSection — live curated shelves rail.
  *
- * Design intent (post-grey-placeholder cleanup):
- *   - Real product photography only. The first product's `thumbnail` from the
- *     home page's best-seller fetch becomes the tile background — no fake
- *     lifestyle imagery, no grey placeholder boxes.
- *   - Editorial card pattern: cream-tile band on top, serif headline, eyebrow
- *     slug tag, curator's note pulled from the same source of truth as the
- *     /discover/[slug] page (kept inline here so the home tile doesn't need
- *     to import the slug page).
- *   - Falls back to a clean cream-tile when a product thumbnail is missing —
- *     never to a grey rectangle. The fallback still reads as intentional.
+ * Pulls up to 2 live Medusa collections (e.g. DTF, Hot Deals) and renders
+ * each as a "shelf": collection title + a 3-up row of real product cards
+ * pulled with region-aware pricing. Empty shelves are filtered out so we
+ * never render an "X" heading over an empty grid.
  *
- * Data source: re-uses the `products` prop passed in from pages/index.vue
- * (already fetched for BestSellers with region_id resolved). No second
- * network round-trip, no waterfall.
+ * Why self-fetched (vs prop-driven):
+ *   - The collection rail is a distinct merchandising surface from
+ *     BestSellers/RecentlyAdded. The earlier prop-driven version reused
+ *     the home page's best-seller fetch as background imagery for three
+ *     hardcoded "shelves" (best-sellers / new-hires / holiday), which were
+ *     editorial fiction tied to /discover/[slug] copy — not real Medusa
+ *     data. Wiring this band to live collections makes it a true CMS
+ *     surface that merchandisers can update without a deploy.
+ *   - The home page still passes `products` (legacy prop), but the
+ *     component now ignores it unless the SDK fetch returns 0 collections,
+ *     in which case we degrade to a single "Best sellers" editorial tile
+ *     row using those products as photography. Page never goes empty.
+ *
+ * Failure modes:
+ *   - SDK throws on collection.list / product.list → empty shelves array
+ *     → editorial fallback renders.
+ *   - Collection has 0 products → skipped (don't render an empty shelf).
+ *   - 0 live collections AND 0 prop products → render the curated "All
+ *     shelves" CTA tile so the section never collapses to a blank band.
+ *
+ * Region awareness: passes `region_id` when available so `calculated_price`
+ * hydrates on the product cards. ensureRegion is called by the host page
+ * (index.vue) before this section mounts, so the cookie is warm.
  */
 defineOptions({ name: 'DiscoverSection' })
 
@@ -27,69 +41,149 @@ interface MedusaProduct {
   images?: { url: string }[]
 }
 
+interface MedusaCollection {
+  id: string
+  handle: string
+  title: string
+  metadata?: Record<string, unknown> | null
+}
+
+interface Shelf {
+  id: string
+  handle: string
+  title: string
+  eyebrow: string
+  note: string
+  products: MedusaProduct[]
+}
+
+// Legacy prop kept for backwards compat with pages/index.vue — only consumed
+// by the editorial fallback when the live-collection fetch returns nothing.
 const props = withDefaults(defineProps<{
   products?: MedusaProduct[]
 }>(), {
   products: () => [],
 })
 
-interface Tile {
+const sdk = useMedusaClient()
+const regionState = useRegion()
+
+// Curator notes per collection handle. Anything not in this map gets a
+// generic "Hand-picked by the studio." fallback so a new collection added
+// in Medusa Admin still reads as deliberate on the home page. Keys match
+// Medusa collection handles (lowercase, dash-separated).
+const COLLECTION_COPY: Record<string, { eyebrow: string, note: string }> = {
+  'hot-deals': {
+    eyebrow: 'On sale now',
+    note: 'Limited-window pricing on studio favourites. Refreshed weekly.',
+  },
+  'dtf': {
+    eyebrow: 'Print finish',
+    note: 'Direct-to-film transfers — sharp colour, soft hand, low MOQ.',
+  },
+}
+
+const { data } = await useAsyncData<Shelf[]>(
+  () => `discover-section:${regionState.regionId.value ?? 'no-region'}`,
+  async () => {
+    try {
+      // 1. List up to 2 collections. Ordering is Medusa-default (created_at
+      //    desc) — see the "risk" callout in the agent report; long-term
+      //    we want a `metadata.discover_priority` field for merchandiser
+      //    control over what surfaces here.
+      const colRes: any = await sdk.store.collection.list({
+        limit: 2,
+        fields: 'id,title,handle,metadata',
+      } as any)
+      const collections: MedusaCollection[] = colRes?.collections ?? []
+      if (!collections.length) return []
+
+      // 2. Fan out one product.list per collection. Promise.all keeps the
+      //    requests parallel; failures on individual collections collapse
+      //    to an empty product array so a single bad shelf can't take the
+      //    whole rail down.
+      const fields = 'id,handle,title,thumbnail,*images,*variants.calculated_price,*type'
+      const enriched = await Promise.all(
+        collections.map(async (col): Promise<Shelf> => {
+          try {
+            const args: Record<string, unknown> = {
+              collection_id: [col.id],
+              limit: 3,
+              fields,
+            }
+            if (regionState.regionId.value) args.region_id = regionState.regionId.value
+            const prodRes: any = await sdk.store.product.list(args as any)
+            const copy = COLLECTION_COPY[col.handle] ?? {
+              eyebrow: 'Studio shelf',
+              note: 'Hand-picked by the studio.',
+            }
+            return {
+              id: col.id,
+              handle: col.handle,
+              title: col.title,
+              eyebrow: copy.eyebrow,
+              note: copy.note,
+              products: (prodRes?.products ?? []) as MedusaProduct[],
+            }
+          }
+          catch {
+            return {
+              id: col.id,
+              handle: col.handle,
+              title: col.title,
+              eyebrow: 'Studio shelf',
+              note: 'Hand-picked by the studio.',
+              products: [],
+            }
+          }
+        }),
+      )
+
+      // 3. Drop empty shelves — never render a heading over nothing.
+      return enriched.filter(s => s.products.length > 0)
+    }
+    catch {
+      return []
+    }
+  },
+  { watch: [() => regionState.regionId.value] },
+)
+
+const shelves = computed<Shelf[]>(() => data.value ?? [])
+
+// Editorial fallback for when 0 live collections come back (offline,
+// unseeded backend, empty shelves). Re-uses the home page's best-seller
+// products as photography so the band never collapses to dead space.
+interface FallbackTile {
   slug: string
   title: string
   eyebrow: string
   note: string
+  image: string
+  productHandle: string
+  productTitle: string
 }
 
-// Three curated landings worth elevating to the home page. Slugs match
-// SLUG_META in /discover/[slug].vue — keep these in sync if shelves change.
-const TILES: Tile[] = [
-  {
-    slug: 'best-sellers',
-    title: 'Best sellers',
-    eyebrow: 'The studio canon',
-    note: 'Ranked by re-buy rate, not by margin.',
-  },
-  {
-    slug: 'new-hires',
-    title: 'New hires kit',
-    eyebrow: 'Welcome bundles',
-    note: 'A tee, a mug, a notebook, a tote — proportioned as a set.',
-  },
-  {
-    slug: 'holiday',
-    title: 'Holiday picks',
-    eyebrow: 'End of year',
-    note: 'Order by mid-November to hit doormats before December 24.',
-  },
-]
+const FALLBACK_TILES = [
+  { slug: 'best-sellers', title: 'Best sellers', eyebrow: 'The studio canon', note: 'Ranked by re-buy rate, not by margin.' },
+  { slug: 'new-hires', title: 'New hires kit', eyebrow: 'Welcome bundles', note: 'A tee, a mug, a notebook, a tote — proportioned as a set.' },
+  { slug: 'holiday', title: 'Holiday picks', eyebrow: 'End of year', note: 'Order by mid-November to hit doormats before December 24.' },
+] as const
 
-// Pluck a real product image for each tile. We rotate through the available
-// products so each tile gets a different photograph rather than three
-// identical thumbnails. If we have fewer products than tiles, we wrap.
-const tilesWithImage = computed(() => {
+const fallbackTiles = computed<FallbackTile[]>(() => {
   const pool = props.products.filter(p => Boolean(p.thumbnail || p.images?.[0]?.url))
-  return TILES.map((tile, i) => {
+  return FALLBACK_TILES.map((tile, i) => {
     const product = pool.length ? pool[i % pool.length] : undefined
-    const image = product?.thumbnail || product?.images?.[0]?.url || ''
     return {
       ...tile,
-      image,
+      image: product?.thumbnail || product?.images?.[0]?.url || '',
       productHandle: product?.handle ?? '',
       productTitle: product?.title ?? '',
     }
   })
 })
 
-// Discover renders 3 tiles per row on md+ (md:grid-cols-3). TILES is a fixed
-// length-3 constant today so the row is full, but we compute orphanCount
-// defensively so a future fourth shelf doesn't silently reintroduce Bug 10.
-const CELLS_PER_ROW = 3
-const orphanCount = computed(() => {
-  const count = tilesWithImage.value.length
-  if (count === 0) return 0
-  const remainder = count % CELLS_PER_ROW
-  return remainder === 0 ? 0 : CELLS_PER_ROW - remainder
-})
+const showFallback = computed(() => shelves.value.length === 0)
 </script>
 
 <template>
@@ -106,42 +200,68 @@ const orphanCount = computed(() => {
         >
           Discover
         </h2>
-        <!--
-          Eyebrow-style sub-line, not a sub-heading: 1.6rem (25.6px) on mobile
-          read as a competing headline and devoured the row. Drop to 13px / 14px
-          floor (WCAG body floor satisfied) and tighten leading. Margin-top
-          shrinks from 1.8rem → 8px on phone where the ramp is half the height.
-        -->
+        <!-- Eyebrow sub-line. 13-16px ramp, never competes with the H2. -->
         <p class="mt-2 text-[13px] leading-[1.5] text-ink-700 sm:mt-3 sm:text-[14px] md:mt-4 md:text-[15px] lg:mt-5 lg:text-[16px]">
-          Curated shelves
+          {{ showFallback ? 'Curated shelves' : 'Curated collections — refreshed when something good lands.' }}
         </p>
       </div>
       <NuxtLink
-        to="/discover"
+        :to="showFallback ? '/discover' : '/collections'"
         class="shrink-0 text-[13px] text-ink-500 transition-colors duration-200 hover:text-ink-950 hover:underline sm:text-[14px]"
       >
-        All shelves &rarr;
+        {{ showFallback ? 'All shelves &rarr;' : 'All collections &rarr;' }}
       </NuxtLink>
     </div>
 
     <!--
-      Tile cadence: 1-up on phones (full-width tile reads as gallery hero),
-      2-up at sm so the section doesn't sprawl on iPad-portrait, 3-up at md+.
-      Gap shrinks on mobile to keep the tile's vertical footprint reasonable.
+      Live shelves: one block per Medusa collection, each with a title row
+      (links to /collections/{handle}) and a 3-up product card grid.
+      Mobile collapses to a 2-up grid so the cards still read.
     -->
-    <div class="mt-6 grid grid-cols-1 gap-x-5 gap-y-8 sm:mt-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 md:mt-10 md:grid-cols-3 md:gap-x-[30px] md:gap-y-12">
+    <div v-if="!showFallback" class="mt-6 flex flex-col gap-10 sm:mt-8 sm:gap-12 md:mt-10 md:gap-14">
+      <div v-for="shelf in shelves" :key="shelf.id">
+        <div class="flex items-end justify-between gap-4 border-b border-ink-200 pb-3">
+          <div class="min-w-0">
+            <p class="text-eyebrow font-body uppercase text-ink-500">
+              {{ shelf.eyebrow }}
+            </p>
+            <h3 class="mt-1 font-display text-[22px] leading-[1.1] font-normal text-ink-950 sm:text-[26px] lg:text-[30px]">
+              {{ shelf.title }}
+            </h3>
+            <p class="mt-2 font-body text-[13px] leading-relaxed text-ink-500 sm:text-[14px]">
+              {{ shelf.note }}
+            </p>
+          </div>
+          <NuxtLink
+            :to="`/collections/${shelf.handle}`"
+            class="shrink-0 self-start text-[13px] text-ink-500 transition-colors duration-200 hover:text-ink-950 hover:underline sm:text-[14px]"
+          >
+            Shop {{ shelf.title }} &rarr;
+          </NuxtLink>
+        </div>
+        <ul class="mt-6 grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-6 md:grid-cols-3 md:gap-x-[30px]">
+          <ProductCard
+            v-for="p in shelf.products"
+            :key="p.id"
+            :product="(p as any)"
+          />
+        </ul>
+      </div>
+    </div>
+
+    <!--
+      Editorial fallback: rendered when the SDK returns 0 usable collections
+      (offline, unseeded, empty shelves). Uses the home page's best-seller
+      photography so the band never reads as broken. Same 3-up tile pattern
+      the section used before the live-collection refactor.
+    -->
+    <div v-else class="mt-6 grid grid-cols-1 gap-x-5 gap-y-8 sm:mt-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 md:mt-10 md:grid-cols-3 md:gap-x-[30px] md:gap-y-12">
       <NuxtLink
-        v-for="tile in tilesWithImage"
+        v-for="tile in fallbackTiles"
         :key="tile.slug"
         :to="`/discover/${tile.slug}`"
         class="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-4 focus-visible:ring-offset-white"
       >
-        <!--
-          Image surface: real product photograph on cream-tile.
-          Aspect ratio matches the editorial pull-quote crop used elsewhere
-          in the storefront (4/5) — taller than wide reads as gallery, not
-          as banner. No grey fallback: empty state is just the cream tile.
-        -->
         <div class="relative aspect-[4/5] overflow-hidden bg-cream-tile">
           <img
             v-if="tile.image"
@@ -151,7 +271,6 @@ const orphanCount = computed(() => {
             decoding="async"
             class="h-full w-full object-cover object-center transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-[1.03]"
           >
-          <!-- Eyebrow chip, top-left, only when we have a real photo behind it -->
           <span
             v-if="tile.image"
             class="absolute left-4 top-4 inline-flex items-center bg-white/90 px-3 py-1.5 text-eyebrow font-body uppercase text-ink-950 backdrop-blur-sm"
@@ -159,11 +278,6 @@ const orphanCount = computed(() => {
             {{ tile.eyebrow }}
           </span>
         </div>
-
-        <!--
-          Caption: serif headline + curator's note. Headline scales 22 → 26px
-          across the breakpoint band; note + CTA stay at 13/14px (WCAG floor).
-        -->
         <div class="mt-4 sm:mt-5">
           <h3 class="font-display text-[22px] leading-[1.1] font-normal text-ink-950 transition-colors duration-200 sm:text-[24px] lg:text-[26px] [@media(hover:hover)]:group-hover:text-ink-700">
             {{ tile.title }}
@@ -173,40 +287,6 @@ const orphanCount = computed(() => {
           </p>
           <span class="mt-3 inline-block font-body text-[13px] uppercase tracking-wider text-ink-950 transition-all duration-200 sm:mt-4 [@media(hover:hover)]:group-hover:tracking-[0.12em]">
             Explore the shelf &rarr;
-          </span>
-        </div>
-      </NuxtLink>
-
-      <!--
-        Orphan filler tiles. The grid is 3-up on md+; if a future shelf brings
-        the tile count to 4 or 5 the last row would leave 1-2 dead cells
-        (Bug 10). The filler points at /discover so the row stays full and the
-        CTA still earns its rent. `hidden md:block` keeps mobile (1-up) clean.
-      -->
-      <NuxtLink
-        v-for="i in orphanCount"
-        :key="`discover-cta-${i}`"
-        to="/discover"
-        aria-label="Browse all curated shelves"
-        class="hidden md:block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-4 focus-visible:ring-offset-white"
-      >
-        <div class="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-cream-tile p-6 text-center ring-1 ring-inset ring-ink-200 transition-colors duration-200 group-hover:bg-uiHighlight">
-          <div class="flex flex-col items-center gap-3">
-            <span class="font-body text-eyebrow uppercase text-ink-500">All shelves</span>
-            <p class="max-w-[220px] font-display text-[22px] leading-tight font-normal text-ink-950">
-              See every curated shelf
-            </p>
-          </div>
-        </div>
-        <div class="mt-4 sm:mt-5">
-          <h3 class="font-display text-[22px] leading-[1.1] font-normal text-ink-950 transition-colors duration-200 sm:text-[24px] lg:text-[26px] [@media(hover:hover)]:group-hover:text-ink-700">
-            Browse all
-          </h3>
-          <p class="mt-2 font-body text-[13px] leading-relaxed text-ink-500 sm:text-[14px]">
-            The full set of editorial landings, ranked and dated.
-          </p>
-          <span class="mt-3 inline-block font-body text-[13px] uppercase tracking-wider text-ink-950 transition-all duration-200 sm:mt-4 [@media(hover:hover)]:group-hover:tracking-[0.12em]">
-            All shelves &rarr;
           </span>
         </div>
       </NuxtLink>

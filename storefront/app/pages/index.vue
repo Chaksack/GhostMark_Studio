@@ -43,9 +43,13 @@
       <DiscoverSection :products="bestSellers" />
 
       <!--
-        Discover intentionally consumes the full bestSellers list (mixed types)
-        — it's a curated landing rail, not a D2C-only band, so cross-mode
-        exposure is desirable here.
+        DiscoverSection self-fetches up to 2 live Medusa collections (e.g.
+        DTF, Hot Deals) and renders each as a shelf with real product cards.
+        The `:products="bestSellers"` prop is the editorial fallback the
+        component falls back to when the SDK returns 0 usable collections,
+        so the band never collapses to dead space on a fresh/offline backend.
+        Bestsellers is intentionally the full mixed-type list (apparel + POD)
+        so the fallback rail isn't artificially D2C-only.
       -->
 
       <!-- 5. Testimonials -->

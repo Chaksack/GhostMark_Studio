@@ -124,6 +124,35 @@ const { data: category } = await useAsyncData(
   },
 )
 
+// Discover slug: pull live Medusa collections so the curated landing renders
+// real merchandised data (e.g. "DTF", "Hot Deals") rather than a static CTA
+// panel. Brands stays editorial — there's no live brand taxonomy in Medusa
+// today, so its fallback panel below remains the source of truth.
+//
+// Failure mode: any SDK error (offline, 5xx, empty seed) collapses to an
+// empty array — the template then falls back to the EDITORIAL_FALLBACK CTA
+// panel for `discover`, so the page never breaks.
+const { data: discoverCollections } = await useAsyncData(
+  'category-discover-collections',
+  async () => {
+    if (parent.value !== 'discover') return []
+    try {
+      const res = await sdk.store.collection.list({
+        limit: 12,
+        fields: 'id,title,handle,metadata',
+      } as any)
+      return (res as any).collections ?? []
+    }
+    catch {
+      return []
+    }
+  },
+)
+
+const hasDiscoverCollections = computed(
+  () => parent.value === 'discover' && (discoverCollections.value?.length ?? 0) > 0,
+)
+
 const { data: products } = await useAsyncData(
   `category-parent-products-${parent.value}-${region.value?.id ?? 'no-region'}`,
   async () => {
@@ -257,11 +286,44 @@ function onClearFilters() {
         produced in Bordeaux for studios and teams. Order from 25 pieces, e-proof in 48 hours.
       </p>
 
-      <!-- Editorial routes (Discover / Brands): no Medusa category exists, but
-           we still want a useful landing page rather than the "we couldn't find
-           it" gut-punch. Show a curated CTA panel and skip the filter bar. -->
+      <!-- Discover w/ live collections: render the actual merchandised
+           collections (DTF, Hot Deals, ...) as a 3-up grid of cream tiles
+           that link straight to /collections/{handle}. Mirrors the
+           /collections index layout so the surfaces stay coherent. -->
+      <section
+        v-if="hasDiscoverCollections"
+        class="mb-12"
+        aria-labelledby="discover-collections-heading"
+      >
+        <h2 id="discover-collections-heading" class="sr-only">
+          Curated collections
+        </h2>
+        <ul class="grid grid-cols-1 gap-x-[30px] gap-y-[30px] sm:grid-cols-2 lg:grid-cols-3">
+          <li
+            v-for="col in (discoverCollections as any[])"
+            :key="col.handle ?? col.id"
+          >
+            <NuxtLink
+              :to="`/collections/${col.handle}`"
+              class="group flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-cream-tile p-6 text-center transition-colors duration-base ease-emphasis hover:bg-cream-warm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50"
+            >
+              <span class="font-display text-display-sm font-normal text-ink-950">
+                {{ col.title }}
+              </span>
+              <span class="font-body text-caption text-ink-500">
+                Shop collection &rarr;
+              </span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Editorial routes (Discover w/ 0 live collections / Brands): no
+           Medusa data to render, but we still want a useful landing page
+           rather than the "we couldn't find it" gut-punch. Show a curated
+           CTA panel and skip the filter bar. -->
       <div
-        v-if="isEditorial"
+        v-else-if="isEditorial"
         class="mb-12 flex flex-col gap-6 rounded border border-greyLines bg-cream-tile p-8 lg:flex-row lg:items-center lg:justify-between"
       >
         <p class="max-w-[44rem] font-body text-body text-ink-700">

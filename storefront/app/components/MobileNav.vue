@@ -3,7 +3,7 @@
     MobileNav — full-screen mobile navigation overlay.
 
     Mounted by AppHeader as:
-        <MobileNav v-model:open="mobileNavOpen" :categories="categories" />
+        <MobileNav v-model:open="mobileNavOpen" />
 
     Layout (lg:hidden — burger overlay is mobile-only, <lg):
       1. Backdrop  (fixed inset-0, click-self closes)
@@ -147,7 +147,13 @@
           </div>
           <ul class="divide-y divide-greyLines">
             <li v-for="c in categories" :key="c.key">
-              <details v-if="c.menu && c.menu.sections.length" class="group">
+              <!--
+                Live Medusa children: if the category has descendants we
+                expose them as an expandable group with the "All …" deep
+                link first. Categories with no children render as a flat
+                row so the drawer stays uniform.
+              -->
+              <details v-if="c.items && c.items.length" class="group">
                 <summary class="flex items-center justify-between min-h-[56px] px-5 py-4 text-[16px] font-medium text-zinc-950 cursor-pointer list-none hover:bg-uiGrey">
                   <span>{{ c.label }}</span>
                   <span class="inline-flex transition group-open:rotate-90">
@@ -164,12 +170,9 @@
                       All {{ c.label.toLowerCase() }}
                     </NuxtLink>
                   </li>
-                  <li v-for="section in c.menu.sections" :key="section.title">
-                    <p class="px-8 pt-3 pb-1 text-[11px] uppercase tracking-[0.12em] text-greyText">{{ section.title }}</p>
+                  <li v-for="item in c.items" :key="item.handle">
                     <NuxtLink
-                      v-for="item in section.items"
-                      :key="item.label"
-                      :to="item.to"
+                      :to="`/categories/${item.handle}`"
                       class="block px-8 py-2 text-[15px] text-zinc-700 hover:text-zinc-950 min-h-[44px]"
                       @click="closeOverlay"
                     >
@@ -234,35 +237,17 @@
 <script setup lang="ts">
 import Icon from '~/components/ui/Icon.vue'
 
-type CategoryMenuLink = {
-  label: string
-  to: string
-}
-
-type CategoryMenuSection = {
-  title: string
-  items: CategoryMenuLink[]
-}
-
-type CategoryMenu = {
-  featuredTitle?: string
-  featuredDescription?: string
-  featuredBackground?: string
-  sections: CategoryMenuSection[]
-}
-
-type CategoryLink = {
-  key: string
-  label: string
-  to: string
-  menu?: CategoryMenu
-}
-
 const props = defineProps<{
   open: boolean
-  categories: CategoryLink[]
   title?: string
 }>()
+
+// Live categories — useCategories() is a useState-backed singleton, so
+// the list AppHeader resolves on the server is the same instance we read
+// here. `ensureResolved()` is a no-op once cached, so calling it on a
+// component that opens lazily costs nothing.
+const { categories, ensureResolved } = useCategories()
+await ensureResolved()
 
 const emit = defineEmits<{
   (e: 'update:open', value: boolean): void

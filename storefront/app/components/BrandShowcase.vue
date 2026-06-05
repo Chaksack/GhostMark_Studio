@@ -1,3 +1,24 @@
+<!--
+  BrandShowcase — STATIC BY DESIGN.
+
+  This component renders a wall of premium label partners (Patagonia, Kinto,
+  Moleskine, ...). The data here is NOT Medusa data and intentionally is not
+  wired to a backend collection or "brands" taxonomy:
+
+  - Brand names + lockups are third-party IP. Surfacing them on the home page
+    requires legal sign-off (partnership agreement, logo usage license) and
+    a real product story behind each one. We do not have that today.
+  - When the time comes, swap the inline `brands` array for editorial CMS
+    content (Strapi/Sanity), and source the logos from `/public/img/logos/*`
+    after legal review. Do NOT wire to `sdk.store.collection.list()` — these
+    are partner narratives, not merchandised product collections.
+  - This component is NOT currently mounted on `/` (pages/index.vue) — it
+    stays on disk for future content drops. See the section comment in
+    pages/index.vue that explains the omission.
+
+  TL;DR: brand logos are static editorial content sourced from
+  `/public/img/logos/*` and require legal sign-off before launch.
+-->
 <template>
   <section class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
     <h2 class="font-display text-display-lg font-normal text-zinc-950">Our best selling brands</h2>

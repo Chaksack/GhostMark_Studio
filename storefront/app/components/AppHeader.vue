@@ -207,113 +207,22 @@
         <!-- Visual separator between primary modes and category filters -->
         <span class="hidden lg:inline-block h-4 w-px bg-greyLines mx-2 shrink-0" aria-hidden="true" />
 
-        <div
+        <!--
+          Live category links — sourced from Medusa via useCategories().
+          Mega-menu chrome (featured tiles + curated sub-sections) was
+          dropped: that content was editorial seed data that didn't map
+          to any backend taxonomy, so every link broke. Simple anchors
+          here mirror the merchery reference and stay honest about what
+          the catalogue actually contains.
+        -->
+        <NuxtLink
           v-for="c in categories"
           :key="c.key"
-          class="group/menu static shrink-0 whitespace-nowrap"
+          :to="c.to"
+          class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
         >
-          <button
-            v-if="c.menu"
-            class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 group-hover/menu:border-zinc-950 group-hover/menu:text-zinc-950 group-focus-within/menu:border-zinc-950 group-focus-within/menu:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-            type="button"
-            aria-haspopup="true"
-          >
-            <span>{{ c.label }}</span>
-            <span class="inline-flex transition group-hover/menu:rotate-180 group-focus-within/menu:rotate-180">
-              <Icon name="chevron-down" :size="12" :stroke-width="2" />
-            </span>
-          </button>
-
-          <NuxtLink
-            v-else
-            class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-            :to="c.to"
-          >
-            <span>{{ c.label }}</span>
-          </NuxtLink>
-
-          <div
-            v-if="c.menu"
-            class="hidden lg:block invisible absolute inset-x-0 top-full -mt-px z-[95] translate-y-2 border-t border-[#ece7dd] bg-[#fbfaf7] opacity-0 shadow-[0_28px_90px_-48px_rgba(24,24,27,0.28)] transition duration-180 ease-out pointer-events-none group-hover/menu:visible group-hover/menu:pointer-events-auto group-hover/menu:translate-y-0 group-hover/menu:opacity-100 group-focus-within/menu:visible group-focus-within/menu:pointer-events-auto group-focus-within/menu:translate-y-0 group-focus-within/menu:opacity-100"
-          >
-            <div class="absolute inset-x-0 -top-5 h-5" aria-hidden="true" />
-            <div class="mx-auto grid w-full max-w-screen-3xl grid-cols-[minmax(460px,1.05fr)_minmax(360px,0.95fr)] gap-0 px-5 sm:px-6 lg:px-8">
-              <NuxtLink
-                :to="c.to"
-                class="group relative min-h-[318px] overflow-hidden border-r border-[#ece7dd]"
-                :style="{ background: c.menu.featuredBackground }"
-              >
-                <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.34),rgba(255,255,255,0.04)_40%,rgba(255,255,255,0.18))]" />
-                <div class="absolute left-10 right-10 top-9 h-px bg-zinc-700/12" aria-hidden="true" />
-                <div class="absolute left-12 top-10 flex items-start gap-4" aria-hidden="true">
-                  <div class="relative mt-4 h-[240px] w-[96px] rounded-[48px_48px_16px_16px] bg-white/64 shadow-[0_24px_60px_-35px_rgba(39,39,42,0.55)] backdrop-blur-[1px]">
-                    <div class="absolute left-1/2 top-[-18px] h-7 w-px -translate-x-1/2 bg-zinc-700/25" />
-                    <div class="absolute left-1/2 top-[-16px] h-5 w-8 -translate-x-1/2 rounded-t-full border border-zinc-700/20 border-b-0" />
-                  </div>
-                  <div class="relative h-[258px] w-[110px] rounded-[54px_54px_18px_18px] bg-[#ede5d8]/90 shadow-[0_24px_60px_-35px_rgba(39,39,42,0.48)]">
-                    <div class="absolute left-1/2 top-[-22px] h-8 w-px -translate-x-1/2 bg-zinc-700/25" />
-                    <div class="absolute left-1/2 top-[-20px] h-6 w-9 -translate-x-1/2 rounded-t-full border border-zinc-700/20 border-b-0" />
-                  </div>
-                  <div class="relative mt-1 h-[268px] w-[118px] rounded-[58px_58px_18px_18px] bg-[#7989ba]/88 shadow-[0_28px_70px_-40px_rgba(39,39,42,0.65)]">
-                    <div class="absolute left-1/2 top-[-22px] h-8 w-px -translate-x-1/2 bg-zinc-700/25" />
-                    <div class="absolute left-1/2 top-[-20px] h-6 w-9 -translate-x-1/2 rounded-t-full border border-zinc-700/20 border-b-0" />
-                  </div>
-                  <div class="relative mt-5 h-[238px] w-[102px] rounded-[50px_50px_16px_16px] bg-[#f7f6f2]/92 shadow-[0_24px_60px_-35px_rgba(39,39,42,0.55)]">
-                    <div class="absolute left-1/2 top-[-18px] h-7 w-px -translate-x-1/2 bg-zinc-700/25" />
-                    <div class="absolute left-1/2 top-[-16px] h-5 w-8 -translate-x-1/2 rounded-t-full border border-zinc-700/20 border-b-0" />
-                  </div>
-                </div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_82%_30%,rgba(255,255,255,0.58),transparent_24%),radial-gradient(circle_at_8%_16%,rgba(255,255,255,0.42),transparent_22%)]" aria-hidden="true" />
-
-                <div class="relative flex h-full flex-col justify-end p-8 lg:p-10">
-                  <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-700/55">{{ c.label }}</p>
-                  <p class="mt-3 max-w-[340px] font-serif text-[30px] leading-[1.02] text-zinc-950">{{ c.menu.featuredTitle }}</p>
-                  <p class="mt-3 max-w-[360px] text-[13px] leading-relaxed text-zinc-700/72">{{ c.menu.featuredDescription }}</p>
-                  <span class="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold tracking-[0.01em] text-zinc-950">
-                    Shop {{ c.label }}
-                    <span class="transition group-hover:translate-x-1">→</span>
-                  </span>
-                </div>
-              </NuxtLink>
-
-              <div class="grid grid-cols-[minmax(220px,1fr)_minmax(170px,220px)] gap-x-12 px-8 py-8 lg:px-10 lg:py-9">
-                <div>
-                  <p class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400">{{ c.menu.sections[0]?.title || c.label }}</p>
-                  <div class="mt-4 grid gap-2.5">
-                    <NuxtLink
-                      v-for="item in c.menu.sections[0]?.items || []"
-                      :key="item.label"
-                      :to="item.to"
-                      class="text-[17px] leading-[1.15] text-zinc-800 transition hover:text-zinc-950"
-                    >
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </div>
-
-                <div class="border-l border-[#ece7dd] pl-8">
-                  <div
-                    v-for="section in c.menu.sections.slice(1)"
-                    :key="section.title"
-                    class="mt-7 first:mt-0"
-                  >
-                    <p class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400">{{ section.title }}</p>
-                    <div class="mt-3 grid gap-2">
-                      <NuxtLink
-                        v-for="item in section.items"
-                        :key="item.label"
-                        :to="item.to"
-                        class="text-[13px] leading-[1.25] text-zinc-600 transition hover:text-zinc-950"
-                      >
-                        {{ item.label }}
-                      </NuxtLink>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <span>{{ c.label }}</span>
+        </NuxtLink>
       </div>
   </nav>
 
@@ -321,43 +230,21 @@
 
   <!--
     Full-screen mobile burger overlay. Mounted once, controlled by
-    `mobileNavOpen`. Categories pass-through so the overlay reuses the
-    same data the desktop mega-menu consumes — single source of truth.
+    `mobileNavOpen`. Categories are now read from `useCategories()`
+    inside the overlay itself — single source of truth, no prop drilling.
   -->
-  <MobileNav v-model:open="mobileNavOpen" :categories="categories" />
+  <MobileNav v-model:open="mobileNavOpen" />
 </template>
 
 <script setup lang="ts">
 import MobileNav from '~/components/MobileNav.vue'
 import Icon from '~/components/ui/Icon.vue'
 
-type CategoryMenuLink = {
-  label: string
-  to: string
-}
-
-type CategoryMenuSection = {
-  title: string
-  items: CategoryMenuLink[]
-}
-
-type CategoryMenu = {
-  featuredTitle: string
-  featuredDescription: string
-  featuredBackground: string
-  sections: CategoryMenuSection[]
-}
-
-type CategoryLink = {
-  key: string
-  label: string
-  to: string
-  menu?: CategoryMenu
-}
-
-const { categories } = defineProps<{
-  categories: CategoryLink[]
-}>()
+// Live taxonomy — sourced from Medusa once per app boot, shared via
+// useState. Awaited in setup so the SSR render emits the resolved list
+// (no flash of empty nav on first paint when backend is reachable).
+const { categories, ensureResolved } = useCategories()
+await ensureResolved()
 
 const route = useRoute()
 
