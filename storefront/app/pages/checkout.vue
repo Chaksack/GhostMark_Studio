@@ -292,6 +292,7 @@ import type {
 } from '@stripe/stripe-js'
 import UiSpinner from '~/components/ui/UiSpinner.vue'
 import CartModeBanner from '~/components/cart/CartModeBanner.vue'
+import { inferCartMode } from '~/utils/cartMode'
 
 useHead({ title: 'Checkout' })
 const sdk = useMedusaClient()
@@ -354,45 +355,11 @@ const cartShipping = computed(() => formatMoney((cart.value as any)?.shipping_to
 const cartTax = computed(() => formatMoney((cart.value as any)?.tax_total) || null)
 const cartTotal = computed(() => formatMoney((cart.value as any)?.total) || cartSubtotal.value)
 
-// ---------------------------------------------------------------------------
-// Cart mode classification (mirrors CartDropdown.inferMode + CartModeBanner).
+// Cart mode classification routes through ~/utils/cartMode (`inferCartMode`).
 // Drives the estimated-delivery copy below: all-apparel cart shows the fast
 // D2C ETA, all-POD cart shows the e-proof + production ETA, mixed defers to
 // the banner above the line items so we don't double-narrate.
-// ---------------------------------------------------------------------------
-const POD_MOQ_FALLBACK = 25
-type CartLineMode = 'pod' | 'apparel'
-
-const inferMode = (item: any): CartLineMode => {
-  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
-  if (productType === 'pod') return 'pod'
-  if (productType === 'apparel') return 'apparel'
-
-  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (lineMode === 'pod') return 'pod'
-  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
-
-  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (variantMode === 'pod') return 'pod'
-  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
-
-  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (productMeta === 'pod') return 'pod'
-  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
-
-  if (item?.metadata?.design_data) return 'pod'
-  if (item?.metadata?.preview_url) return 'pod'
-  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
-
-  return 'apparel'
-}
-
-const cartMode = computed<'pod' | 'apparel' | 'mixed' | 'empty'>(() => {
-  if (!cartItems.value.length) return 'empty'
-  const modes = new Set(cartItems.value.map(inferMode))
-  if (modes.size >= 2) return 'mixed'
-  return modes.has('pod') ? 'pod' : 'apparel'
-})
+const cartMode = computed(() => inferCartMode(cartItems.value))
 
 const estimatedDeliveryText = computed(() => {
   switch (cartMode.value) {

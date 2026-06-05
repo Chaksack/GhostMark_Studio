@@ -45,6 +45,7 @@ interface MedusaCollection {
   id: string
   handle: string
   title: string
+  created_at?: string
   metadata?: Record<string, unknown> | null
 }
 
@@ -68,6 +69,33 @@ const props = withDefaults(defineProps<{
 const sdk = useMedusaClient()
 const regionState = useRegion()
 
+/**
+ * Sort collections by merchandiser priority when set, then by created_at desc.
+ *
+ * - metadata.discover_priority is a numeric field on the Medusa collection.
+ * - Lower number = higher priority (1 first, 2 second, …) — standard
+ *   "rank from the top" convention.
+ * - Collections without the field sink below ranked ones, then sort by
+ *   created_at desc (newest first) so new drops still surface naturally.
+ */
+function sortByDiscoverPriority<T extends { metadata?: any, created_at?: string | Date }>(list: T[]): T[] {
+  const arr = [...list]
+  arr.sort((a, b) => {
+    const pa = Number(a?.metadata?.discover_priority)
+    const pb = Number(b?.metadata?.discover_priority)
+    const aHas = Number.isFinite(pa)
+    const bHas = Number.isFinite(pb)
+    if (aHas && bHas) return pa - pb
+    if (aHas) return -1
+    if (bHas) return 1
+    // Both unranked — fall back to created_at desc
+    const da = a?.created_at ? new Date(a.created_at).getTime() : 0
+    const db = b?.created_at ? new Date(b.created_at).getTime() : 0
+    return db - da
+  })
+  return arr
+}
+
 // Curator notes per collection handle. Anything not in this map gets a
 // generic "Hand-picked by the studio." fallback so a new collection added
 // in Medusa Admin still reads as deliberate on the home page. Keys match
@@ -87,15 +115,18 @@ const { data } = await useAsyncData<Shelf[]>(
   () => `discover-section:${regionState.regionId.value ?? 'no-region'}`,
   async () => {
     try {
-      // 1. List up to 2 collections. Ordering is Medusa-default (created_at
-      //    desc) — see the "risk" callout in the agent report; long-term
-      //    we want a `metadata.discover_priority` field for merchandiser
-      //    control over what surfaces here.
+      // 1. List a pool of collections, then rank by merchandiser priority
+      //    (metadata.discover_priority) and slice the top 2. When the field
+      //    is unset everywhere we fall back to Medusa-default created_at
+      //    desc inside sortByDiscoverPriority — so today's behaviour is
+      //    preserved until merchandisers start setting the field.
       const colRes: any = await sdk.store.collection.list({
-        limit: 2,
-        fields: 'id,title,handle,metadata',
+        limit: 50,
+        fields: 'id,title,handle,created_at,metadata',
       } as any)
-      const collections: MedusaCollection[] = colRes?.collections ?? []
+      const collections: MedusaCollection[] = sortByDiscoverPriority(
+        (colRes?.collections ?? []) as MedusaCollection[],
+      ).slice(0, 2)
       if (!collections.length) return []
 
       // 2. Fan out one product.list per collection. Promise.all keeps the

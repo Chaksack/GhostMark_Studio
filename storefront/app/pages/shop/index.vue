@@ -37,10 +37,10 @@
            those B2B-only facets don't apply here.) -->
       <nav class="hidden md:flex justify-between items-start gap-4 pb-[1rem] border-b border-greyLines">
         <div class="flex gap-[10px] flex-wrap">
-          <FilterPill v-model="categoryFilter" label="Category" :options="filterOptions.category" data-test="filter-category" />
+          <FilterPill v-model="categoryFilter" label="Category" :options="liveOptions.category" data-test="filter-category" />
           <FilterPill v-model="priceFilter" label="Price range" :options="filterOptions.price" data-test="filter-price" />
-          <FilterPill v-model="colorFilter" label="Color" :options="filterOptions.color" data-test="filter-color" />
-          <FilterPill v-model="brandFilter" label="Brands" :options="filterOptions.brand" data-test="filter-brand" />
+          <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color" />
+          <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand" />
         </div>
         <FilterPill v-model="sortBy" label="Sort by" :options="filterOptions.sort" :multi="false" data-test="filter-sort" />
       </nav>
@@ -79,10 +79,10 @@
         @clear="onClearFilters"
       >
         <div class="space-y-3">
-          <FilterPill v-model="categoryFilter" label="Category" :options="filterOptions.category" data-test="filter-category-mobile" />
+          <FilterPill v-model="categoryFilter" label="Category" :options="liveOptions.category" data-test="filter-category-mobile" />
           <FilterPill v-model="priceFilter" label="Price range" :options="filterOptions.price" data-test="filter-price-mobile" />
-          <FilterPill v-model="colorFilter" label="Color" :options="filterOptions.color" data-test="filter-color-mobile" />
-          <FilterPill v-model="brandFilter" label="Brands" :options="filterOptions.brand" data-test="filter-brand-mobile" />
+          <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color-mobile" />
+          <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand-mobile" />
         </div>
       </MobileFilterSheet>
 
@@ -164,7 +164,7 @@
 <script setup lang="ts">
 import FilterPill from '~/components/ui/FilterPill.vue'
 import MobileFilterSheet from '~/components/ui/MobileFilterSheet.vue'
-import { applySort, filterOptions, useProductTypeIds } from '~/utils/filters'
+import { applySort, filterOptions, useFilterOptions, useProductTypeIds } from '~/utils/filters'
 
 useHead({
   title: 'Shop · GhostMark Studio',
@@ -202,6 +202,12 @@ function onClearFilters() {
 }
 
 await regionState.ensureRegion()
+
+// Live filter options — Medusa-backed `category`/`color`/`brand` pills with
+// static fallback. `price`/`sort` remain static (domain-specific per the
+// filters.ts header docblock).
+const { liveOptions, ensureResolved: ensureFilterOptionsResolved } = useFilterOptions()
+await ensureFilterOptionsResolved()
 
 // Resolve product-type IDs so we can pass `type_id` to the Store API and let
 // the backend narrow to apparel-only — /shop is the Studio Canon D2C surface,

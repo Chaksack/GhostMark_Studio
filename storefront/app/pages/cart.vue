@@ -152,7 +152,7 @@
                       <div v-if="item.variant_title && item.title" class="mt-0.5 text-[13px] text-zinc-500">{{ item.variant_title }}</div>
                       <div class="mt-1.5 flex flex-wrap gap-1.5">
                         <span class="inline-block rounded bg-zinc-200 px-[6px] py-[2px] text-[10px] font-medium uppercase tracking-[0.06em] text-zinc-950">POD</span>
-                        <span v-if="needsProof(item)" class="inline-block rounded bg-amber-100 px-[6px] py-[2px] text-[10px] font-medium uppercase tracking-[0.06em] text-zinc-950">E-proof needed</span>
+                        <span v-if="needsEProof(item)" class="inline-block rounded bg-amber-100 px-[6px] py-[2px] text-[10px] font-medium uppercase tracking-[0.06em] text-zinc-950">E-proof needed</span>
                       </div>
                     </div>
                     <div class="text-right text-[15px] font-semibold text-zinc-950">{{ lineTotal(item) || '&mdash;' }}</div>
@@ -250,6 +250,7 @@
 
 <script setup lang="ts">
 import CartModeBanner from '~/components/cart/CartModeBanner.vue'
+import { inferLineMode, needsEProof } from '~/utils/cartMode'
 
 useHead({ title: 'Cart' })
 const { cart, isReady, ensureCart, updateItem, removeItem } = useCart()
@@ -259,45 +260,6 @@ const items = computed(() => (cart.value?.items ?? []) as any[])
 const itemsCount = computed(() => items.value.reduce((sum: number, i: any) => sum + (i?.quantity || 0), 0))
 const discountCode = ref('')
 
-// ---------------------------------------------------------------------------
-// Mode classification — duplicated from CartDropdown.inferMode rather than
-// extracted to a shared util to keep CartDropdown.vue self-contained per the
-// current ownership boundary. If you touch this chain, mirror the change in
-// CartDropdown.vue (5-tier resolution: product.type -> line meta -> variant
-// meta -> product meta -> design signals -> MOQ heuristic).
-// ---------------------------------------------------------------------------
-const POD_MOQ_FALLBACK = 25
-type CartLineMode = 'pod' | 'apparel'
-
-function inferMode(item: any): CartLineMode {
-  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
-  if (productType === 'pod') return 'pod'
-  if (productType === 'apparel') return 'apparel'
-
-  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (lineMode === 'pod') return 'pod'
-  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
-
-  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (variantMode === 'pod') return 'pod'
-  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
-
-  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (productMeta === 'pod') return 'pod'
-  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
-
-  if (item?.metadata?.design_data) return 'pod'
-  if (item?.metadata?.preview_url) return 'pod'
-  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
-
-  return 'apparel'
-}
-
-function needsProof(item: any): boolean {
-  const meta = item?.metadata || {}
-  return Boolean(meta.requires_proof || meta.design_data || meta.preview_url)
-}
-
 function sumLines(rows: any[]) {
   return rows.reduce(
     (sum: number, item: any) => sum + ((item?.unit_price ?? 0) * (item?.quantity ?? 0)),
@@ -305,8 +267,11 @@ function sumLines(rows: any[]) {
   )
 }
 
-const apparelItems = computed(() => items.value.filter((i: any) => inferMode(i) === 'apparel'))
-const podItems = computed(() => items.value.filter((i: any) => inferMode(i) === 'pod'))
+// Mode classification routes through ~/utils/cartMode — see that module for
+// the 5-tier resolution order. Keeping the bucketing as page-level computeds
+// (rather than a util) preserves reactivity off the `items` computed above.
+const apparelItems = computed(() => items.value.filter((i: any) => inferLineMode(i) === 'apparel'))
+const podItems = computed(() => items.value.filter((i: any) => inferLineMode(i) === 'pod'))
 
 const apparelSubtotalText = computed(() => {
   if (!apparelItems.value.length) return null

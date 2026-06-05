@@ -27,13 +27,40 @@
  */
 import FilterPill from '~/components/ui/FilterPill.vue'
 import MobileFilterSheet from '~/components/ui/MobileFilterSheet.vue'
-import { applySort, filterOptions } from '~/utils/filters'
+import { applySort, filterOptions, useFilterOptions } from '~/utils/filters'
 
 defineOptions({ name: 'PageCategoryParent' })
 
 const route = useRoute()
 const sdk = useMedusaClient()
 const { region, ensureRegion } = useRegion()
+
+/**
+ * Sort collections by merchandiser priority when set, then by created_at desc.
+ *
+ * - metadata.discover_priority is a numeric field on the Medusa collection.
+ * - Lower number = higher priority (1 first, 2 second, …) — standard
+ *   "rank from the top" convention.
+ * - Collections without the field sink below ranked ones, then sort by
+ *   created_at desc (newest first) so new drops still surface naturally.
+ */
+function sortByDiscoverPriority<T extends { metadata?: any, created_at?: string | Date }>(list: T[]): T[] {
+  const arr = [...list]
+  arr.sort((a, b) => {
+    const pa = Number(a?.metadata?.discover_priority)
+    const pb = Number(b?.metadata?.discover_priority)
+    const aHas = Number.isFinite(pa)
+    const bHas = Number.isFinite(pb)
+    if (aHas && bHas) return pa - pb
+    if (aHas) return -1
+    if (bHas) return 1
+    // Both unranked — fall back to created_at desc
+    const da = a?.created_at ? new Date(a.created_at).getTime() : 0
+    const db = b?.created_at ? new Date(b.created_at).getTime() : 0
+    return db - da
+  })
+  return arr
+}
 
 const parent = computed(() => String(route.params.parent ?? ''))
 
@@ -105,6 +132,12 @@ const HANDLE_FALLBACK_COPY: Record<string, { title: string, lede: string }> = {
 
 await ensureRegion()
 
+// Live filter options — Medusa-backed `category`/`color`/`brand` pills with
+// static fallback. `price`/`quantity`/`leadTime`/`sort` remain on the static
+// `filterOptions` import (domain-specific, see filters.ts header docblock).
+const { liveOptions, ensureResolved: ensureFilterOptionsResolved } = useFilterOptions()
+await ensureFilterOptionsResolved()
+
 const { data: category } = await useAsyncData(
   `category-parent-${parent.value}`,
   async () => {
@@ -137,11 +170,15 @@ const { data: discoverCollections } = await useAsyncData(
   async () => {
     if (parent.value !== 'discover') return []
     try {
+      // Pull a larger pool (50) so the merchandiser-priority sort has
+      // headroom to rank against; then slide the top 12 onto the page.
+      // When no collection sets metadata.discover_priority the helper falls
+      // back to created_at desc, preserving today's behaviour.
       const res = await sdk.store.collection.list({
-        limit: 12,
-        fields: 'id,title,handle,metadata',
+        limit: 50,
+        fields: 'id,title,handle,created_at,metadata',
       } as any)
-      return (res as any).collections ?? []
+      return sortByDiscoverPriority(((res as any).collections ?? []) as any[]).slice(0, 12)
     }
     catch {
       return []
@@ -382,12 +419,12 @@ function onClearFilters() {
         <!-- Desktop filter bar -->
         <nav class="hidden md:flex justify-between items-start gap-4 pb-[1rem] border-b border-greyLines">
           <div class="flex gap-[10px] flex-wrap">
-            <FilterPill v-model="categoryFilter" label="Category" :options="filterOptions.category" data-test="filter-category" />
+            <FilterPill v-model="categoryFilter" label="Category" :options="liveOptions.category" data-test="filter-category" />
             <FilterPill v-model="priceFilter" label="Price range" :options="filterOptions.price" data-test="filter-price" />
             <FilterPill v-model="quantityFilter" label="Quantity" :options="filterOptions.quantity" data-test="filter-quantity" />
             <FilterPill v-model="leadTimeFilter" label="Lead time" :options="filterOptions.leadTime" data-test="filter-leadtime" />
-            <FilterPill v-model="colorFilter" label="Color" :options="filterOptions.color" data-test="filter-color" />
-            <FilterPill v-model="brandFilter" label="Brands" :options="filterOptions.brand" data-test="filter-brand" />
+            <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color" />
+            <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand" />
             <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
               <input v-model="fastShipping" type="checkbox" class="w-5 h-5 rounded border-greyLines text-ink-950 focus:ring-ink-950">
               <span class="text-[14px] text-ink-950">Fast shipping only</span>
@@ -436,12 +473,12 @@ function onClearFilters() {
           @clear="onClearFilters"
         >
           <div class="space-y-3">
-            <FilterPill v-model="categoryFilter" label="Category" :options="filterOptions.category" data-test="filter-category-mobile" />
+            <FilterPill v-model="categoryFilter" label="Category" :options="liveOptions.category" data-test="filter-category-mobile" />
             <FilterPill v-model="priceFilter" label="Price range" :options="filterOptions.price" data-test="filter-price-mobile" />
             <FilterPill v-model="quantityFilter" label="Quantity" :options="filterOptions.quantity" data-test="filter-quantity-mobile" />
             <FilterPill v-model="leadTimeFilter" label="Lead time" :options="filterOptions.leadTime" data-test="filter-leadtime-mobile" />
-            <FilterPill v-model="colorFilter" label="Color" :options="filterOptions.color" data-test="filter-color-mobile" />
-            <FilterPill v-model="brandFilter" label="Brands" :options="filterOptions.brand" data-test="filter-brand-mobile" />
+            <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color-mobile" />
+            <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand-mobile" />
             <label class="flex items-center min-h-[48px] gap-3 cursor-pointer" data-test="filter-fast-shipping-mobile">
               <input v-model="fastShipping" type="checkbox" class="w-5 h-5 rounded border-greyLines text-ink-950 focus:ring-ink-950">
               <span class="text-[16px] text-ink-950">Fast shipping only</span>

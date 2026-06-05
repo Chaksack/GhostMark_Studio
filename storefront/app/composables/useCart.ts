@@ -1,3 +1,13 @@
+// Module-level guard so the regionId watcher is registered exactly once
+// per client session, regardless of how many components call useCart().
+// useCart() can be invoked from dozens of components per page; registering
+// a watcher inside each invocation would multiply network refreshes on a
+// single region flip and leak listeners across navigations. The composable
+// itself is request-scoped on the server (no-op there), and the watcher
+// is only registered on the client where this module persists for the
+// lifetime of the SPA shell.
+let cartRegionWatcherWired = false
+
 export const useCart = () => {
   const cartId = useCookie<string | null>('gms_cart_id', { sameSite: 'lax' })
   const cart = useState<any | null>('gms_cart', () => null)
@@ -107,6 +117,51 @@ export const useCart = () => {
         // localStorage may be unavailable (private mode); cookie reset is sufficient
       }
     }
+  }
+
+  // Region-change subscription.
+  //
+  // When the user flips region (RegionSelector / GeoModal → setRegion()),
+  // useRegion() already issues `sdk.store.cart.update(cartId, { region_id })`
+  // which causes Medusa to recompute `currency_code`, line `unit_price`,
+  // tax, and totals server-side. But without re-reading the cart, our local
+  // `cart` ref still mirrors the old region — header badge, mini-cart
+  // drawer, and checkout summary show stale GBP totals after a switch to
+  // EUR until the next page navigation triggers a fresh retrieve.
+  //
+  // We watch `regionId` here (rather than inside setRegion) so that ANY
+  // path that mutates the region cookie — direct setRegion call, future
+  // cookie-sync from the server, dev tools tampering — triggers a refresh.
+  // Keeps the responsibility on the cart side: it knows when its own state
+  // is stale, and consumers of useRegion don't need to know about cart.
+  //
+  // Client-only via `import.meta.client`: SSR seeds region from the cookie
+  // on the first request and never mutates it, so a server-side watcher
+  // would never fire and would only add lifecycle noise.
+  //
+  // Module-level guard prevents duplicate watchers when useCart() is called
+  // from multiple components on the same page.
+  if (import.meta.client && !cartRegionWatcherWired) {
+    cartRegionWatcherWired = true
+    watch(
+      () => regionState.regionId.value,
+      async (newId, oldId) => {
+        // No-op when the value didn't actually change (initial fire),
+        // when the new id is null (region cleared), or when there's no
+        // cart yet to refresh — the next addItem() will mint a fresh
+        // cart in the new region via ensureCart().
+        if (!newId || newId === oldId) return
+        if (!cartId.value) return
+        try {
+          await refresh()
+        } catch {
+          // Best-effort. The cookie flip is already authoritative, and
+          // the next user-driven cart mutation will re-read with the
+          // current region. Surfacing a toast here would be noise.
+        }
+      },
+      { immediate: false, flush: 'post' },
+    )
   }
 
   return {

@@ -53,6 +53,3 @@ test-results/
 .terraform.lock.hcl
 crash.log
 *.tfvars.local
-
-# Pre-rename leftover (delete folder once migration is finalized)
-/ghostmark/

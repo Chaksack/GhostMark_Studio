@@ -16,59 +16,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { inferCartMode } from '~/utils/cartMode'
 
 const props = defineProps<{
   items: any[] // cart line items
 }>()
 
-// MOQ heuristic — only consulted as the final fallback when no explicit
-// product.type / metadata signal is present. Matches CartDropdown.inferMode.
-const POD_MOQ_FALLBACK = 25
-
-type CartLineMode = 'pod' | 'apparel'
-
-/**
- * Mirror of CartDropdown.inferMode — kept inline (no shared util import) to
- * preserve the single-file contract on this component and avoid a circular
- * dep with the dropdown. If the chain here drifts from CartDropdown.vue, fix
- * both sites in lockstep.
- */
-function modeOf(item: any): CartLineMode {
-  // 1. Source of truth — product.type.value (backend taxonomy)
-  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
-  if (productType === 'pod') return 'pod'
-  if (productType === 'apparel') return 'apparel'
-
-  // 2. Line-level metadata override
-  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (lineMode === 'pod') return 'pod'
-  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
-
-  // 3. Variant-level metadata fallback
-  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (variantMode === 'pod') return 'pod'
-  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
-
-  // 4. Product-level metadata fallback
-  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (productMeta === 'pod') return 'pod'
-  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
-
-  // 5a. Custom-design signals — uploaded designs are POD by definition
-  if (item?.metadata?.design_data) return 'pod'
-  if (item?.metadata?.preview_url) return 'pod'
-
-  // 5b. MOQ heuristic — final fallback for legacy lines with zero metadata
-  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
-
-  // 6. Default — treat as in-stock apparel (D2C path)
-  return 'apparel'
-}
-
-const showBanner = computed(() => {
-  const items = props.items || []
-  if (!items.length) return false
-  const modes = new Set(items.map(modeOf))
-  return modes.size >= 2
-})
+// Banner renders only when the cart spans BOTH pod + apparel lines. The
+// aggregate-mode helper returns 'mixed' exactly in that case (and 'empty' /
+// 'pod' / 'apparel' otherwise) so the check stays declarative.
+const showBanner = computed(() => inferCartMode(props.items) === 'mixed')
 </script>

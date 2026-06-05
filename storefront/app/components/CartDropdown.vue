@@ -127,7 +127,7 @@
                     POD
                   </span>
                   <span
-                    v-if="needsProof(item)"
+                    v-if="needsEProof(item)"
                     class="mt-1 ml-1 inline-block rounded bg-amber-100 px-[6px] py-[2px] text-[10px] font-medium uppercase tracking-[0.06em] text-zinc-950"
                   >
                     E-proof needed
@@ -180,13 +180,16 @@
 </template>
 
 <script setup lang="ts">
+import { inferLineMode, needsEProof } from '~/utils/cartMode'
+
 const { cart, ensureCart, removeItem } = useCart()
 
 const open = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
 
-// MOQ heuristic — only consulted as the final fallback when no explicit
-// product.type / metadata signal is present on the line item.
+// MOQ heuristic used by the "Quote pending" badge below. The matching
+// fallback inside `inferLineMode` lives in ~/utils/cartMode — keep this
+// constant in sync if the threshold ever moves.
 const POD_MOQ_FALLBACK = 25
 
 function onBlur() {
@@ -205,52 +208,6 @@ const cartCount = computed(
 )
 const currency = computed(() => cart.value?.currency_code || 'usd')
 
-type CartLineMode = 'pod' | 'apparel'
-
-/**
- * 5-tier resolution chain. Aligned to the v3 backend taxonomy:
- *   product.type.value === 'pod' | 'apparel' is the canonical signal.
- * Every fallback below exists for backwards compatibility while the seed
- * runs through the catalog. Defensive optional chaining: each level may be
- * undefined on legacy data or partial cart fetches.
- */
-function inferMode(item: any): CartLineMode {
-  // 1. Source of truth — product.type.value (backend taxonomy)
-  const productType = (item?.variant?.product?.type?.value as string | undefined)?.toLowerCase()
-  if (productType === 'pod') return 'pod'
-  if (productType === 'apparel') return 'apparel'
-
-  // 2. Line-level metadata override (legacy / explicit per-line classification)
-  const lineMode = (item?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (lineMode === 'pod') return 'pod'
-  if (lineMode === 'shop' || lineMode === 'apparel') return 'apparel'
-
-  // 3. Variant-level metadata fallback
-  const variantMode = (item?.variant?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (variantMode === 'pod') return 'pod'
-  if (variantMode === 'shop' || variantMode === 'apparel') return 'apparel'
-
-  // 4. Product-level metadata fallback
-  const productMeta = (item?.variant?.product?.metadata?.commerce_mode as string | undefined)?.toLowerCase()
-  if (productMeta === 'pod') return 'pod'
-  if (productMeta === 'shop' || productMeta === 'apparel') return 'apparel'
-
-  // 5a. Custom-design signals — uploaded designs are POD by definition
-  if (item?.metadata?.design_data) return 'pod'
-  if (item?.metadata?.preview_url) return 'pod'
-
-  // 5b. MOQ heuristic — final fallback for legacy lines with zero metadata
-  if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
-
-  // 6. Default — treat as in-stock apparel (D2C path)
-  return 'apparel'
-}
-
-function needsProof(item: any): boolean {
-  const meta = item?.metadata || {}
-  return Boolean(meta.requires_proof || meta.design_data || meta.preview_url)
-}
-
 function needsQuote(item: any): boolean {
   const meta = item?.metadata || {}
   return Boolean(meta.requires_quote) || (item?.quantity ?? 0) >= POD_MOQ_FALLBACK
@@ -263,8 +220,8 @@ function sumLines(items: any[]) {
   )
 }
 
-const apparelItems = computed(() => cartItems.value.filter((item: any) => inferMode(item) === 'apparel'))
-const podItems = computed(() => cartItems.value.filter((item: any) => inferMode(item) === 'pod'))
+const apparelItems = computed(() => cartItems.value.filter((item: any) => inferLineMode(item) === 'apparel'))
+const podItems = computed(() => cartItems.value.filter((item: any) => inferLineMode(item) === 'pod'))
 
 const apparelSubtotal = computed(() => sumLines(apparelItems.value))
 const podSubtotal = computed(() => sumLines(podItems.value))
