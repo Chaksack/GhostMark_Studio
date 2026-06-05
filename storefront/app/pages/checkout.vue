@@ -390,15 +390,39 @@ const onSaveShipping = async () => {
       billing_address: { ...ship },
     })
     await refresh()
-    // Load shipping options
+    // Load shipping options for the now-known destination. Medusa filters by
+    // service-zone country + price resolvability against the cart's currency
+    // or region, so this can legitimately return zero (e.g. an unsupported
+    // country, or a region with no shipping rates configured yet).
     shippingOptions.value = await listShippingOptions()
+    if (!shippingOptions.value.length) {
+      // Hard-block advance. Previously the flow silently jumped to payment,
+      // user paid, and `cart.complete()` returned 400 ("No shipping method
+      // selected but the cart contains items that require shipping"). Better
+      // to surface the gap here than after card auth.
+      shipError.value =
+        'No shipping options are available for this address. Please double-check the country/postcode, or contact us — we may not deliver here yet.'
+      selectedShippingOptionId.value = ''
+      return
+    }
     if (shippingOptions.value.length === 1) {
       selectedShippingOptionId.value = shippingOptions.value[0].id
+    } else if (
+      selectedShippingOptionId.value &&
+      !shippingOptions.value.some((o: any) => o.id === selectedShippingOptionId.value)
+    ) {
+      // Previously-selected option no longer applies to this address — clear
+      // it so the radio re-renders unselected and the user must pick again.
+      selectedShippingOptionId.value = ''
     }
-    if (selectedShippingOptionId.value) {
-      await addShippingMethod(selectedShippingOptionId.value)
-      await refresh()
+    if (!selectedShippingOptionId.value) {
+      // Multiple options and none chosen yet — keep the user on the shipping
+      // step so they pick one. The radio block above already rendered.
+      shipError.value = 'Please select a shipping method to continue.'
+      return
     }
+    await addShippingMethod(selectedShippingOptionId.value)
+    await refresh()
     // Load payment providers and advance
     await loadProviders()
     step.value = 2

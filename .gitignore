@@ -45,6 +45,13 @@ logs/
 coverage/
 playwright-report/
 test-results/
+# Ephemeral Playwright MCP snapshot YAMLs at the repo root — these are
+# per-tool-call dumps that accumulate by the dozen on every e2e run and
+# carry no diagnostic value off-session. Keep `.playwright-mcp/e2e/` and
+# `.playwright-mcp/review/` (curated PNG screenshots) trackable.
+.playwright-mcp/*.yml
+.playwright-mcp/page-*.yml
+.playwright-mcp/console-*.log
 
 # Terraform
 *.tfstate
