@@ -244,6 +244,48 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
       }
     }
 
+    if (template === 'invite-created') {
+      // Admin staff invite. Fired by ghostmark/src/subscribers/
+      // invite-notifications.ts on the `invite.created` event. The
+      // subscriber supplies:
+      //   invite_email      — the address being invited
+      //   accept_url        — full /app/invite?token=… link
+      //   expires_in_days   — integer; Medusa default is 7
+      const subject = "You're invited to GhostMark Studio admin"
+      const bodyHtml = `
+        <p style="font-size:16px;color:#111827;margin:0 0 16px;font-weight:600;">Hi {{invite_email}},</p>
+        <p style="font-size:14px;color:#4b5563;line-height:1.6;margin:0 0 20px;">
+          You've been invited to join the GhostMark Studio admin team. Click the button below to accept your invitation and set up your account. The link is unique to you — please don't share it.
+        </p>
+        <div style="background:#ffffff;border:2px solid #000000;border-radius:8px;padding:20px;margin:24px 0;">
+          <h3 style="color:#000000;margin:0 0 12px;font-size:16px;font-weight:700;">What happens next</h3>
+          <p style="margin:6px 0;color:#4b5563;font-size:13px;">1. Click <strong style="color:#000000;">Accept invitation</strong> below.</p>
+          <p style="margin:6px 0;color:#4b5563;font-size:13px;">2. Enter your name and choose a password.</p>
+          <p style="margin:6px 0;color:#4b5563;font-size:13px;">3. You'll be signed in and ready to go.</p>
+          <p style="margin:10px 0 0;color:#92400e;font-size:13px;">This link expires in <strong>{{expires_in_days}} days</strong>.</p>
+        </div>
+        <p style="font-size:12px;color:#6b7280;line-height:1.5;margin:18px 0 0;">
+          If the button doesn't work, copy and paste this URL into your browser:
+          <br />
+          <a href="{{accept_url}}" style="color:#000000;text-decoration:underline;word-break:break-all;">{{accept_url}}</a>
+        </p>
+        <p style="font-size:12px;color:#6b7280;line-height:1.5;margin:18px 0 0;">
+          Didn't expect this email? You can safely ignore it — the invitation will expire on its own.
+        </p>
+      `
+      const html = renderEmailLayout({
+        title: 'Welcome to GhostMark Studio',
+        subtitle: 'You have been invited to the admin team',
+        bodyHtml,
+        cta: { label: 'Accept invitation', href: '{{accept_url}}' },
+      })
+      return {
+        subject,
+        html,
+        text: htmlToText(html),
+      }
+    }
+
     // Fallback generic template in the unified layout
     const genericSubject = 'Notification from GhostMark Studio'
     const genericHtml = renderEmailLayout({
