@@ -215,6 +215,16 @@
           stays under 8 visible entries no matter how flat the taxonomy
           gets. Both buckets keep their entry as a NAVIGABLE link to
           the parent landing page — the dropdown is sub-category-only.
+
+          IMPORTANT: the surrounding `<div>` is `overflow-x-auto` so that
+          when the lg viewport is narrow the row can horizontally scroll.
+          That clips any absolutely-positioned child (including the
+          dropdown panel) below the 50px row. To escape the clip we
+          `<Teleport to="body">` each MenuItems panel and position it
+          with `fixed` coordinates derived from the trigger button.
+          Headless UI's click-outside, focus return, and ESC behaviour
+          are component-level (not DOM-position-dependent), so they all
+          continue to work after the teleport.
         -->
         <Menu
           v-for="c in nestedCategories"
@@ -224,8 +234,10 @@
           class="relative shrink-0"
         >
           <MenuButton
+            :ref="(el: any) => registerMenuButton(c.key, el)"
             class="inline-flex min-h-[44px] items-center gap-1 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
             :class="{ 'text-zinc-950 border-zinc-950': open }"
+            @click="trackMenu(c.key)"
           >
             <span>{{ c.label }}</span>
             <svg
@@ -240,50 +252,57 @@
               <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </MenuButton>
-          <Transition
-            enter-active-class="transition duration-150 ease-out"
-            enter-from-class="opacity-0 -translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-1"
-          >
-            <MenuItems
-              class="absolute left-0 top-full z-20 mt-1 min-w-[12rem] origin-top-left rounded-md border border-greyLines bg-white py-1 shadow-lg focus:outline-none"
+          <Teleport to="body">
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 -translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-1"
             >
-              <!-- Parent landing page entry — keeps the "see everything in X" path. -->
-              <MenuItem v-slot="{ active }">
-                <NuxtLink
-                  :to="c.to"
-                  class="block px-4 py-2 text-[13px] font-medium transition"
-                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-950'"
-                >
-                  All {{ c.label.toLowerCase() }}
-                </NuxtLink>
-              </MenuItem>
-              <div class="my-1 h-px bg-greyLines" aria-hidden="true" />
-              <MenuItem
-                v-for="child in c.items"
-                :key="child.handle"
-                v-slot="{ active }"
+              <MenuItems
+                v-if="open"
+                static
+                class="fixed z-50 min-w-[12rem] origin-top-left rounded-md border border-greyLines bg-white py-1 shadow-lg focus:outline-none"
+                :style="getPanelStyle(c.key, 'left')"
               >
-                <NuxtLink
-                  :to="`/categories/${child.handle}`"
-                  class="block px-4 py-2 text-[13px] transition"
-                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                <!-- Parent landing page entry — keeps the "see everything in X" path. -->
+                <MenuItem v-slot="{ active }">
+                  <NuxtLink
+                    :to="c.to"
+                    class="block px-4 py-2 text-[13px] font-medium transition"
+                    :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-950'"
+                  >
+                    All {{ c.label.toLowerCase() }}
+                  </NuxtLink>
+                </MenuItem>
+                <div class="my-1 h-px bg-greyLines" aria-hidden="true" />
+                <MenuItem
+                  v-for="child in c.items"
+                  :key="child.handle"
+                  v-slot="{ active }"
                 >
-                  {{ child.label }}
-                </NuxtLink>
-              </MenuItem>
-            </MenuItems>
-          </Transition>
+                  <NuxtLink
+                    :to="`/categories/${child.handle}`"
+                    class="block px-4 py-2 text-[13px] transition"
+                    :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                  >
+                    {{ child.label }}
+                  </NuxtLink>
+                </MenuItem>
+              </MenuItems>
+            </Transition>
+          </Teleport>
         </Menu>
 
         <!--
           "More" bucket — every top-level WITHOUT children gets stashed
           here so the row stays compact. Order is whatever Medusa
           returns (admin-controlled sort_order, falling back to
-          handle alphabetical).
+          handle alphabetical). Right-aligned panel because it's the
+          last trigger in the row and would overflow viewport-right
+          if anchored from its left edge.
         -->
         <Menu
           v-if="flatCategories.length"
@@ -292,8 +311,10 @@
           class="relative shrink-0"
         >
           <MenuButton
+            :ref="(el: any) => registerMenuButton('__more__', el)"
             class="inline-flex min-h-[44px] items-center gap-1 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
             :class="{ 'text-zinc-950 border-zinc-950': open }"
+            @click="trackMenu('__more__')"
           >
             <span>More</span>
             <svg
@@ -308,32 +329,37 @@
               <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </MenuButton>
-          <Transition
-            enter-active-class="transition duration-150 ease-out"
-            enter-from-class="opacity-0 -translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-1"
-          >
-            <MenuItems
-              class="absolute right-0 top-full z-20 mt-1 grid w-[22rem] origin-top-right grid-cols-2 gap-x-4 rounded-md border border-greyLines bg-white p-3 shadow-lg focus:outline-none"
+          <Teleport to="body">
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 -translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-1"
             >
-              <MenuItem
-                v-for="c in flatCategories"
-                :key="c.key"
-                v-slot="{ active }"
+              <MenuItems
+                v-if="open"
+                static
+                class="fixed z-50 grid w-[22rem] origin-top-right grid-cols-2 gap-x-4 rounded-md border border-greyLines bg-white p-3 shadow-lg focus:outline-none"
+                :style="getPanelStyle('__more__', 'right')"
               >
-                <NuxtLink
-                  :to="c.to"
-                  class="block rounded px-3 py-2 text-[13px] transition"
-                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                <MenuItem
+                  v-for="c in flatCategories"
+                  :key="c.key"
+                  v-slot="{ active }"
                 >
-                  {{ c.label }}
-                </NuxtLink>
-              </MenuItem>
-            </MenuItems>
-          </Transition>
+                  <NuxtLink
+                    :to="c.to"
+                    class="block rounded px-3 py-2 text-[13px] transition"
+                    :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                  >
+                    {{ c.label }}
+                  </NuxtLink>
+                </MenuItem>
+              </MenuItems>
+            </Transition>
+          </Teleport>
         </Menu>
       </div>
   </nav>
@@ -380,6 +406,81 @@ const nestedCategories = computed(() =>
 const flatCategories = computed(() =>
   (categories.value ?? []).filter((c) => (c.items?.length ?? 0) === 0),
 )
+
+// ---------------------------------------------------------------------------
+// Desktop category dropdown positioning
+// ---------------------------------------------------------------------------
+// The category nav row uses `overflow-x-auto` (so the row can horizontally
+// scroll at narrow lg viewports). That overflow ALSO clips any absolutely-
+// positioned descendant on the Y axis — so a stock HeadlessUI Menu rendered
+// inline below the trigger button is invisible: the panel exists in the DOM
+// but every pixel below the 50px row is cropped out.
+//
+// We solve it by teleporting each MenuItems panel to <body> and positioning
+// it with `position: fixed` coordinates derived from the trigger button's
+// bounding rect. The position is recomputed on:
+//   - the MenuButton click (we cache the trigger ref by category key)
+//   - scroll / resize while the panel is open (handled by reactive triggers)
+//
+// We keep one ref per trigger button (`menuButtonEls`), and one tick counter
+// (`positionTick`) bumped on scroll/resize so getPanelStyle re-runs. The
+// `__more__` key is reserved for the trailing "More" bucket.
+const menuButtonEls = new Map<string, HTMLElement>()
+const positionTick = ref(0)
+
+// Template ref callback. HeadlessUI's <MenuButton> exposes an `$el` on the
+// component instance (it renders a real <button>), so we drill into that to
+// get the DOM node we can call getBoundingClientRect on.
+function registerMenuButton(key: string, instance: any) {
+  const el: HTMLElement | null = instance?.$el ?? (instance instanceof HTMLElement ? instance : null)
+  if (el) {
+    menuButtonEls.set(key, el)
+  } else {
+    menuButtonEls.delete(key)
+  }
+}
+
+// Force a recompute when the user clicks a trigger — useful when the row
+// has been horizontally scrolled between opens.
+function trackMenu(_key: string) {
+  positionTick.value++
+}
+
+// Coordinate generator. Reads the trigger's bounding rect at render time and
+// returns a `fixed`-positioned style object. `align` controls whether the
+// panel's left or right edge anchors under the trigger.
+function getPanelStyle(key: string, align: 'left' | 'right'): Record<string, string> {
+  // Touch the tick so the computation re-runs when we tell it to.
+  void positionTick.value
+  const el = menuButtonEls.get(key)
+  if (!el) return { visibility: 'hidden' }
+  const r = el.getBoundingClientRect()
+  // Sit the panel 6px below the trigger, matching the previous `mt-1` look.
+  const top = `${Math.round(r.bottom + 6)}px`
+  if (align === 'right') {
+    // Anchor right edge of panel to right edge of trigger.
+    const right = `${Math.round(window.innerWidth - r.right)}px`
+    return { top, right }
+  }
+  return { top, left: `${Math.round(r.left)}px` }
+}
+
+// Reposition on viewport changes so an open panel stays glued to its trigger.
+// Cheap — only bumps a counter; the computed style runs again from the next
+// render tick. Listeners are scoped to client-side only (Nuxt SSR safe).
+if (import.meta.client) {
+  const onLayoutChange = () => {
+    positionTick.value++
+  }
+  onMounted(() => {
+    window.addEventListener('scroll', onLayoutChange, { passive: true, capture: true })
+    window.addEventListener('resize', onLayoutChange, { passive: true })
+  })
+  onBeforeUnmount(() => {
+    window.removeEventListener('scroll', onLayoutChange, { capture: true })
+    window.removeEventListener('resize', onLayoutChange)
+  })
+}
 
 const route = useRoute()
 
