@@ -220,7 +220,7 @@
             <svg class="h-16 w-16 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <h1 class="mt-6 font-serif text-[32px] text-zinc-950">Thank you!</h1>
             <p class="mt-2 text-[15px] text-zinc-600">Your order has been placed successfully.</p>
-            <p v-if="confirmationId" class="mt-1 text-[14px] text-zinc-500">Order ID: {{ confirmationId }}</p>
+            <p v-if="confirmationDisplayId" class="mt-1 text-[14px] text-zinc-500">Order ID: {{ confirmationDisplayId }}</p>
             <NuxtLink to="/products" class="mt-8 inline-flex h-[48px] items-center justify-center bg-zinc-950 px-8 text-[14px] font-medium tracking-wide text-white hover:bg-zinc-800">
               Continue shopping
             </NuxtLink>
@@ -608,7 +608,14 @@ onBeforeUnmount(() => {
 const placing = ref(false)
 const payError = ref<string | null>(null)
 const orderResult = ref<string | null>(null)
-const confirmationId = ref<string | null>(null)
+// Customer-facing label only. We show `display_id` (the human-readable
+// integer Medusa surfaces in the admin and in our Resend order-confirmation
+// email — see `order_display_id` in `resend-notification/service.ts`). The
+// internal ULID (`order_01KTD…`) is kept in `confirmationOrderId` for any
+// future "View order" deep-link, but must NOT be shown as the headline ID
+// because the customer's email and the storefront would then disagree.
+const confirmationDisplayId = ref<string | number | null>(null)
+const confirmationOrderId = ref<string | null>(null)
 
 const placeDisabled = computed(() => {
   if (placing.value) return true
@@ -646,7 +653,11 @@ const finalizeOrder = async () => {
     throw new Error(result.error?.message || 'Cart could not be completed.')
   }
   const order = result?.order ?? (result?.type === 'order' ? result?.order : null) ?? result
-  confirmationId.value = order?.id || result?.id || null
+  confirmationOrderId.value = order?.id || result?.id || null
+  // Fall back to the internal id ONLY if display_id is somehow missing —
+  // newly-minted orders always have one, but defensive in case the response
+  // shape changes upstream.
+  confirmationDisplayId.value = order?.display_id ?? confirmationOrderId.value
   // Clear the cart cookie so a fresh cart is created on the next visit.
   cartId.value = null
   step.value = 3
