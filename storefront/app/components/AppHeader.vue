@@ -208,21 +208,133 @@
         <span class="hidden lg:inline-block h-4 w-px bg-greyLines mx-2 shrink-0" aria-hidden="true" />
 
         <!--
-          Live category links — sourced from Medusa via useCategories().
-          Mega-menu chrome (featured tiles + curated sub-sections) was
-          dropped: that content was editorial seed data that didn't map
-          to any backend taxonomy, so every link broke. Simple anchors
-          here mirror the merchery reference and stay honest about what
-          the catalogue actually contains.
+          Live category nav — sourced from Medusa via useCategories().
+          Top-levels with children render as HeadlessUI Menu dropdowns
+          (apparel/drinkware/accessories/lifestyle today). Top-levels
+          without children get bucketed under "More ▾" so the row
+          stays under 8 visible entries no matter how flat the taxonomy
+          gets. Both buckets keep their entry as a NAVIGABLE link to
+          the parent landing page — the dropdown is sub-category-only.
         -->
-        <NuxtLink
-          v-for="c in categories"
+        <Menu
+          v-for="c in nestedCategories"
           :key="c.key"
-          :to="c.to"
-          class="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+          v-slot="{ open }"
+          as="div"
+          class="relative shrink-0"
         >
-          <span>{{ c.label }}</span>
-        </NuxtLink>
+          <MenuButton
+            class="inline-flex min-h-[44px] items-center gap-1 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+            :class="{ 'text-zinc-950 border-zinc-950': open }"
+          >
+            <span>{{ c.label }}</span>
+            <svg
+              class="h-3 w-3 transition-transform"
+              :class="{ 'rotate-180': open }"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </MenuButton>
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 -translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-1"
+          >
+            <MenuItems
+              class="absolute left-0 top-full z-20 mt-1 min-w-[12rem] origin-top-left rounded-md border border-greyLines bg-white py-1 shadow-lg focus:outline-none"
+            >
+              <!-- Parent landing page entry — keeps the "see everything in X" path. -->
+              <MenuItem v-slot="{ active }">
+                <NuxtLink
+                  :to="c.to"
+                  class="block px-4 py-2 text-[13px] font-medium transition"
+                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-950'"
+                >
+                  All {{ c.label.toLowerCase() }}
+                </NuxtLink>
+              </MenuItem>
+              <div class="my-1 h-px bg-greyLines" aria-hidden="true" />
+              <MenuItem
+                v-for="child in c.items"
+                :key="child.handle"
+                v-slot="{ active }"
+              >
+                <NuxtLink
+                  :to="`/categories/${child.handle}`"
+                  class="block px-4 py-2 text-[13px] transition"
+                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                >
+                  {{ child.label }}
+                </NuxtLink>
+              </MenuItem>
+            </MenuItems>
+          </Transition>
+        </Menu>
+
+        <!--
+          "More" bucket — every top-level WITHOUT children gets stashed
+          here so the row stays compact. Order is whatever Medusa
+          returns (admin-controlled sort_order, falling back to
+          handle alphabetical).
+        -->
+        <Menu
+          v-if="flatCategories.length"
+          v-slot="{ open }"
+          as="div"
+          class="relative shrink-0"
+        >
+          <MenuButton
+            class="inline-flex min-h-[44px] items-center gap-1 border-b border-transparent px-0.5 py-1.5 text-zinc-500 transition hover:text-zinc-950 hover:border-zinc-950 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+            :class="{ 'text-zinc-950 border-zinc-950': open }"
+          >
+            <span>More</span>
+            <svg
+              class="h-3 w-3 transition-transform"
+              :class="{ 'rotate-180': open }"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </MenuButton>
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 -translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-1"
+          >
+            <MenuItems
+              class="absolute right-0 top-full z-20 mt-1 grid w-[22rem] origin-top-right grid-cols-2 gap-x-4 rounded-md border border-greyLines bg-white p-3 shadow-lg focus:outline-none"
+            >
+              <MenuItem
+                v-for="c in flatCategories"
+                :key="c.key"
+                v-slot="{ active }"
+              >
+                <NuxtLink
+                  :to="c.to"
+                  class="block rounded px-3 py-2 text-[13px] transition"
+                  :class="active ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950'"
+                >
+                  {{ c.label }}
+                </NuxtLink>
+              </MenuItem>
+            </MenuItems>
+          </Transition>
+        </Menu>
       </div>
   </nav>
 
@@ -239,12 +351,35 @@
 <script setup lang="ts">
 import MobileNav from '~/components/MobileNav.vue'
 import Icon from '~/components/ui/Icon.vue'
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 // Live taxonomy — sourced from Medusa once per app boot, shared via
 // useState. Awaited in setup so the SSR render emits the resolved list
 // (no flash of empty nav on first paint when backend is reachable).
 const { categories, ensureResolved } = useCategories()
 await ensureResolved()
+
+// Partition the live taxonomy for the desktop nav. The Medusa tree is
+// uneven: only a few top-level categories carry children right now
+// (Apparel / Drinkware / Accessories / Lifestyle), while the rest are
+// flat shortcuts (Mugs, Hats, Tote bags, …). Rendering all 16 inline
+// drowned the row; instead:
+//
+//   - `nestedCategories` → top-levels WITH children → each becomes a
+//     hover/click dropdown showing its sub-categories
+//   - `flatCategories`   → top-levels WITHOUT children → collapsed into
+//     a single "More ▾" dropdown so the row stays compact
+//
+// Data-driven by design: if a merchant adds children to "Gifts" in the
+// Medusa admin tomorrow, it auto-promotes to a top-level dropdown
+// without any code change here. Conversely, dropping a category from
+// the tree retires it from the nav silently.
+const nestedCategories = computed(() =>
+  (categories.value ?? []).filter((c) => (c.items?.length ?? 0) > 0),
+)
+const flatCategories = computed(() =>
+  (categories.value ?? []).filter((c) => (c.items?.length ?? 0) === 0),
+)
 
 const route = useRoute()
 
