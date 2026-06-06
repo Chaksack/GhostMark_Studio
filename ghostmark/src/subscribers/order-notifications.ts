@@ -90,6 +90,121 @@ export default async function orderConfirmationHandler({
       }
     }
 
+    // URL prefix for storefront-served upload assets (preview thumbnails
+    // and original design files). Set STOREFRONT_PUBLIC_URL in production;
+    // dev defaults to localhost:3000 which is what the Nuxt storefront
+    // boots on per the rest of this codebase.
+    const storefrontOrigin = (
+      process.env.STOREFRONT_PUBLIC_URL || 'http://localhost:3000'
+    ).replace(/\/$/, '')
+    const absolutizeUpload = (url: string | null | undefined): string | null => {
+      if (!url) return null
+      if (/^(?:https?:)?\/\//.test(url)) return url
+      if (url.startsWith('/')) return `${storefrontOrigin}${url}`
+      return url
+    }
+
+    // Per-item designs for the email template. POD items will carry
+    // `metadata.isCustomized = true` and a `designDataJson` payload that
+    // includes `originalUrl` per print location. Non-POD items get an
+    // empty `designs: []` so the template branches don't have to null-check.
+    const buildDesigns = (item: any): Array<{
+      location: string
+      original_url: string | null
+      original_filename: string | null
+    }> => {
+      if (!item?.metadata?.isCustomized) return []
+      let parsed: any = null
+      try {
+        parsed = item.metadata.designDataJson
+          ? JSON.parse(item.metadata.designDataJson)
+          : null
+      } catch {
+        parsed = null
+      }
+      const designs = (parsed?.designs ?? {}) as Record<string, any>
+      return Object.entries(designs)
+        .filter(([, slot]) => slot)
+        .map(([location, slot]) => ({
+          location,
+          original_url: absolutizeUpload(slot?.originalUrl ?? null),
+          original_filename: slot?.originalFilename ?? null,
+        }))
+    }
+
+    // Per-item line for the customer email. POD items get a thumbnail
+    // and a "Designs received" block; plain items just show qty + price.
+    const escapeHtml = (s: string): string =>
+      s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+
+    type EnrichedItem = ReturnType<typeof enrichItem>
+    const enrichItem = (item: any) => {
+      const title = item?.variant?.product?.title || item?.title || 'Product'
+      const qty = item?.quantity ?? 1
+      const isCustomized = item?.metadata?.isCustomized === true
+      return {
+        title,
+        quantity: qty,
+        unit_price: formatCurrency(item?.unit_price),
+        is_customized: isCustomized,
+        preview_image_url: absolutizeUpload(item?.metadata?.previewImageUrl),
+        designs: buildDesigns(item),
+      }
+    }
+
+    const enriched: EnrichedItem[] = (order.items ?? []).map(enrichItem)
+
+    // Renders the per-item rows shown inside the Order Summary card. POD
+    // items get a thumbnail + a "designs received" sub-block listing
+    // each print location's original-file download link. Non-POD items
+    // get a clean qty/price row. The simple `{{key}}` interpolator
+    // in resend-notification/service.ts can't iterate, so we
+    // pre-render the whole block here.
+    const itemsSummaryHtml = enriched.length
+      ? enriched
+          .map((it) => {
+            const previewImg = it.preview_image_url
+              ? `<img src="${escapeHtml(it.preview_image_url)}" alt="" style="display:block;width:64px;height:64px;border-radius:6px;object-fit:cover;border:1px solid #e5e7eb;" />`
+              : ''
+            const designsRows = it.is_customized && it.designs.length
+              ? `
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb;">
+                  <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:#000000;">Designs received</p>
+                  ${it.designs
+                    .map(
+                      (d) => `
+                    <p style="margin:2px 0;font-size:12px;color:#4b5563;">
+                      <span style="font-weight:600;color:#000000;">${escapeHtml(
+                        d.location.charAt(0).toUpperCase() + d.location.slice(1),
+                      )}:</span>
+                      ${
+                        d.original_url
+                          ? `<a href="${escapeHtml(d.original_url)}" style="color:#000000;text-decoration:underline;">${escapeHtml(d.original_filename || 'original file')}</a>`
+                          : `<span style="color:#92400e;">awaiting upload — we'll email you to follow up</span>`
+                      }
+                    </p>`,
+                    )
+                    .join('')}
+                </div>`
+              : ''
+            return `
+              <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6;">
+                ${previewImg ? `<div style="flex:0 0 64px;">${previewImg}</div>` : ''}
+                <div style="flex:1;min-width:0;">
+                  <p style="margin:0;font-size:14px;font-weight:600;color:#000000;">${escapeHtml(it.title)}</p>
+                  <p style="margin:2px 0 0;font-size:13px;color:#4b5563;">Qty: ${it.quantity} · ${escapeHtml(it.unit_price)}</p>
+                  ${designsRows}
+                </div>
+              </div>`
+          })
+          .join('')
+      : ''
+
     // Prepare email data
     const emailData = {
       order_display_id: displayId,
@@ -98,11 +213,12 @@ export default async function orderConfirmationHandler({
       order_total: formatCurrency(order.total),
       total_quantity: totalQuantity,
       customer_type: customerType,
-      items: order.items?.map((item: any) => ({
-        title: item.variant?.product?.title || 'Product',
-        quantity: item.quantity,
-        unit_price: formatCurrency(item.unit_price)
-      }))
+      // String pre-rendered above — the {{items_summary_html}}
+      // placeholder in the template gets replaced verbatim.
+      items_summary_html: itemsSummaryHtml,
+      // Structured items still passed alongside so future templates
+      // (e.g. plaintext fallback, ops alert) can iterate on the data.
+      items: enriched,
     }
 
     // Send customer confirmation email

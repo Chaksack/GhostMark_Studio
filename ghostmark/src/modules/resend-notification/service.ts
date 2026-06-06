@@ -192,7 +192,11 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
           <p style="margin:6px 0;color:#4b5563;font-size:13px;"><span style="font-weight:600;color:#000000;">Order ID:</span> {{order_display_id}}</p>
           <p style="margin:6px 0;color:#4b5563;font-size:13px;"><span style="font-weight:600;color:#000000;">Customer Type:</span> {{customer_type}}</p>
           <p style="margin:6px 0;color:#4b5563;font-size:13px;"><span style="font-weight:600;color:#000000;">Quantity:</span> {{total_quantity}} units</p>
-          <p style="margin:10px 0 0;font-size:16px;font-weight:700;color:#000000;">Total: {{order_total}}</p>
+          <!-- Per-item rows: pre-rendered HTML built in order-notifications.ts.
+               POD line items embed a preview thumbnail + per-location design
+               download links so the customer can re-reach their artwork. -->
+          <div style="margin:14px 0 0;">{{items_summary_html}}</div>
+          <p style="margin:14px 0 0;font-size:16px;font-weight:700;color:#000000;">Total: {{order_total}}</p>
         </div>
       `
       const html = renderEmailLayout({

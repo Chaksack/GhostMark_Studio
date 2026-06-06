@@ -128,6 +128,26 @@ interface SideState {
   position: { x: number; y: number }
   scale: number
   rotation: number
+  // Persisted upload of the ORIGINAL file (not the preview screenshot).
+  // Filled in asynchronously by `loadDesign` so the user can keep
+  // positioning while the upload races to completion. When `onSubmit`
+  // runs, these fields are read into `sidePayload` so the line item
+  // metadata carries the durable URL — production needs the original
+  // artwork to render high-quality print files, the preview screenshot
+  // is too lossy.
+  //
+  //   originalUrl     — server-relative URL (e.g. /uploads/designs/…)
+  //   originalFilename — what the customer named the file (for support)
+  //   originalMimeType — image/png | image/jpeg | image/webp
+  //   uploadingOriginal — true while the network request is in flight
+  //   originalUploadError — non-null if the upload failed; we still
+  //     allow ATC because the customer can re-upload from order detail
+  //     later, but we surface a warning in the UI.
+  originalUrl: string | null
+  originalFilename: string | null
+  originalMimeType: string | null
+  uploadingOriginal: boolean
+  originalUploadError: string | null
 }
 
 const STAGE_W = 600
@@ -156,6 +176,11 @@ const makeEmptySide = (key: string): SideState => {
     position: { x: a.x + a.width / 2, y: a.y + a.height / 2 },
     scale: 1,
     rotation: 0,
+    originalUrl: null,
+    originalFilename: null,
+    originalMimeType: null,
+    uploadingOriginal: false,
+    originalUploadError: null,
   }
 }
 
@@ -280,6 +305,65 @@ const onPickFile = (e: Event) => {
   loadDesign(file, activeKey.value)
 }
 
+// Persist the ORIGINAL design file to the server (not the preview
+// screenshot — that flow is in `onSubmit`). This is what production
+// uses to render high-quality print files, so it has to survive the
+// browser session. We POST the same multipart shape as the existing
+// /api/uploads/image endpoint accepts, then patch the slot with the
+// returned URL when the response lands.
+//
+// Errors are NOT fatal — we set `originalUploadError` on the slot so
+// the UI can show a "retry" hint, but `onSubmit` will still ship the
+// metadata (just with `originalUrl: null`). This means a user with a
+// flaky connection can still place an order; support can chase the
+// missing artwork from order detail.
+const uploadOriginalFile = async (file: File, key: string): Promise<void> => {
+  // Mark in-flight so anyUploadingOriginal blocks ATC until done.
+  const cur = designs.value[key]
+  if (!cur) return
+  designs.value = {
+    ...designs.value,
+    [key]: { ...cur, uploadingOriginal: true, originalUploadError: null },
+  }
+  try {
+    const fd = new FormData()
+    fd.append('image', file, file.name || 'design')
+    const res = await $fetch<{ url: string; bytes: number; mime: string }>(
+      '/api/uploads/image',
+      { method: 'POST', body: fd },
+    )
+    // Re-read the slot at write time: the user may have removed the
+    // design or swapped a new file while this upload was racing. In
+    // either case we drop the result on the floor rather than clobber.
+    const after = designs.value[key]
+    if (!after || after.file !== file) return
+    designs.value = {
+      ...designs.value,
+      [key]: {
+        ...after,
+        originalUrl: res.url,
+        originalFilename: file.name || null,
+        originalMimeType: file.type || res.mime || null,
+        uploadingOriginal: false,
+        originalUploadError: null,
+      },
+    }
+  } catch (e: unknown) {
+    const after = designs.value[key]
+    if (!after || after.file !== file) return
+    const message = e instanceof Error ? e.message : 'Upload failed'
+    designs.value = {
+      ...designs.value,
+      [key]: {
+        ...after,
+        uploadingOriginal: false,
+        originalUploadError: message,
+      },
+    }
+    emit('error', `Couldn't upload the original design file: ${message}. You can still add to cart — we'll request the file again from your order page.`)
+  }
+}
+
 const loadDesign = (file: File, key: string) => {
   const prev = designs.value[key]
   if (prev?.imageUrl) URL.revokeObjectURL(prev.imageUrl)
@@ -302,12 +386,24 @@ const loadDesign = (file: File, key: string) => {
         position: { x: a.x + a.width / 2, y: a.y + a.height / 2 },
         scale: initialScale,
         rotation: 0,
+        // Original-file persistence kicks off below; seed the metadata
+        // fields with sensible defaults so the type contract holds
+        // even if the user smashes "Add to cart" before the upload
+        // settles.
+        originalUrl: null,
+        originalFilename: file.name || null,
+        originalMimeType: file.type || null,
+        uploadingOriginal: true,
+        originalUploadError: null,
       },
     }
     sideImages.value = { ...sideImages.value, [key]: img }
     if (key === activeKey.value) void nextTick(attachTransformer)
     emit('design-uploaded', { locationKey: key })
     void nextTick(emitLivePreview)
+    // Fire-and-forget. `uploadOriginalFile` reads the slot, mutates
+    // it on completion, and is safe across re-renders + file swaps.
+    void uploadOriginalFile(file, key)
   }
   img.src = url
 }
@@ -498,6 +594,15 @@ watch(
 
 const showTablist = computed<boolean>(() => props.printLocations.length >= 2)
 
+// True while any slot's original-file upload is still in flight. We use
+// this to block submit so the line item metadata always carries a real
+// URL when possible — the design-editor → cart hop is the only chance
+// to attach the original artwork, so a half-second wait here saves a
+// support round-trip later.
+const anyUploadingOriginal = computed<boolean>(() =>
+  Object.values(designs.value).some((s) => s?.uploadingOriginal === true),
+)
+
 // -----------------------------------------------------------------------------
 // Submit — capture stage to PNG, upload preview, post ALL locations' designs.
 // -----------------------------------------------------------------------------
@@ -527,6 +632,15 @@ const onSubmit = async () => {
     emit('error', errorMessage.value)
     return
   }
+  if (anyUploadingOriginal.value) {
+    // The background upload of the original file is what production
+    // will render from. Submitting now would attach a `null` originalUrl
+    // to the line item, leaving support to chase the customer for the
+    // artwork. A second's wait is much cheaper.
+    errorMessage.value = 'Hang on — your design is still uploading. This usually takes a second.'
+    emit('error', errorMessage.value)
+    return
+  }
 
   submitting.value = true
   try {
@@ -550,6 +664,15 @@ const onSubmit = async () => {
         rotation: slot.rotation,
         mockupUrl: mockupUrlForKey(key),
         area: areaForKey(key),
+        // Original-file URL: durable server-side copy of what the
+        // customer actually uploaded. This is what production needs
+        // for high-quality rendering. May be null if the background
+        // upload failed or was still in flight at submit time — both
+        // cases are valid ship paths (see `anyUploadingOriginal` and
+        // the warning emitted from `uploadOriginalFile`).
+        originalUrl: slot.originalUrl,
+        originalFilename: slot.originalFilename,
+        originalMimeType: slot.originalMimeType,
       }
     }
 
