@@ -1,6 +1,20 @@
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
 import { Modules } from "@medusajs/framework/utils"
 
+// Customer-facing order number: `GMS-<ULID>` derived from Medusa's internal
+// `order.id`. We use the ULID rather than `display_id` because the integer
+// leaks order velocity and isn't unique enough to quote in support tickets.
+//
+// CRITICAL: this format MUST stay in sync with the storefront helper in
+// `storefront/app/pages/checkout.vue` (`formatOrderNumber`). Both surfaces
+// have to render the same string or the customer sees a mismatch between
+// the email and the confirmation page. If you change the format here,
+// change it there in the same commit.
+const formatOrderNumber = (internalId: string): string => {
+  if (internalId.startsWith("GMS-")) return internalId
+  return `GMS-${internalId.replace(/^order_/, "")}`
+}
+
 // Order confirmation email subscriber
 export default async function orderConfirmationHandler({
   event: { data },
@@ -37,7 +51,10 @@ export default async function orderConfirmationHandler({
     const totalQuantity = order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0
     const customerType = order.metadata?.customer_type || 'individual'
 
-    const displayId = (order as any).display_id || order.id
+    // GMS-<ULID> formatted order number — shared format with the storefront
+    // confirmation page. Used as the `order_display_id` template placeholder
+    // in both the customer confirmation and the bulk-order admin alert.
+    const displayId = formatOrderNumber(order.id)
 
     // Prepare email data
     const emailData = {

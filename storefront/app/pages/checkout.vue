@@ -608,13 +608,27 @@ onBeforeUnmount(() => {
 const placing = ref(false)
 const payError = ref<string | null>(null)
 const orderResult = ref<string | null>(null)
-// Customer-facing label only. We show `display_id` (the human-readable
-// integer Medusa surfaces in the admin and in our Resend order-confirmation
-// email — see `order_display_id` in `resend-notification/service.ts`). The
-// internal ULID (`order_01KTD…`) is kept in `confirmationOrderId` for any
-// future "View order" deep-link, but must NOT be shown as the headline ID
-// because the customer's email and the storefront would then disagree.
-const confirmationDisplayId = ref<string | number | null>(null)
+// Customer-facing order number: `GMS-<ULID>` derived from Medusa's internal
+// `order.id` (e.g. `order_01KTD3WAPW1S99VDWFP789Z455` → `GMS-01KTD3WAPW1S99VDWFP789Z455`).
+// We use the ULID rather than Medusa's auto-increment `display_id` because
+// the integer leaks order velocity (#3 tells competitors we've shipped two
+// orders before this one) and isn't unique enough to mention in support.
+//
+// CRITICAL: this format MUST stay in sync with the backend computation in
+// `ghostmark/src/subscribers/order-notifications.ts` — both surfaces have
+// to render the same string or the customer sees a mismatch between the
+// confirmation page and the email. If you change the format here, change
+// it there in the same commit.
+const formatOrderNumber = (internalId: string | null | undefined): string | null => {
+  if (!internalId) return null
+  // Strip the `order_` prefix Medusa attaches to every ULID, then prepend
+  // the GMS namespace. Idempotent — re-running on an already-formatted id
+  // returns it unchanged.
+  if (internalId.startsWith('GMS-')) return internalId
+  return `GMS-${internalId.replace(/^order_/, '')}`
+}
+
+const confirmationDisplayId = ref<string | null>(null)
 const confirmationOrderId = ref<string | null>(null)
 
 const placeDisabled = computed(() => {
@@ -654,10 +668,7 @@ const finalizeOrder = async () => {
   }
   const order = result?.order ?? (result?.type === 'order' ? result?.order : null) ?? result
   confirmationOrderId.value = order?.id || result?.id || null
-  // Fall back to the internal id ONLY if display_id is somehow missing —
-  // newly-minted orders always have one, but defensive in case the response
-  // shape changes upstream.
-  confirmationDisplayId.value = order?.display_id ?? confirmationOrderId.value
+  confirmationDisplayId.value = formatOrderNumber(confirmationOrderId.value)
   // Clear the cart cookie so a fresh cart is created on the next visit.
   cartId.value = null
   step.value = 3
