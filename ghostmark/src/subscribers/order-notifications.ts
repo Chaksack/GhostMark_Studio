@@ -56,6 +56,40 @@ export default async function orderConfirmationHandler({
     // in both the customer confirmation and the bulk-order admin alert.
     const displayId = formatOrderNumber(order.id)
 
+    // Persist the order_number on the order itself so the admin (and any
+    // future support search) can resolve a customer's quoted "GMS-…" back
+    // to the underlying order. Without this, the email shows
+    // GMS-01KTD…802N but admin only knows display_id #4 — support has no
+    // way to match them up, producing the "logistic hell" reported by ops.
+    //
+    // Pattern mirrored from `gift-card-code.ts` (also fires on order.placed
+    // and patches metadata via `Modules.ORDER.updateOrders`). Metadata
+    // updates emit `order.updated`, NOT `order.placed`, so this does not
+    // re-enter the present subscriber.
+    //
+    // Idempotency: skip the write if the value is already correct. Re-runs
+    // (e.g. order.updated for unrelated reasons triggering this handler if
+    // wiring widens) become a no-op.
+    if ((order as any).metadata?.order_number !== displayId) {
+      try {
+        const orderModule = container.resolve(Modules.ORDER)
+        await orderModule.updateOrders(order.id, {
+          metadata: {
+            ...((order as any).metadata ?? {}),
+            order_number: displayId,
+          },
+        })
+      } catch (e) {
+        // Best-effort. The email still goes out — but log loudly because
+        // support won't be able to look this order up by its GMS number
+        // until something else writes the metadata.
+        console.warn(
+          `[order-notifications] failed to persist order_number for ${order.id}:`,
+          e,
+        )
+      }
+    }
+
     // Prepare email data
     const emailData = {
       order_display_id: displayId,
