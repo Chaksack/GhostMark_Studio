@@ -24,23 +24,14 @@ type InvoiceItemInput = {
   unitPriceMajor: string
 }
 
-function currencyFractionDigits(currencyCode?: string): number {
-  const currency = (currencyCode || "USD").toUpperCase()
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-    }).resolvedOptions().maximumFractionDigits
-  } catch {
-    return 2
-  }
-}
-
-function minorUnitFactor(currencyCode?: string): number {
-  return Math.pow(10, currencyFractionDigits(currencyCode))
-}
-
-function parseMajorToMinor(value: string, currencyCode?: string): number {
+// NOTE: Medusa v2 order/line-item money fields (unit_price, total, subtotal, ...)
+// are already decimal amounts in the currency's major unit (e.g. 40.80 means
+// £40.80) — NOT integer minor units like cents. Do not multiply/divide by a
+// currency factor anywhere in this file; confirmed by inspecting a draft order
+// created through this exact form, where a previous version of this code
+// multiplied the entered amount by 100 before sending it as `unit_price`,
+// silently persisting a 100x-inflated price on every walk-in invoice.
+function parseDecimalAmount(value: string): number {
   const raw = String(value || "").trim()
   if (!raw) return 0
 
@@ -51,23 +42,18 @@ function parseMajorToMinor(value: string, currencyCode?: string): number {
     .replaceAll(",", ".")
 
   const n = Number(normalized)
-  if (!Number.isFinite(n)) return 0
-
-  const factor = minorUnitFactor(currencyCode)
-  return Math.round(n * factor)
+  return Number.isFinite(n) ? n : 0
 }
 
-function formatMoney(amountMinor: number, currencyCode?: string): string {
+function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
-  const factor = minorUnitFactor(currency)
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
-    }).format((amountMinor || 0) / factor)
+    }).format(amount || 0)
   } catch {
-    const digits = currencyFractionDigits(currency)
-    return `${((amountMinor || 0) / factor).toFixed(digits)} ${currency}`
+    return `${(amount || 0).toFixed(2)} ${currency}`
   }
 }
 
@@ -183,12 +169,12 @@ const DraftOrderCreatePageInner = () => {
     )
   }, [email, regionId, salesChannelId, items])
 
-  const subtotalMinor = useMemo(() => {
+  const subtotalAmount = useMemo(() => {
     return items.reduce((sum, item) => {
-      const lineMinor = parseMajorToMinor(item.unitPriceMajor, currencyCode) * Number(item.quantity || 0)
-      return sum + Math.max(0, Number(lineMinor || 0))
+      const lineAmount = parseDecimalAmount(item.unitPriceMajor) * Number(item.quantity || 0)
+      return sum + Math.max(0, Number(lineAmount || 0))
     }, 0)
-  }, [items, currencyCode])
+  }, [items])
 
   const createDraftOrder = useMutation({
     mutationFn: async () => {
@@ -198,7 +184,7 @@ const DraftOrderCreatePageInner = () => {
           return {
             title: i.description.trim(),
             quantity: Number(i.quantity || 0),
-            unit_price: Math.max(0, parseMajorToMinor(i.unitPriceMajor, currencyCode)),
+            unit_price: Math.max(0, parseDecimalAmount(i.unitPriceMajor)),
           }
         })
 
@@ -496,7 +482,7 @@ const DraftOrderCreatePageInner = () => {
                 </Button>
 
                 <Text size="small" className="text-ui-fg-subtle">
-                  Subtotal: {formatMoney(subtotalMinor, currencyCode)}
+                  Subtotal: {formatMoney(subtotalAmount, currencyCode)}
                 </Text>
               </div>
             </div>

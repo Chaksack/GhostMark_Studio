@@ -1,6 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
 import { generateInvoicePdf } from "../../../../../../services/invoice-pdf"
+import { ORDER_DOCUMENT_FIELDS } from "../../../../../../services/pdf-utils"
 
 type SendInvoiceBody = {
   to?: string
@@ -19,14 +20,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
     const { data } = await query.graph({
       entity: "order",
-      fields: [
-        "*",
-        "customer.*",
-        "billing_address.*",
-        "shipping_address.*",
-        "items.*",
-        "items.variant.product.title",
-      ],
+      fields: ORDER_DOCUMENT_FIELDS,
       filters: { id: draftOrderId },
     })
 

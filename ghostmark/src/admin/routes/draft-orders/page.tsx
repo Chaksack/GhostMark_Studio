@@ -46,15 +46,17 @@ function statusColor(status?: string): "green" | "blue" | "grey" {
   return "grey"
 }
 
-function formatMoney(amountMinor: number, currencyCode?: string): string {
+// Medusa v2 order totals are already decimal major-unit amounts (e.g. 42.00
+// means £42.00), not integer cents — do not divide by 100 here.
+function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
-    }).format((amountMinor || 0) / 100)
+    }).format(amount || 0)
   } catch {
-    return `${((amountMinor || 0) / 100).toFixed(2)} ${currency}`
+    return `${(amount || 0).toFixed(2)} ${currency}`
   }
 }
 

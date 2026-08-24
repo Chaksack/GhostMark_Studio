@@ -1,5 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { generateInvoicePdf } from "../../../../../services/invoice-pdf"
+import { generateReceiptPdf } from "../../../../../services/receipt-pdf"
 import { ORDER_DOCUMENT_FIELDS } from "../../../../../services/pdf-utils"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -23,14 +23,10 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     return res.status(404).json({ message: "Order not found" })
   }
 
-  const pdf = await generateInvoicePdf(order, {
-    branding: {
-      issuerName: process.env.INVOICE_ISSUER_NAME || "GhostMark Studio",
-    },
-  })
+  const pdf = await generateReceiptPdf(order)
 
   const displayId = String((order as any).display_id || order.id)
-  const filename = `invoice-${displayId}.pdf`
+  const filename = `receipt-${displayId}.pdf`
 
   res.setHeader("Content-Type", "application/pdf")
   res.setHeader("Content-Disposition", `attachment; filename="${filename}"`)

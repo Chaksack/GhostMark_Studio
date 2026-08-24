@@ -1,10 +1,13 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
-import { generateInvoicePdf } from "../../../../../services/invoice-pdf"
+import { generateReceiptPdf } from "../../../../../services/receipt-pdf"
 import { ORDER_DOCUMENT_FIELDS } from "../../../../../services/pdf-utils"
 
-type SendInvoiceBody = {
+type SendReceiptBody = {
   to?: string
+  reference?: string
+  paymentType?: string
+  serviceType?: string
 }
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
@@ -15,7 +18,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       return res.status(400).json({ message: "Missing orderId" })
     }
 
-    const body = (req.body || {}) as SendInvoiceBody
+    const body = (req.body || {}) as SendReceiptBody
 
     const query = req.scope.resolve("query") as any
 
@@ -37,21 +40,21 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       return res.status(400).json({ message: "Order has no customer email" })
     }
 
-    const pdf = await generateInvoicePdf(order, {
-      branding: {
-        issuerName: process.env.INVOICE_ISSUER_NAME || "GhostMark Studio",
-      },
+    const pdf = await generateReceiptPdf(order, {
+      reference: body.reference,
+      paymentType: body.paymentType,
+      serviceType: body.serviceType,
     })
 
     const displayId = String((order as any).display_id || order.id)
-    const filename = `invoice-${displayId}.pdf`
+    const filename = `receipt-${displayId}.pdf`
 
     const notificationModuleService = req.scope.resolve(Modules.NOTIFICATION) as any
 
-    const subject = `Invoice ${displayId} | GhostMark Studio`
+    const subject = `Receipt ${displayId} | ${process.env.INVOICE_ISSUER_NAME || "GhostMark Studio"}`
     const html = `
       <p style="margin:0 0 12px;">Hi,</p>
-      <p style="margin:0 0 12px;">Attached is your invoice for order <strong>${displayId}</strong>.</p>
+      <p style="margin:0 0 12px;">Attached is your receipt for order <strong>${displayId}</strong>.</p>
       <p style="margin:0;">Thank you for your business.</p>
     `
 
@@ -79,13 +82,13 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       success: true,
       to: customerEmail,
       order_id: order.id,
-      invoice_display_id: displayId,
+      receipt_display_id: displayId,
     })
   } catch (error: any) {
-    console.error("Error sending invoice:", error)
+    console.error("Error sending receipt:", error)
     return res.status(500).json({
       success: false,
-      message: error?.message || "Failed to send invoice",
+      message: error?.message || "Failed to send receipt",
     })
   }
 }

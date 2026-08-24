@@ -1,88 +1,31 @@
 import PDFDocument from "pdfkit"
-import fs from "node:fs/promises"
-import path from "node:path"
+import {
+  type PdfLayout,
+  type BrandingColors,
+  type ResolvedBrandingColors,
+  defaultColors,
+  formatMoney,
+  safeText,
+  pdfToBuffer,
+  getLayout,
+  drawDivider,
+  isNearPageBottom,
+  tryLoadLogoBuffer,
+  formatAddressLines,
+} from "./pdf-utils"
 
 type InvoiceBranding = {
   issuerName?: string
   issuerEmail?: string
   logoPath?: string
-  colors?: {
-    primaryText?: string
-    mutedText?: string
-    border?: string
-    surface?: string
-    strongBorder?: string
-  }
-}
-
-type ResolvedInvoiceColors = {
-  primaryText: string
-  mutedText: string
-  border: string
-  surface: string
-  strongBorder: string
+  colors?: BrandingColors
 }
 
 type ResolvedInvoiceBranding = {
   issuerName: string
   issuerEmail: string
   logoPath: string
-  colors: ResolvedInvoiceColors
-}
-
-function currencyFractionDigits(currencyCode?: string): number {
-  const currency = (currencyCode || "USD").toUpperCase()
-  try {
-    const digits = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-    }).resolvedOptions().maximumFractionDigits
-    return typeof digits === "number" ? digits : 2
-  } catch {
-    return 2
-  }
-}
-
-function minorUnitFactor(currencyCode?: string): number {
-  const digits = currencyFractionDigits(currencyCode)
-  return Math.pow(10, digits)
-}
-
-function formatMoney(amountMinor: number, currencyCode?: string): string {
-  const currency = (currencyCode || "USD").toUpperCase()
-  const factor = minorUnitFactor(currency)
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-    }).format((amountMinor || 0) / factor)
-  } catch {
-    // Fallback if currency code is invalid
-    const digits = currencyFractionDigits(currency)
-    return `${((amountMinor || 0) / factor).toFixed(digits)} ${currency}`
-  }
-}
-
-function safeText(value: any): string {
-  if (value == null) return ""
-  return String(value)
-}
-
-async function pdfToBuffer(doc: PDFKit.PDFDocument): Promise<Buffer> {
-  return await new Promise((resolve, reject) => {
-    const chunks: Buffer[] = []
-    doc.on("data", (c: Buffer) => chunks.push(c))
-    doc.on("end", () => resolve(Buffer.concat(chunks)))
-    doc.on("error", reject)
-    doc.end()
-  })
-}
-
-type PdfLayout = {
-  pageWidth: number
-  left: number
-  right: number
-  mid: number
+  colors: ResolvedBrandingColors
 }
 
 export type InvoicePdfOptions = {
@@ -90,76 +33,13 @@ export type InvoicePdfOptions = {
   paymentMethod?: string
 }
 
-function safeUpper(value: any): string {
-  const s = safeText(value)
-  return s ? s.toUpperCase() : ""
-}
-
-function resolveDefaultLogoPath(): string | undefined {
-  const envPath = process.env.INVOICE_LOGO_PATH
-  if (envPath) return envPath
-
-  // Local mono-repo default: use storefront logo if present.
-  // In prod/Docker, set INVOICE_LOGO_PATH to a mounted asset.
-  try {
-    const candidate = path.resolve(process.cwd(), "../ghostmark-storefront/public/ghostmark-logo.png")
-    return candidate
-  } catch {
-    return undefined
-  }
-}
-
-async function tryLoadLogoBuffer(logoPath?: string): Promise<Buffer | null> {
-  const p = logoPath || resolveDefaultLogoPath()
-  if (!p) return null
-  try {
-    return await fs.readFile(p)
-  } catch {
-    return null
-  }
-}
-
 function defaultBranding(overrides: InvoiceBranding = {}): ResolvedInvoiceBranding {
   return {
     issuerName: overrides.issuerName || process.env.INVOICE_ISSUER_NAME || "GhostMark Studio",
     issuerEmail: overrides.issuerEmail || process.env.INVOICE_ISSUER_EMAIL || process.env.RESEND_FROM_EMAIL || "",
-    logoPath: overrides.logoPath || resolveDefaultLogoPath() || "",
-    colors: {
-      primaryText: overrides.colors?.primaryText || "#000000",
-      mutedText: overrides.colors?.mutedText || "#525252",
-      border: overrides.colors?.border || "#E5E5E5",
-      surface: overrides.colors?.surface || "#FAFAFA",
-      strongBorder: overrides.colors?.strongBorder || "#000000",
-    },
+    logoPath: overrides.logoPath || "",
+    colors: defaultColors(overrides.colors),
   }
-}
-
-function getLayout(doc: PDFKit.PDFDocument): PdfLayout {
-  const pageWidth = doc.page.width
-  const left = doc.page.margins.left
-  const right = pageWidth - doc.page.margins.right
-  return {
-    pageWidth,
-    left,
-    right,
-    mid: left + (right - left) / 2,
-  }
-}
-
-function drawDivider(
-  doc: PDFKit.PDFDocument,
-  layout: PdfLayout,
-  y: number,
-  color: string
-): void {
-  doc
-    .save()
-    .moveTo(layout.left, y)
-    .lineTo(layout.right, y)
-    .lineWidth(1)
-    .strokeColor(color)
-    .stroke()
-    .restore()
 }
 
 async function drawHeader(
@@ -170,7 +50,7 @@ async function drawHeader(
     issuerName: string
     issuerEmail: string
     logoPath: string
-    colors: ResolvedInvoiceColors
+    colors: ResolvedBrandingColors
     createdAt: Date
     paymentMethod: string
   }
@@ -230,32 +110,6 @@ async function drawHeader(
   return dividerY
 }
 
-function formatAddressLines(args: {
-  address: any
-  customerEmail?: string
-  includeEmailAndPhone?: boolean
-}): string {
-  const address = args.address || {}
-  const customerEmail = safeText(args.customerEmail)
-
-  return [
-    safeText(address?.company),
-    [safeText(address?.first_name), safeText(address?.last_name)].filter(Boolean).join(" "),
-    safeText(address?.address_1),
-    safeText(address?.address_2),
-    [safeText(address?.city), safeText(address?.province), safeText(address?.postal_code)]
-      .filter(Boolean)
-      .join(", "),
-    safeUpper(address?.country_code),
-    args.includeEmailAndPhone && customerEmail ? `Email: ${customerEmail}` : "",
-    args.includeEmailAndPhone && safeText(address?.phone)
-      ? `Phone: ${safeText(address.phone)}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join("\n")
-}
-
 function drawAddresses(
   doc: PDFKit.PDFDocument,
   layout: PdfLayout,
@@ -264,7 +118,7 @@ function drawAddresses(
     bill: any
     ship: any
     customerEmail: string
-    colors: ResolvedInvoiceColors
+    colors: ResolvedBrandingColors
   }
 ): number {
   doc.fontSize(11).font("Helvetica-Bold").fillColor(args.colors.primaryText).text("Bill To", layout.left, args.y)
@@ -303,7 +157,7 @@ function drawLineItemsHeader(
   doc: PDFKit.PDFDocument,
   layout: PdfLayout,
   y: number,
-  colors: ResolvedInvoiceColors
+  colors: ResolvedBrandingColors
 ): number {
   doc
     .save()
@@ -330,10 +184,6 @@ function drawLineItemsHeader(
   return nextY + 10
 }
 
-function isNearPageBottom(doc: PDFKit.PDFDocument, y: number): boolean {
-  return y > doc.page.height - doc.page.margins.bottom - 120
-}
-
 function drawLineItems(
   doc: PDFKit.PDFDocument,
   layout: PdfLayout,
@@ -341,7 +191,7 @@ function drawLineItems(
     y: number
     items: any[]
     currencyCode: string
-    colors: ResolvedInvoiceColors
+    colors: ResolvedBrandingColors
   }
 ): number {
   const colTitle = layout.left
@@ -389,7 +239,7 @@ function drawTotals(
   args: {
     y: number
     currencyCode: string
-    colors: ResolvedInvoiceColors
+    colors: ResolvedBrandingColors
     subtotal: number
     shipping: number
     tax: number
@@ -433,7 +283,7 @@ function drawTotals(
 function drawFooter(
   doc: PDFKit.PDFDocument,
   layout: PdfLayout,
-  colors: ResolvedInvoiceColors
+  colors: ResolvedBrandingColors
 ): void {
   const footerY = doc.page.height - doc.page.margins.bottom - 40
   doc.font("Helvetica").fontSize(9).fillColor(colors.mutedText)

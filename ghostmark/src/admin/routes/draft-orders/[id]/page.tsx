@@ -68,15 +68,47 @@ async function downloadDraftInvoicePdf(draftOrder: DraftOrder) {
   }
 }
 
-function formatMoney(amountMinor: number, currencyCode?: string): string {
+async function downloadDraftReceiptPdf(draftOrder: DraftOrder) {
+  const displayId = String(draftOrder.display_id || draftOrder.id)
+  const res = await fetch(`/admin/receipts/${encodeURIComponent(draftOrder.id)}/pdf`, {
+    method: "GET",
+    credentials: "include",
+  })
+
+  if (!res.ok) {
+    let msg = "Failed to download receipt"
+    try {
+      msg = (await res.text()) || msg
+    } catch {}
+    throw new Error(msg)
+  }
+
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+
+  try {
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `receipt-${displayId}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
+
+// Medusa v2 order totals are already decimal major-unit amounts (e.g. 42.00
+// means £42.00), not integer cents — do not divide by 100 here.
+function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
-    }).format((amountMinor || 0) / 100)
+    }).format(amount || 0)
   } catch {
-    return `${((amountMinor || 0) / 100).toFixed(2)} ${currency}`
+    return `${(amount || 0).toFixed(2)} ${currency}`
   }
 }
 
@@ -186,6 +218,23 @@ const DraftOrderPageInner = () => {
             }}
           >
             Send invoice
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="small"
+            disabled={!draft || isLoading}
+            onClick={async () => {
+              if (!draft) return
+              try {
+                await downloadDraftReceiptPdf(draft)
+                toast.success("Receipt downloaded")
+              } catch (e: any) {
+                toast.error(e?.message || "Failed to download receipt")
+              }
+            }}
+          >
+            Download receipt
           </Button>
 
           <Button
