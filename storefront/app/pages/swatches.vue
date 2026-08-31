@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '~/components/ui/Icon.vue'
 /**
  * /swatches: Material swatch packs.
  *
@@ -121,20 +122,25 @@ const onSubmit = () => {
         <div class="aspect-[4/5] w-full overflow-hidden bg-cream-tile">
           <div class="flex h-full w-full items-center justify-center">
             <!--
-              ink-600, not ink-400. These placeholder captions are real rendered text
-              and answer to the 4.5:1 floor like any other: ink-400 measured 2.89:1 on
-              cream-warm and 3.33:1 on cream-tile. ink-600 is 6.06 / 6.98. ink-500
-              also passes but by 0.05 on cream-warm, which is no margin at all.
+              Placeholder for photography that has not been shot yet. It used to say
+              "Image: replace with real photography" — an instruction to us, rendered
+              to customers on a live marketing page. Fixing its contrast last commit
+              only made the wrong thing easier to read.
 
-              `role="img"` is not decoration either: `aria-label` on a bare <span>
-              (role=generic) is non-conforming and unreliably exposed, so the label
-              was a coin flip. role="img" gives it an element that can carry a name.
+              This is the placeholder the codebase already had (ProductCard uses it for
+              a missing thumbnail), so it is a fourth pattern avoided rather than a new
+              one invented. Decorative on purpose: Icon sets aria-hidden when no
+              ariaLabel is passed, and the previous `aria-label="Image placeholder"`
+              announced the absence of content, which is noise rather than information.
+              ink-500 is 4.55:1 on cream-warm and 5.23:1 on cream-tile, over the 3:1
+              floor a non-text graphic answers to.
             -->
-            <span
-              class="font-body text-caption text-ink-600"
-              role="img"
-              aria-label="Image placeholder"
-            >Image: swatch pack laid out</span>
+            <Icon
+              name="image-placeholder"
+              :size="40"
+              :stroke-width="1.5"
+              class="text-ink-500"
+            />
           </div>
         </div>
       </div>
@@ -168,18 +174,12 @@ const onSubmit = () => {
           >
             <div :class="[pack.swatchClass, 'aspect-[4/5] w-full overflow-hidden']">
               <div class="flex h-full w-full items-center justify-center">
-                <!--
-                  ink-600, not ink-500. This one label renders on THREE grounds
-                  (`pack.swatchClass`: cream-tile, cream-warm, merchery-sage),
-                  so it has to clear 4.5:1 on the darkest of them. ink-500 is
-                  3.76:1 on sage. ink-600 is 5.01:1 there and 6.9:1 / 6.0:1 on
-                  the two creams. Colour it for the worst ground, not the first.
-                -->
-                <span
-                  class="font-body text-caption text-ink-600"
-                  role="img"
-                  aria-label="Swatch placeholder"
-                >Swatch: {{ pack.title }}</span>
+                <Icon
+                  name="image-placeholder"
+                  :size="40"
+                  :stroke-width="1.5"
+                  class="text-ink-500"
+                />
               </div>
             </div>
             <h3 class="font-display text-display-sm font-normal text-ink-950">

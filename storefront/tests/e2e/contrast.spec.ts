@@ -306,26 +306,30 @@ for (const ground of GROUNDS) {
 }
 
 /**
- * Image-placeholder captions.
+ * Image placeholders.
  *
- * WHY THESE GET THEIR OWN BLOCK RATHER THAN A "cream grounds" ENTRY IN
- * `GROUNDS` ABOVE
- * The captions live on `cream-warm` and `cream-tile`, but those grounds
- * cannot be added to the allowlist yet: a site-wide probe on 2026-08-31
- * found 35 further failures on the cream family — the `ink-700/70` logo
- * bar at 4.31:1 (x24), `ink-950/40` display numerals at 2.56:1, and
- * `ink-300` 56px letterforms at 1.56:1, across /platform,
- * /customer-stories and /club. Listing the ground would import all of
- * them and the suite would be red on arrival.
+ * WHAT CHANGED, AND WHY THIS BLOCK STILL EXISTS
+ * These were text captions reading "Image: replace with real photography" —
+ * an instruction to the team, rendered to customers on live marketing pages.
+ * They shipped at ink-400 (2.89:1 on cream-warm) and the first fix simply
+ * raised the contrast, which made the wrong thing easier to read. They are
+ * now the `image-placeholder` Icon the codebase already used for a missing
+ * product thumbnail, decorative (aria-hidden), at ink-500.
  *
- * So this asserts the thing that was fixed, by its role rather than by its
- * ground: every placeholder caption, wherever it sits. Delete this block
- * and add the cream grounds to `GROUNDS` the day those 35 are dealt with.
+ * The previous version of this block asserted `span[role="img"]` and its
+ * zero-nodes guard is what caught the swap — it failed with "listed as
+ * carrying placeholder captions but none were found" rather than passing
+ * green on an empty selector. Keeping that property here: a route listed
+ * below must actually render a placeholder, or the test says so.
  *
- * These captions shipped at `ink-400` — 2.89:1 on cream-warm, 3.33:1 on
- * cream-tile — on the reasoning that scaffolding does not need to be
- * legible. It does: it is rendered text on a live marketing page, and the
- * floor does not care why the text is there.
+ * FLOOR: 3:1, not 4.5:1. This is now a graphic, not text. It is also
+ * aria-hidden, which would arguably exempt it entirely — held to the
+ * non-text floor anyway, on the same reasoning as the club numerals: hiding
+ * something from the accessibility tree does not make it invisible to a
+ * sighted low-vision reader.
+ *
+ * These grounds cannot join the `GROUNDS` allowlist above, because that
+ * probe reads TEXT and there is no longer any text here to read.
  */
 const PLACEHOLDER_ROUTES = [
   '/sustainability',
@@ -336,9 +340,9 @@ const PLACEHOLDER_ROUTES = [
   '/about/people-and-culture',
 ]
 
-test.describe('Image-placeholder captions', () => {
+test.describe('Image placeholders', () => {
   for (const route of PLACEHOLDER_ROUTES) {
-    test(`${route} — placeholder captions are legible`, async ({ page }, testInfo) => {
+    test(`${route} — placeholder graphics clear 3:1`, async ({ page }, testInfo) => {
       test.skip(
         testInfo.project.name !== 'desktop-chromium',
         'Colour does not vary by viewport; the desktop run is sufficient.',
@@ -383,41 +387,47 @@ test.describe('Image-placeholder captions', () => {
           return { r: 255, g: 255, b: 255, a: 1 }
         }
 
-        const nodes = [...document.querySelectorAll('span[role="img"]')]
+        // Identify the placeholder by its path data rather than by a class,
+        // so a restyle cannot silently drop it out of this suite. These are
+        // the three primitives Icon's `image-placeholder` registry entry
+        // draws: frame, lens, horizon.
+        const nodes = [...document.querySelectorAll('svg')].filter(
+          sv => sv.querySelector('rect[width="18"]') && sv.querySelector('circle[r="1.5"]'),
+        )
+
         return {
           seen: nodes.length,
+          exposed: nodes.filter(n => n.getAttribute('aria-hidden') !== 'true').length,
           failures: nodes
-            .map(el => {
-              const cs = getComputedStyle(el)
-              const bg = bgOf(el)
-              const fg = parse(cs.color)!
-              return {
-                text: (el.textContent || '').trim().slice(0, 50),
-                ratio: Number(ratio(fg, bg).toFixed(2)),
-                color: cs.color,
-                cls: String((el as HTMLElement).className).slice(0, 90),
-              }
-            })
-            .filter(f => f.ratio < 4.5),
+            .map(el => ({
+              ratio: Number(ratio(parse(getComputedStyle(el).color)!, bgOf(el)).toFixed(2)),
+              color: getComputedStyle(el).color,
+            }))
+            .filter(f => f.ratio < 3),
         }
       })
 
-      // A zero-node page would pass vacuously and guard nothing. Every route
-      // in the list above is here BECAUSE it renders one.
       expect(
         result.seen,
-        `${route} is listed as carrying placeholder captions but none were found. ` +
+        `${route} is listed as rendering image placeholders but none were found. ` +
           `Either the markup changed (update PLACEHOLDER_ROUTES) or real imagery ` +
           `landed here — in which case drop the route rather than leaving a test ` +
           `that asserts nothing.`,
       ).toBeGreaterThan(0)
 
       expect(
+        result.exposed,
+        `${result.exposed} placeholder graphic(s) on ${route} are exposed to the ` +
+          `accessibility tree. A placeholder announces the ABSENCE of content, ` +
+          `which is noise; pass no ariaLabel to Icon so it stays aria-hidden.`,
+      ).toBe(0)
+
+      expect(
         result.failures,
         result.failures.length
-          ? `Placeholder captions below 4.5:1:\n${result.failures
-              .map(f => `  ${f.ratio}:1 ${f.color} "${f.text}"\n    class: ${f.cls}`)
-              .join('\n')}\n  fix: ink-600 (6.06:1 on cream-warm, 6.98:1 on cream-tile)`
+          ? `Placeholder graphics below the 3:1 non-text floor:\n${result.failures
+              .map(f => `  ${f.ratio}:1 ${f.color}`)
+              .join('\n')}\n  fix: ink-500 (4.55:1 on cream-warm, 5.23:1 on cream-tile, 3.76:1 on sage)`
           : undefined,
       ).toEqual([])
     })
