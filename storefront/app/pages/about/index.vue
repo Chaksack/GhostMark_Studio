@@ -102,14 +102,33 @@
       <!-- CTA -->
       <section class="mb-16 rounded-2xl bg-ink-950 p-8 text-center sm:p-14">
         <h2 class="font-serif text-[28px] text-white sm:text-[36px]">Ready to create something great?</h2>
-        <p class="mx-auto mt-3 max-w-[45ch] text-[15px] text-ink-600">
+        <!--
+          ink-300, not ink-600. The ink ramp runs dark-to-light, so the
+          "muted body" step is ink-600 ON A LIGHT GROUND and its MIRROR
+          (ink-300) on a dark one. Using ink-600 here inverted the ramp:
+          2.37:1 on ink-950, i.e. dark text on a dark slab. ink-300 is
+          8.17:1 and still reads as clearly subordinate to the white h2
+          above it (18.69:1), which is the effect the ink-600 was reaching
+          for. ink-400 would also pass, but at 4.98:1 it has 0.48 of
+          headroom over the floor — too little for supporting copy.
+        -->
+        <p class="mx-auto mt-3 max-w-[45ch] text-[15px] text-ink-300">
           Browse our catalog or get in touch to start your branded merch project today.
         </p>
         <div class="mt-7 flex flex-wrap items-center justify-center gap-4">
           <NuxtLink to="/products" class="inline-flex h-[48px] items-center justify-center bg-white px-8 text-[14px] font-medium tracking-wide text-ink-950 hover:bg-ink-100">
             Shop now
           </NuxtLink>
-          <NuxtLink to="/contact" class="inline-flex h-[48px] items-center justify-center border border-ink-600 px-8 text-[14px] font-medium tracking-wide text-white hover:border-ink-400">
+          <!--
+            Same inversion in the border, and it failed the other way round:
+            border-ink-600 is 2.37:1 on ink-950, under SC 1.4.11's 3:1 for a
+            control boundary — and the boundary is the only thing that makes
+            this ghost button read as a button. The old hover (ink-400,
+            4.98:1) PASSED, so the control was legal only while the pointer
+            was on it, which is exactly backwards. Rest state now clears the
+            floor on its own and hover lifts to white, matching the primary.
+          -->
+          <NuxtLink to="/contact" class="inline-flex h-[48px] items-center justify-center border border-ink-400 px-8 text-[14px] font-medium tracking-wide text-white hover:border-white">
             Contact us
           </NuxtLink>
         </div>

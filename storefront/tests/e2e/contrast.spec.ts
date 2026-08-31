@@ -1,5 +1,13 @@
 /**
- * Text-contrast regression suite for the `merchery-sage` ground.
+ * Text-contrast regression suite for the grounds that have been fixed.
+ *
+ * HOW TO USE THIS FILE
+ * It is an ALLOWLIST, not an audit. Each entry in `GROUNDS` is a background
+ * whose text has been measured and corrected; the suite then guards it. A
+ * site-wide probe still finds failures on grounds NOT listed here (see
+ * "SCOPE" below) — that is deliberate. Add a ground the day you fix it, not
+ * before, because a suite that is red on arrival is one people learn to
+ * ignore, and then it guards nothing at all.
  *
  * WHY THIS EXISTS
  * `merchery-sage` (#C8D2B8) is the darkest of the decorative slabs, and it
@@ -38,6 +46,20 @@
  */
 import { test, expect } from '@playwright/test'
 
+/**
+ * A ground under guard: how to recognise it, where it appears, and what to
+ * use on it. `match` receives 0-255 channels of the resolved background.
+ */
+interface Ground {
+  name: string
+  /** Recognise the ground from its composited background colour. */
+  match: (c: { r: number; g: number; b: number }) => boolean
+  /** Routes that actually render it. */
+  routes: string[]
+  /** Told to the author in the failure message. */
+  remedy: string
+}
+
 /** Every route that renders a `bg-merchery-sage` block. */
 const SAGE_ROUTES = [
   '/returns',
@@ -54,6 +76,38 @@ const SAGE_ROUTES = [
   '/categories',
 ]
 
+/**
+ * Dark ink slabs. `/about`'s CTA band shipped `text-ink-600` on `bg-ink-950`
+ * at 2.37:1 — dark text on a dark ground. The cause is worth naming because
+ * it will recur: the ink ramp runs dark-to-light, so the "muted body" step is
+ * ink-600 on a LIGHT ground and its mirror, ink-300, on a dark one. Reaching
+ * for the number you know rather than the number for this ground inverts the
+ * ramp, and the result looks deliberate in code review.
+ */
+const DARK_ROUTES = ['/about', '/pricing', '/faq']
+
+const GROUNDS: Ground[] = [
+  {
+    name: 'merchery-sage',
+    // #C8D2B8, tolerance 2/255 so an engine rounding difference cannot
+    // silently skip the ground this suite exists to check.
+    match: c => Math.abs(c.r - 200) < 3 && Math.abs(c.g - 210) < 3 && Math.abs(c.b - 184) < 3,
+    routes: SAGE_ROUTES,
+    remedy: 'use text-ink-600 (5.01:1) on sage, not the ink-500 eyebrow default',
+  },
+  {
+    name: 'dark ink slab',
+    // ink-800 #2E2A25 through ink-950 #141210 and merchery-ink #1F1C18:
+    // any near-neutral dark. Matched by luminance rather than by exact
+    // value so a new dark slab is covered the day it lands.
+    match: c => c.r < 60 && c.g < 60 && c.b < 60,
+    routes: DARK_ROUTES,
+    remedy:
+      'the ink ramp mirrors on dark grounds: use ink-300 (8.17:1 on ink-950) ' +
+      'or lighter, not the ink-600 you would use on cream',
+  },
+]
+
 interface Failure {
   text: string
   tag: string
@@ -67,9 +121,16 @@ interface Failure {
 
 /**
  * Runs in the page. Self-contained on purpose — Playwright serialises the
- * function source, so it cannot close over anything in this module.
+ * function source, so it cannot close over anything in this module; the
+ * ground test arrives as a stringified predicate and is rebuilt here.
  */
-const probeSageContrast = (): Failure[] => {
+const probeContrast = (matchSrc: string): Failure[] => {
+  // eslint-disable-next-line no-new-func
+  const matchesGround = new Function(`return (${matchSrc})`)() as (c: {
+    r: number
+    g: number
+    b: number
+  }) => boolean
   const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
 
   const parse = (s: string) => {
@@ -112,12 +173,6 @@ const probeSageContrast = (): Failure[] => {
     return { r: 255, g: 255, b: 255, a: 1 }
   }
 
-  // merchery-sage #C8D2B8. Exact-match with a tolerance of 2/255 so a
-  // rounding difference in the engine does not silently skip the ground
-  // this whole suite exists to check.
-  const isSage = (c: RGBA) =>
-    Math.abs(c.r - 200) < 3 && Math.abs(c.g - 210) < 3 && Math.abs(c.b - 184) < 3
-
   const failures: Failure[] = []
 
   for (const el of Array.from(document.querySelectorAll('*'))) {
@@ -134,7 +189,7 @@ const probeSageContrast = (): Failure[] => {
     if (box.width < 1 || box.height < 1) continue
 
     const bg = effectiveBg(el)
-    if (!isSage(bg)) continue
+    if (!matchesGround(bg)) continue
 
     const fgRaw = parse(cs.color)
     if (!fgRaw) continue
@@ -162,47 +217,49 @@ const probeSageContrast = (): Failure[] => {
   return failures
 }
 
-test.describe('Contrast on merchery-sage', () => {
-  for (const route of SAGE_ROUTES) {
-    test(`${route} — all text on sage meets WCAG AA`, async ({ page }, testInfo) => {
-      // Skipped inside the body rather than via a describe-level
-      // `test.skip(fn)`: that callback receives fixtures only, not
-      // testInfo, so `testInfo.project.name` there throws on every test
-      // and reads as 12 real failures.
-      test.skip(
-        testInfo.project.name !== 'desktop-chromium',
-        'Colour does not vary by viewport; the desktop run is sufficient.',
-      )
+for (const ground of GROUNDS) {
+  test.describe(`Contrast on ${ground.name}`, () => {
+    for (const route of ground.routes) {
+      test(`${route} — all text on ${ground.name} meets WCAG AA`, async ({ page }, testInfo) => {
+        // Skipped inside the body rather than via a describe-level
+        // `test.skip(fn)`: that callback receives fixtures only, not
+        // testInfo, so `testInfo.project.name` there throws on every test
+        // and reads as a suite of real failures.
+        test.skip(
+          testInfo.project.name !== 'desktop-chromium',
+          'Colour does not vary by viewport; the desktop run is sufficient.',
+        )
 
-      await page.goto(route, { waitUntil: 'networkidle' })
+        await page.goto(route, { waitUntil: 'networkidle' })
 
-      // Sage bands sit low on these pages and several are behind a
-      // scroll-reveal, which starts at opacity 0. An unscrolled page
-      // reports zero failures because it has rendered almost nothing.
-      await page.evaluate(async () => {
-        for (let y = 0; y < document.body.scrollHeight; y += 700) {
-          window.scrollTo(0, y)
-          await new Promise(r => setTimeout(r, 60))
-        }
-        window.scrollTo(0, 0)
+        // These bands sit low on the page and several are behind a
+        // scroll-reveal, which starts at opacity 0. An unscrolled page
+        // reports zero failures because it has rendered almost nothing.
+        await page.evaluate(async () => {
+          for (let y = 0; y < document.body.scrollHeight; y += 700) {
+            window.scrollTo(0, y)
+            await new Promise(r => setTimeout(r, 60))
+          }
+          window.scrollTo(0, 0)
+        })
+        await page.waitForTimeout(300)
+
+        const failures = await page.evaluate(probeContrast, ground.match.toString())
+
+        expect(
+          failures,
+          failures.length
+            ? `Text below WCAG AA on ${ground.name}:\n${failures
+                .map(
+                  f =>
+                    `  ${f.ratio}:1 (needs ${f.floor}:1) ${f.color} ${f.px}px/${f.weight}` +
+                    ` <${f.tag}> "${f.text}"\n    class: ${f.cls}` +
+                    `\n    fix: ${ground.remedy}`,
+                )
+                .join('\n')}`
+            : undefined,
+        ).toEqual([])
       })
-      await page.waitForTimeout(300)
-
-      const failures = await page.evaluate(probeSageContrast)
-
-      expect(
-        failures,
-        failures.length
-          ? `Text below WCAG AA on merchery-sage:\n${failures
-              .map(
-                f =>
-                  `  ${f.ratio}:1 (needs ${f.floor}:1) ${f.color} ${f.px}px/${f.weight}` +
-                  ` <${f.tag}> "${f.text}"\n    class: ${f.cls}` +
-                  `\n    fix: use text-ink-600 (5.01:1) on sage, not the ink-500 eyebrow default`,
-              )
-              .join('\n')}`
-          : undefined,
-      ).toEqual([])
-    })
-  }
-})
+    }
+  })
+}

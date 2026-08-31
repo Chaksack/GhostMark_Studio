@@ -198,7 +198,7 @@ export default {
           // call sites that needed it were changed on 2026-08-31 and each
           // carries a comment saying why, because the obvious "tidy-up" is
           // to put them back on the ink-500 eyebrow default.
-          // `tests/e2e/contrast-sage.spec.ts` fails if any regress, or if
+          // `tests/e2e/contrast.spec.ts` fails if any regress, or if
           // a new band repeats the mistake.
           500: '#68645A',
           600: '#565149',

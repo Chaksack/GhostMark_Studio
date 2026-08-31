@@ -76,7 +76,13 @@
       <!-- Shop CTA banner -->
       <div class="mt-12 rounded-2xl bg-ink-950 p-8 text-center sm:p-12">
         <h2 class="font-serif text-[28px] text-white">Ready to get started?</h2>
-        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-ink-600">
+        <!--
+          ink-300, not ink-600 — the same inversion as the /about CTA band,
+          copy-pasted. The ink ramp runs dark-to-light, so the "muted body"
+          step is ink-600 on a LIGHT ground and ink-300 on a dark one; using
+          ink-600 here put dark text on a dark slab at 2.37:1.
+        -->
+        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-ink-300">
           Browse our catalog of sustainable branded merchandise.
         </p>
         <NuxtLink
