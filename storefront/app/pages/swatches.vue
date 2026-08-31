@@ -157,8 +157,15 @@ const onSubmit = () => {
           >
             <div :class="[pack.swatchClass, 'aspect-[4/5] w-full overflow-hidden']">
               <div class="flex h-full w-full items-center justify-center">
+                <!--
+                  ink-600, not ink-500. This one label renders on THREE grounds
+                  (`pack.swatchClass`: cream-tile, cream-warm, merchery-sage),
+                  so it has to clear 4.5:1 on the darkest of them. ink-500 is
+                  3.76:1 on sage. ink-600 is 5.01:1 there and 6.9:1 / 6.0:1 on
+                  the two creams. Colour it for the worst ground, not the first.
+                -->
                 <span
-                  class="font-body text-caption text-ink-500"
+                  class="font-body text-caption text-ink-600"
                   aria-label="Swatch placeholder"
                 >Swatch: {{ pack.title }}</span>
               </div>

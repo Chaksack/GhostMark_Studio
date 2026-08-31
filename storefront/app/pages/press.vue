@@ -270,7 +270,8 @@ const assets: Asset[] = [
       <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
           <div class="max-w-[400px]">
-            <p class="text-eyebrow font-body uppercase text-ink-500">
+            <!-- ink-600, not the ink-500 eyebrow default: sage ground. See tailwind.config.ts ink.500. -->
+            <p class="text-eyebrow font-body uppercase text-ink-600">
               Press contact
             </p>
             <h2

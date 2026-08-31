@@ -142,7 +142,8 @@ const timeline: Timeline[] = [
     >
       <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="bg-merchery-sage p-10 lg:p-16">
-          <p class="text-eyebrow font-body uppercase text-ink-500">
+          <!-- ink-600, not the ink-500 eyebrow default: sage ground. See tailwind.config.ts ink.500. -->
+          <p class="text-eyebrow font-body uppercase text-ink-600">
             Our promise
           </p>
           <h2
@@ -293,7 +294,8 @@ const timeline: Timeline[] = [
     >
       <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="bg-merchery-sage p-10 lg:p-14">
-          <p class="text-eyebrow font-body uppercase text-ink-500">
+          <!-- ink-600, not the ink-500 eyebrow default: sage ground. See tailwind.config.ts ink.500. -->
+          <p class="text-eyebrow font-body uppercase text-ink-600">
             One important caveat
           </p>
           <h2

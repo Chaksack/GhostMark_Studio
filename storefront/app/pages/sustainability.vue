@@ -310,7 +310,7 @@ const factories: FactoryStep[] = [
         <div class="flex justify-center lg:justify-end">
           <div class="grid h-40 w-40 place-items-center rounded-full bg-merchery-sage ring-1 ring-ink-200">
             <span class="text-center font-display text-display-sm font-normal leading-tight text-ink-950">
-              1%<br><span class="text-eyebrow font-body uppercase tracking-wide text-ink-500">For the Planet</span>
+              1%<br><span class="text-eyebrow font-body uppercase tracking-wide text-ink-600">For the Planet</span>
             </span>
           </div>
         </div>
@@ -412,7 +412,8 @@ const factories: FactoryStep[] = [
             </p>
           </article>
           <article class="flex flex-col gap-5 bg-merchery-sage p-10">
-            <p class="text-eyebrow font-body uppercase text-ink-500">
+            <!-- ink-600, not the ink-500 eyebrow default: sage ground. See tailwind.config.ts ink.500. -->
+            <p class="text-eyebrow font-body uppercase text-ink-600">
               Last mile
             </p>
             <h3 class="font-display text-display-sm font-normal text-ink-950">
@@ -517,7 +518,8 @@ const factories: FactoryStep[] = [
       <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
           <div class="max-w-[400px]">
-            <p class="text-eyebrow font-body uppercase text-ink-500">
+            <!-- ink-600, not the ink-500 eyebrow default: sage ground. See tailwind.config.ts ink.500. -->
+            <p class="text-eyebrow font-body uppercase text-ink-600">
               The full picture
             </p>
             <h2

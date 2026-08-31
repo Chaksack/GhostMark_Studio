@@ -187,9 +187,19 @@ export default {
           // Chosen as the LIGHTEST value that passes, so the 400/500/600
           // ramp keeps a real luminance gap (500 = 0.128, 600 = 0.083).
           //
-          // STILL FAILS ON `merchery-sage` (3.76:1). That ground is dark
-          // enough that no ink-500 passes without collapsing into ink-600.
-          // Use `ink-600` for text on sage, which measures 5.01:1.
+          // DOES NOT PASS ON `merchery-sage` (3.76:1), and cannot be made
+          // to. For ink-500 to clear 4.5:1 the ground needs relative
+          // luminance >= 0.751; sage is 0.618. Lifting it there would put
+          // sage ABOVE cream-warm (0.759 is effectively the same value), so
+          // the darker alternating slab would stop reading as a different
+          // band at all. The slab is load-bearing; the eyebrow tint is not.
+          //
+          // So on sage, and only on sage, use `ink-600` (5.01:1). The nine
+          // call sites that needed it were changed on 2026-08-31 and each
+          // carries a comment saying why, because the obvious "tidy-up" is
+          // to put them back on the ink-500 eyebrow default.
+          // `tests/e2e/contrast-sage.spec.ts` fails if any regress, or if
+          // a new band repeats the mistake.
           500: '#68645A',
           600: '#565149',
           700: '#3F3A33',
