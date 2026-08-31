@@ -185,8 +185,14 @@
                 >
                   View product details
                 </a>
+                <!--
+                  These two are affordances of a PRINT order, not of the
+                  ability to print — so they follow `isCustomOrder`, not
+                  `canCustomise`. A visitor reading an apparel page as a shelf
+                  item is not asking for a sample of their own artwork.
+                -->
                 <button
-                  v-if="isPOD"
+                  v-if="showsPrintCommerce"
                   type="button"
                   data-test="buy-sample"
                   class="inline-flex items-center min-h-11 bg-offWhite hover:bg-uiGrey py-2.5 px-4 lg:px-5 rounded-none text-[14px] leading-5"
@@ -195,7 +201,7 @@
                   Buy a sample
                 </button>
                 <NuxtLink
-                  v-if="isPOD"
+                  v-if="showsPrintCommerce"
                   :to="`/contact?intent=quote&product=${product.handle}`"
                   class="inline-flex items-center min-h-11 bg-offWhite hover:bg-uiGrey px-5 py-2.5 rounded-none text-[14px] leading-5"
                 >
@@ -365,11 +371,22 @@
               Invariant #2 + #3: 1 vs N locations is decided inside DesignEditor.
             -->
             <div
-              v-if="isPOD && printLocations.length"
+              v-if="canCustomise"
               class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
               data-test="design-editor-section"
             >
-              <h2 class="text-[20px] leading-[24px] md:text-[24px] md:leading-[28px] whitespace-pre-wrap mb-[2rem] md:mb-[3rem]">{{ stepNumber('customise') }}. Upload your design</h2>
+              <h2 class="text-[20px] leading-[24px] md:text-[24px] md:leading-[28px] whitespace-pre-wrap mb-[0.75rem]">{{ stepNumber('customise') }}. Upload your design</h2>
+
+              <!--
+                The terms of the printed order, before the upload rather than
+                after it. See `customTerms`. Discovering a minimum of 25 and a
+                three-week lead time AFTER attaching artwork is the same
+                defect as never stating them, only later and more annoying.
+              -->
+              <p
+                class="mb-[2rem] font-body text-caption text-ink-600 md:mb-[3rem]"
+                data-test="custom-production-terms"
+              >{{ customTerms }}</p>
 
               <!--
                 Attach / detach announcement. POLITE, not assertive: attaching
@@ -698,7 +715,7 @@
               B2B affordances and never render on apparel.
             -->
             <div
-              v-if="isPOD"
+              v-if="showsPrintCommerce"
               class="flex flex-col bg-white shadow-custom p-[1.5rem] pb-[3rem] rounded-[0.5rem] relative mt-[1.8rem]"
               data-test="quantity-section"
             >
@@ -1427,7 +1444,13 @@
                 </div>
               </div>
 
-              <div v-if="isPOD" class="flex flex-col text-[12px] text-greyText">
+              <!--
+                Ordered custom-first on purpose. A printed order quotes the
+                PRINT lead time (10-20 days in the catalogue), never the
+                ready-to-ship estimate below it. Getting this the other way
+                round promises a date the business misses on every order.
+              -->
+              <div v-if="showsPrintCommerce" class="flex flex-col text-[12px] text-greyText">
                 <span>Lead time:</span>
                 <span class="text-[13px] font-medium text-ink-950">~{{ leadTime }} working days</span>
               </div>
@@ -2113,6 +2136,91 @@ const canCustomise = computed<boolean>(
   () => isCustomizable.value && printLocations.value.length > 0,
 )
 
+// -------------------------------------------------------------------------
+// THE MODE MODEL. Read this before touching any gate below.
+//
+// Uploading artwork and having us print it IS the product. It is not a
+// separate shelf and it is not a property of `product.type.value`. Measured
+// live across all 26 catalogue rows:
+//
+//   20 apparel  is_customizable, 1-3 print zones, moq 15-25, 4-7 tiers,
+//               lead_time_days 10-20 (a PRINT lead time, not a shelf one)
+//    2 pod      cable-organiser, tech-pouch: same shape, commerce_mode
+//               'studio'
+//    2 pod      logo-sticker-sheet, studio-sticker-pack: is_customizable
+//               FALSE, buy as-is only
+//    1 pod      studio-laser-coaster: customizable, zero zones (fixture)
+//
+// So `type === 'pod'` excluded 20 products that carry real print zones and
+// included 3 that cannot use them. Gating the upload UI on it is why
+// "Upload your design" was missing from every apparel page.
+//
+// A product is therefore in ONE OF TWO MODES, and the mode is a property of
+// the ORDER, not of the product:
+//
+//   as-is   buy the blank object. qty 1, unit price, no minimum, no upload.
+//   custom  we print your artwork on it. MOQ and the tier ladder apply, the
+//           print lead time applies, and the design payload must reach the
+//           cart.
+//
+// As-is is the default (approved decision). Attaching a design is what moves
+// an order into custom mode — which is why `isCustomOrder` reads the design
+// state rather than the product type.
+// -------------------------------------------------------------------------
+
+/** Seeded lane: 'shop' = D2C buy-as-is, 'studio' = made to order. */
+const commerceMode = computed<string>(() =>
+  String(product.value?.metadata?.commerce_mode ?? '').toLowerCase(),
+)
+
+/**
+ * Declared HERE, far from the rest of the design state, on purpose.
+ * `watch(moq, …, { immediate: true })` runs during setup, `moq` now reads
+ * `isCustomOrder`, and `isCustomOrder` reads these. Left at their natural
+ * home ~900 lines below they would be in the temporal dead zone and the
+ * page would die on first paint with a ReferenceError.
+ */
+const anyDesignUploaded = ref(false)
+const savedDraft = ref<DesignDraft | null>(null)
+const hasSavedDesign = computed<boolean>(() => !!savedDraft.value?.commit)
+
+/** Artwork is attached, from the inline editor or a saved draft. */
+const hasDesign = computed<boolean>(() => anyDesignUploaded.value || hasSavedDesign.value)
+
+/**
+ * This product cannot be bought blank: the studio lane is made-to-order.
+ * Only `commerce_mode === 'studio'` (cable-organiser, tech-pouch). Apparel
+ * is `shop`, so its upload is an OFFER, never a toll gate — that is the
+ * difference between adding the flow and breaking the buy-as-is path.
+ */
+const requiresDesign = computed<boolean>(() => canCustomise.value && commerceMode.value === 'studio')
+
+/**
+ * This ORDER is a print order. Drives every commercial consequence: MOQ,
+ * the tier ladder, the quantity card, the print lead time and the payload
+ * route at add-to-cart. Deliberately NOT `canCustomise` — an apparel buyer
+ * who never uploads anything must keep their qty-1 unit price.
+ */
+const isCustomOrder = computed<boolean>(() => requiresDesign.value || (canCustomise.value && hasDesign.value))
+
+/**
+ * Does this page wear the print-commerce chrome — "From £X", MOQ, the tier
+ * ladder, the e-proof promise, the production lead time?
+ *
+ * `isPOD || isCustomOrder`, and the `isPOD` half is deliberate rather than
+ * lazy. Three pod-typed SKUs cannot be customised at all
+ * (logo-sticker-sheet and studio-sticker-pack are is_customizable=false,
+ * studio-laser-coaster has zero zones) and on a pure capability rule they
+ * would silently lose the chrome they ship with today. That is not what was
+ * asked for and it is not this change's business: the ask was to give
+ * apparel the upload flow it should always have had, not to restyle three
+ * sticker pages on the way past.
+ *
+ * So: pod-typed products keep exactly the chrome they have. Apparel gains it
+ * the moment its order becomes a print order. Nothing regresses.
+ */
+const showsPrintCommerce = computed<boolean>(() => isPOD.value || isCustomOrder.value)
+
 // Cheapest variant price across the product's catalogued variants. Used by
 // the gift-card "From £X" label (denomination variants ARE the offering),
 // independent of which variant the v-model has selected.
@@ -2190,14 +2298,24 @@ const quantityTiers = computed<QuantityTier[]>(() => {
 //
 // For POD: explicit metadata first, otherwise the smallest tier qty,
 // otherwise 1. For apparel / gift cards: always 1.
-const moq = computed<number>(() => {
-  if (!isPOD.value) return 1
+/**
+ * The minimum that applies WHEN THIS PRODUCT IS PRINTED, whatever mode the
+ * order is in right now. Kept separate from `moq` so the customise step can
+ * state its terms BEFORE the customer uploads: discovering a minimum of 25
+ * after you have attached artwork is the same defect as not stating it at
+ * all, just later and more annoying.
+ */
+const printMoq = computed<number>(() => {
   const raw = product.value?.metadata?.moq
   const n = typeof raw === 'number' ? raw : Number(raw)
   if (Number.isFinite(n) && n > 0) return Math.floor(n)
   if (quantityTiers.value[0]) return quantityTiers.value[0].quantity
   return 1
 })
+
+// Mode, not type: a minimum is a consequence of printing, so it binds a
+// custom ORDER. An apparel buyer taking the blank still buys one.
+const moq = computed<number>(() => (showsPrintCommerce.value ? printMoq.value : 1))
 
 // "Is this product subject to a minimum the buyer needs to know about?"
 //
@@ -2239,7 +2357,7 @@ const hasMinimum = computed<boolean>(() => moq.value > 1)
 //
 // On apparel this collapses to `hasMinimum`, which is 1, which is nothing,
 // which is what the PLP contract asserts and what a D2C buyer should see.
-const showsMinimumFact = computed<boolean>(() => hasMinimum.value || isPOD.value)
+const showsMinimumFact = computed<boolean>(() => hasMinimum.value || showsPrintCommerce.value)
 
 // lead_time_days, accept the {min, max} shape per the contract; fall back
 // to the legacy free-form string for unmigrated SKUs.
@@ -2255,6 +2373,24 @@ const leadTime = computed<string>(() => {
   }
   if (typeof raw === 'string' && raw.trim()) return raw
   return '10-20'
+})
+
+/**
+ * The terms of a PRINT order, stated on the customise step itself.
+ *
+ * As-is is the default, so the page's headline dispatch estimate is the
+ * ready-to-ship one ("Dispatched in 3-5 working days") and that is true of
+ * the blank object sitting in the buy box. It is NOT true of a printed run,
+ * which is 10-20 days and carries a minimum. A page that offers to print
+ * your artwork while showing only the shelf estimate is quoting a date the
+ * business misses on every such order — so the printed terms are stated
+ * where the offer is made, before any artwork is attached.
+ */
+const customTerms = computed<string>(() => {
+  if (!canCustomise.value) return ''
+  const parts = ['Printed to order', `~${leadTime.value} working days`]
+  if (printMoq.value > 1) parts.push(`minimum ${printMoq.value}`)
+  return parts.join(' · ')
 })
 
 // --- Variant axis detection (invariant #7) -------------------------------
@@ -2284,7 +2420,11 @@ const stepNumber = (name: StepName): number => {
   // card. Non-customisable PODs (where the merchant has explicitly opted
   // out of artwork upload) skip the slot, the "not customisable" hint
   // renders without a step heading, and quantity stays at Step 2.
-  if (isPOD.value && (printLocations.value.length > 0 || isPODWithoutLocations.value)) {
+  // Capability, not type. Every product with real print zones gets a
+  // numbered customise step, which is what stops the heading rendering
+  // "0. Upload your design" — indexOf returns -1 when the step is absent
+  // from the ladder but present in the template.
+  if (canCustomise.value || isPODWithoutLocations.value) {
     order.push('customise')
   }
   order.push('quantity')
@@ -2624,7 +2764,7 @@ const metaFacts = computed<MetaFact[]>(() => {
   // Bulk entry price. POD-only: an apparel SKU shows its exact unit price in
   // the dedicated price line below, and a second "From" would read as a
   // range that doesn't exist.
-  if (isPOD.value && fromPrice.value !== null) {
+  if (showsPrintCommerce.value && fromPrice.value !== null) {
     out.push({ key: 'from-price', text: formatMoney(fromPrice.value) })
   }
   // Minimum, driven by `moq`, NOT by a type branch. See `showsMinimumFact`.
@@ -2633,7 +2773,7 @@ const metaFacts = computed<MetaFact[]>(() => {
   }
   // E-proof is a genuine POD-flow promise (we mock the artwork before
   // production); it has no meaning on a buy-as-is SKU.
-  if (isPOD.value) {
+  if (showsPrintCommerce.value) {
     out.push({ key: 'eproof', text: 'E-proof in 48h' })
   }
   return out
@@ -2854,7 +2994,7 @@ const effectiveTotal = computed(() => currentQuote.value.total)
 // from TYPE to CAPABILITY, this line surfaces a priced ladder on 20 products
 // at once. That is a pricing change, not a rendering change. Do not flip it
 // on its own.
-const usesQuantitySelect = computed<boolean>(() => isPOD.value && tiers.value.length >= 2)
+const usesQuantitySelect = computed<boolean>(() => showsPrintCommerce.value && tiers.value.length >= 2)
 
 const tierQtys = computed<number[]>(() => tiers.value.map((t) => t.qty))
 
@@ -3007,7 +3147,6 @@ const { addItem, ensureCart, cartId, refresh: refreshCart } = useCart()
 // it's still the source for the LEFT pane mirror.
 interface AttachedDesign { key: string; label: string; filename: string | null }
 
-const anyDesignUploaded = ref(false)
 const attachedDesigns = ref<AttachedDesign[]>([])
 
 const onDesignUploadedStateChange = (
@@ -3094,7 +3233,6 @@ const designEditorRef = ref<DesignEditorApi | null>(null)
 // button will commit.
 // -------------------------------------------------------------------------
 const designDrafts = useDesignDrafts()
-const savedDraft = ref<DesignDraft | null>(null)
 
 // Read on the client only, after mount: sessionStorage does not exist during
 // SSR, and reading it in setup would render "no design" on the server and
@@ -3111,8 +3249,6 @@ watch(() => product.value?.id, (id) => {
 watch(() => (product.value?.id ? designDrafts.drafts.value[product.value.id] : null), (d) => {
   savedDraft.value = d ?? null
 })
-
-const hasSavedDesign = computed<boolean>(() => !!savedDraft.value?.commit)
 
 const designSurfaceUrl = computed<string>(() => {
   const base = `/design/${handle.value}`
@@ -3251,13 +3387,26 @@ const onAddToCart = async () => {
   // entirely, they never require a design upload because they're
   // sold ready-to-ship as-is. Previously the button just no-op'd
   // and the user got zero feedback, a P0 abandonment funnel.
-  const needsDesign = isPOD.value && printLocations.value.length > 0
+  // `needsDesign` used to do two different jobs with one flag, and that is
+  // what made the half-migration dangerous: it BLOCKED the sale when no
+  // artwork was present, and it also chose the payload route that actually
+  // carries the artwork. Wired to type, apparel fell out of both — so an
+  // apparel customer could upload a design, see a preview, and have a bare
+  // line item posted with no design at all. Measured at the network layer:
+  // {variant_id, quantity} and nothing else. Silent loss of customer content,
+  // and they are charged for a blank garment.
+  //
+  // They are two separate questions and are now asked separately:
+  //   mustHaveDesign — may this order proceed without artwork?
+  //   sendsDesign    — is there artwork that has to reach the cart?
+  const mustHaveDesign = requiresDesign.value
+  const sendsDesign = canCustomise.value && hasDesign.value
 
   // A saved draft satisfies the design requirement just as an inline upload
   // does. Without this the gate would refuse a customer who had just finished
   // designing on the dedicated surface, which is the exact dead-end the gate
   // exists to prevent.
-  if (needsDesign && !anyDesignUploaded.value && !hasSavedDesign.value) {
+  if (mustHaveDesign && !hasDesign.value) {
     addError.value = 'Upload a design before adding to cart.'
     addSuccess.value = false
     scrollToEditor()
@@ -3268,7 +3417,7 @@ const onAddToCart = async () => {
   addSuccess.value = false
 
   try {
-    if (needsDesign) {
+    if (sendsDesign) {
       commitStage.value = 'preparing'
 
       // TWO SOURCES, ONE SHAPE. Both branches produce the identical
@@ -3469,7 +3618,7 @@ const infoSections = computed<InfoSection[]>(() => {
     })
   }
 
-  if (isPOD.value) {
+  if (canCustomise.value) {
     // 3a. Custom path: what we need from you, what you get back, how long
     // the run takes. Three steps in the order the buyer meets them.
     //

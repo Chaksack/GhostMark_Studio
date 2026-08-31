@@ -158,23 +158,59 @@ test.describe('PDP capability gate: the editor and the payload must agree', () =
 
   test('a product that offers customisation states its production terms', async ({ page }) => {
     /*
-     * Not a style question. On apparel the editor now renders while the lead
-     * time still reads "Dispatched in 3-5 working days" - the ready-to-ship
-     * D2C estimate - against a job that has to be printed. The identical
-     * activity on cable-organiser is quoted at ~10-15 working days. That is a
-     * delivery date the business misses on every such order.
+     * The original form of this test asserted that "dispatched in N-N working
+     * days" appears NOWHERE on a page that offers an editor. That was the
+     * right instinct against the wrong target, and it is worth saying why it
+     * changed rather than quietly relaxing it.
+     *
+     * The instinct: a page offering to print your artwork must not quote you
+     * the ready-to-ship shelf estimate. The identical job on cable-organiser
+     * is quoted at ~10-15 working days; promising 3-5 is a date the business
+     * misses on every such order.
+     *
+     * Why the target was wrong: apparel is now dual-mode. As-is is the
+     * DEFAULT — the buy box holds one blank garment, and for THAT the 3-5 day
+     * dispatch estimate is simply true. Banning the string outright would
+     * force the page to hide a fact about the thing it is actually selling.
+     *
+     * So the assertion moves from "the shelf estimate is absent" to "the
+     * printed terms are present, and present BEFORE the upload". That is the
+     * stronger claim: it is not enough to avoid the wrong number, the right
+     * one has to be on the page at the moment the offer is made — a customer
+     * who learns the minimum is 25 and the lead time three weeks only AFTER
+     * attaching artwork has been misled just as effectively.
      */
     await page.goto(`/products/${APPAREL_CUSTOMISABLE}`)
     await settlePage(page)
     const offersEditor = (await page.locator('canvas').count()) > 0
     if (!offersEditor) return
 
-    const text = await page.evaluate(() => document.body.innerText)
-    expect(
-      /dispatched in \d+-\d+ working days/i.test(text),
-      'this PDP offers to print the customer\'s artwork and quotes the ready-to-ship ' +
-        'dispatch estimate. Either state a production lead time or do not offer the editor.',
-    ).toBe(false)
+    const terms = page.locator('[data-test="custom-production-terms"]')
+    await expect(
+      terms,
+      'this PDP offers to print the customer\'s artwork but states no production ' +
+        'terms. Either say what a printed run costs in time and volume, or do not ' +
+        'offer the editor.',
+    ).toBeVisible()
+
+    const text = (await terms.innerText()).trim()
+    expect(text, `production terms must quote a lead time, got "${text}"`)
+      .toMatch(/\d+\s*-\s*\d+\s*working days/i)
+    expect(text, `production terms must quote the minimum, got "${text}"`)
+      .toMatch(/minimum\s+\d+/i)
+
+    // The printed lead time must not silently equal the shelf estimate: if
+    // they ever converge, one of the two numbers is wrong.
+    const shelf = (await page.evaluate(() => document.body.innerText))
+      .match(/dispatched in (\d+)-(\d+) working days/i)
+    const printed = text.match(/(\d+)\s*-\s*(\d+)\s*working days/i)
+    if (shelf && printed) {
+      expect(
+        `${printed[1]}-${printed[2]}`,
+        'the printed lead time is identical to the ready-to-ship estimate, so one ' +
+          'of them is not being read from the product',
+      ).not.toBe(`${shelf[1]}-${shelf[2]}`)
+    }
   })
 
   for (const handle of Object.keys(UNIT_PRICE_GBP)) {

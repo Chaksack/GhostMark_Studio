@@ -90,10 +90,23 @@ export class PdpPage {
       await expect(this.designEditorSection).toBeVisible()
       await expect(this.apparelAtcCard).toHaveCount(0)
     } else {
+      // Apparel, in its DEFAULT as-is mode.
+      //
+      // `designEditorSection` used to be asserted absent here, and that
+      // assertion was wrong in a way that mattered: uploading artwork for us
+      // to print IS the product, and every one of the 20 apparel SKUs
+      // carries real print zones, a minimum and a tier ladder. Gating the
+      // editor on `product.type.value === 'pod'` hid the core flow on every
+      // apparel page, and this line locked the bug in.
+      //
+      // What stays true, and is what these assertions now say: as-is is the
+      // DEFAULT. The editor is an offer, not a toll gate. Until artwork is
+      // attached the page shows a unit price with no minimum and no ladder,
+      // and add-to-cart commits a plain garment.
       await expect(this.apparelPrice).toBeVisible()
       await expect(this.fromPrice).toHaveCount(0)
       await expect(this.moqCaption).toHaveCount(0)
-      await expect(this.designEditorSection).toHaveCount(0)
+      await expect(this.designEditorSection).toBeVisible()
       await expect(this.apparelAtcCard).toBeVisible()
     }
   }
