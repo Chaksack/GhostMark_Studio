@@ -231,8 +231,21 @@ const currentTestimonial = computed(
             :key="benefit.title"
             class="flex flex-col gap-5 bg-cream-tile p-10 transition-colors duration-300 ease-emphasis hover:bg-cream-warm"
           >
+            <!--
+              /55, up from /40 (2.56:1). At 44px the floor is 3:1, not 4.5.
+              `aria-hidden` keeps this out of the accessibility tree, but it
+              does not make it invisible: a sighted low-vision reader still
+              has to resolve it, so it is held to the large-text floor rather
+              than treated as exempt decoration.
+
+              Measured on BOTH grounds, because the card is
+              `hover:bg-cream-warm` — the ground moves under the pointer.
+              /55 is 3.99 at rest and 3.83 on hover; /50 would have been
+              3.42 / 3.31, which is too little for a value that has to
+              survive a ground change.
+            -->
             <span
-              class="font-display text-[44px] leading-none text-ink-950/40"
+              class="font-display text-[44px] leading-none text-ink-950/55"
               aria-hidden="true"
             >
               {{ benefit.number }}
@@ -272,11 +285,22 @@ const currentTestimonial = computed(
         <ul
           class="grid grid-cols-2 items-center gap-x-10 gap-y-10 border-y border-ink-200 py-12 sm:grid-cols-3 lg:grid-cols-4"
         >
+          <!--
+            ink-500, not ink-700/70. These are real content — client and agency
+            names — not decoration, so they answer to the 4.5:1 floor, and at
+            22px/18px they are NOT large text (that starts at 24px). The alpha
+            composited to 4.31:1 on cream-tile and missed.
+
+            Replaced the alpha with a solid ramp step rather than nudging the
+            opacity to /75. An alpha value has to be re-derived every time the
+            ground changes; a token can be measured once and read off a table.
+            ink-500 is 5.23:1 here, and the ink-950 hover is unchanged.
+          -->
           <li
             v-for="(agency, i) in agencies"
             :key="agency"
             :class="[
-              'text-center font-display text-[22px] leading-none text-ink-700/70 transition-colors duration-300 hover:text-ink-950',
+              'text-center font-display text-[22px] leading-none text-ink-500 transition-colors duration-300 hover:text-ink-950',
               i % 4 === 1 ? 'tracking-[0.04em]' : '',
               i % 4 === 2 ? 'italic' : '',
             ]"

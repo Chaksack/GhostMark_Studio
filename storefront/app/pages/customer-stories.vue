@@ -179,8 +179,9 @@ const trustedBy: string[] = [
               <div
                 class="flex h-full w-full items-center justify-center"
               >
+                <!-- ink-500 for the gradient-tile reason documented on the grid card below. -->
                 <span
-                  class="font-display text-[64px] font-normal leading-none tracking-[-0.04em] text-ink-300/80"
+                  class="font-display text-[64px] font-normal leading-none tracking-[-0.04em] text-ink-500"
                   aria-hidden="true"
                 >
                   {{ featured.brand.charAt(0) }}
@@ -255,8 +256,23 @@ const trustedBy: string[] = [
                 <div
                   class="flex h-full w-full items-center justify-center transition-transform duration-slow ease-emphasis group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 >
+                  <!--
+                    ink-500, not the ink-300/80 this shipped with (1.73:1), and
+                    not ink-400 either. The glyph sits on a GRADIENT tile, so it
+                    has no single ground: `tonePlaceholderClass` mixes sage-100/50,
+                    cream-100/200/tile and ink-100/50. It has to clear the 3:1
+                    large-text floor on the DARKEST stop of any of them, which is
+                    cream-200 — where ink-400 measures 2.95 and misses. ink-500's
+                    worst stop is 4.64.
+
+                    Worth knowing for the next audit: a probe that reads
+                    `backgroundColor` cannot see this tile at all. A gradient is a
+                    background-IMAGE, so the computed backgroundColor is transparent
+                    and the probe walks up to the section behind it, measuring
+                    against a ground the glyph never actually touches.
+                  -->
                   <span
-                    class="font-display text-[56px] font-normal leading-none tracking-[-0.04em] text-ink-300/80"
+                    class="font-display text-[56px] font-normal leading-none tracking-[-0.04em] text-ink-500"
                     aria-hidden="true"
                   >
                     {{ story.brand.charAt(0) }}

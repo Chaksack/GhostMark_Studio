@@ -493,10 +493,21 @@ const toggleFaq = (index: number) => {
         <ul
           class="grid grid-cols-2 items-center gap-x-10 gap-y-8 sm:grid-cols-4 lg:grid-cols-8"
         >
+          <!--
+            ink-500, not ink-700/70. These are real content — client and agency
+            names — not decoration, so they answer to the 4.5:1 floor, and at
+            22px/18px they are NOT large text (that starts at 24px). The alpha
+            composited to 4.31:1 on cream-tile and missed.
+
+            Replaced the alpha with a solid ramp step rather than nudging the
+            opacity to /75. An alpha value has to be re-derived every time the
+            ground changes; a token can be measured once and read off a table.
+            ink-500 is 5.23:1 here, and the ink-950 hover is unchanged.
+          -->
           <li
             v-for="logo in logos"
             :key="logo"
-            class="text-center font-display text-[18px] leading-none text-ink-700/70 transition-colors duration-300 hover:text-ink-950"
+            class="text-center font-display text-[18px] leading-none text-ink-500 transition-colors duration-300 hover:text-ink-950"
           >
             {{ logo }}
           </li>

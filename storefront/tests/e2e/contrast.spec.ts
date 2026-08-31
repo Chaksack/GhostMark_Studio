@@ -86,6 +86,27 @@ const SAGE_ROUTES = [
  */
 const DARK_ROUTES = ['/about', '/pricing', '/faq']
 
+/**
+ * The cream family, on the three pages that carried the 35 failures fixed on
+ * 2026-08-31: the `ink-700/70` logo walls (4.31:1, x24), the `ink-950/40`
+ * club numerals (2.56:1) and the `ink-300/80` customer-stories monograms
+ * (1.73:1).
+ *
+ * A tripwire on the surfaces that were fixed, not a site-wide cream audit.
+ * Every marketing page has a cream ground somewhere; listing all of them
+ * would triple the suite's runtime to re-prove pages that were never
+ * implicated.
+ *
+ * KNOWN BLIND SPOT, so nobody reads a green run as more than it is: the
+ * probe resolves a ground from `backgroundColor`, and a GRADIENT is a
+ * background-image. The customer-stories tiles are gradients, so their
+ * computed backgroundColor is transparent and the probe walks past them to
+ * the section behind. It therefore measures those monograms against a
+ * ground they never touch. The values shipped there were checked by hand
+ * against every gradient stop instead (worst: cream-200, 4.64:1).
+ */
+const CREAM_ROUTES = ['/platform', '/club', '/customer-stories']
+
 const GROUNDS: Ground[] = [
   {
     name: 'merchery-sage',
@@ -94,6 +115,26 @@ const GROUNDS: Ground[] = [
     match: c => Math.abs(c.r - 200) < 3 && Math.abs(c.g - 210) < 3 && Math.abs(c.b - 184) < 3,
     routes: SAGE_ROUTES,
     remedy: 'use text-ink-600 (5.01:1) on sage, not the ink-500 eyebrow default',
+  },
+  {
+    name: 'cream family',
+    // cream-50 FBF7F1, cream-100 F5EFE6, cream-200 EDE3D2, cream-tile
+    // F4F1EB, cream-warm EDE0D1, and plain white. Matched by explicit
+    // value rather than by "is it light", so a new tint has to be added
+    // deliberately and cannot drift in unmeasured.
+    match: c =>
+      [
+        [251, 247, 241],
+        [245, 239, 230],
+        [237, 227, 210],
+        [244, 241, 235],
+        [237, 224, 209],
+        [255, 255, 255],
+      ].some(([r, g, b]) => Math.abs(c.r - r) < 3 && Math.abs(c.g - g) < 3 && Math.abs(c.b - b) < 3),
+    routes: CREAM_ROUTES,
+    remedy:
+      'prefer a solid ramp step over an alpha (an alpha has to be re-derived ' +
+      'for every ground); ink-500 is 5.23:1 on cream-tile, ink-600 is 6.98:1',
   },
   {
     name: 'dark ink slab',
