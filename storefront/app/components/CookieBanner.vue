@@ -150,8 +150,17 @@ onBeforeUnmount(teardown)
           >
             Customise
           </UiButton>
+          <!--
+            `outlineStrong`, not `outline`. Reject has to carry the same
+            visual weight as "Accept all" beside it: a consent choice that
+            is legible but quieter than its opposite is still a steered
+            one. As shipped it was worse than quiet — the `outline` border
+            measured 1.14:1 against this banner's cream-warm ground, so the
+            control had no perceivable boundary at all while accept was a
+            solid ink slab.
+          -->
           <UiButton
-            variant="outline"
+            variant="outlineStrong"
             size="sm"
             shape="square"
             @click="rejectAll"

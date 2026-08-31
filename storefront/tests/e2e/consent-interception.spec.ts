@@ -360,3 +360,135 @@ test.describe('Cookie banner: pointer interception at desktop', () => {
     expect(bodyPad).toBeGreaterThanOrEqual(consentH - 1)
   })
 })
+
+/**
+ * Consent-choice parity.
+ *
+ * WHY THIS IS SEPARATE FROM THE CONTRAST SUITE
+ * `contrast.spec.ts` measures TEXT against its ground (SC 1.4.3). What
+ * failed here was not text: the "Reject non-essential" label was perfectly
+ * legible at 14.4:1. What was invisible was the button's BOUNDARY — a
+ * `border-ink-200` hairline measuring 1.14:1 against the banner's
+ * cream-warm ground, on a control whose fill is white on cream. A text
+ * probe cannot see that, and neither can a screenshot pass, because every
+ * pixel is painted exactly as specified.
+ *
+ * WHY IT IS AN ASSERTION AND NOT A NOTE
+ * Reject sat beside a solid ink "Accept all" slab. So the two consent
+ * choices were not merely unequal, they were unequal in the direction that
+ * benefits the site: the louder control was the one that grants consent.
+ * That is the shape of a steered choice regardless of intent, and it is
+ * the kind of styling that gets "tidied" back toward a quieter secondary
+ * button by anyone who does not know why it is loud.
+ *
+ * So this asserts the property, not the implementation: reject must have a
+ * perceivable boundary (3:1, SC 1.4.11) and must not be physically smaller
+ * than accept. It says nothing about which variant delivers that.
+ */
+test.describe('Cookie banner: consent choice parity', () => {
+  test('reject is as perceivable and as large as accept', async ({ page }) => {
+    await page.goto('/')
+    await expect(banner(page)).toBeVisible()
+
+    const measured = await page.evaluate(() => {
+      const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
+      const parse = (s: string) => {
+        const m = s.match(/rgba?\(([^)]+)\)/)
+        if (!m) return null
+        const q = m[1].split(/[,\s/]+/).filter(Boolean).map(Number)
+        return { r: q[0], g: q[1], b: q[2], a: q.length > 3 ? q[3] : 1 }
+      }
+      type RGBA = { r: number; g: number; b: number; a: number }
+      const L = ({ r, g, b }: RGBA) => {
+        const [R, G, B] = [r, g, b].map(v => lin(v / 255))
+        return 0.2126 * R + 0.7152 * G + 0.0722 * B
+      }
+      const ratio = (x: RGBA, y: RGBA) => {
+        const l1 = L(x)
+        const l2 = L(y)
+        const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
+        return (hi + 0.05) / (lo + 0.05)
+      }
+      const bgOf = (el: Element | null): RGBA => {
+        let n = el
+        while (n && n !== document.documentElement) {
+          const c = parse(getComputedStyle(n).backgroundColor)
+          if (c && c.a > 0.01) return c
+          n = n.parentElement
+        }
+        return { r: 255, g: 255, b: 255, a: 1 }
+      }
+
+      const root = document.querySelector('.gm-consent')
+      if (!root) return null
+      const ground = bgOf(root)
+
+      const find = (needle: string) =>
+        [...root.querySelectorAll('button')].find(b =>
+          (b.textContent || '').toLowerCase().includes(needle),
+        )
+
+      /**
+       * How strongly a control separates itself from the banner: whichever
+       * of its fill or its border does the most work. A filled button needs
+       * no border; a ghost-filled button is carried entirely by its border.
+       */
+      const perceivability = (el: HTMLElement) => {
+        const cs = getComputedStyle(el)
+        const fill = parse(cs.backgroundColor)
+        const border = parse(cs.borderTopColor)
+        const hasBorder = (parseFloat(cs.borderTopWidth) || 0) > 0 && cs.borderTopStyle !== 'none'
+        const fromFill = fill && fill.a > 0.01 ? ratio(fill, ground) : 1
+        const fromBorder = hasBorder && border && border.a > 0.01 ? ratio(border, ground) : 1
+        return Math.max(fromFill, fromBorder)
+      }
+
+      const reject = find('reject')
+      const accept = find('accept')
+      if (!reject || !accept) return null
+      const rb = reject.getBoundingClientRect()
+      const ab = accept.getBoundingClientRect()
+      return {
+        reject: { edge: +perceivability(reject).toFixed(2), w: rb.width, h: rb.height },
+        accept: { edge: +perceivability(accept).toFixed(2), w: ab.width, h: ab.height },
+      }
+    })
+
+    expect(measured, 'banner must expose a reject and an accept control').not.toBeNull()
+    const { reject, accept } = measured!
+
+    // (1) The accessibility floor. SC 1.4.11 asks 3:1 of a control boundary.
+    expect(
+      reject.edge,
+      `The reject control has no perceivable boundary: it measures ${reject.edge}:1 ` +
+        `against the banner ground, under SC 1.4.11's 3:1. Both its fill and its ` +
+        `border are too close to the banner, so the control has no visible extent.`,
+    ).toBeGreaterThanOrEqual(3)
+
+    // (2) Parity, which is a stricter and separate bar. Clearing 3:1 makes
+    // reject VISIBLE; it does not make it EQUAL. A grey outline at 4.55:1
+    // beside a solid ink slab at 13.08:1 is legal and still visibly the
+    // quieter of the two choices, which is the whole failure mode here.
+    // Half of accept's edge contrast is the line: it admits a genuine
+    // outline-vs-fill pair of the same ink, and rejects the "tidy it into a
+    // soft secondary button" change that started this.
+    expect(
+      reject.edge,
+      `Reject (${reject.edge}:1) is visibly weaker than accept (${accept.edge}:1). ` +
+        `Clearing 3:1 makes a control visible, not equal — and a consent choice ` +
+        `that is quieter than its opposite is a steered one. Give reject an edge ` +
+        `of the same ink as the accept slab (variant="outlineStrong"), not a ` +
+        `softer grey outline.`,
+    ).toBeGreaterThanOrEqual(accept.edge * 0.5)
+
+    expect(
+      reject.h,
+      `Reject (${reject.h}px tall) must not be smaller than accept (${accept.h}px): ` +
+        `a consent choice that is harder to see or hit than its opposite is a steered one.`,
+    ).toBeGreaterThanOrEqual(accept.h)
+
+    // Not an equality assertion on width — the labels differ in length, so
+    // the boxes legitimately differ. Prominence is carried by height, edge
+    // contrast and adjacency, all of which are asserted above.
+  })
+})

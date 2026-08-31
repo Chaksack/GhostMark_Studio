@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { NuxtLink } from '#components'
 import UiSpinner from './UiSpinner.vue'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'merchery'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'outlineStrong' | 'danger' | 'merchery'
 type Size = 'sm' | 'md' | 'lg'
 type Shape = 'pill' | 'rounded' | 'square'
 type Tag = 'button' | 'a' | 'NuxtLink'
@@ -51,7 +51,34 @@ const variantClasses: Record<Variant, string> = {
   primary: 'bg-ink-900 text-cream-50 hover:bg-ink-700',
   secondary: 'bg-cream-100 text-ink-900 hover:bg-cream-200',
   ghost: 'text-ink-700 hover:bg-ink-50',
-  outline: 'border border-ink-200 bg-white text-ink-900 hover:border-ink-300 hover:bg-ink-50',
+  // Border was `ink-200`, which is 1.48:1 against the button's own white
+  // fill and 1.14:1 against `cream-warm`. On a bordered button the border
+  // IS the control boundary, so at those ratios the control had no
+  // perceivable extent — SC 1.4.11 asks 3:1 of it. Worse, `hover:ink-300`
+  // (2.29:1) was also under, so hovering did not rescue it either.
+  //
+  // `ink-500` is the LIGHTEST step that clears 3:1 on every ground this
+  // variant is painted on — white 5.90, cream-50 5.61, cream-warm 4.55 —
+  // the same selection rule the ink-500 token itself was chosen by.
+  // `ink-400` was the tempting smaller change and it fails: 2.89:1 on
+  // cream-warm, which is exactly the ground the cookie banner sits on.
+  //
+  // This IS a visible change across ~38 buttons: a hairline becomes a
+  // legible outline. That is the fix, not a side effect — the hairline was
+  // the defect.
+  outline: 'border border-ink-500 bg-white text-ink-900 hover:border-ink-700 hover:bg-ink-50',
+  // Same shape as `outline`, at the weight of a filled primary: the border
+  // matches the `merchery` slab's own ink, so the two read as an equal
+  // pair rather than as a primary and an afterthought.
+  //
+  // This exists for CONSENT, and the requirement there is not merely
+  // legibility. A reject control is expected to be as prominent and as
+  // easy to reach as accept; a grey-outlined button beside a solid black
+  // one is arguably not that, whatever it measures. Use this wherever a
+  // choice must not be visually steered — not as a general "louder
+  // outline", which is what `outline` is now for.
+  outlineStrong:
+    'border border-merchery-ink bg-transparent text-ink-950 hover:bg-merchery-ink hover:text-merchery-cta',
   // Routed through the `semantic` group so this and UiBadge finally agree on
   // what danger looks like: they previously shipped two different hues
   // (`red-600` here, `accent-terracotta/15` there). `red-*` is also a
