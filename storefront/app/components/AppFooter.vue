@@ -250,10 +250,19 @@
       <div
         class="mt-10 pt-6 border-t border-greyLines flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
       >
+      <!--
+        These provenance chips carry NO aria-label, and that is deliberate.
+        They used to. It was `aria-label="Made in Europe"` on a bare <span>
+        whose visible text already read "Made in Europe" — so the attribute
+        was both redundant AND non-conforming: a <span> is role=generic,
+        which cannot take an accessible name, so browsers were free to drop
+        it. Removing it is strictly better than making it conform with a
+        role: the visible text is already the content, and the icon beside
+        it is already aria-hidden. Do not add them back.
+      -->
         <div class="flex items-center gap-3 flex-wrap">
           <span
             class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
-            aria-label="Made in Europe"
           >
             <svg
               viewBox="0 0 24 24"
@@ -274,7 +283,6 @@
           </span>
           <span
             class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
-            aria-label="Family-owned in Bordeaux"
           >
             <svg
               viewBox="0 0 24 24"
@@ -295,7 +303,6 @@
           </span>
           <span
             class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
-            aria-label="Carbon-aware shipping"
           >
             <svg
               viewBox="0 0 24 24"

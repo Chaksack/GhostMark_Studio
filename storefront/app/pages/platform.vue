@@ -368,11 +368,26 @@ const toggleFaq = (index: number) => {
             :key="step.number"
             class="flex flex-col gap-4 border-t border-ink-200 pt-6"
           >
-            <span
-              class="font-display text-[44px] leading-none text-ink-950"
-              :aria-label="`Step ${i + 1}`"
-            >
-              {{ step.number }}
+            <!--
+              The ordinal is announced by a visually-hidden sibling, not by
+              an aria-label. Three reasons it cannot be done the shorter ways:
+
+              1. `aria-label` on a bare <span> (role=generic) cannot take an
+                 accessible name, so the old attribute was free to be ignored
+                 — leaving a screen reader to announce the raw glyph "01".
+              2. `role="img"` would make it conform, but calls a numeral an
+                 image to get there.
+              3. Leaving it to the <ol> does not work either: this list is
+                 `list-style: none` AND `display: grid` (both measured), and
+                 each of those is enough on its own to strip list semantics,
+                 so there is no reliable "item 1 of 4" to lean on.
+
+              A real text node in the accessibility tree needs none of that
+              to be true.
+            -->
+            <span class="font-display text-[44px] leading-none text-ink-950">
+              <span class="sr-only">Step {{ i + 1 }}</span>
+              <span aria-hidden="true">{{ step.number }}</span>
             </span>
             <h3 class="font-display text-[22px] leading-snug text-ink-950">
               {{ step.title }}
