@@ -24,7 +24,7 @@
       <nav class="pt-[2rem] md:absolute md:top-[2rem] md:z-10 md:pt-0" aria-label="breadcrumbs">
         <ol class="flex flex-wrap items-center gap-x-1 gap-y-0">
           <li>
-            <NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">
+            <NuxtLink to="/" class="gm-tap-44 text-sm text-greyText hover:text-ink-950 hover:underline">
               Home
             </NuxtLink>
           </li>

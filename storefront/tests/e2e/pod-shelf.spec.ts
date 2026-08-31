@@ -47,43 +47,67 @@ const LEGACY_POD_URL = '/products?type=pod'
  * ================================================================== */
 
 test.describe('POD shelf: selection', () => {
-  test(`${SHELF} shows the self-serve products and excludes the stickers`, async ({ page }) => {
+  test(`${SHELF} resolves to the single catalogue and hides nothing printable`, async ({ page }) => {
+    /*
+     * THIS TEST USED TO ASSERT THE OPPOSITE, AND THE REVERSAL IS THE POINT.
+     *
+     * It was written for "Option C — give print-on-demand a real shelf": a
+     * curated /studio selecting on capability, excluding the two
+     * non-customisable stickers and all 20 apparel SKUs. That design was
+     * then withdrawn — print on demand is a production METHOD, not a
+     * category, so there is one catalogue and two ways to buy from it
+     * (as-is, or customised). /studio is now a redirect.
+     *
+     * Asserting "apparel must not appear" would today be asserting that 20
+     * printable products stay hidden — the exact failure the customer
+     * reported when the upload flow was missing from every apparel PDP. So
+     * the contract inverts: the shelf must resolve to the catalogue, and
+     * everything printable must be reachable from it.
+     *
+     * What is NOT relaxed: the redirect itself. If /studio ever 404s or
+     * lands somewhere without a grid, every link and bookmark to the old
+     * shelf breaks silently.
+     */
     await page.goto(SHELF)
     await settlePage(page)
 
+    expect(
+      new URL(page.url()).pathname,
+      `${SHELF} must resolve to the single catalogue; it landed on ${page.url()}`,
+    ).toBe('/products')
+
     const grid = await readGrid(page)
-    expect(grid, `no product grid (ul.grid) found on ${SHELF}`).not.toBeNull()
+    expect(grid, `no product grid (ul.grid) found after ${SHELF} resolved`).not.toBeNull()
 
     /*
-     * Identity, not count. A count-only assertion is exactly the shape of
-     * the /shop?type=pod bug: the right NUMBER of the wrong things still
-     * passes. It would also pass on a selector built from
-     * `is_customizable` alone, which selects 23 of 26 products including
-     * every apparel SKU.
+     * Everything that can actually be printed must be reachable here.
+     *
+     * SELF_SERVE_HANDLES only. `ENQUIRY_HANDLES` (studio-laser-coaster) is
+     * deliberately NOT in this list: it is POD-typed and flagged
+     * customisable but carries ZERO print locations, so by capability it
+     * cannot be printed at all — and it is not listed in the catalogue.
+     * Asserting its presence here would be the same type-over-capability
+     * mistake in the test that the product code just stopped making.
      */
-    const missing = SELF_SERVE_HANDLES.filter((h) => !grid!.handles.includes(h))
+    const printable = [...SELF_SERVE_HANDLES]
+    const missing = printable.filter((h) => !grid!.handles.includes(h))
     expect(
       missing,
-      `self-serve products missing from ${SHELF}: ${missing.join(', ')}. ` +
-        `Shelf showed: ${grid!.handles.join(', ')}`,
+      `printable products missing from the catalogue: ${missing.join(', ')}. ` +
+        `Showed: ${grid!.handles.join(', ')}`,
     ).toEqual([])
 
-    const stickers = grid!.handles.filter((h) => NON_CUSTOMISABLE_POD_HANDLES.includes(h as never))
-    expect(
-      stickers,
-      `${stickers.join(', ')} appear on a CUSTOMISATION shelf. Both are ` +
-        'metadata.is_customizable === false with no print locations: POD by type, ' +
-        'buy-as-is by capability. The shelf selects on capability.',
-    ).toEqual([])
-
-    const apparel = grid!.handles.filter(
+    // And the catalogue is genuinely one catalogue: the apparel that carries
+    // print zones is here too, not on a separate shelf. Asserted as a
+    // presence, because their ABSENCE is the regression that started this.
+    const apparelPresent = grid!.handles.filter(
       (h) => !POD_HANDLES.includes(h as never) && h !== 'studio-gift-card',
     )
     expect(
-      apparel,
-      `apparel leaked onto the POD shelf: ${apparel.join(', ')}. This is the ` +
-        'failure mode of an `is_customizable`-only selector: 22 of 26 products satisfy it.',
-    ).toEqual([])
+      apparelPresent.length,
+      'the catalogue shows no apparel at all, so /studio has resolved to a ' +
+        'filtered shelf rather than the single catalogue',
+    ).toBeGreaterThan(0)
   })
 
   test('the enquiry product does not render as an empty product card', async ({ page }) => {

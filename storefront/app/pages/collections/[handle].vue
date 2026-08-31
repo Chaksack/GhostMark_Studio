@@ -137,7 +137,7 @@ function onClearFilters() {
       <nav class="pt-[2rem] md:absolute md:top-[2rem] md:z-10 md:pt-0" aria-label="breadcrumbs">
         <ol class="flex flex-wrap items-center gap-x-1 gap-y-0">
           <li>
-            <NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">
+            <NuxtLink to="/" class="gm-tap-44 text-sm text-greyText hover:text-ink-950 hover:underline">
               Home
             </NuxtLink>
           </li>
@@ -145,7 +145,7 @@ function onClearFilters() {
             /
           </li>
           <li>
-            <NuxtLink to="/products" class="text-sm text-greyText hover:text-ink-950 hover:underline">
+            <NuxtLink to="/products" class="gm-tap-44 text-sm text-greyText hover:text-ink-950 hover:underline">
               All products
             </NuxtLink>
           </li>
@@ -153,7 +153,7 @@ function onClearFilters() {
             /
           </li>
           <li>
-            <NuxtLink to="/collections" class="text-sm text-greyText hover:text-ink-950 hover:underline">
+            <NuxtLink to="/collections" class="gm-tap-44 text-sm text-greyText hover:text-ink-950 hover:underline">
               Collections
             </NuxtLink>
           </li>

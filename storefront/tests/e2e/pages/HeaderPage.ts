@@ -48,7 +48,24 @@ export class HeaderPage {
      */
     this.overlay = page.getByRole('dialog')
     this.shopCanonEntry = this.overlay.getByRole('link', { name: /shop the studio canon/i })
-    this.podEntry = this.overlay.getByRole('link', { name: /customise.*print on demand/i })
+    /*
+     * The burger's second mode entry. It used to read "Customise · Print on
+     * demand" and point at `/products?type=pod`; it now reads "All products"
+     * and points at the whole catalogue.
+     *
+     * That is not drift, it is two decisions landing:
+     *   1. /studio was folded back into a single catalogue — there is one
+     *      shelf and two ways to buy from it, as-is or customised.
+     *   2. `?type=pod` stopped being a meaningful selector for "can be
+     *      printed". Measured: 22 of 26 products carry print zones, while
+     *      only 5 are typed 'pod' — and 3 of those 5 cannot be customised
+     *      at all. Pointing a "Print on demand" entry at that filter would
+     *      show 5 printable products and hide 20, which is the same
+     *      type-vs-capability bug that hid the upload flow on every apparel
+     *      PDP. Do not restore it without a capability-based filter to aim
+     *      it at.
+     */
+    this.podEntry = this.overlay.getByRole('link', { name: /all products/i })
     this.categoryHeading = this.overlay.getByText(/browse by category/i)
   }
 

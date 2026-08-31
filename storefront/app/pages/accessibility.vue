@@ -3,7 +3,7 @@
     <div class="relative mx-auto w-full max-w-rail px-gutter">
       <nav class="absolute top-[2rem] z-10 self-end md:self-start" aria-label="breadcrumbs">
         <ol class="flex items-center gap-1">
-          <li><NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">Home</NuxtLink></li>
+          <li><NuxtLink to="/" class="gm-tap-44 text-sm text-greyText hover:text-ink-950 hover:underline">Home</NuxtLink></li>
           <li class="text-sm text-greyText" aria-hidden="true">/</li>
           <li><span class="text-sm text-ink-950" aria-current="page">Accessibility</span></li>
         </ol>

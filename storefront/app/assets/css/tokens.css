@@ -572,6 +572,39 @@ body {
   opacity: 0.22;
 }
 
+/**
+ * `gm-tap-44`: grow a small control's HIT AREA to 44px without moving it.
+ *
+ * WCAG 2.5.5 (AAA) and every platform HIG ask for a 44px target. Breadcrumb
+ * links are 17px tall by design — they are 14px text in a row, and making
+ * the BOX 44px would wreck the rhythm of the row for pointer users, who do
+ * not need it.
+ *
+ * So the box stays and a pseudo-element stretches the tappable region,
+ * scoped to touch-primary devices via the `pointer: coarse` media query.
+ * Layout is untouched, nothing reflows, no design changes. The pseudo spans
+ * the control's own inline extent only, so adjacent breadcrumb items cannot
+ * swallow each other's taps.
+ *
+ * Same technique as `TOUCH_TARGET_SM` in UiButton.vue, hoisted here because
+ * seven pages each carried the raw six-utility incantation and any one of
+ * them could drift.
+ */
+.gm-tap-44 {
+  position: relative;
+}
+
+@media (pointer: coarse) {
+  .gm-tap-44::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
 /* Reduced motion: the halftone is static, but pin it explicitly so a fixed
    attachment never fights an OS-level reduced-motion setting on iOS. */
 @media (prefers-reduced-motion: reduce) {
