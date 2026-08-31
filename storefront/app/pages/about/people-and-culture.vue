@@ -130,8 +130,19 @@ const roles: Role[] = [
 
         <div class="aspect-[4/5] w-full overflow-hidden bg-cream-warm">
           <div class="flex h-full w-full items-center justify-center">
+            <!--
+              ink-600, not ink-400. These placeholder captions are real rendered text
+              and answer to the 4.5:1 floor like any other: ink-400 measured 2.89:1 on
+              cream-warm and 3.33:1 on cream-tile. ink-600 is 6.06 / 6.98. ink-500
+              also passes but by 0.05 on cream-warm, which is no margin at all.
+
+              `role="img"` is not decoration either: `aria-label` on a bare <span>
+              (role=generic) is non-conforming and unreliably exposed, so the label
+              was a coin flip. role="img" gives it an element that can carry a name.
+            -->
             <span
-              class="font-body text-caption text-ink-400"
+              class="font-body text-caption text-ink-600"
+              role="img"
               aria-label="Image placeholder"
             >Image: replace with team photography</span>
           </div>
@@ -168,7 +179,8 @@ const roles: Role[] = [
             <div class="aspect-[4/5] w-full overflow-hidden bg-cream-tile">
               <div class="flex h-full w-full items-center justify-center">
                 <span
-                  class="font-body text-caption text-ink-400"
+                  class="font-body text-caption text-ink-600"
+                  role="img"
                   aria-label="Portrait placeholder"
                 >Portrait: placeholder</span>
               </div>

@@ -263,3 +263,122 @@ for (const ground of GROUNDS) {
     }
   })
 }
+
+/**
+ * Image-placeholder captions.
+ *
+ * WHY THESE GET THEIR OWN BLOCK RATHER THAN A "cream grounds" ENTRY IN
+ * `GROUNDS` ABOVE
+ * The captions live on `cream-warm` and `cream-tile`, but those grounds
+ * cannot be added to the allowlist yet: a site-wide probe on 2026-08-31
+ * found 35 further failures on the cream family — the `ink-700/70` logo
+ * bar at 4.31:1 (x24), `ink-950/40` display numerals at 2.56:1, and
+ * `ink-300` 56px letterforms at 1.56:1, across /platform,
+ * /customer-stories and /club. Listing the ground would import all of
+ * them and the suite would be red on arrival.
+ *
+ * So this asserts the thing that was fixed, by its role rather than by its
+ * ground: every placeholder caption, wherever it sits. Delete this block
+ * and add the cream grounds to `GROUNDS` the day those 35 are dealt with.
+ *
+ * These captions shipped at `ink-400` — 2.89:1 on cream-warm, 3.33:1 on
+ * cream-tile — on the reasoning that scaffolding does not need to be
+ * legible. It does: it is rendered text on a live marketing page, and the
+ * floor does not care why the text is there.
+ */
+const PLACEHOLDER_ROUTES = [
+  '/sustainability',
+  '/swatches',
+  '/press',
+  '/about/value-chain',
+  '/about/environmental-footprint',
+  '/about/people-and-culture',
+]
+
+test.describe('Image-placeholder captions', () => {
+  for (const route of PLACEHOLDER_ROUTES) {
+    test(`${route} — placeholder captions are legible`, async ({ page }, testInfo) => {
+      test.skip(
+        testInfo.project.name !== 'desktop-chromium',
+        'Colour does not vary by viewport; the desktop run is sufficient.',
+      )
+
+      await page.goto(route, { waitUntil: 'networkidle' })
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += 700) {
+          window.scrollTo(0, y)
+          await new Promise(r => setTimeout(r, 60))
+        }
+        window.scrollTo(0, 0)
+      })
+      await page.waitForTimeout(300)
+
+      const result = await page.evaluate(() => {
+        const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
+        const parse = (s: string) => {
+          const m = s.match(/rgba?\(([^)]+)\)/)
+          if (!m) return null
+          const q = m[1].split(/[,\s/]+/).filter(Boolean).map(Number)
+          return { r: q[0], g: q[1], b: q[2], a: q.length > 3 ? q[3] : 1 }
+        }
+        type RGBA = { r: number; g: number; b: number; a: number }
+        const L = ({ r, g, b }: RGBA) => {
+          const [R, G, B] = [r, g, b].map(v => lin(v / 255))
+          return 0.2126 * R + 0.7152 * G + 0.0722 * B
+        }
+        const ratio = (f: RGBA, b: RGBA) => {
+          const l1 = L(f)
+          const l2 = L(b)
+          const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
+          return (hi + 0.05) / (lo + 0.05)
+        }
+        const bgOf = (el: Element | null): RGBA => {
+          let n = el
+          while (n && n !== document.documentElement) {
+            const c = parse(getComputedStyle(n).backgroundColor)
+            if (c && c.a > 0.01) return c
+            n = n.parentElement
+          }
+          return { r: 255, g: 255, b: 255, a: 1 }
+        }
+
+        const nodes = [...document.querySelectorAll('span[role="img"]')]
+        return {
+          seen: nodes.length,
+          failures: nodes
+            .map(el => {
+              const cs = getComputedStyle(el)
+              const bg = bgOf(el)
+              const fg = parse(cs.color)!
+              return {
+                text: (el.textContent || '').trim().slice(0, 50),
+                ratio: Number(ratio(fg, bg).toFixed(2)),
+                color: cs.color,
+                cls: String((el as HTMLElement).className).slice(0, 90),
+              }
+            })
+            .filter(f => f.ratio < 4.5),
+        }
+      })
+
+      // A zero-node page would pass vacuously and guard nothing. Every route
+      // in the list above is here BECAUSE it renders one.
+      expect(
+        result.seen,
+        `${route} is listed as carrying placeholder captions but none were found. ` +
+          `Either the markup changed (update PLACEHOLDER_ROUTES) or real imagery ` +
+          `landed here — in which case drop the route rather than leaving a test ` +
+          `that asserts nothing.`,
+      ).toBeGreaterThan(0)
+
+      expect(
+        result.failures,
+        result.failures.length
+          ? `Placeholder captions below 4.5:1:\n${result.failures
+              .map(f => `  ${f.ratio}:1 ${f.color} "${f.text}"\n    class: ${f.cls}`)
+              .join('\n')}\n  fix: ink-600 (6.06:1 on cream-warm, 6.98:1 on cream-tile)`
+          : undefined,
+      ).toEqual([])
+    })
+  }
+})
