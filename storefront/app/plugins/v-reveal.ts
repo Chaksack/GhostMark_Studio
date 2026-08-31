@@ -1,5 +1,5 @@
 /**
- * v-reveal — global Vue directive for scroll-into-view fade+rise.
+ * v-reveal: global Vue directive for scroll-into-view fade+rise.
  *
  *   <BrandShowcase v-reveal />
  *   <BestSellers v-reveal="80" />   <!-- 80ms stagger -->
@@ -11,7 +11,7 @@
  * with `Cannot read properties of undefined (reading 'getSSRProps')`. We
  * therefore register the directive in both environments, but the actual
  * IntersectionObserver wiring only runs inside `mounted`, which Vue 3
- * never invokes during SSR — so server output stays inert (no observer,
+ * never invokes during SSR, so server output stays inert (no observer,
  * no `reveal-init` class), and the client takes over post-hydration.
  *
  * Honors `prefers-reduced-motion`: when reduced motion is requested the
@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
      * and client. This is the canonical fix for the SSR/CSR hydration
      * mismatch caused by `getSSRProps`.
      *
-     * Why: `getSSRProps` only patches the server-rendered HTML string —
+     * Why: `getSSRProps` only patches the server-rendered HTML string;
      * the *client* VNode tree never learns about that class. During
      * hydration, Vue compares the client VNode's `props.class` against
      * the SSR markup; if the directive added `reveal-init` only on the
@@ -59,7 +59,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
 
     /**
-     * Server-side rendering hook. Retained as a defensive fallback only —
+     * Server-side rendering hook. Retained as a defensive fallback only:
      * the real hydration-safe class injection happens in `created` above,
      * which runs in both SSR and CSR and keeps the client VNode in sync
      * with the server-rendered HTML.
@@ -94,7 +94,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
 
       // `reveal-init` is already on the element via the `created` hook
-      // (which mutated vnode.props.class). No need to re-add it here —
+      // (which mutated vnode.props.class). No need to re-add it here;
       // doing so was previously safe but redundant.
 
       const observer = new IntersectionObserver(

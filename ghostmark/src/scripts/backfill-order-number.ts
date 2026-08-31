@@ -1,5 +1,5 @@
 // =============================================================================
-// backfill-order-number — set `metadata.order_number = GMS-<ULID>` on every
+// backfill-order-number: set `metadata.order_number = GMS-<ULID>` on every
 // pre-existing order that lacks it.
 //
 // Why this exists
@@ -37,7 +37,7 @@ import {
 //   - src/subscribers/order-notifications.ts (backend)
 //   - src/admin/widgets/order-number-widget.tsx (admin UI)
 //   - storefront/app/pages/checkout.vue (storefront)
-// If you change the format in any of those, change it here too — otherwise
+// If you change the format in any of those, change it here too; otherwise
 // the backfill writes a stale value and support sees a mismatch.
 const formatOrderNumber = (internalId: string): string => {
   if (internalId.startsWith("GMS-")) return internalId
@@ -57,7 +57,7 @@ export default async function backfillOrderNumber({
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[backfill-order-number] DRY-RUN — no writes.")
+    logger.info("[backfill-order-number] DRY-RUN: no writes.")
   }
 
   const { data: orders } = await query.graph({
@@ -79,7 +79,7 @@ export default async function backfillOrderNumber({
 
     if (dryRun) {
       logger.info(
-        `[backfill-order-number] DRY-RUN would set ${order.id} (#${order.display_id}) -> ${desired} (was: ${current ?? "—"})`,
+        `[backfill-order-number] DRY-RUN would set ${order.id} (#${order.display_id}) -> ${desired} (was: ${current ?? "–"})`,
       )
       updated++
       continue

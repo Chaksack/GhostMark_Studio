@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /swatches — Material swatch packs.
+ * /swatches: Material swatch packs.
  *
  * Editorial sample-request page:
  *   - Hero: eyebrow "Materials" + serif "Order a free swatch pack"
@@ -18,7 +18,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Order a free GhostMark Studio swatch pack — apparel cottons, hoodie blends and drinkware finishes, posted to your door inside five working days.',
+        'Order a free GhostMark Studio swatch pack: apparel cottons, hoodie blends and drinkware finishes, posted to your door inside five working days.',
     },
   ],
 })
@@ -35,7 +35,7 @@ const packs: SwatchPack[] = [
     id: 'apparel',
     title: 'Apparel cottons',
     body:
-      'Six weights of GOTS-certified cotton — single-jersey 160 gsm through to garment-dyed 240 gsm — labelled with composition, weave and a square inch of every print method we offer on it.',
+      'Six weights of GOTS-certified cotton (single-jersey 160 gsm through to garment-dyed 240 gsm) labelled with composition, weave and a square inch of every print method we offer on it.',
     swatchClass: 'bg-cream-tile',
   },
   {
@@ -49,7 +49,7 @@ const packs: SwatchPack[] = [
     id: 'drinkware',
     title: 'Drinkware finishes',
     body:
-      'Ceramic, stainless and double-walled glass with the four finishes we offer — matte glaze, gloss glaze, etched and screened. A mini set, but enough to commit to a colour and a method.',
+      'Ceramic, stainless and double-walled glass with the four finishes we offer: matte glaze, gloss glaze, etched and screened. A mini set, but enough to commit to a colour and a method.',
     swatchClass: 'bg-merchery-sage',
   },
 ]
@@ -82,7 +82,7 @@ const onSubmit = () => {
       class="bg-merchery-tile"
       aria-labelledby="swatches-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-10 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-10 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Materials
@@ -96,7 +96,7 @@ const onSubmit = () => {
           <p class="max-w-[48ch] font-body text-body text-ink-700">
             Hold the cotton, see the colour against daylight, scratch the
             glaze with a thumbnail. We post a curated swatch pack to
-            anyone weighing a real production run — no card required.
+            anyone weighing a real production run. No card required.
           </p>
           <div class="flex flex-wrap gap-3 pt-2">
             <UiButton
@@ -123,7 +123,7 @@ const onSubmit = () => {
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; swatch pack laid out</span>
+            >Image: swatch pack laid out</span>
           </div>
         </div>
       </div>
@@ -136,8 +136,8 @@ const onSubmit = () => {
       class="bg-white"
       aria-labelledby="swatches-packs-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             What's in the pack
           </p>
@@ -160,7 +160,7 @@ const onSubmit = () => {
                 <span
                   class="font-body text-caption text-ink-500"
                   aria-label="Swatch placeholder"
-                >Swatch &mdash; {{ pack.title }}</span>
+                >Swatch: {{ pack.title }}</span>
               </div>
             </div>
             <h3 class="font-display text-display-sm font-normal text-ink-950">
@@ -175,14 +175,14 @@ const onSubmit = () => {
     </section>
 
     <!-- ============================================================
-         3. Request a swatch — form
+         3. Request a swatch: form
          ============================================================ -->
     <section
       id="request"
       class="bg-cream-warm"
       aria-labelledby="swatches-form-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
         <div class="flex flex-col gap-3">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Request a swatch
@@ -291,7 +291,7 @@ const onSubmit = () => {
             class="font-body text-caption text-ink-700"
             role="status"
           >
-            Thanks — we've logged your request and will dispatch within
+            Thanks. We've logged your request and will dispatch within
             five working days.
           </p>
         </form>
@@ -305,7 +305,7 @@ const onSubmit = () => {
       class="bg-white"
       aria-labelledby="swatches-policy-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="bg-merchery-tile p-10 lg:p-14">
           <h2
             id="swatches-policy-heading"
@@ -315,7 +315,7 @@ const onSubmit = () => {
           </h2>
           <p class="mt-4 max-w-[60ch] font-body text-body text-ink-700">
             Swatch packs ship within five working days, free of charge,
-            anywhere we deliver finished orders. One pack per address —
+            anywhere we deliver finished orders. One pack per address,
             if you need multiple for a team review, drop us a line at
             <a
               href="mailto:hello@ghostmark.studio"

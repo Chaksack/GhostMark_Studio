@@ -42,7 +42,7 @@ export const useCustomer = () => {
   const writeAuthCookie = (token: string): void => {
     if (import.meta.client && typeof document !== 'undefined') {
       const isHttps = window.location.protocol === 'https:'
-      // Synchronous write — visible to the very next `document.cookie` read.
+      // Synchronous write: visible to the very next `document.cookie` read.
       const parts = [
         `${AUTH_COOKIE_NAME}=${encodeURIComponent(token)}`,
         'Path=/',
@@ -96,7 +96,7 @@ export const useCustomer = () => {
     // P2 fix: avoid the gratuitous /store/customers/me 401 spam that hits
     // the backend on every guest pageload (auth middleware -> refresh()).
     // The token cookie is the source of truth for "is this browser logged
-    // in?" — when it's empty there's no point round-tripping the API only
+    // in?"; when it's empty there's no point round-tripping the API only
     // to receive a 401, fail the catch branch, and short-circuit anyway.
     // See app/plugins/medusa-token-cookie.ts for the cookie lifecycle.
     const tokenCookie = useCookie<string | null>('gms_auth_token')
@@ -123,7 +123,7 @@ export const useCustomer = () => {
       } catch {
         // best-effort
       }
-      // Synchronous eviction — see `clearAuthCookie` comment in `logout`.
+      // Synchronous eviction: see `clearAuthCookie` comment in `logout`.
       clearAuthCookie()
       return null
     } finally {
@@ -172,7 +172,7 @@ export const useCustomer = () => {
   const logout = async () => {
     await sdk.auth.logout()
     // `auth.logout` clears the SDK's stored token via the storage adapter,
-    // but be explicit — also calls our wrapper which wipes the cookie.
+    // but be explicit: also calls our wrapper which wipes the cookie.
     try {
       const client = (sdk as AnyClient).client
       if (client && typeof client.clearToken === 'function') {
@@ -181,7 +181,7 @@ export const useCustomer = () => {
     } catch {
       // best-effort
     }
-    // Synchronously evict the cookie — same reasoning as writeAuthCookie:
+    // Synchronously evict the cookie, same reasoning as writeAuthCookie:
     // the plugin's wrapped clearToken pushes the null through Vue's async
     // watch, which may not have flushed before the next navigation re-reads
     // document.cookie. Setting Max-Age=0 here is immediate and idempotent.

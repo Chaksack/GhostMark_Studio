@@ -1,5 +1,5 @@
 // =============================================================================
-// seed-merchery-metadata — populate the merchery-pattern metadata contract on
+// seed-merchery-metadata: populate the merchery-pattern metadata contract on
 // every customizable product so the data-driven DesignEditor on the storefront
 // can render print locations, technique tabs, and quantity ladders without any
 // hard-coded fallbacks.
@@ -19,7 +19,7 @@
 //
 // Stage coords are 600x800. Print areas are tuned per location family below.
 //
-// Idempotency: re-running this script over the same products is safe — the
+// Idempotency: re-running this script over the same products is safe. The
 // metadata patch is a structural REPLACE of the merchery keys (so tier counts
 // don't grow) but is shallow-merged into any existing metadata so unrelated
 // keys (e.g. mockup_front, anything else seeded earlier) survive untouched.
@@ -31,7 +31,7 @@ import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 // -----------------------------------------------------------------------------
-// Types — must match the storefront contract exactly.
+// Types: must match the storefront contract exactly.
 // -----------------------------------------------------------------------------
 interface PrintArea { x: number; y: number; width: number; height: number }
 interface PrintLocation {
@@ -69,7 +69,7 @@ const AREA = {
 } as const
 
 // -----------------------------------------------------------------------------
-// Family templates — the per-product map below picks one and the script then
+// Family templates: the per-product map below picks one and the script then
 // hydrates `mockup_url` from each product's image list at runtime.
 // -----------------------------------------------------------------------------
 type Family = {
@@ -314,13 +314,44 @@ function buildLocations(
   })
 }
 
+/**
+ * Build the quantity ladder from a base unit price.
+ *
+ * !! DO NOT REINTRODUCE Math.round() HERE !!
+ *
+ * This used to be `Math.round(baseUnitAmount * (1 - discount))`, which was
+ * correct only while `baseUnitAmount` was a MINOR-unit integer (8900 = GBP 89).
+ * Rounding to a whole minor unit is rounding to the penny: harmless.
+ *
+ * `baseUnitAmount` now arrives in MAJOR units, read from the live GBP price
+ * (see the query.graph call in the main function). After
+ * migrate-price-units.ts, that value is 89, not 8900. Rounding to a whole
+ * MAJOR unit is rounding to the whole POUND:
+ *
+ *     Math.round(89 * (1 - 0.05))  ->  Math.round(84.55)  ->  85     WRONG
+ *
+ * Every rung would silently lose its pence, and metadata.quantity_tiers would
+ * once again disagree with the `price` table, by up to 99p per unit, which at
+ * the 400-unit rung is GBP 396 on a single line. That is the same class of
+ * defect migrate-tier-metadata-units.ts exists to remove, and a reseed would
+ * have quietly undone it.
+ *
+ * Rounding to 2 decimal places is correct for both conventions: a minor-unit
+ * integer is unchanged by it, and a major-unit value keeps its pence.
+ *
+ * Longer term this function should not exist. Once the Store route at
+ * src/api/store/products/[id]/tier-prices/route.ts is wired into the PDP,
+ * quantity_tiers stops holding money at all and the price table is the only
+ * source. See that route's header.
+ */
 function buildTiers(
   ladder: Family["tierLadder"],
   baseUnitAmount: number,
 ): QuantityTier[] {
   return ladder.map(([quantity, discount]) => ({
     quantity,
-    unit_amount: Math.round(baseUnitAmount * (1 - discount)),
+    // 2dp, NOT whole units. See the warning above.
+    unit_amount: Math.round(baseUnitAmount * (1 - discount) * 100) / 100,
   }))
 }
 
@@ -362,11 +393,11 @@ export default async function seedMercheryMetadata({ container }: ExecArgs) {
 
   type RowReport = {
     handle: string
-    is_customizable: boolean | "—"
+    is_customizable: boolean | "–"
     locations: number
     techniques: number
     tiers: number
-    moq: number | "—"
+    moq: number | "–"
     lead: string
     status: "updated" | "skipped" | "missing"
     note?: string
@@ -381,8 +412,8 @@ export default async function seedMercheryMetadata({ container }: ExecArgs) {
     if (!products.length) {
       logger.warn(`[seed-merchery] missing product handle=${spec.handle}`)
       report.push({
-        handle: spec.handle, is_customizable: "—", locations: 0, techniques: 0,
-        tiers: 0, moq: "—", lead: "—", status: "missing",
+        handle: spec.handle, is_customizable: "–", locations: 0, techniques: 0,
+        tiers: 0, moq: "–", lead: "–", status: "missing",
         note: "product not found",
       })
       continue
@@ -397,7 +428,7 @@ export default async function seedMercheryMetadata({ container }: ExecArgs) {
       })
       report.push({
         handle: spec.handle, is_customizable: false, locations: 0,
-        techniques: 0, tiers: 0, moq: "—", lead: "—",
+        techniques: 0, tiers: 0, moq: "–", lead: "–",
         status: "updated", note: "marked non-customizable",
       })
       continue
@@ -453,7 +484,7 @@ export default async function seedMercheryMetadata({ container }: ExecArgs) {
       techniques: fam.techniques.length,
       tiers: quantity_tiers.length,
       moq: fam.moq,
-      lead: fam.lead ? `${fam.lead.min}-${fam.lead.max}d` : "—",
+      lead: fam.lead ? `${fam.lead.min}-${fam.lead.max}d` : "–",
       status: "updated",
       note: baseGbp == null ? "no GBP base price" : undefined,
     })

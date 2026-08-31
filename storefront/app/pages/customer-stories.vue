@@ -1,22 +1,22 @@
 <script setup lang="ts">
 /**
- * /customer-stories — editorial case-studies index.
+ * /customer-stories: editorial case-studies index.
  *
  * Mirrors merchery's content-page rhythm: cream backgrounds, full-bleed
  * imagery placeholders (4:5 portrait), Fraunces display headlines, dashed
  * underline link affordances, sage CTA band at the foot.
  *
- * Stories are inline stubs — when CMS wiring lands, swap `stories` for the
+ * Stories are inline stubs, when CMS wiring lands, swap `stories` for the
  * fetched dataset; the template loop can stay as-is.
  */
 
 useHead({
-  title: 'Customer stories — GhostMark Studio',
+  title: 'Customer stories · GhostMark Studio',
   meta: [
     {
       name: 'description',
       content:
-        'Editorial case studies from brands we partner with — coffee roasters, running clubs, conference organizers and design studios using GhostMark for sustainable, on-demand merchandise.',
+        'Editorial case studies from brands we partner with: coffee roasters, running clubs, conference organizers and design studios using GhostMark for sustainable, on-demand merchandise.',
     },
   ],
 })
@@ -28,7 +28,7 @@ interface Story {
   title: string
   excerpt: string
   /**
-   * Tone seed for the placeholder swatch — purely decorative, used to vary
+   * Tone seed for the placeholder swatch, purely decorative, used to vary
    * the gradient cards so the grid does not read as a single visual block.
    */
   tone: 'sage' | 'terracotta' | 'cream' | 'ink'
@@ -40,7 +40,7 @@ const featured: Story = {
   sector: 'F&B',
   title: 'How a Berlin coffee roaster scaled merch without inventory',
   excerpt:
-    'Drift was sitting on three pallets of unsold tote bags when we started. Eighteen months later, every piece of merch ships within 72 hours of a customer click — and they have not held a single unit of stock.',
+    'Drift was sitting on three pallets of unsold tote bags when we started. Eighteen months later, every piece of merch ships within 72 hours of a customer click, and they have not held a single unit of stock.',
   tone: 'terracotta',
 }
 
@@ -60,7 +60,7 @@ const stories: Story[] = [
     sector: 'Tech',
     title: "Conference swag that doesn't end up in landfill",
     excerpt:
-      'On-demand printing replaced the bin-bound goodie bag — attendees pick what they actually want, before they fly home.',
+      'On-demand printing replaced the bin-bound goodie bag: attendees pick what they actually want, before they fly home.',
     tone: 'ink',
   },
   {
@@ -87,7 +87,7 @@ const stories: Story[] = [
     sector: 'Studio',
     title: 'Why our designers love working with GhostMark',
     excerpt:
-      'A long-form conversation with the agency partners we ship for — on file specs, color fidelity and the value of an editorial brief.',
+      'A long-form conversation with the agency partners we ship for, on file specs, color fidelity and the value of an editorial brief.',
     tone: 'terracotta',
   },
   {
@@ -122,12 +122,12 @@ const trustedBy: string[] = [
 
 <template>
   <div>
-    <!-- Hero — eyebrow, serif, body intro. -->
+    <!-- Hero: eyebrow, serif, body intro. -->
     <section
       class="bg-cream-warm text-ink-950"
       aria-labelledby="cs-hero"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid items-end gap-12 lg:grid-cols-[0.55fr_0.45fr]">
           <div>
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -143,7 +143,7 @@ const trustedBy: string[] = [
           <p
             class="max-w-[55ch] font-body text-body text-ink-700 lg:pb-3"
           >
-            Long-form conversations with the brands we ship for — coffee
+            Long-form conversations with the brands we ship for, coffee
             roasters, running clubs, conference organizers, agencies and
             climate NGOs. The product changes; the editorial standard
             doesn't.
@@ -152,12 +152,12 @@ const trustedBy: string[] = [
       </div>
     </section>
 
-    <!-- Featured story — image left, content right. -->
+    <!-- Featured story: image left, content right. -->
     <section
       class="bg-cream-50 text-ink-950"
       aria-labelledby="cs-featured"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Featured
         </p>
@@ -218,12 +218,12 @@ const trustedBy: string[] = [
       </div>
     </section>
 
-    <!-- Story grid — 3-up cards. -->
+    <!-- Story grid: 3-up cards. -->
     <section
       class="bg-cream-warm text-ink-950"
       aria-labelledby="cs-grid"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="flex flex-col gap-3">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             All stories
@@ -292,12 +292,12 @@ const trustedBy: string[] = [
       </div>
     </section>
 
-    <!-- Brand strip — grayscale text wordmarks. -->
+    <!-- Brand strip: grayscale text wordmarks. -->
     <section
       class="bg-cream-50 text-ink-950"
       aria-labelledby="cs-trust"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="flex flex-col items-center gap-10">
           <p
             id="cs-trust"
@@ -320,12 +320,12 @@ const trustedBy: string[] = [
       </div>
     </section>
 
-    <!-- Sage CTA band — tell your story. -->
+    <!-- Sage CTA band: tell your story. -->
     <section
       class="bg-merchery-sage text-ink-950"
       aria-labelledby="cs-cta"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between"
         >

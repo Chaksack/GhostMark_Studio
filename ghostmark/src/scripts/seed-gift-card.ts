@@ -1,5 +1,33 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT. IT WOULD SEED GIFT CARDS AT 100x THEIR VALUE.
+ * ============================================================================
+ *
+ * `:85-88` declare the denominations in MINOR units:
+ *
+ *        gbp 2500 / 5000 / 10000 / 25000   for the GBP 25 / 50 / 100 / 250 cards
+ *
+ * and `:194` writes those straight into `prices[].amount`.
+ *
+ * THE CONVENTION FLIPPED ON 2026-08-30. Measured live that day, the gift card
+ * variants read gbp 25 / 50 / 100 / 250 — correct, MAJOR. Re-seeding would
+ * write GBP 2,500.00 for the GBP 25 card.
+ *
+ * `:200` even carries the now-false comment "The variant's actual
+ * prices[].amount is in minor units (pence)". It is not, any more.
+ *
+ * This is dormant only because the product already exists and the script
+ * short-circuits on it. It arms the moment studio-gift-card is deleted, or on
+ * a fresh environment.
+ *
+ * SEE ALSO fix-gift-card-prices.ts, which was written to repair the OPPOSITE
+ * error and is gated for the same reason. The two files disagree with each
+ * other and both now disagree with the database.
+ *
+ * Before running this again: convert :85-88 to major units, or delete the file.
+ * ========================================================================== */
+
 // =============================================================================
-// seed-gift-card — create a "Studio Gift Card" product tagged with the
+// seed-gift-card: create a "Studio Gift Card" product tagged with the
 // gift-card product type so the storefront has at least one SKU available
 // for the third commerce mode.
 //
@@ -24,7 +52,7 @@
 // -----------
 //   - Checks for an existing product on handle 'studio-gift-card' before
 //     creating. If present, the script exits cleanly with a "already seeded"
-//     log line — no duplicate variants, no price churn.
+//     log line: no duplicate variants, no price churn.
 //   - The gift-card product type is upserted on value. If
 //     seed-product-types.ts hasn't been run yet, this script creates the type
 //     itself (so it works in either order).
@@ -60,10 +88,10 @@ const DESCRIPTION =
 const TYPE_VALUE = "gift-card"
 
 // GBP-base denominations. The USD/EUR equivalents are FX-rounded heuristics
-// (close enough for a dev catalog — real pricing should come from a finance-
+// (close enough for a dev catalog; real pricing should come from a finance-
 // owned table or live FX feed before launch).
 //
-// IMPORTANT — minor units convention
+// IMPORTANT: minor units convention
 // ----------------------------------
 // All `amount` values on Medusa Price rows in this catalogue are stored in
 // MINOR units for GBP/USD/EUR (i.e. pence / cents). The storefront divides
@@ -80,7 +108,7 @@ const DENOMS: Array<{
   eur: number
   sku: string
   title: string
-  denomination_gbp: number // major units — display / source-of-truth
+  denomination_gbp: number // major units: display / source-of-truth
 }> = [
   { gbp: 2500,  usd: 3200,  eur: 3000,  sku: "GMS-GIFT-25",  title: "£25 gift card",  denomination_gbp: 25 },
   { gbp: 5000,  usd: 6500,  eur: 6000,  sku: "GMS-GIFT-50",  title: "£50 gift card",  denomination_gbp: 50 },
@@ -92,6 +120,15 @@ const DENOMS: Array<{
 // Main
 // -----------------------------------------------------------------------------
 export default async function seedGiftCard({ args, container }: ExecArgs) {
+  // Hard gate. See the DO NOT RUN banner at the top of this file.
+  // Throws rather than returns: a `return` exits 0 and any CI wrapper
+  // checking the exit status would read the refusal as a successful run.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    const msg =
+      "[seed-gift-card] REFUSING TO RUN. Its denominations at :85-88 are MINOR " + "units (2500 = GBP 25.00), but the catalogue moved to MAJOR units on " + "2026-08-30 and the live cards read 25/50/100/250. Re-seeding would price " + "them 100x high. Convert the literals (or delete this file) before re-enabling.";
+    console.error(msg);
+    throw new Error(msg);
+  }
   const productService = container.resolve(Modules.PRODUCT)
   const salesChannelService = container.resolve(Modules.SALES_CHANNEL)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
@@ -101,11 +138,11 @@ export default async function seedGiftCard({ args, container }: ExecArgs) {
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[seed-gift-card] DRY-RUN mode — no writes will happen.")
+    logger.info("[seed-gift-card] DRY-RUN mode: no writes will happen.")
   }
 
   // ---------------------------------------------------------------------------
-  // 1) Short-circuit if the product already exists. Idempotency win — re-runs
+  // 1) Short-circuit if the product already exists. Idempotency win: re-runs
   //    are safe and cheap.
   // ---------------------------------------------------------------------------
   const existingProducts = await productService.listProducts(
@@ -120,7 +157,7 @@ export default async function seedGiftCard({ args, container }: ExecArgs) {
   }
 
   // ---------------------------------------------------------------------------
-  // 2) Resolve the gift-card product type. Upsert on `value` — if
+  // 2) Resolve the gift-card product type. Upsert on `value`: if
   //    seed-product-types.ts has already run the type exists; otherwise create
   //    it ourselves so this script is self-contained.
   // ---------------------------------------------------------------------------
@@ -159,7 +196,7 @@ export default async function seedGiftCard({ args, container }: ExecArgs) {
   )
   if (channels.length === 0) {
     logger.warn(
-      "[seed-gift-card] no 'Default Sales Channel' found — product will not be visible " +
+      "[seed-gift-card] no 'Default Sales Channel' found: product will not be visible " +
         "on the storefront until linked to a channel manually.",
     )
   }

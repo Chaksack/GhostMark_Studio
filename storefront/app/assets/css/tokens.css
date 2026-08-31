@@ -1,5 +1,5 @@
 /**
- * tokens.css — Phase 1 design-token runtime layer.
+ * tokens.css: Phase 1 design-token runtime layer.
  *
  * Loaded via nuxt.config.ts `css:` array, after tailwind.css.
  * Keep this file lean: declare base color-scheme + a single accessibility
@@ -16,11 +16,102 @@
 
 :root {
   color-scheme: light;
+
+  /*
+   * Fixed-header geometry.
+   *
+   * The header is two stacked fixed bands, so the offset every page needs in
+   * order to clear it is a SUM, not a measurement. It was previously written
+   * out as a bare `118px` literal in 14 places, which meant changing either
+   * band silently desynced thirteen of them.
+   *
+   * Declared as a calc so the sum propagates: change a band, every consumer
+   * follows. It is also deliberately a *length* rather than a number, because
+   * the PDP's sticky image pane subtracts it, `calc(100vh - var(--header-offset))`,
+   * and that only works if the token carries its unit.
+   *
+   * Known straggler: HeroSection.vue:16 still hardcodes
+   * `lg:h-[calc(100vh-118px)]`. Correct today, and the last un-tokened copy.
+   */
+  /*
+   * ------------------------------------------------------------------
+   * PAGE LAYOUT RAIL. One gutter, one content width, for the whole site.
+   * ------------------------------------------------------------------
+   *
+   * This exists because SIX container systems were live at once and none
+   * of them agreed. Measured in-browser at 1440 (clientWidth 1425), the
+   * left/right inset of a structural block depended entirely on which
+   * system its author happened to copy.
+   *
+   * ┌──────────────────────────────────────────────────────────────────┐
+   * │ THE TABLE BELOW IS A HISTORICAL RECORD OF SYSTEMS THAT HAVE BEEN │
+   * │ REMOVED. Every one of these patterns is now at ZERO uses in      │
+   * │ app/**. Do NOT read it as a description of the current tree, and │
+   * │ do NOT "migrate" anything to match it. Verify with grep first.   │
+   * └──────────────────────────────────────────────────────────────────┘
+   *
+   * (A units lane read this table as current state and nearly converted
+   * `px-[1.5rem] lg:px-[3rem]` back into a rival gutter system. It caught
+   * itself. The next reader might not, hence the box.)
+   *
+   * REMOVED, all now 0 uses:
+   *
+   *   max-w-[1320px] px-gutter          99 uses   content at  89 / 89
+   *   max-w-screen-3xl px-5..lg:px-8    22 uses   content at  32 / 32
+   *   max-w-screen-xl  px-5..lg:px-8     7 uses   content at 105 /105
+   *   px-[1.5rem] lg:px-[3rem]           7 pages  content at  48 / 48
+   *   AppHeader ml-[3rem] mr-[16px]      1 use    content at  48 / 16
+   *
+   * So a customer scrolling one page saw the edge step in and out. That is
+   * the defect, and it is the same disease as the 719 stock Tailwind
+   * neutrals that coexisted with the token palette: two systems live at
+   * once, invisible because each page is internally consistent.
+   *
+   * `max-w-screen-3xl` deserves special mention: Tailwind's default
+   * `screens` has no `3xl` key and this config never adds one, so the class
+   * emits NO CSS AT ALL. All 22 of those containers — including every
+   * homepage section component and the footer on every route — had no
+   * max-width whatsoever and ran full-bleed. It was not a narrower rail
+   * chosen on purpose; it was a class that does nothing. Same bug class as
+   * the missing `ink-100` / `sage-50` steps already documented in
+   * tailwind.config.ts.
+   *
+   * --gm-gutter: a single fluid ramp, no breakpoint jumps.
+   *     clamp(20px, 4.8px + 3vw, 48px)
+   *       390px viewport ->  20px   (min; the ramp would want 16.5)
+   *       640px viewport ->  24px
+   *      1440px viewport ->  48px   (max; the ramp hits 48 exactly here)
+   *   20px is the existing mobile value on the browse pages and matches the
+   *   tightest of the brand-owned references. 48px is the existing DESKTOP
+   *   value on the browse pages (`lg:px-[3rem]`), so the busiest pages on
+   *   the site do not move at all — the other four systems come to them.
+   *
+   * --gm-rail: the CONTENT column, 1320px, inherited from the most-adopted
+   *   of the five systems (99 uses).
+   *
+   * --gm-rail-outer: the BOX, i.e. content + both gutters. This is the
+   *   distinction the old system got wrong. `max-w-[1320px] px-gutter` caps
+   *   the box at 1320 and then eats the gutter OUT of it, so the content
+   *   column was only 1320 - 2*gutter wide and its inset drifted with the
+   *   viewport. Capping the OUTER box means the content column is exactly
+   *   1320px on every wide screen and the gutter is the true page margin.
+   *
+   * Use `mx-auto w-full max-w-rail px-gutter` (Tailwind, preferred) or the
+   * `.gm-container` class below. Do not reach for a bare px-* on a page
+   * band; that is how the fifth system got started.
+   */
+  --gm-gutter: clamp(20px, 4.8px + 3vw, 48px);
+  --gm-rail: 1320px;
+  --gm-rail-outer: calc(var(--gm-rail) + 2 * var(--gm-gutter));
+
+  --header-band-primary: 68px;   /* AppHeader: fixed warmGrey logo/search/actions bar */
+  --header-band-nav: 50px;       /* AppHeader: fixed white category nav directly below */
+  --header-offset: calc(var(--header-band-primary) + var(--header-band-nav)); /* 118px */
   /*
    * Body inherits Inter Tight without needing a `font-sans` / `font-body`
    * class on every element. The Tailwind config aliases both `font-sans`
    * and `font-body` to the same Inter Tight stack, but Nuxt's preflight
-   * resets html/body to the platform `ui-sans-serif` cascade — without
+   * resets html/body to the platform `ui-sans-serif` cascade, without
    * this rule, `getComputedStyle(document.body).fontFamily` reports
    * `ui-sans-serif` and the variable woff2 we requested in
    * nuxt.config.ts is downloaded but never painted.
@@ -33,11 +124,27 @@ body {
 }
 
 /*
+ * The page rail as a single class, for markup that is not Tailwind-authored
+ * (or where the utility trio would be repeated on many sibling bands).
+ *
+ * Exactly equivalent to `mx-auto w-full max-w-rail px-gutter`. Prefer the
+ * utilities in .vue templates so the class stays greppable alongside the
+ * rest of the layout; this is here so the rail has a home in CSS too and a
+ * future stylesheet cannot invent a sixth system by accident.
+ */
+.gm-container {
+  width: 100%;
+  max-width: var(--gm-rail-outer);
+  margin-inline: auto;
+  padding-inline: var(--gm-gutter);
+}
+
+/*
  * Dial Fraunces' optical size axis down so headlines render with the
  * low-contrast wedge-serif silhouette merchery.co reaches for with
  * Reckless. `font-optical-sizing: auto` would otherwise hand off to the
  * browser's size-based heuristic and we'd get the high-contrast Didone
- * cut at large display sizes — exactly what we're moving away from.
+ * cut at large display sizes, exactly what we're moving away from.
  *
  * `font-variation-settings` is the only way to pin the opsz axis on a
  * variable font; the size-keyword shortcut doesn't expose it.
@@ -50,7 +157,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /**
- * Phase 4 — page + layout transitions.
+ * Phase 4: page + layout transitions.
  *
  * Wired via nuxt.config.ts `app.pageTransition` / `app.layoutTransition`,
  * which Vue resolves to these `.page-*` / `.layout-*` CSS class hooks on the
@@ -120,7 +227,7 @@ h1, h2, h3, h4, h5, h6,
  * tuned slightly slower (600ms) because reveals span a larger Y delta than
  * a button hover.
  *
- * `will-change` is declared on the init state only — once the element has
+ * `will-change` is declared on the init state only, once the element has
  * settled into `reveal-visible` we want the browser to release the
  * compositor layer it created for the transition.
  */
@@ -150,4 +257,323 @@ h1, h2, h3, h4, h5, h6,
     transform: none !important;
     transition: none !important;
   }
+}
+
+/* ============================================================================
+   REGISTRATION: GhostMark art direction layer
+   ----------------------------------------------------------------------------
+   The problem this solves, measured rather than asserted:
+
+     Fraunces (the display face) rendered on 15 elements of the homepage.
+     Inter Tight rendered on 662.
+
+   The H1 ("Objects we design.") painted at 112px in Inter Tight, and five of
+   the seven H2s did the same. So the site was not "under-exploiting" its type
+   pairing, on its largest typographic moments it was not using the display
+   face AT ALL, while still paying to download it. That single fact is why the
+   page read as a competent wireframe: when every size of type is the same
+   face, you have a document, not a design.
+
+   The direction is drawn from what this company physically does: put ink on
+   cloth. Print production has a native visual language (registration marks,
+   crop marks, spec sheets, halftone screens, proof stamps) and it is borrowed
+   from nothing: it IS the domain. Mobbin confirms it reads commercially rather
+   than as art-school affectation:
+     - FREITAG:        solid rule carrying type straight through a photo grid
+                        https://mobbin.com/sites/sections/0977c23c-09b8-49f4-b586-7961b9a382cc
+     - Superpower:     corner crop marks bracketing product thumbnails
+                        https://mobbin.com/sites/sections/2f1c22cc-9959-4bbf-83ef-7f892258a79d
+     - Shopify Supply: monospace terminal labels as the metadata voice
+                        https://mobbin.com/sites/sections/84e5f6f6-bc86-489d-a542-16f0d8fc0d89
+     - Runway:         "Object n°7 / …" spec-sheet captioning under each item
+                        https://mobbin.com/sites/sections/c1787a46-d962-4580-a4de-34a98c883798
+
+   Everything here is plain CSS on purpose. It is real component CSS (it needs
+   pseudo-elements and gradients), so it belongs in a stylesheet rather than in
+   tailwind.config.ts regardless of whether config hot-reload is working.
+   ========================================================================== */
+
+:root {
+  /*
+   * Consent-banner reserved space. Default 0 so nothing shifts for the ~95% of
+   * sessions with no banner; CookieBanner.vue overwrites this with a live
+   * ResizeObserver measurement while it is mounted. See that file for the P0
+   * this exists to fix (fixed bottom bar swallowing add-to-cart at 390).
+   */
+  --consent-height: 0px;
+
+  /*
+   * THIRD VOICE: the deliberate risk in this direction.
+   *
+   * Adding a third typeface to a two-face system is normally a mistake, and I
+   * am taking it knowingly for two reasons. First, it costs zero bytes: this
+   * is the platform mono stack, no webfont request, no FOUT, no extra CSS
+   * weight. Second, a print shop's own documents (job tickets, spec sheets,
+   * colour bars) are set in mono, so it reads as provenance rather than as
+   * decoration. It is scoped hard: metadata, indices, and spec labels ONLY.
+   * It must never set a sentence and never set a heading.
+   */
+  --gm-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+             "Liberation Mono", monospace;
+
+  /*
+   * Registration ink. This is the existing palette's `accent-terracotta`
+   * (#C46B4F), promoted from near-unused to the signature mark colour.
+   *
+   * MEASURED, and the measurement constrains its use:
+   *   #C46B4F on offWhite #F1EEE9 = 3.26:1
+   * That clears WCAG 2.2 SC 1.4.11 (non-text contrast, 3:1) so it is legal for
+   * RULES, TICKS AND MARKS, and it fails 4.5:1, so it is illegal for body
+   * text. Hence two tokens: the bright one is for geometry only, and anything
+   * that has to be READ uses --gm-ink-accent below.
+   */
+  --gm-reg: #C46B4F;
+  --gm-reg-soft: rgba(196, 107, 79, 0.28);
+
+  /*
+   * Readable accent: same hue family, dropped in lightness until it clears
+   * 4.5:1 on every warm ground in the palette. Use this for accent TEXT.
+   */
+  --gm-ink-accent: #8F3F27;
+
+  /* Hairline weights, named so a rule reads as intentional rather than default. */
+  --gm-rule: 1px;
+  --gm-rule-bold: 2px;
+
+  /*
+   * Display scale. Fluid, and deliberately more extreme at the top than the
+   * old ramp: the whole point of a display face is that it is allowed to be
+   * loud. Floors are set so nothing collapses at 320.
+   */
+  --gm-display-xl: clamp(2.75rem, 1.4rem + 6.4vw, 7.5rem);
+  --gm-display-lg: clamp(2.15rem, 1.3rem + 4.0vw, 4.75rem);
+  --gm-display-md: clamp(1.75rem, 1.25rem + 2.2vw, 3rem);
+}
+
+/*
+ * Reserve the banner's space in normal page flow. Without this the last band
+ * of every page sits permanently under the banner and cannot be scrolled into
+ * view. Fixed/sticky action bars do NOT use this, they offset themselves with
+ * `bottom: var(--consent-height)` so they ride above the banner.
+ */
+body {
+  padding-bottom: var(--consent-height);
+}
+
+/* ---------------------------------------------------------------- type ---- */
+
+/*
+ * The core correction: display type is set in the display face.
+ * `font-synthesis: none` stops the browser faking a bolder Fraunces when a
+ * weight we did not request is asked for, a synthesised wedge serif smears
+ * and is exactly what makes a serif look cheap at 100px.
+ */
+.gm-display {
+  font-family: "Fraunces", "GT Sectra", "Playfair Display", Georgia, serif;
+
+  /*
+   * DO NOT pin `opsz` here. The previous revision set
+   * `font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 1` and all three
+   * were wrong:
+   *
+   *  - `SOFT` and `WONK` are NOT IN THE LOADED FILE. The Google request in
+   *    nuxt.config.ts asks for `Fraunces:opsz,wght@...` only, so Google serves
+   *    a two-axis instance. Both settings were silently ignored, which made
+   *    the CSS claim a treatment the page never had.
+   *  - `opsz` 144 forced Fraunces' MAXIMUM display cut at every display size.
+   *    At 144 the face is a Didone: hairline thins against heavy stems, ball
+   *    terminals, extreme modulation. It reads as fashion editorial and
+   *    collides with Inter Tight, which is what made the hero look like it
+   *    belonged to another site. Pinning it also broke `font-optical-sizing`,
+   *    so `.gm-display-md` at 28px was rendering a 144pt cut, spindly at a
+   *    size that needs sturdier strokes.
+   *
+   * `font-optical-sizing: auto` is the whole point of a variable opsz axis:
+   * the browser picks the cut that suits the rendered size. Let it.
+   */
+  /*
+   * `font-variation-settings` INHERITS, and the body rule above pins
+   * `'opsz' 14`. Without this reset the 120px hero inherited the 14pt TEXT
+   * cut, sturdy strokes meant for body copy, blown up huge. That is the
+   * opposite failure to the 144pt Didone it replaced, and just as wrong.
+   * `normal` clears the inherited pin so `font-optical-sizing: auto` can do
+   * its job and pick the cut that matches the rendered size.
+   */
+  /*
+   * `opsz` is pinned LOW (40) on purpose, and this is a deliberate reversal of
+   * how an optical-size axis is normally used. Fraunces' high opsz values are
+   * its display cuts: hairline thins against heavy stems, ball terminals,
+   * Didone modulation. At 120px that reads as fashion-magazine masthead and
+   * fought the industrial register of a print-and-merch studio. Pinning opsz
+   * near the text end keeps the thins THICK, which is what "low contrast"
+   * means for a serif.
+   *
+   * `font-variation-settings` also INHERITS, and the body rule above pins
+   * `'opsz' 14`. Setting it explicitly here overrides that inheritance; an
+   * earlier revision removed the pin entirely and the 120px hero silently
+   * inherited the 14pt cut instead.
+   *
+   * SOFT/WONK are deliberately absent: nuxt.config.ts requests
+   * `Fraunces:opsz,wght@...`, so Google serves a two-axis instance and any
+   * SOFT or WONK value here is silently ignored. Declaring them made the CSS
+   * claim a treatment the page never had.
+   */
+  font-variation-settings: 'opsz' 40;
+  /*
+   * 600, not 400. Weight is the other half of killing the contrast: a heavier
+   * stem narrows the ratio between thick and thin, so the face reads as a
+   * sturdy workhorse serif rather than an editorial one.
+   */
+  font-weight: 600;
+  font-synthesis: none;
+  /*
+   * Was -0.021em with line-height 0.95. At 120px that is -2.5px of tracking
+   * and a 114px line box, so the `j` and `g` descenders in "Objects we
+   * design." crowded the line beneath. Serifs need more room than a grotesk
+   * at display size, not less.
+   */
+  letter-spacing: -0.012em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.gm-display-xl { font-size: var(--gm-display-xl); }
+.gm-display-lg { font-size: var(--gm-display-lg); }
+.gm-display-md { font-size: var(--gm-display-md); line-height: 1.05; letter-spacing: -0.015em; }
+
+/*
+ * Spec label: the mono voice. 12px floor is deliberate and is the reason
+ * there is no `gm-spec-sm`: EDITOR refused to ship anything under 12px and
+ * that decision is correct, so the scale simply does not offer the option.
+ */
+.gm-spec {
+  font-family: var(--gm-mono);
+  font-size: 12px;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------- graphic devices -- */
+
+/*
+ * SIGNATURE DEVICE: registration corner ticks.
+ *
+ * Crop marks are what a printer puts at the corners of a sheet to show where
+ * it gets trimmed. Bracketing an editorial block in them says "this is a
+ * printed artefact" in a way no border can, and unlike a border it leaves
+ * three-quarters of each edge open, so it adds incident without adding weight.
+ *
+ * Drawn with two pseudo-elements and four gradients, no SVG, no extra
+ * request, and it inherits colour so it can sit on light or dark ground.
+ */
+.gm-reg-marks {
+  position: relative;
+}
+
+.gm-reg-marks::before,
+.gm-reg-marks::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  /*
+   * MEASURED, and the measurement changed this line.
+   *
+   * The bright --gm-reg (#C46B4F) was the obvious choice and it is the wrong
+   * one: on the warmGrey band where the mosaic actually paints (#E5DFD6) it
+   * measures 2.85:1, under SC 1.4.11's 3:1 floor for non-text contrast. These
+   * ticks are decorative pseudo-elements, so the SC arguably exempts them,
+   * but "arguably exempt" is a bad reason to ship 2.85 when the darker accent
+   * costs nothing and measures 5.45:1 on that same ground, and passes on every
+   * other warm ground in the palette too.
+   *
+   * So the DEFAULT is the accessible colour. --gm-mark-color is the opt-in for
+   * dark slabs, where the bright terracotta has plenty of contrast and is the
+   * better-looking choice. Default safe, opt in to bright, not the reverse.
+   */
+  border-color: var(--gm-mark-color, var(--gm-ink-accent));
+  border-style: solid;
+  border-width: 0;
+}
+
+.gm-reg-marks::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: var(--gm-rule-bold);
+  border-left-width: var(--gm-rule-bold);
+}
+
+.gm-reg-marks::after {
+  right: -1px;
+  bottom: -1px;
+  border-right-width: var(--gm-rule-bold);
+  border-bottom-width: var(--gm-rule-bold);
+}
+
+/*
+ * HALFTONE: a dot screen, which is how a photograph becomes printable ink.
+ * Kept at 3.5% so it registers as tooth in the paper rather than as a visible
+ * pattern; at higher opacity this device goes cheap immediately.
+ * `background-attachment: fixed` makes the screen sit still while content
+ * scrolls over it, which reads as printed stock rather than as a texture layer.
+ */
+.gm-halftone {
+  position: relative;
+  isolation: isolate;
+}
+
+.gm-halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(var(--gm-reg) 0.5px, transparent 0.5px);
+  background-size: 6px 6px;
+  opacity: 0.035;
+}
+
+/*
+ * Colour bar: the strip of solid ink patches a press prints in the trim area
+ * to check density. Used as a section terminator / divider.
+ */
+.gm-colour-bar {
+  height: 6px;
+  /*
+   * Patches are 12px and the unit TILES. The first cut of this used eight
+   * 12.5%-wide bands, which at 1440 made each patch 180px across, that reads
+   * as a rainbow stripe, not as a press bar. Density patches on a real sheet
+   * are small and repetitive; the repetition is the whole visual signature.
+   */
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--gm-reg) 0 12px,
+    #1F1C18 12px 24px,
+    #C5C99B 24px 36px,
+    #EDE0D1 36px 48px,
+    #8F3F27 48px 60px,
+    #3F3A33 60px 72px
+  );
+}
+
+/*
+ * Marquee rule used under a section heading: a hairline that carries an index
+ * number, spec-sheet style. The flex-1 rule is drawn by the element itself so
+ * markup stays a single line.
+ */
+.gm-rule-line {
+  flex: 1 1 auto;
+  height: var(--gm-rule);
+  background: currentColor;
+  opacity: 0.22;
+}
+
+/* Reduced motion: the halftone is static, but pin it explicitly so a fixed
+   attachment never fights an OS-level reduced-motion setting on iOS. */
+@media (prefers-reduced-motion: reduce) {
+  .gm-halftone::before { background-attachment: scroll; }
 }

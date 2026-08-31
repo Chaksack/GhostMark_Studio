@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /**
- * /club — GhostMark agency partner program landing page.
+ * /club: GhostMark agency partner program landing page.
  *
  * For branding and event agencies. Same tile-and-band rhythm used across the
  * editorial pages: cream-tile hero, alternating white / cream-warm bands,
  * sage CTA at the foot. All CTAs use <UiButton> with the `merchery` (ink
  * slab) or `outline` variants.
  *
- * Token discipline: design-token utility classes only — no `bg-[#hex]`
+ * Token discipline: design-token utility classes only, no `bg-[#hex]`
  * literals, no `as any` casts.
  */
 defineOptions({ name: 'PageClub' })
@@ -144,7 +144,7 @@ const currentTestimonial = computed(
     <!-- 1. Hero -->
     <section class="bg-cream-tile">
       <div
-        class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center"
+        class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center"
       >
         <div class="flex flex-col gap-8">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
@@ -213,7 +213,7 @@ const currentTestimonial = computed(
 
     <!-- 2. Member benefits -->
     <section>
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mb-14 flex flex-col gap-4">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
             Member benefits
@@ -250,7 +250,7 @@ const currentTestimonial = computed(
 
     <!-- 3. Brand wall -->
     <section class="bg-cream-tile">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="mb-12 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end"
         >
@@ -289,7 +289,7 @@ const currentTestimonial = computed(
 
     <!-- 4. Founder pull-quote -->
     <section class="bg-cream-warm">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="grid grid-cols-1 gap-x-[30px] gap-y-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-center"
         >
@@ -331,7 +331,7 @@ const currentTestimonial = computed(
 
     <!-- 5. How to join -->
     <section id="how-to-join">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mb-14 flex flex-col gap-4">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
             How to join
@@ -365,7 +365,7 @@ const currentTestimonial = computed(
 
     <!-- 6. Member testimonial carousel -->
     <section class="bg-cream-tile">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="flex flex-col gap-4">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
             Members on the record
@@ -411,7 +411,7 @@ const currentTestimonial = computed(
 
     <!-- 7. CTA band -->
     <section class="w-full bg-merchery-sage">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="grid grid-cols-1 gap-x-[30px] gap-y-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center"
         >

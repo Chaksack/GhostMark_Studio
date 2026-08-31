@@ -1,3 +1,38 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT. IT WOULD SEED 18 PRODUCTS AT 100x THEIR PRICE.
+ * ============================================================================
+ *
+ * `:183` says "price in GBP minor units (pence)" and `:189` types the field
+ * `basePriceGbp: number; // pence`. Every one of the 18 catalogue entries at
+ * :202-:401 is therefore a MINOR-unit integer, and :575 writes it straight
+ * into `prices[].amount`.
+ *
+ * THE CONVENTION FLIPPED ON 2026-08-30. migrate-price-units converted the
+ * catalogue to MAJOR units. Measured live against the database that day:
+ *
+ *        basePriceGbp here      live gbp price      would seed as
+ *        8900 (atelier-hoodie)  89                  GBP 8,900.00
+ *        3200 (tech-pouch)      32                  GBP 3,200.00
+ *        7500                   75                  GBP 7,500.00
+ *
+ * The eur/usd amounts at :576-:583 are FX-derived from the same field, so they
+ * inherit the error rather than escaping it.
+ *
+ * Only the CREATE path is convention-bearing: `createProductsWorkflow` at :595
+ * runs for handles that do not already exist, so this is dormant while all 18
+ * are present and arms itself the moment any one of them is deleted, or on any
+ * fresh environment. That is the whole hazard — it is not broken today, it is
+ * one product deletion away from being broken.
+ *
+ * NOTE the field name is why a `grep "amount:\s*[0-9]{3,}"` sweep does NOT
+ * find this file. The literals hide behind `basePriceGbp`. If you are auditing
+ * for this class, grep the VALUES, not the key.
+ *
+ * Before running this again: convert the 18 literals to major units (divide by
+ * 100), or delete the file. The hard gate below exists so that decision is
+ * made deliberately rather than by someone running a plausibly-named seed.
+ * ========================================================================== */
+
 import { ExecArgs } from "@medusajs/framework/types";
 import {
   ContainerRegistrationKeys,
@@ -60,17 +95,86 @@ const PHOTO_SETS = {
     "photo-1576566588028-4147f3842f27",
     "photo-1591047139829-d91aecb6caea",
   ],
+  // Split out of "hoodie-cream" on 2026-08-30, for the same reason
+  // "sweatshirt-black" was split out of "hoodie-charcoal": Heavyweight
+  // Sweatshirt - Cream was sharing the cream HOODIE's photographs, so a
+  // crewneck was illustrated by a hooded pullover on every surface.
+  //
+  // This pair had NO dead URL hiding it. Every image rendered perfectly and
+  // showed the wrong garment, which is why it survived longer than the charcoal
+  // pair: a 404 gets reported, a plausible-but-wrong photo does not. On an
+  // apparel site that is a returns problem, not a cosmetic one.
+  // All four verified HTTP 200 before use.
+  "sweatshirt-cream": [
+    "photo-1621560464578-b399f0e9221f",
+    "photo-1632682582909-2b3a2581eef7",
+    "photo-1704915091057-cc443c8ef019",
+    "photo-1627134137273-fa8bf6897f29",
+  ],
+  // NOTE: index 0 was "photo-1614495039944-6dad99a36e4f" until 2026-08-30, when
+  // it began returning HTTP 404 from images.unsplash.com. Because seed-curated
+  // copies images[0] into `thumbnail`, a dead id in slot 0 breaks the product
+  // card everywhere, not just the gallery. Replacement verified 200 before use.
   "hoodie-charcoal": [
-    "photo-1614495039944-6dad99a36e4f",
+    "photo-1578470507807-3fc541d5f544",
     "photo-1618354691373-d851c5c3a990",
     "photo-1542272604-787c3835535d",
     "photo-1556821840-3a63f95609a7",
+  ],
+  // Split out of "hoodie-charcoal" on 2026-08-30. Heavyweight Sweatshirt -
+  // Black previously shared the charcoal HOODIE's photographs, so a crewneck
+  // sweatshirt was illustrated by a hooded pullover on every surface. The dead
+  // id above was merely hiding it. The comment at the top of PHOTO_SETS
+  // ("Picked so all 4 images in a product show the SAME item type") was being
+  // violated by the sharing, not by the set. All four verified 200 before use.
+  "sweatshirt-black": [
+    "photo-1618354691551-44de113f0164",
+    "photo-1499971442178-8c10fdf5f6ac",
+    "photo-1656339504243-2df4c5ebf1c0",
+    "photo-1576558345433-58e777a5e423",
+  ],
+  // ---------------------------------------------------------------------------
+  // Split out on 2026-08-30. Four products were illustrated with photographs of
+  // a DIFFERENT PRODUCT because they borrowed a neighbouring set:
+  //     cable-organiser  <- "notebook"   studio-candle    <- "mug"
+  //     linen-tea-towel  <- "tote"       tech-pouch       <- "tote"
+  // No dead URL was involved. Every image rendered perfectly and showed the
+  // wrong item, which is exactly why these outlived the 404s: a broken image
+  // gets reported, a plausible-but-wrong one gets bought and returned.
+  //
+  // The sets they borrowed FROM are unchanged and still correct for their own
+  // products (studio-notebook-a5/a6, the ceramic mugs, market-tote-oat,
+  // workshop-tote). All 16 ids below verified HTTP 200 before use.
+  // ---------------------------------------------------------------------------
+  "cable-organiser": [
+    "photo-1760348213270-7cd00b8c3405",
+    "photo-1634839763563-97d93f8131c6",
+    "photo-1634839763121-58fcfed2a94a",
+    "photo-1525972231415-e52a7a56c905",
+  ],
+  candle: [
+    "photo-1561212856-44e9bae482aa",
+    "photo-1601922046210-41e129a3e64a",
+    "photo-1528351655744-27cc30462816",
+    "photo-1640095889747-2090ee12fa7d",
+  ],
+  "tea-towel": [
+    "photo-1643150899069-a748f9216f99",
+    "photo-1650917469541-7578d83c2903",
+    "photo-1554042861-c5b9add98f2c",
+    "photo-1617076678834-b804507ebf61",
+  ],
+  "tech-pouch": [
+    "photo-1620093349352-3d6c6eec7fc4",
+    "photo-1641700409025-015f1eb02a68",
+    "photo-1613896640137-bb5b31496315",
+    "photo-1703564202694-b102aa465666",
   ],
   tote: [
     "photo-1591561954557-26941169b49e",
     "photo-1572883454114-1cf0031ede2a",
     "photo-1597481499750-3e6b22637e12",
-    "photo-1564222256577-45e728f72c1f",
+    "photo-1574365569389-a10d488ca3fb",
   ],
   cap: [
     "photo-1521369909029-2afed882baee",
@@ -82,7 +186,7 @@ const PHOTO_SETS = {
     "photo-1514228742587-6b1558fcca3d",
     "photo-1572119865084-43c285814d63",
     "photo-1551892374-ecf8754cf8b0",
-    "photo-1563932003041-2acebcd2e0fb",
+    "photo-1616241673111-508b4662c707",
   ],
   bottle: [
     "photo-1602143407151-7111542de6e8",
@@ -100,7 +204,7 @@ const PHOTO_SETS = {
     "photo-1611117775350-ac3950990985",
     "photo-1572177812156-58036aae439c",
     "photo-1518611012118-696072aa579a",
-    "photo-1606818693644-fe2a8a4e7e35",
+    "photo-1625768376503-68d2495d78c5",
   ],
 } as const;
 
@@ -132,7 +236,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "400gsm brushed-back loopback cotton crewneck in undyed cream. Made in Europe. Built for years.",
     basePriceGbp: 7500,
     options: [{ title: "Size", values: ["S", "M", "L", "XL"] }],
-    photoSet: "hoodie-cream",
+    photoSet: "sweatshirt-cream",
     categories: ["apparel", "apparel-sweatshirts"],
   },
   {
@@ -142,7 +246,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "400gsm brushed-back loopback cotton crewneck in deep pigment black. Made in Europe. Built for years.",
     basePriceGbp: 7500,
     options: [{ title: "Size", values: ["S", "M", "L", "XL"] }],
-    photoSet: "hoodie-charcoal",
+    photoSet: "sweatshirt-black",
     categories: ["apparel", "apparel-sweatshirts"],
   },
 
@@ -264,7 +368,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "Compact leather-and-elastic cable wrap. Holds charger, cables and a dongle. Fits any pocket.",
     basePriceGbp: 1800,
     options: [{ title: "Size", values: ["Standard"] }],
-    photoSet: "notebook",
+    photoSet: "cable-organiser",
     categories: ["lifestyle", "lifestyle-tech"],
   },
   {
@@ -274,7 +378,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "Zippered canvas pouch for chargers, drives and adapters. Two internal sleeves. Built to fit a 13in laptop charger.",
     basePriceGbp: 3200,
     options: [{ title: "Size", values: ["Standard"] }],
-    photoSet: "tote",
+    photoSet: "tech-pouch",
     categories: ["lifestyle", "lifestyle-tech"],
   },
 
@@ -286,7 +390,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "Soy-wax candle in cream ceramic vessel. 220g, 50h burn. Notes of cedar, vetiver, dry tobacco.",
     basePriceGbp: 2800,
     options: [{ title: "Size", values: ["220g"] }],
-    photoSet: "mug",
+    photoSet: "candle",
     categories: ["lifestyle", "lifestyle-home"],
   },
   {
@@ -296,7 +400,7 @@ const NEW_CATALOGUE: NewProduct[] = [
       "Stonewashed linen tea towel in oat. 50x70cm. Pre-shrunk; gets softer with each wash.",
     basePriceGbp: 1800,
     options: [{ title: "Size", values: ["50x70cm"] }],
-    photoSet: "tote",
+    photoSet: "tea-towel",
     categories: ["lifestyle", "lifestyle-home"],
   },
 
@@ -378,6 +482,15 @@ const COLLECTION_COMPOSITION: Record<string, string[]> = {
 const FX_FROM_GBP = { eur: 1.15, usd: 1.27 } as const;
 
 export default async function seedCurated({ container }: ExecArgs) {
+  // Hard gate. See the DO NOT RUN banner at the top of this file.
+  // Throws rather than returns: a `return` exits 0 and any CI wrapper
+  // checking the exit status would read the refusal as a successful run.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    const msg =
+      "[seed-curated] REFUSING TO RUN. Its 18 basePriceGbp literals (:202-401) " + "are MINOR units (8900 = GBP 89.00), but the catalogue moved to MAJOR units " + "on 2026-08-30. Seeding any missing product would price it 100x high. " + "Convert the literals to major units (or delete this file) before re-enabling.";
+    console.error(msg);
+    throw new Error(msg);
+  }
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
   const productService = container.resolve(Modules.PRODUCT);

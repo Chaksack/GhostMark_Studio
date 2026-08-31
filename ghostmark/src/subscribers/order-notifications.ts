@@ -1,5 +1,6 @@
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
 import { Modules } from "@medusajs/framework/utils"
+import { ORDER_DOCUMENT_FIELDS } from "../services/pdf-utils"
 
 // Customer-facing order number: `GMS-<ULID>` derived from Medusa's internal
 // `order.id`. We use the ULID rather than `display_id` because the integer
@@ -26,16 +27,40 @@ export default async function orderConfirmationHandler({
   const query = container.resolve("query")
 
   try {
-    // Fetch order details with customer information
+    // Fetch order details with customer information.
+    //
+    // The field list must NOT contain "*". Medusa v2 does not store order
+    // totals as columns (`select total from "order"` errors: no such column);
+    // they are derived from the order's summary, and the order module only
+    // derives them when the specific total field names appear in the requested
+    // field list. Worse, mixing "*" into that list SUPPRESSES total resolution
+    // rather than adding to it, so `["*", "total"]` still returns
+    // `total: undefined`, adding "total" alongside the old "*" would have
+    // looked like a fix and changed nothing.
+    //
+    // That is exactly how order confirmations came to quote "$NaN" (and, once
+    // the formatter stopped emitting NaN, a literal "{{order_total}}"): the
+    // subscriber asked for "*", got no total, and formatted undefined.
+    //
+    // ORDER_DOCUMENT_FIELDS is the explicit list the invoice/receipt/dispatch
+    // routes already use, and it carries the full explanation of this quirk at
+    // its definition. Sharing it is deliberate: the constraint is a property of
+    // the order query layer, not of PDFs, and this codebase has already been
+    // bitten by copying money/format logic into five places instead of one.
+    // The extra entries below are this subscriber's own needs layered on top;
+    // duplicates within a field list are harmless.
     const { data: [order] } = await query.graph({
       entity: "order",
       fields: [
-        "*",
+        ...ORDER_DOCUMENT_FIELDS,
+        "total",
+        "currency_code",
         "customer.email",
-        "customer.first_name", 
+        "customer.first_name",
         "customer.last_name",
         "items.*",
-        "items.variant.product.title"
+        "items.metadata",
+        "items.variant.product.title",
       ],
       filters: {
         id: data.id,
@@ -51,7 +76,7 @@ export default async function orderConfirmationHandler({
     const totalQuantity = order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0
     const customerType = order.metadata?.customer_type || 'individual'
 
-    // GMS-<ULID> formatted order number — shared format with the storefront
+    // GMS-<ULID> formatted order number, shared format with the storefront
     // confirmation page. Used as the `order_display_id` template placeholder
     // in both the customer confirmation and the bulk-order admin alert.
     const displayId = formatOrderNumber(order.id)
@@ -59,7 +84,7 @@ export default async function orderConfirmationHandler({
     // Persist the order_number on the order itself so the admin (and any
     // future support search) can resolve a customer's quoted "GMS-…" back
     // to the underlying order. Without this, the email shows
-    // GMS-01KTD…802N but admin only knows display_id #4 — support has no
+    // GMS-01KTD…802N but admin only knows display_id #4, support has no
     // way to match them up, producing the "logistic hell" reported by ops.
     //
     // Pattern mirrored from `gift-card-code.ts` (also fires on order.placed
@@ -80,7 +105,7 @@ export default async function orderConfirmationHandler({
           },
         })
       } catch (e) {
-        // Best-effort. The email still goes out — but log loudly because
+        // Best-effort. The email still goes out, but log loudly because
         // support won't be able to look this order up by its GMS number
         // until something else writes the metadata.
         console.warn(
@@ -150,7 +175,7 @@ export default async function orderConfirmationHandler({
       return {
         title,
         quantity: qty,
-        unit_price: formatCurrency(item?.unit_price),
+        unit_price: formatCurrency(item?.unit_price, order.currency_code),
         is_customized: isCustomized,
         preview_image_url: absolutizeUpload(item?.metadata?.previewImageUrl),
         designs: buildDesigns(item),
@@ -185,7 +210,7 @@ export default async function orderConfirmationHandler({
                       ${
                         d.original_url
                           ? `<a href="${escapeHtml(d.original_url)}" style="color:#000000;text-decoration:underline;">${escapeHtml(d.original_filename || 'original file')}</a>`
-                          : `<span style="color:#92400e;">awaiting upload — we'll email you to follow up</span>`
+                          : `<span style="color:#92400e;">awaiting upload, we'll email you to follow up</span>`
                       }
                     </p>`,
                     )
@@ -205,15 +230,30 @@ export default async function orderConfirmationHandler({
           .join('')
       : ''
 
+    // The order total is the one figure in this email the customer will check
+    // against their bank. If the query contract ever regresses again (someone
+    // reintroduces "*" into the field list above, or ORDER_DOCUMENT_FIELDS
+    // drops "total"), the formatter returns '' and the customer receives a
+    // confirmation with a blank total. That is quieter than "{{order_total}}"
+    // but it is still wrong, so make it loud on our side.
+    const orderTotal = formatCurrency((order as any).total, order.currency_code)
+    if (!orderTotal) {
+      console.error(
+        `[order-notifications] could not resolve a total for order ${order.id}; ` +
+          `the confirmation email will show a blank total. Check that the ` +
+          `query.graph field list still requests "total" WITHOUT "*".`,
+      )
+    }
+
     // Prepare email data
     const emailData = {
       order_display_id: displayId,
       customer_first_name: order.customer.first_name || 'Customer',
       customer_email: order.customer.email,
-      order_total: formatCurrency(order.total),
+      order_total: orderTotal,
       total_quantity: totalQuantity,
       customer_type: customerType,
-      // String pre-rendered above — the {{items_summary_html}}
+      // String pre-rendered above, the {{items_summary_html}}
       // placeholder in the template gets replaced verbatim.
       items_summary_html: itemsSummaryHtml,
       // Structured items still passed alongside so future templates
@@ -221,25 +261,50 @@ export default async function orderConfirmationHandler({
       items: enriched,
     }
 
-    // Send customer confirmation email
+    // Send customer confirmation email.
+    //
+    // IDEMPOTENCY. This subscriber is registered for BOTH `order.placed` and
+    // `order.updated`, so every admin edit to an order re-enters here and used
+    // to re-send the confirmation. `idempotency_key` is a first-class unique
+    // column on the notification model and `createNotifications` de-duplicates
+    // on it, re-sending only when the stored attempt has status FAILURE,
+    // which is precisely the behaviour we want for event-bus retries.
+    //
+    // The key is scoped to the order, not to the event, so `order.placed` and
+    // any number of subsequent `order.updated` events collapse to one email.
     await notificationModuleService.createNotifications({
       to: order.customer.email,
       channel: "email",
       template: "order-confirmation",
       data: emailData,
+      idempotency_key: `order-confirmation:${order.id}`,
     })
 
     // Send bulk order alert for large orders (25+ units or corporate)
     if (totalQuantity >= 25 || customerType === 'corporate') {
-      // Send to admin/sales team
-      const adminEmail = process.env.ADMIN_EMAIL || process.env.GMAIL_USER_EMAIL
+      // Send to admin/sales team.
+      //
+      // The `GMAIL_USER_EMAIL` fallback is gone. ADMIN_EMAIL is not set in this
+      // deployment, so that fallback silently routed internal bulk-order alerts
+      // to a leftover personal Gmail address from a previous mail integration,
+      // an address nobody chose as the ops inbox and which may not even belong
+      // to the team any more. Sending business data to a stale address is worse
+      // than not sending it, so this now no-ops loudly instead.
+      const adminEmail = process.env.ADMIN_EMAIL
       if (adminEmail) {
         await notificationModuleService.createNotifications({
           to: adminEmail,
           channel: "email",
           template: "bulk-order-notification",
           data: emailData,
+          idempotency_key: `bulk-order-alert:${order.id}`,
         })
+      } else {
+        console.warn(
+          `[order-notifications] order ${displayId} qualifies for a bulk-order ` +
+            `alert (${totalQuantity} units, type=${customerType}) but ADMIN_EMAIL ` +
+            `is not set, so no internal alert was sent. Set ADMIN_EMAIL to enable it.`,
+        )
       }
     }
 
@@ -250,89 +315,72 @@ export default async function orderConfirmationHandler({
   }
 }
 
-// Quote request email subscriber
-export async function quoteRequestHandler({
-  event: { data },
-  container,
-}: SubscriberArgs<{
-  productId: string
-  variantId: string
-  quantity: number
-  customerEmail: string
-  customerType?: string
-}>) {
-  const notificationModuleService = container.resolve(Modules.NOTIFICATION)
-  const query = container.resolve("query")
+// Utility functions
+// Money rendering for outbound email.
+//
+// This was previously `Intl.NumberFormat('en-US', { currency: 'USD' })` over
+// `amount / 100`, which was wrong three times over:
+//   - Medusa v2 stores prices in MAJOR units (a price of 10.00 is stored as
+//     10, not 1000), so the /100 shrank every figure by 100x.
+//   - The currency was hardcoded to USD while this store transacts in GBP,
+//     so a £4,200 order emailed as "$42.00", wrong symbol AND wrong scale.
+//   - The locale was hardcoded to en-US, disagreeing with every storefront
+//     surface (en-GB).
+// The currency now comes from the order that is actually being emailed
+// about; `DEFAULT_CURRENCY` is only reached on the quote-request path, which
+// has no order attached.
+const EMAIL_LOCALE = 'en-GB'
+const DEFAULT_CURRENCY = 'GBP'
 
+// Medusa v2 money fields are BigNumber-backed. `query.graph` normally
+// serialises them to plain JS numbers, but depending on the call path they can
+// arrive as a numeric string or as a `{ value }` wrapper. Coerce all three
+// rather than treating the non-number shapes as missing, a shape mismatch
+// used to be indistinguishable from "no total at all", and both rendered blank.
+function toAmount(amount: unknown): number | null {
+  if (typeof amount === 'number') return Number.isFinite(amount) ? amount : null
+  if (typeof amount === 'string' && amount.trim() !== '') {
+    const n = Number(amount)
+    return Number.isFinite(n) ? n : null
+  }
+  if (amount && typeof amount === 'object') {
+    const inner = (amount as any).value ?? (amount as any).numeric
+    if (inner !== undefined && inner !== amount) return toAmount(inner)
+  }
+  return null
+}
+
+function formatCurrency(amount: unknown, currencyCode?: string | null): string {
+  const code = (currencyCode || DEFAULT_CURRENCY).toUpperCase()
+  const value = toAmount(amount)
+  if (value === null) {
+    // Never interpolate "NaN" or "undefined" into a customer-facing email.
+    return ''
+  }
   try {
-    // Fetch product details
-    const { data: [product] } = await query.graph({
-      entity: "product",
-      fields: ["*"],
-      filters: {
-        id: data.productId,
-      },
-    })
-
-    // Estimate pricing (simplified)
-    const estimatedPrice = calculateBulkEstimate(data.quantity)
-
-    const emailData = {
-      customer_first_name: data.customerEmail.split('@')[0], // Simple name extraction
-      product_title: product?.title || 'Custom Product',
-      quantity: data.quantity,
-      customer_type: data.customerType || 'individual',
-      estimated_total: formatCurrency(estimatedPrice),
-    }
-
-    // Send quote confirmation to customer
-    await notificationModuleService.createNotifications({
-      to: data.customerEmail,
-      channel: "email",
-      template: "quote-request",
-      data: emailData,
-    })
-
-    console.log(`Quote request confirmation sent to ${data.customerEmail}`)
-
-  } catch (error) {
-    console.error('Failed to send quote request email:', error)
+    return new Intl.NumberFormat(EMAIL_LOCALE, {
+      style: 'currency',
+      currency: code,
+    }).format(value)
+  } catch {
+    return `${value.toFixed(2)} ${code}`
   }
 }
 
-// Utility functions
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount / 100) // Assuming amount is in cents
-}
-
-function calculateBulkEstimate(quantity: number): number {
-  // Simple bulk pricing estimation
-  const basePrice = 1299 // $12.99 in cents
-  const setupFee = 500   // $5.00 in cents
-  
-  let discount = 0
-  if (quantity >= 100) discount = 0.25
-  else if (quantity >= 50) discount = 0.20
-  else if (quantity >= 25) discount = 0.15
-  else if (quantity >= 10) discount = 0.10
-
-  const subtotal = basePrice * quantity
-  const discountAmount = subtotal * discount
-  
-  return subtotal - discountAmount + setupFee
-}
-
+// Both events stay subscribed. `order.updated` is what catches an order whose
+// customer or totals are only settled after placement, and it is now safe to
+// keep because the send above carries an `idempotency_key` scoped to the order:
+// the notification module de-duplicates on that key and only re-sends when the
+// previous attempt is recorded as FAILURE. Before that key existed, every admin
+// edit re-sent the customer their confirmation.
+//
+// Contrast with gift-card-code.ts, which is `order.placed` only. That handler
+// mints a bearer instrument, so an idempotency key on the outbound email would
+// not have been enough, the side effect it must not repeat is the minting, not
+// the mail.
 export const config: SubscriberConfig = {
   event: [
     "order.placed",
     "order.updated"
   ],
-}
-
-// Export quote request configuration separately
-export const quoteConfig: SubscriberConfig = {
-  event: "quote.requested"
 }

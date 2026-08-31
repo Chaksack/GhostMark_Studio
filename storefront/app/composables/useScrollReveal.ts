@@ -1,12 +1,12 @@
 /**
- * useScrollReveal — composable wrapper around `useIntersectionObserver`.
+ * useScrollReveal: composable wrapper around `useIntersectionObserver`.
  *
  * Returns reactive `isVisible` state for a target element. Designed for
  * scroll-into-view fade-and-rise reveals on Nuxt 4 storefront sections.
  *
  * Honors `prefers-reduced-motion`: when reduced motion is requested the
  * element is marked visible immediately and the IntersectionObserver is
- * never wired up — keeping the DOM accessible without animation.
+ * never wired up, keeping the DOM accessible without animation.
  *
  *   const target = ref<HTMLElement | null>(null)
  *   const { isVisible } = useScrollReveal(target, { delay: 80 })
@@ -26,7 +26,7 @@ export interface ScrollRevealOptions {
   rootMargin?: string
   /** Disconnect after the first reveal. Default true. */
   once?: boolean
-  /** Delay (ms) before flipping to visible — used for stagger. Default 0. */
+  /** Delay (ms) before flipping to visible, used for stagger. Default 0. */
   delay?: number
 }
 

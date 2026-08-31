@@ -1,5 +1,5 @@
 // =============================================================================
-// seed-badges — write a `metadata.badges` string array onto a curated subset of
+// seed-badges: write a `metadata.badges` string array onto a curated subset of
 // products so the storefront ProductCard chip strip (mirrors merchery.co)
 // actually has data to render. Idempotent: shallow-merges into existing
 // metadata, replacing only the `badges` key on each pass.

@@ -5,17 +5,17 @@
   >
       <!-- Left: heading + intro + CTA -->
       <div class="flex flex-col flex-1 lg:sticky lg:top-[140px] lg:self-start lg:h-fit">
-        <h2 id="footer-faq-heading" class="text-[2.4rem] leading-[2.8rem] md:text-[3.2rem] md:leading-[3.8rem] lg:text-[4rem] lg:leading-[4.6rem] mb-[1.8rem]">
+        <h2 id="footer-faq-heading" class="gm-display gm-display-lg mb-[1.8rem] text-ink-950">
           Frequently asked questions
         </h2>
-        <p class="mb-[3rem] text-[1.4rem] leading-[2rem] md:text-[1.6rem] md:leading-[2.3rem]">
+        <p class="mb-[3rem] text-[14px] leading-[20px] md:text-[16px] md:leading-[23px]">
           Need some help? Browse through our summary of the most frequently asked
           questions about shipping, returns, samples, sourcing, pricing, and many more!
         </p>
         <div>
           <NuxtLink
             to="/faq"
-            class="bg-black text-white hover:bg-transparent hover:text-black border border-black border-solid px-[1.6rem] py-[1.2rem] inline-block"
+            class="bg-ink-950 text-cream-50 hover:bg-transparent hover:text-ink-950 border border-ink-950 border-solid px-5 h-11 text-sm font-medium inline-flex items-center justify-center transition-colors duration-fast motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-focus focus-visible:ring-offset-2"
           >
             View more
           </NuxtLink>
@@ -31,7 +31,7 @@
         >
           <h3 class="flex">
             <button
-              class="flex flex-1 items-center justify-between transition-all text-left group font-sans m-0 p-0"
+              class="flex flex-1 items-center justify-between transition-all text-left group font-sans mx-0 -my-3 px-0 py-3"
               type="button"
               @click="toggle(i)"
             >
@@ -95,7 +95,7 @@ const faqs = [
   },
   {
     question: 'What is the minimum order quantity (MOQ)?',
-    answer: 'MOQ varies by product and decoration method. Contact us for specific requirements.',
+    answer: 'Most of the catalogue has no minimum: order a single piece if that is all you need. Where a custom run does carry one it is 25 pieces, and the figure is stated on the product page before anything reaches your basket.',
   },
 ]
 

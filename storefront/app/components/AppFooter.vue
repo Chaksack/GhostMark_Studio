@@ -1,6 +1,6 @@
 <template>
   <!--
-    AppFooter — single source of truth for the global footer band.
+    AppFooter: single source of truth for the global footer band.
 
     Layout contract (intentionally rigid so home / PLP / PDP all match):
       - Surface: bg-offWhite (warm editorial off-white from the merchery
@@ -15,7 +15,7 @@
         payment chips on the right, hairline-divided by border-greyLines.
 
     Authentication / locale / cart state MUST NOT add or remove columns
-    here — they belong in the bottom bar. Adding a sixth section breaks
+    here: they belong in the bottom bar. Adding a sixth section breaks
     the 5-column desktop rhythm and re-introduces the cross-page drift
     reviewers reported.
   -->
@@ -29,20 +29,20 @@
       both have the full content width on narrow handsets.
     -->
     <div
-      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 pt-12 md:pt-16 lg:pt-20 pb-8 border-b border-greyLines"
+      class="mx-auto w-full max-w-rail px-gutter pt-12 md:pt-16 lg:pt-20"
     >
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 pb-8 border-b border-greyLines">
         <div class="flex flex-col gap-3 max-w-[480px]">
           <NuxtLink
             to="/"
             class="inline-flex min-h-[44px] items-center font-display text-[34px] font-extrabold leading-none tracking-[0.2px] text-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
-            aria-label="GhostMark — home"
+            aria-label="GhostMark home"
           >
             GhostMark
           </NuxtLink>
           <p class="text-[14px] leading-[1.6] text-ink-700">
             Branded objects for the kind of work people keep. Laser
-            engraving, DTF print, and apparel finishing — one studio in
+            engraving, DTF print, and apparel finishing, one studio in
             Bordeaux.
           </p>
         </div>
@@ -71,10 +71,10 @@
       44×44 hit targets without being crowded by the region line.
     -->
     <div
-      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 py-6 border-b border-greyLines"
+      class="mx-auto w-full max-w-rail px-gutter pt-6"
     >
       <div
-        class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-greyLines"
       >
         <div class="flex items-center gap-3">
           <span class="text-[12px] uppercase tracking-[0.12em] text-ink-700">Follow us</span>
@@ -162,7 +162,7 @@
     </div>
 
     <div
-      class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 py-10 md:py-14 lg:py-16"
+      class="mx-auto w-full max-w-rail px-gutter py-10 md:py-14 lg:py-16"
     >
       <!--
         Mobile (<768): collapsible accordion. Each section ships closed so
@@ -241,7 +241,7 @@
 
       <!--
         Trust + payments band (v18 audit). Replaces the previous
-        Certified-B / 1% For The Planet pair — those certifications
+        Certified-B / 1% For The Planet pair, those certifications
         are not held yet, so we surface neutral provenance markers
         until the real audits land. Payment marks are TEXT, not
         brand SVGs, to avoid licensing risk before Stripe Connect
@@ -252,7 +252,7 @@
       >
         <div class="flex items-center gap-3 flex-wrap">
           <span
-            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
             aria-label="Made in Europe"
           >
             <svg
@@ -273,7 +273,7 @@
             Made in Europe
           </span>
           <span
-            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
             aria-label="Family-owned in Bordeaux"
           >
             <svg
@@ -294,7 +294,7 @@
             Family-owned in Bordeaux
           </span>
           <span
-            class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.1em] text-ink-700 bg-offWhiteLight border border-greyLines px-3 py-2 rounded"
+            class="gm-spec inline-flex items-center gap-2 rounded border border-greyLines bg-offWhiteLight px-3 py-2 text-ink-700"
             aria-label="Carbon-aware shipping"
           >
             <svg
@@ -318,14 +318,14 @@
 
         <div class="flex items-center gap-3 flex-wrap">
           <span
-            class="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-700"
+            class="gm-spec text-ink-700"
           >Secure payments</span>
           <div class="flex items-center gap-2 flex-wrap" role="list" aria-label="Accepted payment methods">
             <span
               v-for="brand in payments"
               :key="brand"
               role="listitem"
-              class="px-3 py-1.5 border border-greyLines rounded text-[10px] font-bold text-ink-700 bg-offWhiteLight tracking-wide"
+              class="gm-spec rounded border border-greyLines bg-offWhiteLight px-3 py-1.5 text-ink-700"
             >{{ brand }}</span>
           </div>
         </div>
@@ -347,46 +347,40 @@
           </p>
           <span class="hidden sm:inline-block h-3 w-px bg-greyLines" aria-hidden="true" />
           <!--
-            Region trigger. We do not invoke RegionSelector here because
-            its `useRegion()` contract (loadRegions / setRegion) does not
-            yet match the live composable shape — wiring that up belongs
-            in the region composable refactor, not the footer. Until
-            then, the button is a NuxtLink that surfaces the region
-            picker via a route query the GeoModal layer can claim
-            without breaking SSR.
+            Region trigger: the ONLY region/currency control in the storefront.
+
+            History, because the previous comment here was wrong and cost us a
+            shipped defect: this used to be `<NuxtLink to="/?region=open">`,
+            justified by "RegionSelector's `useRegion()` contract (loadRegions /
+            setRegion) does not yet match the live composable shape". That claim
+            is stale: `useRegion.ts:177` returns
+            `{ regionId, region, regions, loadRegions, ensureRegion, setRegion }`
+            and `RegionSelector.vue:33` destructures four of those six. The
+            contract matches exactly; the refactor it was waiting on landed.
+
+            Worse, nothing ever claimed `?region=open`. Grepping `region=open`,
+            `query.region` and `route.query.region` across `app/` returned
+            exactly one hit: the link that emitted it. GeoModal reads no query
+            at all: it is the first-visit suggestion overlay only. So the
+            control rendered on every page, had a 44px hit area and a correct
+            aria-label, and did nothing but navigate to the homepage.
+
+            Net effect while that placeholder shipped: the footer says Bordeaux,
+            the catalogue prices in GBP, and a customer who wanted EUR had no
+            path to it on ANY viewport. RegionSelector (the one component that
+            actually calls `setRegion()`) was mounted only in AppMobileNav.vue,
+            which has zero live references (AppHeader.vue:345 renders
+            MobileNav.vue instead), so it never rendered.
+
+            Pattern: footer/utility trigger opening a right-side sheet that pairs
+            country name with currency code. That is lululemon's web treatment
+            (right drawer, "Select your location", currency right-aligned per
+            row) and Selfridges' pairing ("United Kingdom / GBP £"), both via
+            Mobbin. RegionSelector already implements exactly this,
+            `side="right"`, `title="Choose your region"`, display_name left /
+            currency_code right, so this is a mount, not a redesign.
           -->
-          <NuxtLink
-            to="/?region=open"
-            class="inline-flex min-h-[44px] items-center gap-2 py-2 hover:text-ink-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-2 focus-visible:ring-offset-offWhite rounded-sm"
-            aria-label="Change region or currency"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M2 12h20" />
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            <!--
-              Region label is now SSR-deterministic: `useRegion()` reads the
-              `gms_region_id` cookie via `useCookie()` (server + client) and
-              resolves the region object through `useAsyncData` during SSR.
-              For returning visitors the server already renders "EN · GBP",
-              so no <ClientOnly> wrap / hydration swap is needed. First-time
-              visitors (no cookie) render the "Choose region" fallback on
-              both passes — still hydration-safe.
-            -->
-            <span>{{ regionLabel }}</span>
-          </NuxtLink>
+          <RegionSelector variant="meta" />
         </div>
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
           <div class="flex items-center gap-1">
@@ -450,8 +444,8 @@
 
 <script setup lang="ts">
 /**
- * Footer copy lives in `sections` so the column count is deterministic
- * — exactly five entries, top-to-bottom in the order they should ship.
+ * Footer copy lives in `sections` so the column count is deterministic:
+ * exactly five entries, top-to-bottom in the order they should ship.
  * Add / remove links inside a section freely; do NOT add a sixth section
  * without also bumping the desktop grid (currently lg:grid-cols-5).
  */
@@ -473,7 +467,6 @@ const sections: FooterSection[] = [
     heading: 'Shop',
     links: [
       { to: '/products', label: 'Shop all' },
-      { to: '/studio', label: 'Bespoke studio' },
       { to: '/platform', label: 'Platform' },
       { to: '/club', label: 'Club & agencies' },
       { to: '/blog', label: 'Journal' },
@@ -519,7 +512,7 @@ const sections: FooterSection[] = [
 const payments = ['VISA', 'MC', 'AMEX', 'PAYPAL', 'APPLE PAY'] as const
 
 /**
- * Social icons rendered inline as compact SVGs — no external icon
+ * Social icons rendered inline as compact SVGs, no external icon
  * library, no font load. Each entry carries an explicit `aria-label`
  * (the visible glyph is decorative). The path/dot tuple keeps the SVG
  * markup uniform; `dot` is only used by the Instagram glyph.
@@ -557,17 +550,12 @@ const socials: SocialIcon[] = [
 
 const year = new Date().getFullYear()
 
-/**
- * Region label rendered next to the globe icon. We deliberately keep
- * this read-only here — switching regions still routes through the
- * dedicated region picker (see GeoModal / RegionSelector). The label
- * shape mirrors AppMobileNav's `EN · EUR` convention.
+/*
+ * The `regionLabel` computed that used to live here is gone, along with the
+ * `useRegion()` call that fed it. It rendered a read-only "EN · GBP" beside a
+ * dead link; RegionSelector now owns both the label and the switch, and
+ * derives the same `EN · <CURRENCY>` shape from the same composable
+ * (RegionSelector.vue `pillLabel`, variant="meta"). Keeping a second copy here
+ * would be two sources of truth for one string.
  */
-const { region } = useRegion()
-const regionLabel = computed<string>(() => {
-  const r = region.value as { currency_code?: string, name?: string } | null
-  const currency = r?.currency_code?.toUpperCase()
-  if (currency) return `EN · ${currency}`
-  return 'Choose region'
-})
 </script>

@@ -1,18 +1,18 @@
 /**
- * Mobile burger overlay — type-aware tier ordering.
+ * Mobile burger overlay: type-aware tier ordering.
  *
  * The burger's middle region renders THREE tiers in priority order:
- *   Tier 1 — Mode entries (D2C Studio Canon, B2B POD).
- *   Tier 2 — "Browse by category" heading + native <details> list.
+ *   Tier 1: Mode entries (D2C Studio Canon, B2B POD).
+ *   Tier 2: "Browse by category" heading + native <details> list.
  *
  * These tests assert the two mode entries appear above the category
  * heading and that clicking either entry navigates and dismisses the
- * overlay. The desktop projects skip — the burger only mounts <lg.
+ * overlay. The desktop projects skip: the burger only mounts <lg.
  */
 import { test, expect } from '@playwright/test'
 import { HeaderPage } from './pages/HeaderPage'
 
-test.describe('Mobile burger menu — type-aware tiers', () => {
+test.describe('Mobile burger menu: type-aware tiers', () => {
   // Suite-level guard: the burger is `lg:hidden`, mobile project only.
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile-iphone', 'Mobile-only burger.')

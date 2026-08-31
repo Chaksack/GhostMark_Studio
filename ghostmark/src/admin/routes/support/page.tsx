@@ -101,7 +101,7 @@ const SupportPageInner = () => {
                   </Table.Cell>
                   <Table.Cell>{t.email}</Table.Cell>
                   <Table.Cell>
-                    {t.created_at ? new Date(t.created_at).toLocaleString() : "—"}
+                    {t.created_at ? new Date(t.created_at).toLocaleString() : "–"}
                   </Table.Cell>
                 </Table.Row>
               ))}

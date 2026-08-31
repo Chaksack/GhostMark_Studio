@@ -1,14 +1,14 @@
 <script setup lang="ts">
 /**
- * /platform — GhostMark fulfilment SaaS landing page.
+ * /platform: GhostMark fulfilment SaaS landing page.
  *
  * B2B product page for the inventory + internal-shop + shipments + orders
  * platform. Same tile-and-band rhythm used across /studio, /about and
- * /sustainability — cream-tile hero, alternating white / cream-warm bands,
+ * /sustainability: cream-tile hero, alternating white / cream-warm bands,
  * sage CTA at the foot.
  *
  * All CTAs use <UiButton> with the `merchery` (ink slab) or `outline`
- * variants. Token discipline: design-token utility classes only — no
+ * variants. Token discipline: design-token utility classes only, no
  * `bg-[#hex]` literals, no `as any` casts.
  */
 defineOptions({ name: 'PagePlatform' })
@@ -202,7 +202,7 @@ const toggleFaq = (index: number) => {
     <!-- 1. Hero -->
     <section class="bg-cream-tile">
       <div
-        class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-16 px-gutter py-section lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center"
+        class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-16 px-gutter py-section lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center"
       >
         <div class="flex flex-col gap-8">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
@@ -300,7 +300,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 2. Feature grid -->
     <section>
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mb-14 grid grid-cols-1 gap-x-[30px] gap-y-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
           <div>
             <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
@@ -350,7 +350,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 3. How it works -->
     <section class="bg-cream-warm">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mb-14 max-w-[60ch]">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
             How it works
@@ -387,7 +387,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 4. Pricing -->
     <section>
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mb-14 flex flex-col items-center text-center">
           <p class="text-eyebrow font-body uppercase tracking-[0.18em] text-ink-500">
             Pricing
@@ -484,7 +484,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 5. Customer logos / proof -->
     <section class="bg-cream-tile">
-      <div class="mx-auto max-w-[1320px] px-gutter py-20">
+      <div class="mx-auto max-w-rail px-gutter py-20">
         <p
           class="mb-10 text-center font-body text-caption uppercase tracking-[0.18em] text-ink-500"
         >
@@ -506,7 +506,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 6. FAQ accordion -->
     <section>
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="grid grid-cols-1 gap-x-[30px] gap-y-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
         >
@@ -565,7 +565,7 @@ const toggleFaq = (index: number) => {
 
     <!-- 7. CTA band -->
     <section class="w-full bg-merchery-sage">
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="grid grid-cols-1 gap-x-[30px] gap-y-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center"
         >

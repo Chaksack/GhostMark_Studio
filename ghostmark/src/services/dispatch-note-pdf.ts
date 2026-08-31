@@ -45,7 +45,7 @@ export type DispatchNotePdfOptions = {
 
 // Deterministic, collision-free dispatch note number derived from the order's
 // own monotonic display_id and the dispatch month. Not a true sequential
-// per-month counter (this repo has no counter/DB infra to back one) — see
+// per-month counter (this repo has no counter/DB infra to back one), see
 // implementation plan for the trade-off. Format mirrors GMSDP{YYYYMM}-{seq}.
 export function computeDispatchNoteNumber(order: any, dispatchDate: Date = new Date()): string {
   const yyyymm = `${dispatchDate.getFullYear()}${String(dispatchDate.getMonth() + 1).padStart(2, "0")}`

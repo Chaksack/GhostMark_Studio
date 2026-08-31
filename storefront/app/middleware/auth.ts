@@ -4,7 +4,7 @@
  * Decision flow:
  *   1. No `gms_auth_token` cookie -> immediately bounce to home with the
  *      login modal hint. This is the fast path for guests and skips a
- *      guaranteed-401 round trip to /store/customers/me (P2 fix — see
+ *      guaranteed-401 round trip to /store/customers/me (P2 fix, see
  *      useCustomer.refresh()).
  *   2. Cookie present but `useCustomer().customer` is empty (e.g. fresh
  *      hard reload) -> attempt one silent refresh. The companion plugin

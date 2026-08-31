@@ -1,5 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 // Get current active sales and discounted products
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -29,18 +29,103 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       relations: ["prices"]
     })
 
-    const salePriceListsOnly = (salePriceLists as any[]).filter((pl: any) => pl?.type === "sale")
+    // A price list with NO prices is not a sale, whatever its status says.
+    //
+    // This is defensive and it is here on purpose. The admin route that used to
+    // create these (api/admin/price-lists/sale, deleted 2026-08-30) wrote a real
+    // `status: "active"`, `type: "sale"` price list and then returned entirely
+    // fabricated response data, a hardcoded "demo_variant" with an invented
+    // original_amount, WITHOUT ever attaching prices to it. The result was an
+    // empty active sale list that this route would happily advertise on the
+    // storefront as a live sale with zero discounted products.
+    //
+    // Deleting the writer removed the known source. This filter closes the hole
+    // independently of how such a list ever comes to exist, by another route, a
+    // partial admin action, or a failed import. An empty sale can no longer be
+    // advertised regardless of who created it.
+    //
+    // BUT THIS FILTER ALONE WAS NEVER THE WHOLE FIX, AND IT READS AS IF IT WERE.
+    // It closes the fabricated-EMPTY-list case and nothing else. A list holding
+    // prices that all point at deleted variants passes this check comfortably,
+    // `newyear` has 19 of them. Counting prices is not counting REACHABLE
+    // prices. The reachability pass further down is the half that closes that,
+    // and it was added later; this note is here so nobody reads the original
+    // filter as having always been complete.
+    const salePriceListsOnly = (salePriceLists as any[])
+      .filter((pl: any) => pl?.type === "sale")
+      .filter((pl: any) => Array.isArray(pl?.prices) && pl.prices.length > 0)
 
     // Filter by date range
-    const activeSalePriceLists = salePriceListsOnly.filter((priceList: any) => {
+    const dateActiveSalePriceLists = salePriceListsOnly.filter((priceList: any) => {
       const startDate = priceList.starts_at ? new Date(priceList.starts_at) : null
       const endDate = priceList.ends_at ? new Date(priceList.ends_at) : null
-      
+
       if (startDate && startDate > now) return false
       if (endDate && endDate < now) return false
-      
+
       return true
     })
+
+    // -------------------------------------------------------------------------
+    // REACHABILITY. A price only counts if a customer could actually buy it.
+    //
+    // The `prices.length > 0` filter above is a PROXY. It agrees with the real
+    // question in every case we had tested and diverges exactly where it
+    // matters: the live `newyear` list carries 19 prices and ZERO reachable
+    // ones, because every price_set it points at belongs to a variant that has
+    // since been hard-deleted. Counting prices is not counting REACHABLE prices,
+    // and a list that passes the count check can still advertise a sale with
+    // nothing purchasable behind it.
+    //
+    // "Exists" is deliberately two separate conditions, because they are two
+    // different failure modes and a single check would silently conflate them:
+    //   * the variant row is GONE (hard-deleted)   -> the JOIN drops it
+    //   * the variant row is SOFT-deleted          -> deleted_at IS NULL drops it
+    // The link row itself can also be soft-deleted independently of either.
+    //
+    // One query keyed on the collected price_set_ids. This runs on the
+    // storefront, so a per-price round trip would not be acceptable; the cost
+    // here is a single indexed lookup regardless of how many prices are in play.
+    // -------------------------------------------------------------------------
+    const knex: any = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION)
+
+    const candidatePriceSetIds = Array.from(
+      new Set(
+        dateActiveSalePriceLists.flatMap((pl: any) =>
+          (pl.prices ?? []).map((pr: any) => pr?.price_set_id).filter(Boolean),
+        ),
+      ),
+    ) as string[]
+
+    let reachablePriceSetIds = new Set<string>()
+    if (candidatePriceSetIds.length > 0) {
+      const { rows } = await knex.raw(
+        `SELECT DISTINCT pvps.price_set_id
+           FROM product_variant_price_set pvps
+           JOIN product_variant v ON v.id = pvps.variant_id
+          WHERE pvps.price_set_id = ANY(?)
+            AND pvps.deleted_at IS NULL
+            AND v.deleted_at IS NULL`,
+        [candidatePriceSetIds],
+      )
+      reachablePriceSetIds = new Set(rows.map((r: any) => r.price_set_id))
+    }
+
+    // Drop unreachable PRICES from each list, then drop any list left with none.
+    //
+    // Both, deliberately. A partially-dead sale should advertise its live half,
+    // that half is genuinely purchasable and suppressing it would under-report a
+    // real discount. Advertising the dead half is what must not happen. Dropping
+    // only whole lists would do the wrong thing in both directions: it would
+    // either hide live prices or show dead ones.
+    const activeSalePriceLists = dateActiveSalePriceLists
+      .map((pl: any) => ({
+        ...pl,
+        prices: (pl.prices ?? []).filter((pr: any) =>
+          reachablePriceSetIds.has(pr?.price_set_id),
+        ),
+      }))
+      .filter((pl: any) => pl.prices.length > 0)
 
     if (activeSalePriceLists.length === 0) {
       return res.json({

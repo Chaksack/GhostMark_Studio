@@ -1,5 +1,31 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT. IT WOULD PRICE UK SHIPPING AT GBP 1,000.00.
+ * ============================================================================
+ *
+ * `:67-69` write MINOR units, and say so in their own trailing comments:
+ *
+ *        { currency_code: "gbp", amount: 1000 },  // GBP 10.00
+ *        { currency_code: "usd", amount: 1300 },  // USD 13.00
+ *        { currency_code: "eur", amount: 1200 },  // EUR 12.00
+ *
+ * THE CONVENTION FLIPPED ON 2026-08-30. Verified through the Store API that
+ * day, GET /store/shipping-options on a GB cart returns:
+ *
+ *        UK Standard   amount 10      <- correct, MAJOR (GBP 10.00)
+ *
+ * Re-running this would set it to 1000, i.e. GBP 1,000.00 of postage, on the
+ * only shipping option every UK customer sees and the one every completed
+ * order in this database used.
+ *
+ * This is the highest-impact member of the class: shipping is not a product a
+ * customer can decline, it is added at the last step of checkout.
+ *
+ * Before running this again: divide the three amounts by 100, or delete the
+ * file.
+ * ========================================================================== */
+
 // =============================================================================
-// seed-shipping-gbp — idempotently set up a UK-covering flat-rate shipping
+// seed-shipping-gbp: idempotently set up a UK-covering flat-rate shipping
 // option so GBP carts can resolve a shipping rate at checkout.
 //
 // Why this exists
@@ -15,7 +41,7 @@
 //     include "gb".
 //   - The full `seed.ts` was never run end-to-end (or its fulfillment set
 //     was wiped), so the "European Warehouse delivery" zone it would have
-//     created — which DOES include "gb" — is absent.
+//     created (which DOES include "gb") is absent.
 //
 // Result: UK carts surface zero shipping options, the checkout flow advances
 // to payment without `addShippingMethod`, and `cart.complete()` rejects with
@@ -61,7 +87,7 @@ const FULFILLMENT_SET_NAME = "UK Warehouse delivery"
 const SERVICE_ZONE_NAME = "United Kingdom"
 const SHIPPING_OPTION_NAME = "UK Standard"
 
-// MINOR units (pence / cents) — matches the rest of the catalogue.
+// MINOR units (pence / cents), matches the rest of the catalogue.
 // (workshop-tote at £22.00 stores 2200.)
 const PRICES = [
   { currency_code: "gbp", amount: 1000 }, // £10.00
@@ -70,6 +96,15 @@ const PRICES = [
 ]
 
 export default async function seedShippingGbp({ args, container }: ExecArgs) {
+  // Hard gate. See the DO NOT RUN banner at the top of this file.
+  // Throws rather than returns: a `return` exits 0 and any CI wrapper
+  // checking the exit status would read the refusal as a successful run.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    const msg =
+      "[seed-shipping-gbp] REFUSING TO RUN. Its prices at :67-69 are MINOR units " + "(1000 = GBP 10.00), but the catalogue moved to MAJOR units on 2026-08-30 " + "and the live UK Standard option reads 10. Re-running would charge " + "GBP 1,000.00 postage. Divide by 100 (or delete this file) before re-enabling.";
+    console.error(msg);
+    throw new Error(msg);
+  }
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const fulfillment = container.resolve(Modules.FULFILLMENT)
   const stockLocation = container.resolve(Modules.STOCK_LOCATION)
@@ -81,14 +116,14 @@ export default async function seedShippingGbp({ args, container }: ExecArgs) {
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[seed-shipping-gbp] DRY-RUN — no writes.")
+    logger.info("[seed-shipping-gbp] DRY-RUN: no writes.")
   }
 
   // 1) Default shipping profile must exist (created by seed.ts).
   const profiles = await fulfillment.listShippingProfiles({ type: "default" })
   if (!profiles.length) {
     logger.warn(
-      "[seed-shipping-gbp] no default shipping profile — run seed.ts first.",
+      "[seed-shipping-gbp] no default shipping profile: run seed.ts first.",
     )
     return
   }
@@ -159,7 +194,7 @@ export default async function seedShippingGbp({ args, container }: ExecArgs) {
         )
       } else {
         logger.warn(
-          "[seed-shipping-gbp] no stock locations found — skipping link.",
+          "[seed-shipping-gbp] no stock locations found, skipping link.",
         )
       }
     }
@@ -176,7 +211,7 @@ export default async function seedShippingGbp({ args, container }: ExecArgs) {
 
   if (ukOpt) {
     logger.info(
-      `[seed-shipping-gbp] shipping option exists: ${SHIPPING_OPTION_NAME} (${ukOpt.id}) — skipping.`,
+      `[seed-shipping-gbp] shipping option exists: ${SHIPPING_OPTION_NAME} (${ukOpt.id}), skipping.`,
     )
     return
   }
@@ -211,6 +246,6 @@ export default async function seedShippingGbp({ args, container }: ExecArgs) {
   })
 
   logger.info(
-    `[seed-shipping-gbp] created shipping option "${SHIPPING_OPTION_NAME}" — UK carts can now resolve a rate.`,
+    `[seed-shipping-gbp] created shipping option "${SHIPPING_OPTION_NAME}"; UK carts can now resolve a rate.`,
   )
 }

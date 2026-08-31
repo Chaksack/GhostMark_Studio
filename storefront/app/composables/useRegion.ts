@@ -1,5 +1,5 @@
 /**
- * useRegion — single source of truth for the active store region.
+ * useRegion: single source of truth for the active store region.
  *
  * SSR contract:
  *   - The selected region id is persisted in the `gms_region_id` cookie
@@ -11,17 +11,17 @@
  *     fetch via `useAsyncData` so the resolved region object is part of
  *     the SSR payload. AppFooter (and any other component reading
  *     `region.value` during render) therefore gets the real label on the
- *     server pass — no "Choose region" → "EN · GBP" hydration swap.
+ *     server pass: no "Choose region" → "EN · GBP" hydration swap.
  *   - The fetch is wrapped in try/catch so an offline Medusa cannot
  *     500 the page; we degrade gracefully to the "Choose region" copy.
  *
  * Public API:
- *   - `regionId`        — reactive cookie ref (string | null)
- *   - `region`          — active region object (or null)
- *   - `regions`         — computed list of all live regions (cached)
- *   - `loadRegions()`   — idempotent fetch of the full region catalogue
- *   - `ensureRegion()`  — resolves the active region (cookie → first → null)
- *   - `setRegion(idOrObj)` — switches active region; updates cookie + cart
+ *   - `regionId`:         reactive cookie ref (string | null)
+ *   - `region`:           active region object (or null)
+ *   - `regions`:          computed list of all live regions (cached)
+ *   - `loadRegions()`:    idempotent fetch of the full region catalogue
+ *   - `ensureRegion()`:   resolves the active region (cookie → first → null)
+ *   - `setRegion(idOrObj)`: switches active region; updates cookie + cart
  *
  * Notes:
  *   - Zero hardcoded fallbacks. If Medusa is offline the resolved region is
@@ -47,7 +47,7 @@ export const useRegion = () => {
 
   const sdk = useMedusaClient()
 
-  // Computed view onto the cached catalogue — keeps callers reactive even
+  // Computed view onto the cached catalogue: keeps callers reactive even
   // when `loadRegions` resolves later.
   const regions = computed<StoreRegion[]>(() => regionsList.value)
 
@@ -69,7 +69,7 @@ export const useRegion = () => {
           if (match) region.value = match
           return match
         } catch {
-          // Offline / 5xx — keep `region` null so the UI degrades to the
+          // Offline / 5xx: keep `region` null so the UI degrades to the
           // "Choose region" fallback rather than throwing.
           return null
         }
@@ -79,7 +79,7 @@ export const useRegion = () => {
   }
 
   /**
-   * loadRegions — idempotent fetch of the full region catalogue.
+   * loadRegions: idempotent fetch of the full region catalogue.
    * Safe to call from every component; only hits the network on first call
    * per session (or when `force` is true).
    */
@@ -129,7 +129,7 @@ export const useRegion = () => {
   }
 
   /**
-   * setRegion — switch the active region.
+   * setRegion: switch the active region.
    *
    * Accepts either a region id string (RegionSelector) or a region object
    * (legacy GeoModal path) for backwards compatibility. Writes the cookie,
@@ -167,7 +167,7 @@ export const useRegion = () => {
           await sdk.store.cart.update(cartId, { region_id: (resolved as any).id } as any)
         }
       } catch {
-        // Swallow — cookie flip is authoritative; next cart read picks it up.
+        // Swallow: cookie flip is authoritative; next cart read picks it up.
       }
     }
 

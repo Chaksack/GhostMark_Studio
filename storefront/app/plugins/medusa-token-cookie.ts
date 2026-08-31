@@ -1,5 +1,5 @@
 /**
- * medusa-token-cookie — persist the Medusa JWT across hard reloads.
+ * medusa-token-cookie: persist the Medusa JWT across hard reloads.
  *
  * Background
  * ----------
@@ -30,13 +30,13 @@
  * the SDK instance, then:
  *   1. Hydrate the in-memory token from the `gms_auth_token` cookie if
  *      one exists (rehydration after reload / first SSR render).
- *   2. Wrap `client.setToken` so every subsequent token write — login,
- *      register, refresh — also persists to the cookie.
+ *   2. Wrap `client.setToken` so every subsequent token write (login,
+ *      register, refresh) also persists to the cookie.
  *   3. Wrap `client.clearToken` so logout also wipes the cookie.
  *
  * The cookie is set with `sameSite: 'lax'` (CSRF-resistant for top-level
  * GETs), `secure` in production (HTTPS-only), and a 30-day max age.
- * `httpOnly` is intentionally NOT set — the Medusa SDK reads the JWT from
+ * `httpOnly` is intentionally NOT set: the Medusa SDK reads the JWT from
  * client-side state to attach the bearer header, so the token must be
  * readable from JavaScript. XSS defence is delegated to CSP `script-src`
  * in nuxt.config.ts.

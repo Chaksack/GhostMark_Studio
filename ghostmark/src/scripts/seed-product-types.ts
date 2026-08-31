@@ -1,5 +1,5 @@
 // =============================================================================
-// seed-product-types — assign the binary `pod` | `apparel` taxonomy onto every
+// seed-product-types: assign the binary `pod` | `apparel` taxonomy onto every
 // product via Medusa's first-class `product.type` relation.
 //
 // Why this exists
@@ -16,8 +16,8 @@
 //                   design. Single-unit pricing. Standard cart, no customizer.
 //
 // `product.type.value` is the source-of-truth taxonomy. The legacy
-// `metadata.commerce_mode` field (shop|studio|pod) — written by
-// seed-commerce-mode.ts — remains in place for the chip / IA layer, but
+// `metadata.commerce_mode` field (shop|studio|pod), written by
+// seed-commerce-mode.ts, remains in place for the chip / IA layer, but
 // type.value is what gates the *flow*. Mapping:
 //
 //      commerce_mode='shop'    -> type.value='apparel'
@@ -84,7 +84,7 @@ const TYPES: Array<{
 //   pod    -> pod      (single-unit POD SKUs)
 //
 // Keep this list in sync with the live catalogue. An unmapped handle gets
-// logged as a warning and is left untouched (NOT defaulted) — defaulting to
+// logged as a warning and is left untouched (NOT defaulted). Defaulting to
 // `apparel` would silently hide POD-eligible SKUs from the customizer.
 // -----------------------------------------------------------------------------
 const ASSIGNMENTS: Record<string, TypeValue> = {
@@ -142,7 +142,7 @@ export default async function seedProductTypes({ args, container }: ExecArgs) {
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[seed-product-types] DRY-RUN mode — no writes will happen.")
+    logger.info("[seed-product-types] DRY-RUN mode: no writes will happen.")
   }
 
   const stats: Stats = {
@@ -199,7 +199,7 @@ export default async function seedProductTypes({ args, container }: ExecArgs) {
 
   const liveHandles = new Set(products.map((p) => p.handle))
 
-  // Surface manifest entries that don't match any live product — likely a
+  // Surface manifest entries that don't match any live product, likely a
   // handle drift since seed-commerce-mode was last updated.
   for (const handle of Object.keys(ASSIGNMENTS)) {
     if (!liveHandles.has(handle)) {
@@ -215,7 +215,7 @@ export default async function seedProductTypes({ args, container }: ExecArgs) {
     }
     const desiredTypeId = byValue.get(desired)?.id
     if (!desiredTypeId) {
-      // Should be unreachable — TYPES covers every value in ASSIGNMENTS.
+      // Should be unreachable: TYPES covers every value in ASSIGNMENTS.
       logger.error(
         `[seed-product-types] no type record for value='${desired}' (handle=${product.handle})`,
       )
@@ -255,7 +255,7 @@ export default async function seedProductTypes({ args, container }: ExecArgs) {
   )
   if (stats.productsUnmapped.length) {
     logger.warn(
-      `Unmapped live products (${stats.productsUnmapped.length}) — left untouched: ` +
+      `Unmapped live products (${stats.productsUnmapped.length}), left untouched: ` +
         stats.productsUnmapped.join(", "),
     )
   }

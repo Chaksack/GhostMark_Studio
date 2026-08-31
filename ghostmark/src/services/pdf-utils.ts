@@ -12,7 +12,7 @@ import path from "node:path"
 // (total/subtotal/etc.) on demand from the order's `summary` relation only
 // when the specific total field names appear in the requested field/select
 // list (see @medusajs/order's `shouldIncludeTotals`); "*" expands to the
-// Order model's stored columns only (which do NOT include total/subtotal —
+// Order model's stored columns only (which do NOT include total/subtotal,
 // those are derived from `summary.totals`, not stored columns) and, when
 // combined with explicit total field names in the same fields array,
 // suppresses total resolution entirely instead of adding to it. Confirmed
@@ -43,6 +43,18 @@ export const ORDER_DOCUMENT_FIELDS = [
   "shipping_address.*",
   "items.*",
   "items.variant.product.title",
+  // Payment relations. A receipt has to state what was ACTUALLY paid, and it
+  // can only do that if the payment records travel with the order. Without
+  // these two paths `receipt-pdf.ts` has nothing to consult and falls back to
+  // printing "Not recorded" for Amount Paid and Outstanding Balance.
+  //
+  // `captured_amount` on the collection is the figure that matters:
+  // `authorized_amount` is a hold, not a payment, and most of this store's
+  // collections are authorised with nothing captured. The nested payments
+  // supply `provider_id`, which is how the receipt names the real payment
+  // method instead of defaulting to a rail the customer never used.
+  "payment_collections.*",
+  "payment_collections.payments.*",
 ]
 
 export type PdfLayout = {

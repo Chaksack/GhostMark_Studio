@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * About / People and culture — sub-page of /about that introduces the
+ * About / People and culture: sub-page of /about that introduces the
  * studio team, the working culture (remote-first, four-day week, open
  * salaries) and the current open roles.
  *
@@ -11,7 +11,7 @@
  *   4. A list of open roles with location + employment type
  *   5. A sage CTA band linking back to the open-roles list
  *
- * Every surface is tokenised through the editorial palette — no
+ * Every surface is tokenised through the editorial palette, no
  * `bg-[#hex]` literals.
  */
 defineOptions({ name: 'PageAboutPeopleAndCulture' })
@@ -88,7 +88,7 @@ const roles: Role[] = [
     type: 'Full-time',
   },
   {
-    title: 'Studio internship — Spring 2026',
+    title: 'Studio internship, Spring 2026',
     location: 'Brussels',
     type: 'Part-time',
   },
@@ -103,13 +103,13 @@ const roles: Role[] = [
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — cream tile + serif headline + body intro
+         1. Hero: cream tile + serif headline + body intro
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="people-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             About / People and culture
@@ -133,21 +133,21 @@ const roles: Role[] = [
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; replace with team photography</span>
+            >Image: replace with team photography</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         2. Our team — 4-up portrait grid (placeholder cream tiles)
+         2. Our team: 4-up portrait grid (placeholder cream tiles)
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="people-team-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Our team
           </p>
@@ -170,7 +170,7 @@ const roles: Role[] = [
                 <span
                   class="font-body text-caption text-ink-400"
                   aria-label="Portrait placeholder"
-                >Portrait &mdash; placeholder</span>
+                >Portrait: placeholder</span>
               </div>
             </div>
             <div class="flex flex-col gap-1">
@@ -187,14 +187,14 @@ const roles: Role[] = [
     </section>
 
     <!-- ============================================================
-         3. Working at GhostMark — 3-up benefits cards on cream-warm
+         3. Working at GhostMark: 3-up benefits cards on cream-warm
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="people-benefits-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Working at GhostMark
           </p>
@@ -230,14 +230,14 @@ const roles: Role[] = [
     </section>
 
     <!-- ============================================================
-         4. Open roles — list with location + type
+         4. Open roles: list with location + type
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="people-roles-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Open roles
           </p>
@@ -290,15 +290,15 @@ const roles: Role[] = [
     </section>
 
     <!-- ============================================================
-         5. CTA band — sage slab linking to the roles list
+         5. CTA band: sage slab linking to the roles list
          ============================================================ -->
     <section
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="people-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <p class="text-eyebrow font-body uppercase text-ink-500">
               Join us
             </p>
@@ -310,7 +310,7 @@ const roles: Role[] = [
             </h2>
             <p class="mt-4 font-body text-body text-ink-700">
               We're always interested in meeting people who care about the
-              craft, the planet and the four-day week — even when no role
+              craft, the planet and the four-day week, even when no role
               is open.
             </p>
           </div>

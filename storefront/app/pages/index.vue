@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:pt-[118px]">
+  <div>
     <!-- 1. Hero -->
     <HeroSection />
 
@@ -13,7 +13,7 @@
     -->
     <div class="mt-8 flex flex-col gap-10 sm:mt-10 sm:gap-12 md:mt-12 md:gap-14 lg:mt-14 lg:gap-16">
       <!--
-        3. Best sellers — D2C flavour.
+        3. Best sellers: D2C flavour.
         Filtered to product.type.value === 'apparel' so the band that follows
         the "Shop the Studio Canon" primary CTA stays consistent with what
         that CTA delivers (buy-as-is, no upload step). POD items still surface
@@ -22,22 +22,22 @@
       <BestSellers :products="bestSellersApparel" />
 
       <!--
-        4. Case-study mosaic — the editorial centrepiece. Sits between
+        4. Case-study mosaic: the editorial centrepiece. Sits between
         product-led grids (BestSellers / Discover) so the page reads as
         product → proof-of-work → product. Self-contained section: it
         paints its own warmGrey band + 6/10rem vertical rhythm and does
         not need the parent flex gap. All six tiles are placeholders
-        until real client work + /case-studies/* pages ship — see
+        until real client work + /case-studies/* pages ship, see
         CaseStudyMosaic.vue for the swap-out instructions.
       -->
       <CaseStudyMosaic />
 
       <!--
-        5. Discover — curated landings.
+        5. Discover: curated landings.
         RealLifeShowcase + BrandShowcase intentionally omitted: we don't have
         real lifestyle photography to fill the former, and we are the brand
         ourselves, not a multi-brand reseller for the latter. Restraint is
-        edited content, not missing content — empty grey placeholders read
+        edited content, not missing content, empty grey placeholders read
         as "half-built." Components remain on disk for future content drops.
       -->
       <DiscoverSection :products="bestSellers" />
@@ -56,7 +56,7 @@
       <TestimonialCarousel />
 
       <!--
-        6. Recently added — mixed feed.
+        6. Recently added: mixed feed.
         Intentionally NOT type-filtered: this is a "what's new" rail across
         the whole catalogue, so both apparel and POD items are welcome. The
         chronological lens does the merchandising work.
@@ -64,11 +64,11 @@
       <RecentlyAdded :products="recentProducts" />
 
       <!--
-        7. FAQ + Newsletter — siblings inside one wrapper, per merchery.
+        7. FAQ + Newsletter: siblings inside one wrapper, per merchery.
         Wrapper margin/gap mirror the section ramp above so the FAQ band
         doesn't sit flush against RecentlyAdded on phones.
       -->
-      <div class="mx-auto mb-10 mt-6 flex w-full max-w-screen-3xl flex-col gap-8 px-5 sm:mb-12 sm:mt-8 sm:gap-10 sm:px-6 md:mt-10 md:gap-12 lg:mt-[3rem] lg:px-8">
+      <div class="mx-auto mb-10 mt-6 flex w-full max-w-rail flex-col gap-8 px-gutter sm:mb-12 sm:mt-8 sm:gap-10 md:mt-10 md:gap-12 lg:mt-[3rem]">
         <AppFaq />
         <AppNewsletter />
       </div>
@@ -104,7 +104,7 @@ const apparelTypeId = computed<string | undefined>(() => typeRes.apparelId.value
 // PLP uses, kept aligned on purpose.
 const PRODUCT_LIST_FIELDS = 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,metadata,*tags,*type'
 
-// BestSellers band is apparel-only — pass `type_id` so the backend does
+// BestSellers band is apparel-only, pass `type_id` so the backend does
 // the narrowing. Cache key includes `apparelTypeId` so the request refetches
 // if the resolver lands its result after first render (SSR vs CSR drift).
 const { data: bestSellerData } = await useAsyncData(
@@ -139,7 +139,7 @@ const recentProducts = computed(() => ((recentData.value as any)?.products ?? []
  * Defensive client-side narrowing. Backend taxonomy (see
  * project_product_taxonomy memo) uses `product.type.value` of either
  * 'apparel' (D2C buy-as-is) or 'pod' (upload + MOQ flow). When the
- * `type_id` lookup resolves, Medusa has already filtered — `apparelOnly`
+ * `type_id` lookup resolves, Medusa has already filtered, `apparelOnly`
  * is a no-op. When the lookup fails, this keeps the BestSellers band
  * accurate instead of leaking POD items into the D2C rail.
  */

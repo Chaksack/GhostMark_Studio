@@ -41,7 +41,7 @@ type ListOrdersResponse = {
 const __invoiceQueryClient = new QueryClient()
 
 // Medusa v2 order totals are already decimal major-unit amounts (e.g. 42.00
-// means £42.00), not integer cents — do not divide by 100 here.
+// means £42.00), not integer cents. Do not divide by 100 here.
 function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
@@ -188,7 +188,7 @@ const InvoicesPageInner = () => {
 
               {orders.map((o) => {
                 const displayId = String(o.display_id || o.id)
-                const email = o.customer?.email || o.email || "—"
+                const email = o.customer?.email || o.email || "–"
                 return (
                   <Table.Row key={o.id}>
                     <Table.Cell>
@@ -198,10 +198,10 @@ const InvoicesPageInner = () => {
                     <Table.Cell>
                       {typeof o.total === "number"
                         ? formatMoney(o.total, o.currency_code)
-                        : "—"}
+                        : "–"}
                     </Table.Cell>
                     <Table.Cell>
-                      {o.created_at ? new Date(o.created_at).toLocaleString() : "—"}
+                      {o.created_at ? new Date(o.created_at).toLocaleString() : "–"}
                     </Table.Cell>
                     <Table.Cell>
                       <div className="flex items-center justify-end gap-2">
@@ -289,7 +289,7 @@ const InvoicesPage = () => {
   )
 }
 
-// Route has been merged into Draft Orders — remove from navigation by omitting route config
+// Route has been merged into Draft Orders; remove from navigation by omitting route config
 // export const config = defineRouteConfig({
 //   label: "Invoices",
 //   icon: DocumentText,

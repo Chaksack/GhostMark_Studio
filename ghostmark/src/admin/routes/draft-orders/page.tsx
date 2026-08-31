@@ -47,7 +47,7 @@ function statusColor(status?: string): "green" | "blue" | "grey" {
 }
 
 // Medusa v2 order totals are already decimal major-unit amounts (e.g. 42.00
-// means £42.00), not integer cents — do not divide by 100 here.
+// means £42.00), not integer cents. Do not divide by 100 here.
 function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
@@ -136,8 +136,8 @@ const DraftOrdersPageInner = () => {
 
               {draftOrders.map((d) => {
                 const displayId = String(d.display_id || d.id)
-                const email = d.customer?.email || d.email || "—"
-                const status = d.status || "—"
+                const email = d.customer?.email || d.email || "–"
+                const status = d.status || "–"
 
                 return (
                   <Table.Row key={d.id}>
@@ -153,10 +153,10 @@ const DraftOrdersPageInner = () => {
                     </Table.Cell>
                     <Table.Cell>{email}</Table.Cell>
                     <Table.Cell>
-                      {typeof d.total === "number" ? formatMoney(d.total, d.currency_code) : "—"}
+                      {typeof d.total === "number" ? formatMoney(d.total, d.currency_code) : "–"}
                     </Table.Cell>
                     <Table.Cell>
-                      {d.created_at ? new Date(d.created_at).toLocaleString() : "—"}
+                      {d.created_at ? new Date(d.created_at).toLocaleString() : "–"}
                     </Table.Cell>
                   </Table.Row>
                 )

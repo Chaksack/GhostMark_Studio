@@ -1,6 +1,6 @@
 <template>
   <!--
-    Headless JSON-LD injector for PDPs. Renders no DOM — useHead pushes a
+    Headless JSON-LD injector for PDPs. Renders no DOM, useHead pushes a
     `script type="application/ld+json"` tag into head so Google's rich-results
     parser indexes the Product schema. Per-product key dedupes on route change.
     Integration example lives in pages/products/[handle].vue.

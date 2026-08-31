@@ -1,6 +1,6 @@
 /**
  * Product-list-page object covering both /shop (D2C apparel-scoped) and
- * /products (mixed catalogue with `?type=` filter). Stays small — only
+ * /products (mixed catalogue with `?type=` filter). Stays small: only
  * what the spec suite calls is exposed.
  */
 import { Page, Locator, expect } from '@playwright/test'

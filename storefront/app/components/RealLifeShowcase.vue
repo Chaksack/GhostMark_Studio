@@ -1,9 +1,9 @@
 <template>
-  <section class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
+  <section class="mx-auto w-full max-w-rail px-gutter">
     <div class="flex items-end justify-between gap-4">
       <div>
-        <h2 class="font-display text-display-md font-normal text-zinc-950">Our products in real life</h2>
-        <p class="mt-1 text-[15px] text-zinc-500">As real as it gets</p>
+        <h2 class="font-display text-display-md font-normal text-ink-950">Our products in real life</h2>
+        <p class="mt-1 text-[15px] text-ink-600">As real as it gets</p>
       </div>
     </div>
 
@@ -11,12 +11,12 @@
       <div
         v-for="(item, i) in showcase"
         :key="i"
-        class="group relative overflow-hidden rounded-xl bg-zinc-100"
+        class="group relative overflow-hidden rounded-xl bg-ink-100"
         :class="i === 0 ? 'sm:col-span-2 sm:row-span-2' : ''"
       >
         <div :class="i === 0 ? 'aspect-[4/3]' : 'aspect-[4/3]'">
-          <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-200/60 to-zinc-100">
-            <svg class="h-12 w-12 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-ink-200/60 to-ink-100">
+            <svg class="h-12 w-12 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <circle cx="8.5" cy="8.5" r="1.5" />
               <path d="m21 15-5-5L5 21" />
@@ -37,8 +37,8 @@
         </div>
         <!-- Always-visible caption (mobile) -->
         <div class="p-3 lg:hidden">
-          <span class="text-[12px] font-semibold uppercase tracking-wider text-zinc-500">{{ item.brand }}</span>
-          <span class="mt-0.5 block text-[14px] font-medium text-zinc-950">{{ item.description }}</span>
+          <span class="text-[12px] font-semibold uppercase tracking-wider text-ink-600">{{ item.brand }}</span>
+          <span class="mt-0.5 block text-[14px] font-medium text-ink-950">{{ item.description }}</span>
         </div>
       </div>
     </div>

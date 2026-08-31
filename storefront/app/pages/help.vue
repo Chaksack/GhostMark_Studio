@@ -7,7 +7,7 @@ import {
 } from '@headlessui/vue'
 
 /**
- * /help — Help Center landing page.
+ * /help: Help Center landing page.
  *
  * Editorial cream + serif aesthetic, modeled on merchery's content pages.
  * Composition:
@@ -18,13 +18,13 @@ import {
  *     `motion-reduce:transition-none`.
  *   - Sage-band CTA pointing at /contact.
  *
- * No backend wiring — every list is a typed, in-page stub. Topic links
+ * No backend wiring, every list is a typed, in-page stub. Topic links
  * resolve to deep-linked category pages once those exist; until then they
  * simply 404 gracefully via Nuxt's default handler.
  */
 
 useHead({
-  title: 'Help center — GhostMark Studio',
+  title: 'Help center · GhostMark Studio',
   meta: [
     {
       name: 'description',
@@ -90,17 +90,46 @@ const questions: HelpQuestion[] = [
   {
     id: 'q-cancel',
     title: 'Can I cancel my order?',
-    body: 'Stocked items can be cancelled any time before they leave the warehouse. Custom runs can only be cancelled before we send the digital proof — once you approve a proof, we begin production.',
+    body: 'Stocked items can be cancelled any time before they leave the warehouse. Custom runs can only be cancelled before we send the digital proof. Once you approve a proof, we begin production.',
   },
   {
     id: 'q-files',
     title: 'What file formats do you accept for custom designs?',
-    body: 'Vector files are best — .ai, .eps, .pdf, or .svg. We also accept high-resolution .png at 300dpi or above. Convert all type to outlines before uploading so we render the exact letterforms you signed off on.',
+    // Corrected against the live dropzone rather than against intent.
+    //
+    // The previous answer had the product exactly backwards: it said vector
+    // files were BEST (".ai, .eps, .pdf, or .svg") and treated PNG as the
+    // fallback. The editor refuses all four. `ACCEPTED_MIME` is
+    // ['image/png','image/jpeg','image/webp'] (DesignEditor.vue:363), the input
+    // carries accept="image/png,image/jpeg,image/webp" (:1137), and
+    // MAX_UPLOAD_BYTES is 10 * 1024 * 1024 (:569). So this page's headline
+    // recommendation was the one thing guaranteed to fail, and the customer got
+    // a rejection naming MIME types while the help page named extensions.
+    //
+    // Raster is what you upload; vector is what you cannot upload; vectorisation
+    // is a free service the studio performs FOR you. That is also what the
+    // dropzone, the hero strip and the FAQ already say, this page was the last
+    // surface still contradicting them.
+    //
+    // Wording is deliberately word-identical to the dropzone's own format line
+    // ("PNG, JPEG or WebP · up to 10 MB", DesignEditor.vue:1518) so a customer
+    // reading help and then seeing the uploader gets the same sentence twice.
+    //
+    // 300 DPI is kept because it is a real house standard, verified not assumed
+    // (`DEFAULT_DPI = 300`, ghostmark/src/utils/units.ts:4; the editor's
+    // print-quality readout uses MIN_PRINT_DPI = 300 sourced from this very
+    // line). It is deliberately NOT attached to a physical print size: the
+    // editor works in a 600x800 virtual pixel space and a physical dimension
+    // only exists when a merchant supplies an optional `print_size`. Promising
+    // "300 DPI at 30 x 40 cm" on a print service would be a fabricated spec and
+    // a refund, so the guidance is the honest one: send the largest file you
+    // have.
+    body: 'The customiser takes PNG, JPEG or WebP · up to 10 MB. Upload the largest version you have. We target 300 DPI at print size, so more pixels is always better. Vector files (AI, EPS, PDF, SVG) go to the artwork team rather than the uploader: send them with your order and we will vectorise at no charge. Convert type to outlines first so we render the exact letterforms you signed off on.',
   },
   {
     id: 'q-where',
     title: 'Where do you ship to?',
-    body: 'We ship worldwide from fulfillment hubs in Antwerp, Berlin and Brooklyn. A short list of countries is restricted by carrier policy — checkout will tell you immediately if your address is supported.',
+    body: 'We ship worldwide from fulfillment hubs in Antwerp, Berlin and Brooklyn. A short list of countries is restricted by carrier policy. Checkout will tell you immediately if your address is supported.',
   },
   {
     id: 'q-returns',
@@ -110,12 +139,12 @@ const questions: HelpQuestion[] = [
   {
     id: 'q-bulk',
     title: 'Do you offer bulk discounts?',
-    body: 'Yes — pricing tiers kick in automatically at 25, 50, 100 and 250 units, and we can quote bespoke pricing on anything over 500. Drop the brief in our contact form for a same-day quote.',
+    body: 'Yes, pricing tiers kick in automatically at 25, 50, 100 and 250 units, and we can quote bespoke pricing on anything over 500. Drop the brief in our contact form for a same-day quote.',
   },
   {
     id: 'q-charge',
     title: 'When am I charged?',
-    body: 'Stocked orders are charged at checkout. Custom runs are 50% on proof approval and 50% on dispatch — invoicing on net-30 terms is available for established business accounts.',
+    body: 'Stocked orders are charged at checkout. Custom runs are 50% on proof approval and 50% on dispatch. Invoicing on net-30 terms is available for established business accounts.',
   },
   {
     id: 'q-track',
@@ -127,12 +156,12 @@ const questions: HelpQuestion[] = [
 
 <template>
   <div>
-    <!-- Hero — eyebrow, serif headline, visual-only search field. -->
+    <!-- Hero: eyebrow, serif headline, visual-only search field. -->
     <section
       class="bg-cream-warm text-ink-950"
       aria-labelledby="help-hero"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="mx-auto max-w-[760px] text-center">
           <p
             class="text-eyebrow font-body uppercase text-ink-500"
@@ -172,12 +201,12 @@ const questions: HelpQuestion[] = [
       </div>
     </section>
 
-    <!-- Topic tiles — 6-up grid of cream-tile cards. -->
+    <!-- Topic tiles: 6-up grid of cream-tile cards. -->
     <section
       class="bg-cream-50 text-ink-950"
       aria-labelledby="help-topics"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="flex flex-col gap-3">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Topics
@@ -221,12 +250,12 @@ const questions: HelpQuestion[] = [
       </div>
     </section>
 
-    <!-- Popular questions — Headless UI Disclosure accordion. -->
+    <!-- Popular questions: Headless UI Disclosure accordion. -->
     <section
       class="bg-cream-warm text-ink-950"
       aria-labelledby="help-popular"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid gap-12 lg:grid-cols-[0.4fr_0.6fr]">
           <div class="flex flex-col gap-3">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -303,12 +332,12 @@ const questions: HelpQuestion[] = [
       </div>
     </section>
 
-    <!-- Sage CTA band — still need help. -->
+    <!-- Sage CTA band: still need help. -->
     <section
       class="bg-merchery-sage text-ink-950"
       aria-labelledby="help-cta"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div
           class="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between"
         >
@@ -324,7 +353,7 @@ const questions: HelpQuestion[] = [
             </h2>
             <p class="mt-4 font-body text-body text-ink-700">
               Our studio team replies in plain language, usually within a few
-              hours. No bots, no scripted answers — just people who know the
+              hours. No bots, no scripted answers, just people who know the
               product.
             </p>
           </div>

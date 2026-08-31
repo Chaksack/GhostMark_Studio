@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * DiscoverSection — live curated shelves rail.
+ * DiscoverSection: live curated shelves rail.
  *
  * Pulls up to 2 live Medusa collections (e.g. DTF, Hot Deals) and renders
  * each as a "shelf": collection title + a 3-up row of real product cards
@@ -12,7 +12,7 @@
  *     BestSellers/RecentlyAdded. The earlier prop-driven version reused
  *     the home page's best-seller fetch as background imagery for three
  *     hardcoded "shelves" (best-sellers / new-hires / holiday), which were
- *     editorial fiction tied to /discover/[slug] copy — not real Medusa
+ *     editorial fiction tied to /discover/[slug] copy, not real Medusa
  *     data. Wiring this band to live collections makes it a true CMS
  *     surface that merchandisers can update without a deploy.
  *   - The home page still passes `products` (legacy prop), but the
@@ -58,7 +58,7 @@ interface Shelf {
   products: MedusaProduct[]
 }
 
-// Legacy prop kept for backwards compat with pages/index.vue — only consumed
+// Legacy prop kept for backwards compat with pages/index.vue, only consumed
 // by the editorial fallback when the live-collection fetch returns nothing.
 const props = withDefaults(defineProps<{
   products?: MedusaProduct[]
@@ -73,7 +73,7 @@ const regionState = useRegion()
  * Sort collections by merchandiser priority when set, then by created_at desc.
  *
  * - metadata.discover_priority is a numeric field on the Medusa collection.
- * - Lower number = higher priority (1 first, 2 second, …) — standard
+ * - Lower number = higher priority (1 first, 2 second, …), standard
  *   "rank from the top" convention.
  * - Collections without the field sink below ranked ones, then sort by
  *   created_at desc (newest first) so new drops still surface naturally.
@@ -88,7 +88,7 @@ function sortByDiscoverPriority<T extends { metadata?: any, created_at?: string 
     if (aHas && bHas) return pa - pb
     if (aHas) return -1
     if (bHas) return 1
-    // Both unranked — fall back to created_at desc
+    // Both unranked: fall back to created_at desc
     const da = a?.created_at ? new Date(a.created_at).getTime() : 0
     const db = b?.created_at ? new Date(b.created_at).getTime() : 0
     return db - da
@@ -107,7 +107,7 @@ const COLLECTION_COPY: Record<string, { eyebrow: string, note: string }> = {
   },
   'dtf': {
     eyebrow: 'Print finish',
-    note: 'Direct-to-film transfers — sharp colour, soft hand, low MOQ.',
+    note: 'Direct-to-film transfers: sharp colour, soft hand, low MOQ.',
   },
 }
 
@@ -118,7 +118,7 @@ const { data } = await useAsyncData<Shelf[]>(
       // 1. List a pool of collections, then rank by merchandiser priority
       //    (metadata.discover_priority) and slice the top 2. When the field
       //    is unset everywhere we fall back to Medusa-default created_at
-      //    desc inside sortByDiscoverPriority — so today's behaviour is
+      //    desc inside sortByDiscoverPriority, so today's behaviour is
       //    preserved until merchandisers start setting the field.
       const colRes: any = await sdk.store.collection.list({
         limit: 50,
@@ -170,7 +170,7 @@ const { data } = await useAsyncData<Shelf[]>(
         }),
       )
 
-      // 3. Drop empty shelves — never render a heading over nothing.
+      // 3. Drop empty shelves: never render a heading over nothing.
       return enriched.filter(s => s.products.length > 0)
     }
     catch {
@@ -197,7 +197,7 @@ interface FallbackTile {
 
 const FALLBACK_TILES = [
   { slug: 'best-sellers', title: 'Best sellers', eyebrow: 'The studio canon', note: 'Ranked by re-buy rate, not by margin.' },
-  { slug: 'new-hires', title: 'New hires kit', eyebrow: 'Welcome bundles', note: 'A tee, a mug, a notebook, a tote — proportioned as a set.' },
+  { slug: 'new-hires', title: 'New hires kit', eyebrow: 'Welcome bundles', note: 'A tee, a mug, a notebook, a tote, proportioned as a set.' },
   { slug: 'holiday', title: 'Holiday picks', eyebrow: 'End of year', note: 'Order by mid-November to hit doormats before December 24.' },
 ] as const
 
@@ -219,21 +219,21 @@ const showFallback = computed(() => shelves.value.length === 0)
 
 <template>
   <section
-    class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8"
+    class="mx-auto w-full max-w-rail px-gutter"
     aria-labelledby="discover-section-heading"
   >
     <div class="flex items-end justify-between gap-4">
       <div class="min-w-0">
-        <!-- Same ramp as BestSellers/RecentlyAdded — sibling sections share rhythm. -->
+        <!-- Same ramp as BestSellers/RecentlyAdded: sibling sections share rhythm. -->
         <h2
           id="discover-section-heading"
-          class="text-[1.75rem] leading-[2.1rem] sm:text-[2.4rem] sm:leading-[2.8rem] md:text-[3.2rem] md:leading-[3.8rem] lg:text-[4rem] lg:leading-[4.6rem] font-normal text-ink-950"
+          class="gm-display gm-display-lg text-ink-950"
         >
           Discover
         </h2>
         <!-- Eyebrow sub-line. 13-16px ramp, never competes with the H2. -->
         <p class="mt-2 text-[13px] leading-[1.5] text-ink-700 sm:mt-3 sm:text-[14px] md:mt-4 md:text-[15px] lg:mt-5 lg:text-[16px]">
-          {{ showFallback ? 'Curated shelves' : 'Curated collections — refreshed when something good lands.' }}
+          {{ showFallback ? 'Curated shelves' : 'Curated collections: refreshed when something good lands.' }}
         </p>
       </div>
       <NuxtLink
@@ -270,6 +270,11 @@ const showFallback = computed(() => shelves.value.length === 0)
             Shop {{ shelf.title }} &rarr;
           </NuxtLink>
         </div>
+        <!-- Stays 3-up: the shelf is fetched with `limit: 3` (see the loader
+             below), so a 4- or 5-column grid would leave a hole in the row.
+             It does not need a column change to shrink -- ProductCard's crop
+             moved from 5:7 to 1:1, which took this card from 736px (82% of a
+             900px fold, the tallest card in the app) to ~563px on its own. -->
         <ul class="mt-6 grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-6 md:grid-cols-3 md:gap-x-[30px]">
           <ProductCard
             v-for="p in shelf.products"
@@ -297,7 +302,7 @@ const showFallback = computed(() => shelves.value.length === 0)
           <img
             v-if="tile.image"
             :src="tile.image"
-            :alt="`${tile.title} — featuring ${tile.productTitle}`"
+            :alt="`${tile.title}, featuring ${tile.productTitle}`"
             loading="lazy"
             decoding="async"
             class="h-full w-full object-cover object-center transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-[1.03]"

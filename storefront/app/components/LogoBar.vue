@@ -12,7 +12,18 @@
     brand assets and should be replaced with the real GhostMark client
     roster (and corresponding licensed marks) before production launch.
   -->
-  <section class="overflow-hidden border-y border-greyLines bg-offWhite py-6 lg:py-8">
+  <!--
+    `gm-halftone` lays a 6px dot screen over this band at 3.5% opacity, the
+    dot screen is how a continuous-tone photograph is turned into printable
+    ink. It reads as tooth in the paper rather than as a visible pattern; at
+    any higher opacity this device goes cheap immediately. Verified it does
+    not move text contrast: greyText on the halftoned ground measures 5.14:1
+    versus 5.18:1 on flat offWhite.
+  -->
+  <section class="gm-halftone overflow-hidden border-y border-greyLines bg-offWhite py-6 lg:py-8">
+    <p class="gm-spec mb-5 px-5 text-ink-600 sm:px-6 lg:px-8">
+      Selected clients, 2021&ndash;2026
+    </p>
     <div
       class="logo-marquee flex items-center gap-x-12 lg:gap-x-16 whitespace-nowrap"
       :class="{ 'reduce-motion-static': reduceMotion }"

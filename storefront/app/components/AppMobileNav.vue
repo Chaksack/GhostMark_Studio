@@ -8,7 +8,7 @@ import UiSheet from './ui/overlay/UiSheet.vue'
 import UiButton from './ui/UiButton.vue'
 
 /**
- * AppMobileNav — slide-in mobile navigation drawer.
+ * AppMobileNav: slide-in mobile navigation drawer.
  *
  * Mounted by `AppHeader` as:
  *   <AppMobileNav v-model:open="mobileNavOpen" />
@@ -17,12 +17,12 @@ import UiButton from './ui/UiButton.vue'
  *   - Renders inside <UiSheet side="left" size="md"> which itself wraps a
  *     Headless UI <Dialog>. That gives us focus trap, body scroll lock,
  *     Esc-to-close, backdrop-click-to-close, and focus restoration on
- *     close — for free, with no additional wiring here.
+ *     close, for free, with no additional wiring here.
  *   - Each top-level category is a <Disclosure> from @headlessui/vue.
  *     The slot prop `open` is aliased to `isOpen` to avoid shadowing the
  *     component's `open` prop in the template scope.
  *   - All click-to-navigate elements call `close()` so the sheet collapses
- *     before the route transition completes — this prevents a flash of
+ *     before the route transition completes, this prevents a flash of
  *     stale UI on the destination page.
  *
  * Motion:
@@ -151,7 +151,7 @@ const { categories } = useCategories()
         </li>
       </ul>
 
-      <!-- Quick actions — primary user flows surfaced below the taxonomy. -->
+      <!-- Quick actions: primary user flows surfaced below the taxonomy. -->
       <div
         class="mt-6 px-4 flex flex-col gap-3 border-t border-ink-100 pt-6"
       >
@@ -188,7 +188,7 @@ const { categories } = useCategories()
       </div>
 
       <!-- Footer meta: live region + currency from `useRegion`. The selector
-           wraps the meta line in a button that opens its own UiSheet — Headless
+           wraps the meta line in a button that opens its own UiSheet, Headless
            UI's Dialog stack handles the nested overlay focus management. -->
       <div class="mt-6 px-4 pb-6">
         <RegionSelector variant="meta" />

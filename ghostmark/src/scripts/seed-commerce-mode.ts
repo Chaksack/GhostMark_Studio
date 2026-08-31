@@ -1,5 +1,5 @@
 // =============================================================================
-// seed-commerce-mode — write the 3-mode commerce IA taxonomy onto every product
+// seed-commerce-mode: write the 3-mode commerce IA taxonomy onto every product
 // so the storefront's mode-aware ProductCard / chip catalogue (`chips.ts`) and
 // surface routers (`/shop`, `/studio`, `/pod`) have authoritative metadata to
 // scope queries and render badges.
@@ -19,7 +19,7 @@
 //   POD   : pod_ready
 //   ANY   : made_in_europe, b_corp
 //
-// Idempotency: re-running this script over the same products is safe — the
+// Idempotency: re-running this script over the same products is safe. The
 // patch is a structural REPLACE of `commerce_mode`, `studio_canon`, and `chips`
 // only; every other key on `metadata` (badges, is_customizable, print_locations,
 // techniques, quantity_tiers, mockup_*, etc.) is preserved through a shallow
@@ -32,7 +32,7 @@ import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 // -----------------------------------------------------------------------------
-// Canonical chip keys — must stay in sync with the storefront's chips.ts.
+// Canonical chip keys: must stay in sync with the storefront's chips.ts.
 // Kept as a const tuple so a typo here is a compile-time error.
 // -----------------------------------------------------------------------------
 const CHIP_KEYS = [
@@ -76,7 +76,7 @@ type ProductSpec = {
 //            stickers). Listing on /pod (under /studio in the IA).
 //
 // Studio Canon (`studio_canon: true`):
-//   The 6-piece curated "GhostMark Studio Canon" — the flagship own-brand line
+//   The 6-piece curated "GhostMark Studio Canon", the flagship own-brand line
 //   that anchors the brand. Treated as a hand-picked editorial subset of the
 //   /shop catalogue, surfaced via the homepage Studio Canon strip and the
 //   `/shop?canon=true` filter.
@@ -88,14 +88,14 @@ type ProductSpec = {
 //   - new_drop: SKUs flagged "New" in the original badge map (panel cap, market
 //     tote, steel bottle 750, notebook A6).
 //   - studio_canon: applied as a CHIP only on Canon products (mirrors
-//     `studio_canon: true` flag — chip is what the card renders).
+//     `studio_canon: true` flag; chip is what the card renders).
 //   - from_25_units / e_proof_48h: B2B service guarantees on /studio bases.
 //   - custom_print: Studio bases that emphasise print decoration as their core
 //     value (cable-organiser is a leather-elastic wrap, less print-led, so it
 //     gets from_25_units/e_proof_48h but not custom_print).
 //   - pod_ready: stickers (print-and-ship single-unit SKUs).
 //
-// Single source of truth — every other system (chips.ts, /shop scoping,
+// Single source of truth: every other system (chips.ts, /shop scoping,
 // /studio scoping, homepage Canon strip) reads from this manifest.
 // -----------------------------------------------------------------------------
 const SPECS: ProductSpec[] = [
@@ -235,7 +235,7 @@ const SPECS: ProductSpec[] = [
 ]
 
 // -----------------------------------------------------------------------------
-// Defensive validation — fail loudly if a spec references an unknown chip key
+// Defensive validation: fail loudly if a spec references an unknown chip key
 // (catches typos before they get written to the database).
 // -----------------------------------------------------------------------------
 function validateSpecs(specs: ProductSpec[]): void {
@@ -281,7 +281,7 @@ export default async function seedCommerceMode({ container }: ExecArgs) {
 
   type RowReport = {
     handle: string
-    commerce_mode: CommerceMode | "—"
+    commerce_mode: CommerceMode | "–"
     canon: boolean
     chips: number
     status: "updated" | "missing"
@@ -315,7 +315,7 @@ export default async function seedCommerceMode({ container }: ExecArgs) {
       logger.warn(`[seed-commerce-mode] missing product handle=${spec.handle}`)
       report.push({
         handle: spec.handle,
-        commerce_mode: "—",
+        commerce_mode: "–",
         canon: false,
         chips: 0,
         status: "missing",
@@ -335,12 +335,12 @@ export default async function seedCommerceMode({ container }: ExecArgs) {
     if (spec.studio_canon) {
       patch.studio_canon = true
     } else if ("studio_canon" in existing) {
-      // Idempotent removal — a previous run flagged this handle as Canon and
+      // Idempotent removal: a previous run flagged this handle as Canon and
       // the manifest no longer does, so strip the stale flag.
       patch.studio_canon = undefined
     }
 
-    // Shallow merge — preserves badges, is_customizable, print_locations, etc.
+    // Shallow merge: preserves badges, is_customizable, print_locations, etc.
     const merged: Record<string, unknown> = { ...existing, ...patch }
     // Remove keys explicitly set to undefined so we don't write `null`s.
     for (const k of Object.keys(merged)) {

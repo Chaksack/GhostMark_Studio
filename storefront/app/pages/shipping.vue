@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /shipping — Shipping policy.
+ * /shipping: Shipping policy.
  *
  * Editorial reference page. Hero + structured content sections:
  *   - Where we ship (region table)
@@ -56,7 +56,7 @@ const leadTimes: LeadTime[] = [
     category: 'Custom orders',
     range: '10–15 working days',
     body:
-      'Anything not in the standing catalog — bespoke blanks, multi-piece runs, custom finishes. Lead time confirmed in writing at sample sign-off.',
+      'Anything not in the standing catalog: bespoke blanks, multi-piece runs, custom finishes. Lead time confirmed in writing at sample sign-off.',
   },
 ]
 </script>
@@ -70,7 +70,7 @@ const leadTimes: LeadTime[] = [
       class="bg-merchery-tile"
       aria-labelledby="shipping-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Shipping policy
         </p>
@@ -90,14 +90,14 @@ const leadTimes: LeadTime[] = [
     </section>
 
     <!-- ============================================================
-         2. Where we ship — region table
+         2. Where we ship: region table
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="shipping-regions-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Coverage
           </p>
@@ -159,14 +159,14 @@ const leadTimes: LeadTime[] = [
     </section>
 
     <!-- ============================================================
-         3. Lead times — 3-up cards
+         3. Lead times: 3-up cards
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="shipping-lead-times-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Lead times
           </p>
@@ -205,7 +205,7 @@ const leadTimes: LeadTime[] = [
       class="bg-white"
       aria-labelledby="shipping-fineprint-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-3">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-3">
         <h2 id="shipping-fineprint-heading" class="sr-only">
           Tracking, customs and lost or damaged
         </h2>
@@ -216,7 +216,7 @@ const leadTimes: LeadTime[] = [
           </h3>
           <p class="font-body text-body text-ink-700">
             A tracking link is emailed the moment your order is handed
-            to the courier — usually before 17:00 CET on dispatch day.
+            to the courier, usually before 17:00 CET on dispatch day.
             Account holders can also track from
             <NuxtLink
               to="/account"
@@ -262,9 +262,9 @@ const leadTimes: LeadTime[] = [
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="shipping-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <h2
               id="shipping-cta-heading"
               class="font-display font-normal leading-[1.05] tracking-[-0.015em] text-ink-950"

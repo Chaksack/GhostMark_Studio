@@ -52,16 +52,43 @@ const variantClasses: Record<Variant, string> = {
   secondary: 'bg-cream-100 text-ink-900 hover:bg-cream-200',
   ghost: 'text-ink-700 hover:bg-ink-50',
   outline: 'border border-ink-200 bg-white text-ink-900 hover:border-ink-300 hover:bg-ink-50',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
-  // Editorial / merchery.co primary CTA — flat ink slab, square corners,
+  // Routed through the `semantic` group so this and UiBadge finally agree on
+  // what danger looks like: they previously shipped two different hues
+  // (`red-600` here, `accent-terracotta/15` there). `red-*` is also a
+  // Tailwind stock ramp that appears nowhere else in this warm palette.
+  // cream-50 on the solid measures 5.99:1.
+  danger: 'bg-semantic-danger-solid text-cream-50 hover:bg-semantic-danger-fg',
+  // Editorial / merchery.co primary CTA: flat ink slab, square corners,
   // sentence case. Pair with `shape="square"` for the canonical look.
   merchery: 'bg-merchery-ink text-merchery-cta hover:bg-ink-700',
 }
 
+// Sizes now sit on the declared type ramp instead of reaching outside it:
+// `text-[13px]` → `text-caption`, `text-[15px]` → `text-lead`. `text-sm` is
+// Tailwind's own 14px step and stays.
+//
+// Touch target. `sm` is a 36px control, which clears WCAG 2.2 SC 2.5.8
+// (Target Size Minimum, 24×24, AA) but misses the 44px that SC 2.5.5 (AAA)
+// and every platform HIG ask for. Growing it to 44px unconditionally would
+// wreck the control rhythm on pointer devices, where 36px is the correct
+// size and the extra 8px is dead space.
+//
+// So the *hit area* grows and the *box* does not: on touch-primary devices
+// (`pointer-coarse`, a variant added in tailwind.config.ts) a pseudo-element
+// is stretched to 44px, vertically centred on the button and pinned to its
+// inline edges. Clicks on it route to the button because it is inside the
+// button. Layout is untouched, so nothing reflows and no design changes.
+//
+// `md` (44px) and `lg` (50px) already meet the target and need no help.
+const TOUCH_TARGET_SM
+  = 'relative pointer-coarse:before:absolute pointer-coarse:before:inset-x-0'
+    + ' pointer-coarse:before:top-1/2 pointer-coarse:before:h-11'
+    + ' pointer-coarse:before:-translate-y-1/2 pointer-coarse:before:content-[\'\']'
+
 const sizeClasses: Record<Size, string> = {
-  sm: 'h-9 px-4 text-[13px]',
+  sm: `h-9 px-4 text-caption ${TOUCH_TARGET_SM}`,
   md: 'h-11 px-5 text-sm',
-  lg: 'h-[50px] px-7 text-[15px]',
+  lg: 'h-[50px] px-7 text-lead',
 }
 
 const shapeClasses: Record<Shape, string> = {
@@ -73,10 +100,13 @@ const shapeClasses: Record<Shape, string> = {
 const classes = computed(() => [
   'inline-flex items-center justify-center gap-2 font-medium select-none',
   // Include `transform` in the transition list so the active-press snap
-  // tweens instead of jumping. Duration stays at `fast` (120ms) — the
+  // tweens instead of jumping. Duration stays at `fast` (120ms): the
   // press feedback should feel immediate, not animated.
   'transition-[background,color,border,box-shadow,transform] duration-fast ease-emphasis',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50',
+  // Canonical focus recipe. The offset is load-bearing, not decorative.
+  // See the `semantic.focus` comment in tailwind.config.ts. Keep the five
+  // classes together; splitting them is what breaks conformance.
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-focus focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50',
   // Tactile press: 1px downward nudge while the pointer is held.
   // `disabled:active:translate-y-0` keeps disabled buttons inert so they
   // don't register press feedback the click handler will refuse anyway.

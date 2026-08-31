@@ -1,5 +1,5 @@
 /**
- * useProductTypes — single-flight resolver for Medusa product-type IDs.
+ * useProductTypes: single-flight resolver for Medusa product-type IDs.
  *
  * Why this exists:
  *   Medusa's Store API filters product lists by `type_id`, but our taxonomy is
@@ -9,13 +9,13 @@
  *   so SSR and CSR see the same map.
  *
  * Resolution strategy (cheapest-first):
- *   1. Try `sdk.store.productType.list()` — the dedicated endpoint. Per
+ *   1. Try `sdk.store.productType.list()`: the dedicated endpoint. Per
  *      Medusa v2 docs this is officially an admin-only route, but some
  *      Medusa builds (and our custom Store API extension surface) expose it,
  *      so we attempt it defensively and fall through on 404 / undefined.
  *   2. Fallback: harvest `type` from a small product list with `*type`
  *      expanded. Capped at one round-trip (20–50 products) so SSR budget
- *      stays predictable — the catalogue's only 2 commerce types today
+ *      stays predictable: the catalogue's only 2 commerce types today
  *      (`apparel`, `pod`).
  *   3. If both fail, leave the cache empty and surface the error. Callers
  *      that depend on a specific type ID should fall back to client-side
@@ -24,7 +24,7 @@
  * SSR contract:
  *   - `useState` is replayed across SSR → CSR, so once the server resolves
  *     the map the client never re-fetches.
- *   - No `window` / `document` access — pure SDK calls, safe in node.
+ *   - No `window` / `document` access: pure SDK calls, safe in node.
  */
 
 import type { ComputedRef } from 'vue'
@@ -97,7 +97,7 @@ export const useProductTypes = (): UseProductTypesReturn => {
       }
     }
     catch {
-      // Endpoint not exposed on Store API — fall through.
+      // Endpoint not exposed on Store API: fall through.
     }
 
     // 2. Fallback: harvest from a small product page with `*type` expanded.

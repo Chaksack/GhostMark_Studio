@@ -1,6 +1,205 @@
+import crypto from 'node:crypto'
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+
+/* ------------------------------------------------------------------------ *
+ * Boot-time configuration guards
+ *
+ * Medusa's own starter template ships `jwtSecret: process.env.JWT_SECRET ||
+ * "supersecret"`. That fallback is not a safe default: "supersecret" is a
+ * dictionary entry in every off-the-shelf JWT cracking wordlist, so anyone who
+ * knows the deployment uses it can mint an HS256 token with
+ * `actor_type: "user"` and own the entire Admin API.
+ *
+ * We therefore refuse to start with a guessable signing key rather than
+ * quietly substituting one.
+ * ------------------------------------------------------------------------ */
+
+const IS_PRODUCTION = (process.env.NODE_ENV || "development") === "production"
+
+/** Minimum length for a hand-set secret. 32 chars ~= 24 bytes of entropy. */
+const MIN_SECRET_LENGTH = 32
+
+/**
+ * Secrets that are refused even when explicitly configured. These are the
+ * values that appear in framework templates, tutorials and cracking wordlists.
+ * Compared case-insensitively.
+ */
+const REJECTED_SECRETS: ReadonlySet<string> = new Set([
+  "supersecret",
+  "super_secret",
+  "super-secret",
+  "secret",
+  "mysecret",
+  "changeme",
+  "change_me",
+  "change-me",
+  "medusa",
+  "medusa-secret",
+  "medusa_secret",
+  "test",
+  "dev",
+  "development",
+  "password",
+  "some_secret",
+  "your-secret-here",
+  "dev-insecure-review-token-secret",
+])
+
+const GENERATE_SECRET_CMD =
+  `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
+
+/**
+ * Resolve a signing secret, failing loudly instead of falling back to a
+ * hardcoded constant.
+ *
+ * - production: a missing, well-known or too-short value throws at boot.
+ * - development: an ephemeral random value is generated and loudly announced.
+ *   Sessions signed with it do not survive a restart, which is the intended
+ *   nudge to set a real value in `.env`.
+ *
+ * The secret itself is never logged.
+ */
+function resolveSigningSecret(name: string): string {
+  const value = (process.env[name] ?? "").trim()
+
+  let weakness: string | null = null
+  if (!value) {
+    weakness = "it is not set"
+  } else if (REJECTED_SECRETS.has(value.toLowerCase())) {
+    weakness =
+      "it is set to a well-known placeholder that ships in public JWT brute-force wordlists"
+  } else if (value.length < MIN_SECRET_LENGTH) {
+    weakness = `it is shorter than the ${MIN_SECRET_LENGTH}-character minimum`
+  }
+
+  if (!weakness) {
+    return value
+  }
+
+  if (IS_PRODUCTION) {
+    throw new Error(
+      [
+        "",
+        "==============================================================================",
+        ` FATAL: ${name} cannot be used because ${weakness}.`,
+        "==============================================================================",
+        "",
+        ` ${name} signs authentication tokens. A guessable value lets anyone forge an`,
+        " admin session, so the server refuses to boot in production without a strong",
+        " one. There is deliberately no override flag.",
+        "",
+        " Generate a replacement with:",
+        `   ${GENERATE_SECRET_CMD}`,
+        "",
+        ` then set ${name} in the deployment environment.`,
+        " Rotating it invalidates every existing session; that is expected.",
+        "==============================================================================",
+        "",
+      ].join("\n")
+    )
+  }
+
+  const ephemeral = crypto.randomBytes(32).toString("base64url")
+  console.warn(
+    [
+      "",
+      "------------------------------------------------------------------------------",
+      ` WARNING: ${name} cannot be used because ${weakness}.`,
+      "",
+      " A random ephemeral value has been generated for this process only. Every",
+      " restart invalidates all sessions signed with it, and this WILL throw instead",
+      " of falling back once NODE_ENV=production.",
+      "",
+      " Generate a persistent value with:",
+      `   ${GENERATE_SECRET_CMD}`,
+      ` then set ${name} in ghostmark/.env`,
+      "------------------------------------------------------------------------------",
+      "",
+    ].join("\n")
+  )
+  return ephemeral
+}
+
+const JWT_SECRET = resolveSigningSecret("JWT_SECRET")
+const COOKIE_SECRET = resolveSigningSecret("COOKIE_SECRET")
+
+/* ------------------------------------------------------------------------ *
+ * File storage (S3)
+ *
+ * Without the S3 file module Medusa falls back to the local-disk file
+ * provider. On an ephemeral filesystem (Fargate, Heroku, any rebuilt
+ * container) that means uploaded customer artwork is destroyed on every
+ * deploy. Silence is the wrong failure mode, so say so at boot.
+ * ------------------------------------------------------------------------ */
+
+const S3_REQUIRED_ENV_VARS = [
+  "S3_ACCESS_KEY_ID",
+  "S3_SECRET_ACCESS_KEY",
+  "S3_BUCKET",
+  "S3_REGION",
+  "S3_FILE_URL",
+] as const
+
+const MISSING_S3_ENV_VARS = S3_REQUIRED_ENV_VARS.filter(
+  (key) => !(process.env[key] ?? "").trim()
+)
+
+// Register the S3 provider only when it is fully configured. Registering it
+// with, say, a missing bucket would defer the failure to the first upload.
+const S3_FILE_MODULE_ENABLED = MISSING_S3_ENV_VARS.length === 0
+
+if (!S3_FILE_MODULE_ENABLED) {
+  console.warn(
+    [
+      "",
+      "------------------------------------------------------------------------------",
+      IS_PRODUCTION
+        ? " CRITICAL: the S3 file module is NOT registered in production."
+        : " WARNING: the S3 file module is not registered.",
+      "",
+      " Uploads (including customer design artwork) will be written to ephemeral",
+      " local disk and LOST on restart, redeploy or container replacement. There is",
+      " no recovery path once the container is gone.",
+      "",
+      ` Missing: ${MISSING_S3_ENV_VARS.join(", ")}`,
+      ` Required: ${S3_REQUIRED_ENV_VARS.join(", ")}`,
+      " See ghostmark/.env.template for descriptions.",
+      "------------------------------------------------------------------------------",
+      "",
+    ].join("\n")
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Redis cache
+ *
+ * The cache module reads CACHE_REDIS_URL. `.env`/`.env.template` historically
+ * only defined REDIS_URL, which nothing read - so Redis looked configured
+ * while the in-memory cache was silently in use. Accept both names, preferring
+ * the canonical one, and say which one won.
+ * ------------------------------------------------------------------------ */
+
+const CACHE_REDIS_URL = (
+  process.env.CACHE_REDIS_URL ||
+  process.env.REDIS_URL ||
+  ""
+).trim()
+
+if (CACHE_REDIS_URL) {
+  console.log(
+    `[ghostmark] Redis cache enabled via ${
+      (process.env.CACHE_REDIS_URL ?? "").trim() ? "CACHE_REDIS_URL" : "REDIS_URL (deprecated alias - rename to CACHE_REDIS_URL)"
+    }`
+  )
+} else if (IS_PRODUCTION) {
+  console.warn(
+    "[ghostmark] WARNING: CACHE_REDIS_URL is not set. Falling back to the in-memory cache, " +
+      "which is not shared between instances and is discarded on restart."
+  )
+}
+
 
 module.exports = defineConfig({
   projectConfig: {
@@ -9,8 +208,8 @@ module.exports = defineConfig({
       storeCors: process.env.STORE_CORS || "http://localhost:8000",
       adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
       authCors: process.env.AUTH_CORS || process.env.STORE_CORS || "http://localhost:8000",
-      jwtSecret: process.env.JWT_SECRET || "supersecret",
-      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+      jwtSecret: JWT_SECRET,
+      cookieSecret: COOKIE_SECRET,
     },
     // Enhanced features (commented out: current framework types may not include `features` in ProjectConfigOptions)
     // features: {
@@ -113,7 +312,7 @@ module.exports = defineConfig({
       },
     },
     // Enhanced file service for design assets (optional - enable when S3 is configured)
-    ...(process.env.S3_ACCESS_KEY_ID ? [{
+    ...(S3_FILE_MODULE_ENABLED ? [{
       resolve: "@medusajs/medusa/file",
       options: {
         providers: [
@@ -154,10 +353,10 @@ module.exports = defineConfig({
       },
     },
     // Cache service for performance optimization (optional - enable when Redis is available)
-    ...(process.env.CACHE_REDIS_URL ? [{
+    ...(CACHE_REDIS_URL ? [{
       resolve: "@medusajs/medusa/cache-redis",
       options: {
-        redisUrl: process.env.CACHE_REDIS_URL,
+        redisUrl: CACHE_REDIS_URL,
         ttl: 3600, // 1 hour default TTL
         // Enhanced caching for bulk pricing calculations
         keyPrefix: process.env.CACHE_KEY_PREFIX || "ghostmark:",

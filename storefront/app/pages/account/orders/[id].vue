@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { StoreOrder } from '@medusajs/types'
 import { formatMoney as formatMoneyShared } from '~/utils/money'
 
 /**
- * /account/orders/[id] — single order detail view, scoped to the signed-in
+ * /account/orders/[id]: single order detail view, scoped to the signed-in
  * customer.
  *
  * Layout: AccountShell (shared sidebar nav + page header band) + a 2-column
@@ -13,9 +13,68 @@ import { formatMoney as formatMoneyShared } from '~/utils/money'
  *   - right column: totals summary, shipping address, support CTA
  *
  * Data: a single `sdk.store.order.retrieve` call wide-loads items, addresses
- * and shipping methods so we don't N+1 in the template. The fetch is wrapped
- * in try/catch so an unknown / not-yours order id gracefully renders the
- * "we couldn't find that order" empty state rather than a 500.
+ * and shipping methods so we don't N+1 in the template.
+ *
+ * ---------------------------------------------------------------------------
+ * Why the try/catch went away
+ * ---------------------------------------------------------------------------
+ * The fetch used to be wrapped in `catch { return null }`, and the template
+ * read a null order as "not found". So a timeout, a dropped connection or a
+ * 500 all rendered:
+ *
+ *     We couldn't find that order. It may have been removed, or it might
+ *     belong to a different account.
+ *
+ * That copy accuses the customer of looking at someone else's order because our
+ * own backend was slow. It is the worst of the swallowed-error family: not
+ * merely unhelpful but insinuating, on a page reached only from a link we
+ * ourselves rendered in their own order history.
+ *
+ * Medusa's SDK throws a `FetchError` carrying the HTTP status
+ * (js-sdk/dist/esm/client.js: `throw new FetchError(msg, resp.statusText,
+ * resp.status)`), so the two cases are cleanly separable:
+ *
+ *   404 / 401 / 403 -> genuinely not available to this account. Say so.
+ *   anything else   -> our fault. Apologise and offer a retry.
+ *
+ * ---------------------------------------------------------------------------
+ * CORRECTION — what this comment used to claim, and why it was wrong
+ * ---------------------------------------------------------------------------
+ * It used to read: "401/403 are grouped with 404 deliberately: Medusa answers
+ * 'someone else's order' with an auth error."
+ *
+ * THAT WAS FALSE for @medusajs/medusa 2.11.3, and a wrong comment about an auth
+ * boundary is worse than no comment, because the next person reads it and stops
+ * checking. Verified in the installed dist rather than the docs:
+ *
+ *   dist/api/store/orders/middlewares.js
+ *     "/store/orders"      -> authenticate("customer", ["session","bearer"])
+ *     "/store/orders/:id"  -> validateAndTransformQuery ONLY, no authenticate
+ *   dist/api/store/orders/[id]/route.js:5
+ *     // TODO: Do we want to apply some sort of authentication here?
+ *
+ * Stock Medusa answered "someone else's order" with **HTTP 200 and the whole
+ * order** — email, full name, delivery address, line items, total — to anyone
+ * presenting the publishable key, which ships in this bundle and is public by
+ * design. It never returned an auth error, because there was no auth.
+ *
+ * WHAT IS TRUE NOW. ghostmark/src/api/middlewares.ts adds the guard upstream
+ * left out. `GET /store/orders/:id` grants access on either (1) a signed-in
+ * customer whose id matches the order's `customer_id` — which is this page's
+ * path — or (2) a short-lived capability token minted at cart completion, which
+ * is how the guest confirmation page at /order/confirmed/[number] works. Every
+ * other request is refused with 401 and an identical body.
+ *
+ * So the grouping below is correct, but for a reason the old text had backwards:
+ * the boundary is one WE now enforce, not one Medusa gave us. The backend
+ * returns the SAME 401 for "no such order", "not yours" and "expired link", on
+ * purpose — splitting them would build an existence oracle for order ids. This
+ * page must keep folding them together; the distinction only ever helps someone
+ * enumerating ids.
+ *
+ * This page sends no `?t=` token and does not need one: Grant (1) covers it,
+ * and unlike the token it does not expire.
+ * ---------------------------------------------------------------------------
  *
  * Auth: route-level `auth` middleware. Unauthenticated visitors get bounced
  * to `/account/login?redirect=/account/orders/<id>` so they land back here
@@ -29,22 +88,52 @@ const sdk = useMedusaClient()
 
 const orderId = computed(() => String(route.params.id))
 
-const { data: order, pending } = await useAsyncData(
+const { data: order, pending, error, refresh } = await useAsyncData(
   `gms-order-${orderId.value}`,
   async () => {
-    try {
-      const res = await sdk.store.order.retrieve(orderId.value, {
-        fields:
-          '*items,*shipping_address,*billing_address,*shipping_methods,*payment_collections.payment_sessions',
-      })
-      return res.order as StoreOrder
-    }
-    catch {
-      return null
-    }
+    const res = await sdk.store.order.retrieve(orderId.value, {
+      fields:
+        '*items,*shipping_address,*billing_address,*shipping_methods,*payment_collections.payment_sessions',
+    })
+    return res.order as StoreOrder
   },
   { watch: [orderId] },
 )
+
+// Medusa's FetchError puts the HTTP status on `.status`. `useAsyncData` may
+// wrap it, so check the cause too before giving up and treating it as ours.
+const errorStatus = computed<number | null>(() => {
+  const e = error.value as (Error & { status?: number, statusCode?: number, cause?: unknown }) | null
+  if (!e) return null
+  const cause = e.cause as { status?: number, statusCode?: number } | undefined
+  const code = e.status ?? e.statusCode ?? cause?.status ?? cause?.statusCode
+  return typeof code === 'number' ? code : null
+})
+
+/**
+ * "This order isn't available to you." Covers a bad id, a deleted order, and
+ * someone else's order, all indistinguishable from the customer's side, and
+ * deliberately kept that way.
+ */
+const isUnavailable = computed(() =>
+  error.value ? [400, 401, 403, 404].includes(errorStatus.value ?? 0) : !order.value,
+)
+
+/** Everything else that failed: ours, and probably transient. */
+const isOurFault = computed(() => Boolean(error.value) && !isUnavailable.value)
+
+const retrying = ref(false)
+
+const onRetry = async () => {
+  if (retrying.value) return
+  retrying.value = true
+  try {
+    await refresh()
+  }
+  finally {
+    retrying.value = false
+  }
+}
 
 useHead({
   title: () =>
@@ -79,7 +168,7 @@ type BadgeVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info'
 
 /**
  * Map Medusa's order status enum to a UiBadge variant. The set of returned
- * statuses is stable across recent Medusa v2 releases — anything we don't
+ * statuses is stable across recent Medusa v2 releases, anything we don't
  * recognise falls back to `neutral` so a future status doesn't render as
  * raw text without colour treatment.
  */
@@ -114,39 +203,51 @@ const statusVariant = (status?: string | null): BadgeVariant => {
     page-title="Order detail"
     intro="Everything we shipped (or are about to ship) for this order, with totals and address on hand."
   >
-    <!-- Loading -------------------------------------------------------- -->
+    <!-- 1 of 3: pending ----------------------------------------------- -->
     <div
       v-if="pending"
+      role="status"
       class="flex items-center gap-3 border border-ink-200 bg-white px-6 py-10 font-body text-caption text-ink-500"
     >
       <UiSpinner :size="16" />
       <span>Loading order…</span>
     </div>
 
-    <!-- Empty / not found --------------------------------------------- -->
-    <div
-      v-else-if="!order"
-      class="border border-ink-200 bg-white px-6 py-16 text-center"
+    <!--
+      2 of 3: our fault. This branch exists so the "belongs to a different
+      account" sentence below can never again be shown to someone whose only
+      mistake was clicking a link while our API was down.
+    -->
+    <UiEmptyState
+      v-else-if="isOurFault"
+      variant="error"
+      title="We couldn't load this order."
+      description="This is on us, not you. The order is fine, we just couldn't fetch it. Try again in a moment."
+      :busy="retrying || pending"
+      @retry="onRetry"
     >
-      <p class="font-display text-[24px] leading-tight text-ink-950">
-        We couldn't find that order.
-      </p>
-      <p class="mx-auto mt-2 max-w-md font-body text-caption text-ink-500">
-        It may have been removed, or it might belong to a different account.
-        Head back to your order history to pick another.
-      </p>
-      <UiButton
-        as="NuxtLink"
-        to="/account/orders"
-        variant="outline"
-        size="md"
-        class="mt-6"
-      >
-        Back to all orders
-      </UiButton>
-    </div>
+      <template #extra-actions>
+        <UiButton as="NuxtLink" to="/account/orders" variant="outline" size="md">
+          Back to all orders
+        </UiButton>
+      </template>
+    </UiEmptyState>
 
-    <!-- Order detail --------------------------------------------------- -->
+    <!-- 3a of 3: resolved, and this order genuinely isn't available ---- -->
+    <UiEmptyState
+      v-else-if="isUnavailable"
+      variant="empty"
+      title="We couldn't find that order."
+      description="It may have been removed, or it might belong to a different account. Head back to your order history to pick another."
+    >
+      <template #actions>
+        <UiButton as="NuxtLink" to="/account/orders" variant="outline" size="md">
+          Back to all orders
+        </UiButton>
+      </template>
+    </UiEmptyState>
+
+    <!-- 3b of 3: resolved, order loaded ------------------------------- -->
     <div v-else class="space-y-12">
       <!-- Header strip ------------------------------------------------ -->
       <div
@@ -192,7 +293,7 @@ const statusVariant = (status?: string | null): BadgeVariant => {
 
           <ul
             v-if="order.items?.length"
-            class="mt-6 divide-y divide-ink-100 border-t border-ink-100"
+            class="mt-6 divide-y divide-ink-200 border-t border-ink-200"
           >
             <li
               v-for="item in order.items"
@@ -237,7 +338,7 @@ const statusVariant = (status?: string | null): BadgeVariant => {
 
           <p
             v-else
-            class="mt-6 border-t border-ink-100 pt-6 font-body text-caption text-ink-500"
+            class="mt-6 border-t border-ink-200 pt-6 font-body text-caption text-ink-500"
           >
             This order has no items associated with it.
           </p>

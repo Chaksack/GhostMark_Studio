@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
- * FilterPill — the merchery PLP facet pill.
+ * FilterPill: the merchery PLP facet pill.
  *
  * Anatomy:
- *   [ Label ▾ ]  — closed pill (no count)
- *   [ Label (2) ▾ ]  — active pill, count badge, `bg-uiGrey` background
+ *   [ Label ▾ ]: closed pill (no count)
+ *   [ Label (2) ▾ ]: active pill, count badge, `bg-uiGrey` background
  *   open ↓
  *   ┌─────────────────────────┐
  *   │ ☐ Option A              │
@@ -24,7 +24,7 @@
  * Accessibility: the trigger advertises `aria-haspopup="listbox"` and
  * mirrors the open state in `aria-expanded`. The popover itself carries
  * `role="listbox"` (single-select) or `role="group"` (multi-select with
- * checkboxes — `listbox` semantics don't fit multi-checkbox panels) and the
+ * checkboxes; `listbox` semantics don't fit multi-checkbox panels) and the
  * count badge is wrapped in an `aria-label` so screen readers announce
  * "Category, 2 selected" rather than "Category 2".
  */
@@ -55,7 +55,7 @@ const wrapper = ref<HTMLElement | null>(null)
 // resize between opens still picks the correct side.
 const alignRight = ref(false)
 
-// `selected` is purely derived — a normalised view that always exposes the
+// `selected` is purely derived: a normalised view that always exposes the
 // model as an array of strings so the template doesn't need to branch on
 // `multi`. Single-select stores `''` for unset; multi stores `[]`.
 const selected = computed<string[]>(() => {
@@ -95,7 +95,7 @@ function toggle(value: string) {
     // if the same option is re-clicked, matching merchery's PLP behavior).
     const next = isChecked(value) ? '' : value
     emit('update:modelValue', next)
-    // Auto-close on single-select pick — the operator's intent is committed.
+    // Auto-close on single-select pick: the operator's intent is committed.
     open.value = false
   }
 }
@@ -129,7 +129,7 @@ function toggleOpen() {
 // --- Outside-click + Escape ---------------------------------------------
 //
 // Bound on `mousedown` (not `click`) so a click on the trigger of *another*
-// FilterPill closes this one before the other one's `click` fires — without
+// FilterPill closes this one before the other one's `click` fires. Without
 // this, two pills can briefly be open simultaneously when you whip between
 // them. Escape closes for keyboard users and re-focuses the trigger.
 
@@ -159,7 +159,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeyDown)
 })
 
-// Close if the consumer swaps the option list out from under us (defensive —
+// Close if the consumer swaps the option list out from under us (defensive:
 // keeps stale popovers from persisting across route navigations that share
 // the same FilterPill instance).
 watch(() => props.options, () => { open.value = false })
@@ -169,7 +169,7 @@ watch(() => props.options, () => { open.value = false })
   <div ref="wrapper" class="relative">
     <button
       type="button"
-      class="px-[1.2rem] py-[1rem] min-h-[44px] flex items-center gap-2 border border-greyLines transition-colors hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-1"
+      class="px-4 py-2 min-h-11 text-sm flex items-center gap-2 border border-greyLines transition-colors hover:bg-uiGrey focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-950 focus-visible:ring-offset-1"
       :class="{ 'bg-uiGrey': isActive }"
       :aria-expanded="open"
       :aria-label="triggerAriaLabel"

@@ -1,5 +1,5 @@
 // =============================================================================
-// order-number-widget — surface the customer-facing `GMS-<ULID>` order
+// order-number-widget: surface the customer-facing `GMS-<ULID>` order
 // number at the top of every admin order detail page.
 //
 // Why this widget exists
@@ -9,7 +9,7 @@
 // derived from Medusa's internal `order.id`. Medusa's admin, by default, only
 // surfaces the auto-increment `display_id` (e.g. `#4`). When a customer
 // emails support quoting their GMS number, the support agent has no way to
-// match it against an order in admin — a real "logistic hell".
+// match it against an order in admin, a real "logistic hell".
 //
 // This widget injects into `order.details.before` so the GMS number is
 // the first thing visible on the order detail page, alongside a one-line
@@ -20,7 +20,7 @@
 // Persisted on `order.metadata.order_number` by the `order.placed`
 // subscriber (`src/subscribers/order-notifications.ts`). For orders
 // placed BEFORE that subscriber was wired in (or if the metadata write
-// failed), we compute the same value client-side from `data.id` — the
+// failed), we compute the same value client-side from `data.id`; the
 // derivation rule is deterministic and side-effect-free, so the fallback
 // renders the exact same string the customer would see, just without
 // a guarantee that the value is persisted server-side.
@@ -34,7 +34,7 @@ import { Container, Heading, Text, Badge } from "@medusajs/ui"
 // Keep all three byte-for-byte identical: a divergence here means support
 // sees a different string from the customer, defeating the widget's purpose.
 const formatOrderNumber = (internalId: string | null | undefined): string => {
-  if (!internalId) return "—"
+  if (!internalId) return "–"
   if (internalId.startsWith("GMS-")) return internalId
   return `GMS-${internalId.replace(/^order_/, "")}`
 }

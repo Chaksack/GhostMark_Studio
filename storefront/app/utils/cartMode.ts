@@ -2,12 +2,12 @@
 // Cart line item → commerce mode.
 //
 // Single source of truth for the 5-tier inference chain. Previously duplicated
-// across CartDropdown.vue, CartModeBanner.vue, cart.vue, and checkout.vue —
+// across CartDropdown.vue, CartModeBanner.vue, cart.vue, and checkout.vue:
 // drift between them was a real risk if the backend taxonomy changed (one
 // site updated, three forgotten). All four now route through this module.
 //
 // Resolution order (first match wins):
-//   1. product.type.value           — canonical Medusa taxonomy ('apparel' | 'pod')
+//   1. product.type.value: canonical Medusa taxonomy ('apparel' | 'pod')
 //   2. line item metadata.commerce_mode
 //   3. variant.metadata.commerce_mode
 //   4. variant.product.metadata.commerce_mode
@@ -16,7 +16,7 @@
 //   7. Default → apparel
 //
 // Legacy v0 seed metadata used 'shop' / 'studio' as commerce_mode values.
-// Those are mapped to 'apparel' / 'pod' respectively for backwards compat —
+// Those are mapped to 'apparel' / 'pod' respectively for backwards compat;
 // once the catalog is fully migrated to product.type.value the metadata path
 // becomes vestigial but the cost of carrying it is one branch per check.
 //
@@ -28,7 +28,7 @@
 
 export type CartLineMode = 'apparel' | 'pod'
 
-// MOQ heuristic threshold — kept as the final fallback for legacy lines with
+// MOQ heuristic threshold: kept as the final fallback for legacy lines with
 // zero metadata. Matches the bulk/MOQ pivot used by the POD configurator.
 const POD_MOQ_FALLBACK = 25
 
@@ -45,12 +45,12 @@ function classify(raw: unknown): CartLineMode | null {
 /**
  * Resolve the commerce mode for a single cart line item.
  *
- * Defensive optional chaining at every level — legacy carts, partial fetches,
+ * Defensive optional chaining at every level: legacy carts, partial fetches,
  * or unhydrated line items may be missing any tier. Always returns a concrete
  * mode; never throws.
  */
 export function inferLineMode(item: any): CartLineMode {
-  // 1. Source of truth — product.type.value (canonical backend taxonomy)
+  // 1. Source of truth: product.type.value (canonical backend taxonomy)
   const fromType = classify(item?.variant?.product?.type?.value)
   if (fromType) return fromType
 
@@ -66,14 +66,14 @@ export function inferLineMode(item: any): CartLineMode {
   const fromProductMeta = classify(item?.variant?.product?.metadata?.commerce_mode)
   if (fromProductMeta) return fromProductMeta
 
-  // 5. Custom-design signals — uploaded designs are POD by definition
+  // 5. Custom-design signals: uploaded designs are POD by definition
   if (item?.metadata?.design_data) return 'pod'
   if (item?.metadata?.preview_url) return 'pod'
 
-  // 6. MOQ heuristic — final fallback for legacy lines with zero metadata
+  // 6. MOQ heuristic: final fallback for legacy lines with zero metadata
   if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'
 
-  // 7. Default — treat as in-stock apparel (D2C path)
+  // 7. Default: treat as in-stock apparel (D2C path)
   return 'apparel'
 }
 

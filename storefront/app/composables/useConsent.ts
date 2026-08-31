@@ -1,21 +1,21 @@
 import { computed, onMounted, watch } from 'vue'
 
 /**
- * useConsent — GDPR cookie-consent reader/writer.
+ * useConsent: GDPR cookie-consent reader/writer.
  *
  * Persistence: localStorage under the `gms_cookie_consent` key.
  * The state is hydrated lazily on the client (no SSR mismatch) and the
  * shared Nuxt `useState` keeps every consumer in lockstep across the app.
  *
  * Public surface:
- *   - `consent`        — reactive `ConsentState` ref
- *   - `hasAnalytics`   — computed boolean (decided AND opted-in)
- *   - `hasMarketing`   — computed boolean (decided AND opted-in)
- *   - `acceptAll()`    — opt in to everything
- *   - `rejectAll()`    — keep only essential
- *   - `save()`         — flush current toggles + mark decided
- *   - `reopen()`       — wipe `decided` so the banner reappears
- *   - `ready`          — true once the localStorage rehydrate has run
+ *   - `consent`:         reactive `ConsentState` ref
+ *   - `hasAnalytics`:    computed boolean (decided AND opted-in)
+ *   - `hasMarketing`:    computed boolean (decided AND opted-in)
+ *   - `acceptAll()`:     opt in to everything
+ *   - `rejectAll()`:     keep only essential
+ *   - `save()`:          flush current toggles + mark decided
+ *   - `reopen()`:        wipe `decided` so the banner reappears
+ *   - `ready`:           true once the localStorage rehydrate has run
  */
 
 export interface ConsentState {
@@ -47,7 +47,7 @@ export const useConsent = () => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
     } catch {
-      // localStorage may be disabled (private mode, quota). Fail soft —
+      // localStorage may be disabled (private mode, quota). Fail soft:
       // the in-memory state still drives the UI for this session.
     }
   }
@@ -68,7 +68,7 @@ export const useConsent = () => {
         }
       }
     } catch {
-      // Malformed payload — reset to default and keep going.
+      // Malformed payload: reset to default and keep going.
       consent.value = defaultState()
     }
     ready.value = true

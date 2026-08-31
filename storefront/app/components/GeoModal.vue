@@ -5,13 +5,13 @@ import UiModal from './ui/overlay/UiModal.vue'
 import UiButton from './ui/UiButton.vue'
 
 /**
- * GeoModal — first-visit "looks like you are visiting from X" prompt.
+ * GeoModal: first-visit "looks like you are visiting from X" prompt.
  *
  * Detection strategy (best-effort, never authoritative):
  *   1. Read `Intl.DateTimeFormat().resolvedOptions().timeZone` and map a
  *      handful of well-known IANA zones to ISO-3166 alpha-2 codes. This is
  *      more reliable than `navigator.language` (which mostly reports the
- *      keyboard locale) and degrades gracefully — if we cannot map the zone
+ *      keyboard locale) and degrades gracefully, if we cannot map the zone
  *      we fall back to the language hint.
  *   2. With a candidate ISO-2 in hand we look it up against the live
  *      Medusa region catalogue. The first region whose `countries[]`
@@ -89,7 +89,7 @@ const detectCountry = (): string | null => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
     if (tz && TZ_TO_COUNTRY[tz]) return TZ_TO_COUNTRY[tz]
   } catch {
-    // Intl missing or restricted — fall through to language heuristic.
+    // Intl missing or restricted: fall through to language heuristic.
   }
   if (typeof navigator !== 'undefined') {
     const langs = navigator.languages?.length
@@ -118,7 +118,7 @@ const detectedRegion = computed<StoreRegion | null>(() => {
 
 const detectedRegionLabel = computed<string>(() => {
   if (!detectedRegion.value) return 'another region'
-  // Prefer the country display name where possible — reads as
+  // Prefer the country display name where possible, reads as
   // "visiting from United Kingdom" instead of "visiting from Europe".
   const country = detectedRegion.value.countries?.find(
     (c) => c.iso_2?.toLowerCase() === detectedCountry.value?.toLowerCase(),
@@ -143,7 +143,7 @@ const persistDismissed = (): void => {
   try {
     window.localStorage.setItem(dismissedKey, '1')
   } catch {
-    // Storage disabled — accept the next-visit re-prompt as graceful failure.
+    // Storage disabled: accept the next-visit re-prompt as graceful failure.
   }
   dismissed.value = true
 }
@@ -161,7 +161,7 @@ onMounted(async () => {
     const res = await sdk.store.region.list({ limit: 50 } as Record<string, unknown>)
     regions.value = ((res as { regions?: StoreRegion[] })?.regions ?? []) as StoreRegion[]
   } catch {
-    // SDK unavailable / network blip — bail silently. The user keeps the
+    // SDK unavailable / network blip: bail silently. The user keeps the
     // active region and the modal simply never appears this session.
     return
   }
@@ -169,7 +169,7 @@ onMounted(async () => {
   detectedCountry.value = detectCountry()
 
   if (!detectedRegion.value) {
-    // Nothing to recommend — don't bother the user.
+    // Nothing to recommend: don't bother the user.
     return
   }
 
@@ -179,7 +179,7 @@ onMounted(async () => {
     ?? null
 
   if (activeId && detectedRegion.value.id === activeId) {
-    // Already on the right region — record the dismissal so we don't even
+    // Already on the right region, record the dismissal so we don't even
     // run the SDK call on the next visit.
     persistDismissed()
     return
@@ -242,7 +242,7 @@ const handleOpenChange = (value: boolean): void => {
       </h3>
       <p class="mb-6 font-body text-body leading-relaxed text-ink-700">
         You have landed on the international shelf. Switch to the
-        local edition for accurate pricing, currency, and shipping windows —
+        local edition for accurate pricing, currency, and shipping windows,
         or stay where you are. Your call.
       </p>
 

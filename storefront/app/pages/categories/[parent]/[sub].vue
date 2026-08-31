@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /categories/[parent]/[sub] — nested taxonomy leaf.
+ * /categories/[parent]/[sub]: nested taxonomy leaf.
  *
  * Merchery PLP shell: breadcrumb, oversized H1, intro paragraph, filter bar,
  * 4-up product grid filtered by `category_id`. The sub-category handle is the
@@ -9,7 +9,7 @@
  *
  * SSR / failure model:
  *   - `useAsyncData` keys include both params + region id.
- *   - All SDK calls are wrapped — backend downtime renders an empty state.
+ *   - All SDK calls are wrapped, backend downtime renders an empty state.
  *
  * Region awareness: without `region_id`, Medusa returns
  * `calculated_price = null` and ProductCard strips every sticker.
@@ -30,7 +30,7 @@ const sub = computed(() => String(route.params.sub ?? ''))
 
 await ensureRegion()
 
-// Live filter options — Medusa-backed `category`/`color`/`brand` pills with
+// Live filter options: Medusa-backed `category`/`color`/`brand` pills with
 // static fallback. `price`/`quantity`/`leadTime`/`sort` remain on the static
 // `filterOptions` import (domain-specific, see filters.ts header docblock).
 const { liveOptions, ensureResolved: ensureFilterOptionsResolved } = useFilterOptions()
@@ -87,7 +87,7 @@ useHead(() => ({
   ],
 }))
 
-// --- Filter state — same shape as sibling PLPs.
+// --- Filter state: same shape as sibling PLPs.
 const categoryFilter = ref<string[]>([])
 const priceFilter = ref<string[]>([])
 const quantityFilter = ref<string[]>([])
@@ -99,7 +99,7 @@ const sortBy = ref<string>('relevance')
 
 const sortedProducts = computed(() => applySort(products.value as any[], sortBy.value))
 
-// --- Mobile sheet state — wires the two-button row to a real bottom sheet.
+// --- Mobile sheet state: wires the two-button row to a real bottom sheet.
 const filterSheetOpen = ref(false)
 const sortSheetOpen = ref(false)
 const totalActiveFilters = computed(() =>
@@ -124,12 +124,12 @@ function onClearFilters() {
 </script>
 
 <template>
-  <div class="lg:pt-[118px]">
-    <div class="relative px-[1.5rem] lg:px-[3rem]">
-      <!-- Breadcrumb — flow at <md so a 5-segment trail (Home / All products /
+  <div>
+    <div class="relative mx-auto w-full max-w-rail px-gutter">
+      <!-- Breadcrumb: flow at <md so a 5-segment trail (Home / All products /
            parent / sub) can wrap onto two lines without colliding with H1.
            Floats absolute at md+ where there's vertical headroom. -->
-      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:pt-0" aria-label="breadcrumbs">
+      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:z-10 md:pt-0" aria-label="breadcrumbs">
         <ol class="flex flex-wrap items-center gap-x-1 gap-y-0">
           <li>
             <NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">
@@ -161,15 +161,15 @@ function onClearFilters() {
         </ol>
       </nav>
 
-      <h1 class="relative mb-[3rem] max-w-[110rem] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[4rem] sm:text-[4.4rem] lg:text-[8rem] leading-[4.4rem] sm:leading-[4.8rem] lg:leading-[8.8rem] tracking-[-0.01em]">
+      <h1 class="relative mb-[3rem] max-w-[1100px] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[40px] sm:text-[44px] lg:text-[80px] leading-[44px] sm:leading-[48px] lg:leading-[88px] tracking-[-0.01em]">
         {{ category?.name ?? sub }}
       </h1>
 
-      <p v-if="category?.description" class="mb-[6rem] max-w-[56rem]">
+      <p v-if="category?.description" class="mb-[6rem] max-w-[560px]">
         {{ category.description }}
       </p>
-      <p v-else class="mb-[6rem] max-w-[56rem]">
-        The {{ category?.name ?? sub }} edit from GhostMark Studio &mdash; considered objects
+      <p v-else class="mb-[6rem] max-w-[560px]">
+        The {{ category?.name ?? sub }} edit from GhostMark Studio, considered objects
         for the brands and teams that take taste seriously. Order from 25 pieces, e-proof in 48 hours.
       </p>
 
@@ -177,8 +177,8 @@ function onClearFilters() {
            Always offer a path back to the parent category and to the full
            PLP so the visitor never feels stuck. -->
       <div v-if="!category" class="mb-12 flex flex-col gap-6 rounded border border-greyLines bg-cream-tile p-8 lg:flex-row lg:items-center lg:justify-between">
-        <p class="max-w-[44rem] font-body text-body text-ink-700">
-          We're stocking this shelf — check back soon, or jump up a level and
+        <p class="max-w-[440px] font-body text-body text-ink-700">
+          We're stocking this shelf. Check back soon, or jump up a level and
           browse the full <span class="capitalize">{{ parent }}</span> edit.
         </p>
         <div class="flex flex-wrap gap-3">
@@ -211,7 +211,7 @@ function onClearFilters() {
             <FilterPill v-model="leadTimeFilter" label="Lead time" :options="filterOptions.leadTime" data-test="filter-leadtime" />
             <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color" />
             <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand" />
-            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
+            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded-none cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
               <input v-model="fastShipping" type="checkbox" class="w-5 h-5 rounded border-greyLines text-ink-950 focus:ring-ink-950">
               <span class="text-[14px] text-ink-950">Fast shipping only</span>
             </label>
@@ -225,13 +225,13 @@ function onClearFilters() {
           />
         </nav>
 
-        <!-- Mobile filter bar — wired (drops the inert version that used the
+        <!-- Mobile filter bar: wired (drops the inert version that used the
              extra `mx-[1.5rem]` margin which caused horizontal overflow at
              320). 48px tall buttons satisfy WCAG 2.1 AA touch target rules. -->
         <div class="flex gap-3 pb-[1rem] border-b border-greyLines md:hidden">
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="filterSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950">Filters{{ totalActiveFilters > 0 ? ` (${totalActiveFilters})` : '' }}</span>
@@ -241,7 +241,7 @@ function onClearFilters() {
           </button>
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="sortSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950 truncate">Sort: {{ sortLabel }}</span>
@@ -251,7 +251,7 @@ function onClearFilters() {
           </button>
         </div>
 
-        <!-- Mobile bottom sheets — Teleported to <body>, full-height drawer. -->
+        <!-- Mobile bottom sheets: Teleported to <body>, full-height drawer. -->
         <MobileFilterSheet
           v-model:open="filterSheetOpen"
           title="Filter products"
@@ -283,7 +283,7 @@ function onClearFilters() {
 
         <ul
           v-if="sortedProducts?.length"
-          class="grid grid-cols-2 gap-[1.6rem] md:grid-cols-3 lg:grid-cols-4 lg:gap-[3rem] mt-[3rem]"
+          class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 xl:grid-cols-5 mt-[3rem]"
         >
           <ProductCard
             v-for="p in sortedProducts"
@@ -293,8 +293,8 @@ function onClearFilters() {
         </ul>
 
         <div v-else class="py-12 text-center">
-          <p class="mx-auto max-w-[44rem] font-body text-body text-ink-500">
-            No products in this category yet — check back soon, or browse the
+          <p class="mx-auto max-w-[440px] font-body text-body text-ink-500">
+            No products in this category yet. Check back soon, or browse the
             <NuxtLink :to="`/categories/${parent}`" class="ml-1 capitalize text-ink-950 underline decoration-dashed underline-offset-4 hover:decoration-solid">
               full {{ parent }} edit
             </NuxtLink>.
@@ -303,7 +303,7 @@ function onClearFilters() {
       </template>
     </div>
 
-    <div class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 mt-16 flex flex-col gap-12 mb-12">
+    <div class="mx-auto w-full max-w-rail px-gutter mt-16 flex flex-col gap-12 mb-12">
       <AppFaq />
       <AppNewsletter />
     </div>

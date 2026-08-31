@@ -1,17 +1,67 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT. IT WOULD MULTIPLY EVERY GIFT CARD PRICE BY 100.
+ * ============================================================================
+ *
+ * This script converts gift card prices INTO minor units (25 -> 2500). That was
+ * correct when it was written, because the catalogue stored minor units then.
+ *
+ * THE CONVENTION FLIPPED ON 2026-08-30. migrate-price-units converted the
+ * catalogue to MAJOR units. Verified live against the database that day:
+ *
+ *     Studio Gift Card, gbp:  25 / 50 / 100 / 250      <- correct, MAJOR
+ *
+ * The `intended` value computed below is `fxFromGbpMinor(denomination * 100)`,
+ * i.e. 2500 for a GBP 25 card. The skip-if-already-correct guard compares the
+ * current 25 against that 2500, finds no match, and REWRITES. Running this
+ * today would create the exact defect it was written to fix.
+ *
+ * This is worse than a stale comment. A stale comment misleads a reader who can
+ * push back; stale executable intent just runs. The code is internally
+ * consistent and only the world moved, so no typecheck, test, or review of this
+ * file in isolation would catch it.
+ *
+ * Before running this again, rewrite its arithmetic for major units or delete
+ * the file. The hard gate below exists so that decision is made deliberately
+ * rather than by someone running a plausibly-named script.
+ *
+ * SWEEP COMPLETE (2026-08-30). Every script in this directory was checked for
+ * the same inversion. The class, all now gated on the same env var:
+ *
+ *     fix-gift-card-prices.ts   this file          2500 for GBP 25
+ *     enrich-hoodie.ts          :111               8900 for GBP 89, and it
+ *                                                  DELETES all 32 variants first
+ *     seed-curated.ts           :202-401           18 basePriceGbp literals
+ *     seed-gift-card.ts         :85-88             2500 / 5000 / 10000 / 25000
+ *     seed-pod-no-locations.ts  :108-110           1500 / 2000 / 1800
+ *     seed-shipping-gbp.ts      :67-69             1000 for GBP 10 postage
+ *     seed.ts                   :89-101, :976      prices are FINE (major), but
+ *                                                  it drops GBP from the store
+ *                                                  currency set and injects
+ *                                                  1,000,000 stock units
+ *
+ * CLEARED, convention-agnostic, deliberately NOT gated:
+ *     seed-sample.ts            derives eur/usd from the live gbp price by FX,
+ *                               so it inherits whatever scale is already there
+ *     seed-merchery-metadata.ts :354 was already corrected for major units
+ *
+ * A grep for `amount:\s*[0-9]{3,}` does NOT find seed-curated.ts, because its
+ * literals hide behind a field named `basePriceGbp`. Grep the VALUES.
+ * ========================================================================== */
+
 // =============================================================================
-// fix-gift-card-prices — re-run-safe patcher that rewrites the Studio Gift
+// fix-gift-card-prices: re-run-safe patcher that rewrites the Studio Gift
 // Card variant prices into Medusa's MINOR-units convention.
 //
 // Why this exists
 // ---------------
 // `seed-gift-card.ts` originally wrote `amount: 25` for the £25 denomination.
 // The rest of this catalogue (and the storefront price formatter) treats
-// `calculated_amount` as MINOR units (pence / cents) — confirmed empirically
+// `calculated_amount` as MINOR units (pence / cents), confirmed empirically
 // against workshop-tote (£22.00 -> `calculated_amount: 2200`). The result was
 // that adding the £25 gift card to a cart charged £0.25.
 //
-// `seed-gift-card.ts` is idempotent — it short-circuits if the product
-// already exists — so simply fixing the constants there does not heal the
+// `seed-gift-card.ts` is idempotent (it short-circuits if the product
+// already exists), so simply fixing the constants there does not heal the
 // already-seeded data. This script is the corrective patch.
 //
 // What it does
@@ -55,7 +105,7 @@ import { updateProductVariantsWorkflow } from "@medusajs/medusa/core-flows"
 // -----------------------------------------------------------------------------
 const HANDLE = "studio-gift-card"
 
-// FX heuristics — mirror seed-gift-card.ts. Inputs are minor GBP; outputs are
+// FX heuristics: mirror seed-gift-card.ts. Inputs are minor GBP; outputs are
 // minor USD / EUR. Kept inline so this script has no dependency on the seed
 // file's constants (which may drift independently).
 const fxFromGbpMinor = (gbpMinor: number) => ({
@@ -97,6 +147,22 @@ type VariantNode = {
 // -----------------------------------------------------------------------------
 export default async function fixGiftCardPrices({ args, container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
+  // Hard gate. See the DO NOT RUN banner at the top of this file: this script's
+  // arithmetic targets a unit convention the catalogue no longer uses, so
+  // running it would multiply every gift card price by 100.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    // Throws rather than returns. A `return` here exits 0, so any CI wrapper or
+    // shell `&&` chain checking the exit status would read this refusal as a
+    // successful run. Upgraded 2026-08-30 when the rest of the class was gated.
+    const msg =
+      "[fix-gift-card-prices] REFUSING TO RUN. This script converts gift card " +
+      "prices to MINOR units, but the catalogue moved to MAJOR units on " +
+      "2026-08-30. Running it would multiply every gift card price by 100. " +
+      "Fix the arithmetic (or delete this file) before re-enabling."
+    logger.error(msg)
+    throw new Error(msg)
+  }
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const productService = container.resolve(Modules.PRODUCT)
 
@@ -105,7 +171,7 @@ export default async function fixGiftCardPrices({ args, container }: ExecArgs) {
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[fix-gift-card-prices] DRY-RUN mode — no writes will happen.")
+    logger.info("[fix-gift-card-prices] DRY-RUN mode: no writes will happen.")
   }
 
   const stats: Stats = {
@@ -174,7 +240,7 @@ export default async function fixGiftCardPrices({ args, container }: ExecArgs) {
       stats.variantsSkipped++
       logger.warn(
         `[fix-gift-card-prices] variant ${variant.sku ?? variant.id} has no usable ` +
-          `metadata.denomination_gbp — skipping (cannot determine intended price).`,
+          `metadata.denomination_gbp; skipping (cannot determine intended price).`,
       )
       continue
     }
@@ -194,7 +260,7 @@ export default async function fixGiftCardPrices({ args, container }: ExecArgs) {
       stats.variantsAlreadyCorrect++
       logger.info(
         `[fix-gift-card-prices] ${variant.sku ?? variant.id}: GBP already ${currentGbp.amount} ` +
-          `(within ±${TOLERANCE_MINOR} of intended ${intended.gbp}) — no patch needed.`,
+          `(within ±${TOLERANCE_MINOR} of intended ${intended.gbp}). No patch needed.`,
       )
       continue
     }
@@ -274,7 +340,7 @@ export default async function fixGiftCardPrices({ args, container }: ExecArgs) {
   // 4) Final report
   // ---------------------------------------------------------------------------
   // Touch productService just to keep the import wired for future expansion
-  // (e.g. also flipping is_giftcard or status) — also surfaces a misconfig
+  // (e.g. also flipping is_giftcard or status); also surfaces a misconfig
   // immediately if PRODUCT module isn't registered.
   void productService
 

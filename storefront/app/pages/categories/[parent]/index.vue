@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
- * /categories/[parent] — second-tier landing.
+ * /categories/[parent]: second-tier landing.
  *
  * Renders the parent category title + intro and a 4-up product grid filtered
  * by `category_id`. The merchery shell intentionally drops the
- * "sub-category tiles" intermediate block — visitors go straight from the
+ * "sub-category tiles" intermediate block, visitors go straight from the
  * H1+description to the filter bar to the grid, matching merchery's PLP.
  *
  * Resolution chain:
@@ -19,10 +19,10 @@
  *   - Handle resolves AND backend returns 0 products → "no products yet"
  *     with link back to the full catalogue.
  *
- * `discover` and `brands` are NOT real product taxonomy in Medusa — they're
+ * `discover` and `brands` are NOT real product taxonomy in Medusa, they're
  * editorial entries in the AppHeader nav. We render a curated landing block
  * for them rather than letting the resolver silently 404. (Long-term they
- * should move to /discover and /brands top-level pages — flagged in the
+ * should move to /discover and /brands top-level pages, flagged in the
  * route audit; tracked separately.)
  */
 import FilterPill from '~/components/ui/FilterPill.vue'
@@ -39,7 +39,7 @@ const { region, ensureRegion } = useRegion()
  * Sort collections by merchandiser priority when set, then by created_at desc.
  *
  * - metadata.discover_priority is a numeric field on the Medusa collection.
- * - Lower number = higher priority (1 first, 2 second, …) — standard
+ * - Lower number = higher priority (1 first, 2 second, …), standard
  *   "rank from the top" convention.
  * - Collections without the field sink below ranked ones, then sort by
  *   created_at desc (newest first) so new drops still surface naturally.
@@ -54,7 +54,7 @@ function sortByDiscoverPriority<T extends { metadata?: any, created_at?: string 
     if (aHas && bHas) return pa - pb
     if (aHas) return -1
     if (bHas) return 1
-    // Both unranked — fall back to created_at desc
+    // Both unranked: fall back to created_at desc
     const da = a?.created_at ? new Date(a.created_at).getTime() : 0
     const db = b?.created_at ? new Date(b.created_at).getTime() : 0
     return db - da
@@ -86,7 +86,7 @@ const EDITORIAL_FALLBACK: Record<string, EditorialCopy> = {
   },
   brands: {
     title: 'Brands',
-    lede: 'Shop premium label partners — Patagonia, Kinto, Moleskine, Yeti and more — when the product identity matters as much as the logo. We layer your branding on top of pieces people already trust.',
+    lede: 'Shop premium label partners (Patagonia, Kinto, Moleskine, Yeti and more) when the product identity matters as much as the logo. We layer your branding on top of pieces people already trust.',
     cta: { label: 'Browse all brands', to: '/products' },
     secondary: { label: 'Talk to us', to: '/contact' },
   },
@@ -98,7 +98,7 @@ const EDITORIAL_FALLBACK: Record<string, EditorialCopy> = {
 const HANDLE_FALLBACK_COPY: Record<string, { title: string, lede: string }> = {
   apparel: {
     title: 'Apparel',
-    lede: 'Heavyweight hoodies, crisp tees, and premium outerwear — the everyday uniform of the brand. Order from 25 pieces, e-proof in 48 hours.',
+    lede: 'Heavyweight hoodies, crisp tees, and premium outerwear: the everyday uniform of the brand. Order from 25 pieces, e-proof in 48 hours.',
   },
   bags: {
     title: 'Bags',
@@ -114,7 +114,7 @@ const HANDLE_FALLBACK_COPY: Record<string, { title: string, lede: string }> = {
   },
   drinkware: {
     title: 'Drinkware',
-    lede: 'Thermal bottles, tumblers, and ceramic mugs built to travel between commute, desk, and gym — with room for subtle branding.',
+    lede: 'Thermal bottles, tumblers, and ceramic mugs built to travel between commute, desk, and gym, with room for subtle branding.',
   },
   home: {
     title: 'Home',
@@ -122,7 +122,7 @@ const HANDLE_FALLBACK_COPY: Record<string, { title: string, lede: string }> = {
   },
   wellness: {
     title: 'Wellness',
-    lede: 'Yoga gear, recovery tools, and outdoor accessories for retreats, perks, and active communities — anything but throwaway swag.',
+    lede: 'Yoga gear, recovery tools, and outdoor accessories for retreats, perks, and active communities. Anything but throwaway swag.',
   },
   others: {
     title: 'Others',
@@ -132,7 +132,7 @@ const HANDLE_FALLBACK_COPY: Record<string, { title: string, lede: string }> = {
 
 await ensureRegion()
 
-// Live filter options — Medusa-backed `category`/`color`/`brand` pills with
+// Live filter options: Medusa-backed `category`/`color`/`brand` pills with
 // static fallback. `price`/`quantity`/`leadTime`/`sort` remain on the static
 // `filterOptions` import (domain-specific, see filters.ts header docblock).
 const { liveOptions, ensureResolved: ensureFilterOptionsResolved } = useFilterOptions()
@@ -159,11 +159,11 @@ const { data: category } = await useAsyncData(
 
 // Discover slug: pull live Medusa collections so the curated landing renders
 // real merchandised data (e.g. "DTF", "Hot Deals") rather than a static CTA
-// panel. Brands stays editorial — there's no live brand taxonomy in Medusa
+// panel. Brands stays editorial: there's no live brand taxonomy in Medusa
 // today, so its fallback panel below remains the source of truth.
 //
 // Failure mode: any SDK error (offline, 5xx, empty seed) collapses to an
-// empty array — the template then falls back to the EDITORIAL_FALLBACK CTA
+// empty array, the template then falls back to the EDITORIAL_FALLBACK CTA
 // panel for `discover`, so the page never breaks.
 const { data: discoverCollections } = await useAsyncData(
   'category-discover-collections',
@@ -210,7 +210,7 @@ const { data: products } = await useAsyncData(
   { watch: [() => (category.value as any)?.id, () => region.value?.id] },
 )
 
-// Pretty page title even when Medusa hasn't seeded the handle yet — falls
+// Pretty page title even when Medusa hasn't seeded the handle yet, falls
 // back to the editorial / handle-copy lookup so the browser tab + share
 // previews never read "Category · GhostMark Studio".
 const pageTitle = computed(() => {
@@ -235,7 +235,7 @@ useHead(() => ({
   meta: [{ name: 'description', content: pageDescription.value }],
 }))
 
-// --- Filter state — one ref per multi-select pill, plus the single-select
+// --- Filter state: one ref per multi-select pill, plus the single-select
 // `sortBy` and the standalone `fastShipping` checkbox. Backend facet wiring
 // is out of scope; only sort drives the visible grid order today.
 const categoryFilter = ref<string[]>([])
@@ -249,7 +249,7 @@ const sortBy = ref<string>('relevance')
 
 const sortedProducts = computed(() => applySort(products.value as any[], sortBy.value))
 
-// --- Mobile sheet state — same pattern as /products + /shop so the
+// --- Mobile sheet state: same pattern as /products + /shop so the
 // two-button row (Filter / Sort) can open a real bottom sheet rather than
 // the previous inert placeholder buttons.
 const filterSheetOpen = ref(false)
@@ -276,12 +276,12 @@ function onClearFilters() {
 </script>
 
 <template>
-  <div class="lg:pt-[118px]">
-    <div class="relative px-[1.5rem] lg:px-[3rem]">
-      <!-- Breadcrumb — flow at <md so it can never collide with a wrapping
-           H1 (this route's titles are dynamic — "drinkware", "wellness", ...
-           — so we can't predict line count). Floats absolute at md+. -->
-      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:pt-0" aria-label="breadcrumbs">
+  <div>
+    <div class="relative mx-auto w-full max-w-rail px-gutter">
+      <!-- Breadcrumb: flow at <md so it can never collide with a wrapping
+           H1 (this route's titles are dynamic, "drinkware", "wellness", ...,
+           so we can't predict line count). Floats absolute at md+. -->
+      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:z-10 md:pt-0" aria-label="breadcrumbs">
         <ol class="flex flex-wrap items-center gap-x-1 gap-y-0">
           <li>
             <NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">
@@ -305,21 +305,21 @@ function onClearFilters() {
         </ol>
       </nav>
 
-      <h1 class="relative mb-[3rem] max-w-[110rem] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[4rem] sm:text-[4.4rem] lg:text-[8rem] leading-[4.4rem] sm:leading-[4.8rem] lg:leading-[8.8rem] capitalize tracking-[-0.01em]">
+      <h1 class="relative mb-[3rem] max-w-[1100px] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[40px] sm:text-[44px] lg:text-[80px] leading-[44px] sm:leading-[48px] lg:leading-[88px] capitalize tracking-[-0.01em]">
         {{ (category as any)?.name ?? EDITORIAL_FALLBACK[parent]?.title ?? HANDLE_FALLBACK_COPY[parent]?.title ?? parent }}
       </h1>
 
-      <p v-if="(category as any)?.description" class="mb-[6rem] max-w-[56rem]">
+      <p v-if="(category as any)?.description" class="mb-[6rem] max-w-[560px]">
         {{ (category as any).description }}
       </p>
-      <p v-else-if="isEditorial" class="mb-[6rem] max-w-[56rem]">
+      <p v-else-if="isEditorial" class="mb-[6rem] max-w-[560px]">
         {{ EDITORIAL_FALLBACK[parent].lede }}
       </p>
-      <p v-else-if="HANDLE_FALLBACK_COPY[parent]" class="mb-[6rem] max-w-[56rem]">
+      <p v-else-if="HANDLE_FALLBACK_COPY[parent]" class="mb-[6rem] max-w-[560px]">
         {{ HANDLE_FALLBACK_COPY[parent].lede }}
       </p>
-      <p v-else class="mb-[6rem] max-w-[56rem]">
-        Browse the {{ parent }} corner of the GhostMark catalogue &mdash;
+      <p v-else class="mb-[6rem] max-w-[560px]">
+        Browse the {{ parent }} corner of the GhostMark catalogue,
         produced in Bordeaux for studios and teams. Order from 25 pieces, e-proof in 48 hours.
       </p>
 
@@ -363,7 +363,7 @@ function onClearFilters() {
         v-else-if="isEditorial"
         class="mb-12 flex flex-col gap-6 rounded border border-greyLines bg-cream-tile p-8 lg:flex-row lg:items-center lg:justify-between"
       >
-        <p class="max-w-[44rem] font-body text-body text-ink-700">
+        <p class="max-w-[440px] font-body text-body text-ink-700">
           This shelf is curated rather than a single product category. Use the
           buttons to dive into the catalogue, or tell us what you're sourcing.
         </p>
@@ -389,11 +389,11 @@ function onClearFilters() {
       </div>
 
       <!-- Friendly empty state when a normal product handle is missing from
-           Medusa (backend not seeded, downtime, etc.) — never show the raw
+           Medusa (backend not seeded, downtime, etc.), never show the raw
            "we couldn't find" copy to a real shopper. -->
       <div v-else-if="!category" class="mb-12 flex flex-col gap-6 rounded border border-greyLines bg-cream-tile p-8 lg:flex-row lg:items-center lg:justify-between">
-        <p class="max-w-[44rem] font-body text-body text-ink-700">
-          We're stocking this shelf — check back soon, or browse everything in the catalogue while we restock.
+        <p class="max-w-[440px] font-body text-body text-ink-700">
+          We're stocking this shelf. Check back soon, or browse everything in the catalogue while we restock.
         </p>
         <div class="flex flex-wrap gap-3">
           <UiButton
@@ -425,7 +425,7 @@ function onClearFilters() {
             <FilterPill v-model="leadTimeFilter" label="Lead time" :options="filterOptions.leadTime" data-test="filter-leadtime" />
             <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color" />
             <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand" />
-            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
+            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded-none cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
               <input v-model="fastShipping" type="checkbox" class="w-5 h-5 rounded border-greyLines text-ink-950 focus:ring-ink-950">
               <span class="text-[14px] text-ink-950">Fast shipping only</span>
             </label>
@@ -439,13 +439,13 @@ function onClearFilters() {
           />
         </nav>
 
-        <!-- Mobile filter bar — wired two-button row (Filter / Sort). Drops the
+        <!-- Mobile filter bar: wired two-button row (Filter / Sort). Drops the
              previous `mx-[1.5rem]` (the parent already has `px-[1.5rem]`, so
              nesting margins blew the row out at 320). 48px tall hits WCAG. -->
         <div class="flex gap-3 pb-[1rem] border-b border-greyLines md:hidden">
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="filterSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950">Filters{{ totalActiveFilters > 0 ? ` (${totalActiveFilters})` : '' }}</span>
@@ -455,7 +455,7 @@ function onClearFilters() {
           </button>
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="sortSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950 truncate">Sort: {{ sortLabel }}</span>
@@ -465,7 +465,7 @@ function onClearFilters() {
           </button>
         </div>
 
-        <!-- Mobile bottom sheets — Teleported, full-height drawer pattern. -->
+        <!-- Mobile bottom sheets: Teleported, full-height drawer pattern. -->
         <MobileFilterSheet
           v-model:open="filterSheetOpen"
           title="Filter products"
@@ -497,7 +497,7 @@ function onClearFilters() {
 
         <ul
           v-if="sortedProducts?.length"
-          class="grid grid-cols-2 gap-[1.6rem] md:grid-cols-3 lg:grid-cols-4 lg:gap-[3rem] mt-[3rem]"
+          class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 xl:grid-cols-5 mt-[3rem]"
         >
           <ProductCard
             v-for="p in sortedProducts"
@@ -507,8 +507,8 @@ function onClearFilters() {
         </ul>
 
         <div v-else class="py-12 text-center">
-          <p class="mx-auto max-w-[44rem] font-body text-body text-ink-500">
-            No products on this shelf yet — we're sourcing.
+          <p class="mx-auto max-w-[440px] font-body text-body text-ink-500">
+            No products on this shelf yet. We're sourcing.
             <NuxtLink to="/products" class="ml-1 text-ink-950 underline decoration-dashed underline-offset-4 hover:decoration-solid">
               Browse all products
             </NuxtLink>
@@ -521,7 +521,7 @@ function onClearFilters() {
       </template>
     </div>
 
-    <div class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 mt-16 flex flex-col gap-12 mb-12">
+    <div class="mx-auto w-full max-w-rail px-gutter mt-16 flex flex-col gap-12 mb-12">
       <AppFaq />
       <AppNewsletter />
     </div>

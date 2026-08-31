@@ -1,5 +1,5 @@
 // =============================================================================
-// fix-category-typo — re-run-safe display-name fixer for the "Kids & baby
+// fix-category-typo: re-run-safe display-name fixer for the "Kids & baby
 // clothing" product category.
 //
 // Why this exists
@@ -14,7 +14,7 @@
 // ------------
 //   1. Look up the category by `handle: kids-baby-clothing` via the
 //      remote-query graph (productService.listProductCategories({}) returns
-//      nothing on this Medusa version — same caveat as seed-sample.ts).
+//      nothing on this Medusa version; same caveat as seed-sample.ts).
 //   2. If `name === "Kids & baby clothing"` already: report and exit.
 //   3. Otherwise: run updateProductCategoriesWorkflow with selector by id.
 //
@@ -54,7 +54,7 @@ export default async function fixCategoryTypo({ args, container }: ExecArgs) {
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[fix-category-typo] DRY-RUN mode — no writes will happen.")
+    logger.info("[fix-category-typo] DRY-RUN mode: no writes will happen.")
   }
 
   // ---------------------------------------------------------------------------
@@ -91,13 +91,13 @@ export default async function fixCategoryTypo({ args, container }: ExecArgs) {
   )
 
   if (dryRun) {
-    logger.info("[fix-category-typo] DRY-RUN — skipping write.")
+    logger.info("[fix-category-typo] DRY-RUN: skipping write.")
     return
   }
 
   // ---------------------------------------------------------------------------
   // 2) Apply via the workflow so subscribers (search indexer, etc.) fire.
-  //    Handle is intentionally NOT modified — that would break inbound URLs.
+  //    Handle is intentionally NOT modified; that would break inbound URLs.
   // ---------------------------------------------------------------------------
   try {
     const { result } = await updateProductCategoriesWorkflow(container).run({

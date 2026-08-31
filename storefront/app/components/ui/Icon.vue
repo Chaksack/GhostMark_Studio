@@ -1,6 +1,6 @@
 <template>
   <!--
-    Icon — single source of truth for inline SVG chrome.
+    Icon: single source of truth for inline SVG chrome.
 
     Why this exists (v17 merchery audit):
       Header icons drifted (cart 22, heart 18, user 18, search 20) and stroke-
@@ -11,7 +11,7 @@
 
     Render strategy:
       We use Vue's `h()` render function (Vue 3.4+) instead of v-html for the
-      path bodies. This keeps the SVG inside Vue's vnode tree — no innerHTML
+      path bodies. This keeps the SVG inside Vue's vnode tree: no innerHTML
       parse, no XSS surface, and Vue can statically hoist the registry once.
       The `<component :is="path" />` slot calls the registered factory and
       returns a vnode, so each icon is just a tiny function reference.
@@ -19,7 +19,7 @@
     Sizing & colour discipline:
       - Single 24x24 viewBox so all path data shares the same coordinate
         space and visual weight, even when the rendered size varies.
-      - `stroke="currentColor"` and `fill="none"` by default — colour follows
+      - `stroke="currentColor"` and `fill="none"` by default: colour follows
         the surrounding text, fill is opt-in per path (used by social marks
         and the wishlist-filled state).
       - `stroke-width` defaults to 2; pass-through prop allows e.g. the
@@ -31,7 +31,7 @@
       - When `ariaLabel` is present we set `role="img"` and the label, so
         the SVG becomes a meaningful image for assistive tech. Most call
         sites wrap Icon in a <button aria-label="..."> and want decorative
-        treatment — that path is the default and requires no extra props.
+        treatment. That path is the default and requires no extra props.
   -->
   <svg
     :viewBox="viewBox"
@@ -97,7 +97,7 @@ const props = withDefaults(defineProps<Props>(), {
 const viewBox = computed(() => '0 0 24 24')
 
 // Registry of icon path factories. Each factory returns a vnode (or vnode
-// list) that lives INSIDE the wrapping <svg>. Factories — not raw vnodes —
+// list) that lives INSIDE the wrapping <svg>. Factories (not raw vnodes)
 // because vnodes are not safely shareable across renders; calling the
 // factory yields a fresh tree every time the component mounts.
 const PATHS: Record<IconName, () => any> = {
@@ -107,7 +107,7 @@ const PATHS: Record<IconName, () => any> = {
     h('circle', { cx: 9, cy: 20, r: 1 }),
     h('circle', { cx: 18, cy: 20, r: 1 }),
   ]),
-  // Symmetric heart from Lucide — clean curve, mirrors across the y-axis,
+  // Symmetric heart from Lucide: clean curve, mirrors across the y-axis,
   // recognisable shape. The earlier custom path was asymmetric and read as
   // a melted teardrop instead of a heart.
   wishlist: () => h('path', {

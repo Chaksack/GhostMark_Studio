@@ -1,5 +1,5 @@
 // =============================================================================
-// uploaded-designs-widget — surface customer-uploaded POD designs on the
+// uploaded-designs-widget: surface customer-uploaded POD designs on the
 // admin order detail page.
 //
 // Why this widget exists
@@ -10,12 +10,12 @@
 //   2. The *original* file the customer dropped in, one per print location
 //
 // Both URLs land on the line item's `metadata`:
-//   - `metadata.previewImageUrl` — top-level convenience thumbnail
-//   - `metadata.designDataJson`  — JSON string, contains
+//   - `metadata.previewImageUrl`: top-level convenience thumbnail
+//   - `metadata.designDataJson`:  JSON string, contains
 //       `{ designs: { front: { originalUrl, originalFilename, ... }, … } }`
 //
 // Without this widget, ops sees a normal-looking line item in /app/orders/{id}
-// with no clue there's customer artwork attached — and the customer's email
+// with no clue there's customer artwork attached, and the customer's email
 // already promised "we'll start production after the e-proof", so ops needs
 // to be able to pull the design immediately on order open.
 //
@@ -27,7 +27,7 @@
 //   - One row per print location with: name, technique, original file
 //     download link, mock dimensions
 //   - A bare badge if the original upload failed and only the preview
-//     exists (rare — usually a flaky-network customer)
+//     exists (rare, usually a flaky-network customer)
 //
 // If there are no customised items on the order, the widget renders
 // nothing (`return null`) so non-POD orders aren't cluttered.
@@ -46,17 +46,17 @@ import { Container, Heading, Text, Badge, Button } from "@medusajs/ui"
 // VITE_STOREFRONT_PUBLIC_URL=https://shop.ghostmark.studio in
 // production; the dev fallback assumes the storefront runs on :3000
 // (which is what the rest of this codebase assumes via the Medusa
-// STORE_CORS list — see ghostmark/.env).
+// STORE_CORS list; see ghostmark/.env).
 const STOREFRONT_ORIGIN: string =
-  // @ts-expect-error — VITE_ env types are provided by Medusa's bundler
+  // @ts-expect-error: VITE_ env types are provided by Medusa's bundler
   (import.meta?.env?.VITE_STOREFRONT_PUBLIC_URL as string | undefined) ??
   "http://localhost:3000"
 
 const absoluteUploadUrl = (url: string | null | undefined): string | null => {
   if (!url) return null
-  // Already absolute (http(s):// or //) — leave alone.
+  // Already absolute (http(s):// or //): leave alone.
   if (/^(?:https?:)?\/\//.test(url)) return url
-  // Relative path uploaded by the storefront — prefix with the
+  // Relative path uploaded by the storefront: prefix with the
   // storefront origin so the admin browser can fetch it.
   if (url.startsWith("/")) return `${STOREFRONT_ORIGIN}${url}`
   return url

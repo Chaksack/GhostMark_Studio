@@ -1,12 +1,54 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { sendEmail } from "../../../../services/email-service"
+import { html, safeUrl } from "../../../../utils/html"
+import { signPayload } from "../../../../utils/secure-token"
+import { resolveStorefrontBase, resolveBackendBase } from "../../../../utils/public-url"
+import { NEWSLETTER_CONFIRM_PURPOSE, NEWSLETTER_CONFIRM_TTL_SECONDS } from "../../../../utils/newsletter"
+import { enforceRateLimit, getClientIp, RATE_LIMITS } from "../../../../utils/rate-limit"
+import { isValidEmail, normalizeEmail, clampText } from "../../../../utils/validation"
 
 /**
  * POST /store/newsletter/subscribe
- * Body: { email: string, first_name?: string, last_name?: string, interests?: string[], send_welcome?: boolean }
- * Saves a newsletter subscription intent (no DB persistence in this minimal implementation)
- * and optionally sends a welcome/confirmation email using Resend.
+ * Body: { email: string, first_name?: string, last_name?: string, interests?: string[] }
+ * Returns: { ok: true, pending: true }
+ *
+ * -------------------------------------------------------------------------
+ * WHY THIS IS NOW DOUBLE OPT-IN
+ * -------------------------------------------------------------------------
+ * This route previously took an arbitrary `email` from the request body and
+ * immediately sent a fully branded GhostMark welcome email to it, from our
+ * verified Resend domain, with the caller's `first_name` and `interests`
+ * interpolated UNESCAPED into the HTML body. It required only a publishable
+ * API key, which ships inside storefront JavaScript and is therefore public.
+ * There was no rate limit anywhere in the codebase.
+ *
+ * That is a remote-controlled phishing cannon: an attacker chooses the victim,
+ * chooses the content (including arbitrary <a href> markup), and we supply the
+ * branding, the domain reputation and the DKIM signature.
+ *
+ * Double opt-in is the structural fix, not a mitigation. It splits the flow:
+ *
+ *   1. This route sends a CONFIRMATION email whose content is 100%
+ *      server-generated. An attacker who names a victim's address can cause
+ *      exactly one generic "did you mean to subscribe?" email - carrying no
+ *      message of theirs - and is capped at 3 per day for that address.
+ *
+ *   2. Only after the recipient clicks the signed link in that email does the
+ *      welcome email get sent, and only then is any caller-supplied text
+ *      rendered. By that point the address is proven to be reachable by
+ *      whoever clicked, so caller-supplied content can only reach someone who
+ *      asked for it.
+ *
+ * The pending subscription has no table to live in, so it lives inside the
+ * signed token itself - see signPayload in utils/secure-token.ts. The token is
+ * HMAC-signed and expiring, so its contents cannot be edited by the holder.
  */
+
+const MAX_NAME_LENGTH = 80
+const MAX_INTEREST_LENGTH = 40
+const MAX_INTERESTS = 10
+
+
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   try {
     // In Medusa/Express handlers, the parsed body is available on req.body.
@@ -22,48 +64,125 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       send_welcome?: boolean
     }
 
-    const email = (body?.email || "").trim().toLowerCase()
+    const email = normalizeEmail(body?.email)
+
+    /**
+     * Validate the address properly rather than merely checking it is
+     * non-empty. isValidEmail also rejects CR/LF, which would otherwise be an
+     * SMTP header injection vector, and caps the length so this value cannot
+     * become an unbounded rate-limit map key.
+     */
     if (!email) {
       return res.status(400).json({ ok: false, message: "Email is required" })
     }
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ ok: false, message: "A valid email address is required" })
+    }
 
-    const first = (body.first_name || "").trim()
-    const last = (body.last_name || "").trim()
+    /**
+     * Rate limit BEFORE sending. The per-recipient ceiling (3 per DAY) is the
+     * tightest in the codebase and is the one that matters: "resend the
+     * confirmation" is the classic mail-bombing primitive, and unlike the
+     * per-IP bucket it cannot be evaded by spoofing X-Forwarded-For, because
+     * the address being limited on IS the attacker's target.
+     */
+    const allowed = enforceRateLimit(res, [
+      { name: "newsletter_ip", key: getClientIp(req), ...RATE_LIMITS.NEWSLETTER_SUBSCRIBE_IP },
+      { name: "newsletter_rcpt", key: email, ...RATE_LIMITS.NEWSLETTER_SUBSCRIBE_RECIPIENT },
+    ])
+    if (!allowed) {
+      return // 429 already sent
+    }
+
+    const first = clampText(String(body.first_name ?? "").trim(), MAX_NAME_LENGTH)
+    const last = clampText(String(body.last_name ?? "").trim(), MAX_NAME_LENGTH)
     const name = [first, last].filter(Boolean).join(" ")
 
-    // In a fuller solution, you'd persist the subscriber to your database here.
-    // For now, we just optionally send a welcome email through Resend.
-    const shouldSend = body.send_welcome !== false // default true
+    const interests = (Array.isArray(body.interests) ? body.interests : [])
+      .slice(0, MAX_INTERESTS)
+      .map((i) => clampText(String(i ?? "").trim(), MAX_INTEREST_LENGTH))
+      .filter(Boolean)
 
-    let welcome: any = null
-    if (shouldSend) {
-      const subject = `Welcome${name ? ", " + name : ""}!`
-      const interestsList = (body.interests || []).join(", ")
+    // Preserved from the previous API: an explicit false suppresses email
+    // entirely. Nothing is persisted in this minimal implementation, so this
+    // simply becomes a no-op acknowledgement.
+    if (body.send_welcome === false) {
+      return res.json({ ok: true, pending: false, subscribed: true })
+    }
 
-      // Resolve a public base URL for assets (logo). Fallback to localhost storefront.
-      const publicBase = (
-        process.env.STOREFRONT_PUBLIC_URL ||
-        process.env.NEXT_PUBLIC_STOREFRONT_URL ||
-        process.env.NEXT_PUBLIC_SITE_URL ||
-        process.env.SITE_URL ||
-        process.env.FRONTEND_URL ||
-        "http://localhost:8000"
-      ).replace(/\/$/, "")
-      const logoUrl = `${publicBase}/icon.png`
+    /**
+     * The pending subscription travels inside the signed token. It is signed,
+     * NOT encrypted - anyone holding the link can read the name and interests
+     * back out. That is acceptable because the only person who receives the
+     * link is the owner of the address, and it is their own data.
+     */
+    const token = signPayload(
+      { email, name, interests },
+      NEWSLETTER_CONFIRM_TTL_SECONDS,
+      NEWSLETTER_CONFIRM_PURPOSE
+    )
 
-      const html = `
+    const confirmUrl = `${resolveBackendBase()}/store/newsletter/confirm?token=${encodeURIComponent(token)}`
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Confirm your GhostMark Studio subscription",
+        html: buildConfirmationEmail(confirmUrl),
+        text: buildConfirmationText(confirmUrl),
+        tags: [
+          { name: "category", value: "newsletter" },
+          { name: "event", value: "confirm_request" },
+        ],
+        headers: { "X-Newsletter": "confirm" },
+      })
+    } catch (e: any) {
+      console.error("[newsletter] Failed to send confirmation email:", e)
+      return res.status(200).json({
+        ok: true,
+        pending: true,
+        warning: "Failed to send confirmation email",
+      })
+    }
+
+    /**
+     * The response is IDENTICAL whether or not this address was already
+     * subscribed or previously bounced. Varying it would turn this endpoint
+     * into a subscriber-list oracle - "is bob@company.com a customer?" - which
+     * is a privacy leak that costs an attacker nothing to harvest.
+     */
+    return res.json({ ok: true, pending: true })
+  } catch (e: any) {
+    console.error("[newsletter] Subscribe failed:", e)
+    return res.status(500).json({ ok: false, message: "Failed to subscribe" })
+  }
+}
+
+/**
+ * Confirmation email.
+ *
+ * EVERY VALUE HERE IS SERVER-GENERATED. No name, no interests, no
+ * caller-supplied text of any kind - this is the one message that can be aimed
+ * at an address the caller does not own, so it must carry nothing of theirs.
+ * Escaping alone would not be sufficient: mail clients autolink bare URLs in
+ * plain text, so `verify at https://evil.test` survives escaping and renders
+ * as a live link. The only safe amount of attacker prose here is none.
+ */
+function buildConfirmationEmail(confirmUrl: string): string {
+  const publicBase = resolveStorefrontBase()
+  const logoUrl = `${publicBase}/icon.png`
+
+  return html`
       <!doctype html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Welcome to GhostMark Studio</title>
+          <title>Confirm your subscription</title>
           <style>
-            /* General resets */
             body { margin:0; padding:0; background:#f6f7f9; }
             img { border:0; outline:none; text-decoration:none; display:block; }
             a { color:#111; text-decoration:none; }
-            /* Container */
             .wrapper { width:100%; background:#f6f7f9; padding:24px 0; }
             .container { max-width:640px; margin:0 auto; background:#ffffff; border-radius:16px; box-shadow:0 6px 28px rgba(16,24,40,0.06); overflow:hidden; }
             .header { padding:20px 28px; border-bottom:1px solid #eef0f3; display:flex; align-items:center; gap:12px; }
@@ -94,35 +213,27 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
               <tr>
                 <td align="center">
                   <div class="container">
-                    <!-- Header -->
                     <div class="header">
-                      <img alt="GhostMark Studio" src="${logoUrl}" width="28" height="28" style="border-radius:6px;" />
+                      <img alt="GhostMark Studio" src="${safeUrl(logoUrl)}" width="28" height="28" style="border-radius:6px;" />
                       <div class="brand">GhostMark Studio</div>
                     </div>
-
-                    <!-- Body -->
                     <div class="hero">
                       <div class="badge">Newsletter</div>
-                      <h1 class="h1">Thanks for subscribing${name ? ", " + name : ""} 👋</h1>
-                      <p class="p">You’re now on the list to hear from GhostMark Studio — product drops, workshops, and printing tips straight to your inbox.</p>
-                      ${interestsList ? `<p class="p" style="margin-top:4px;">Your interests: <strong style="color:#0f172a;">${interestsList}</strong></p>` : ""}
-                      <p class="p">As a welcome, here’s a little nudge to start exploring. We’re glad you’re here.</p>
-                      <a class="cta" href="${publicBase}" target="_blank" rel="noopener">Visit the store</a>
-
+                      <h1 class="h1">Confirm your subscription</h1>
+                      <p class="p">Someone entered this address to subscribe to the GhostMark Studio newsletter. Confirm below and we will start sending you product drops, workshops and printing tips.</p>
+                      <a class="cta" href="${safeUrl(confirmUrl)}" target="_blank" rel="noopener">Confirm subscription</a>
                       <div class="divider"></div>
-                      <p class="p muted">If this wasn’t you, you can ignore this message. You can unsubscribe at any time using the link in our emails.</p>
+                      <p class="p muted">If this was not you, do nothing. No subscription is created unless you click the button above, and we will not email this address again. This link expires in 24 hours.</p>
                     </div>
-
-                    <!-- Footer -->
                     <div class="footer">
                       <table role="presentation" width="100%" style="border-collapse:collapse;">
                         <tr>
                           <td style="vertical-align:top;">
-                            <p class="muted" style="margin:0;">© ${new Date().getFullYear()} GhostMark Studio</p>
+                            <p class="muted" style="margin:0;">${new Date().getFullYear()} GhostMark Studio</p>
                             <p class="muted" style="margin:4px 0 0;">Made in London</p>
                           </td>
                           <td align="right" style="vertical-align:top;">
-                            <a href="${publicBase}" class="muted" style="margin-left:12px;">Website</a>
+                            <a href="${safeUrl(publicBase)}" class="muted" style="margin-left:12px;">Website</a>
                           </td>
                         </tr>
                       </table>
@@ -133,32 +244,17 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
             </table>
           </div>
         </body>
-      </html>
-      `
+      </html>`.toString()
+}
 
-      try {
-        welcome = await sendEmail({
-          to: email,
-          subject,
-          html,
-          text: `Thanks for subscribing${name ? ", " + name : ""}. Interests: ${interestsList || "n/a"}.`,
-          tags: [
-            { name: "category", value: "newsletter" },
-            { name: "event", value: "subscribe" },
-          ],
-          headers: {
-            "X-Newsletter": "subscribe",
-          },
-        })
-      } catch (e: any) {
-        // If sending welcome fails, we still return ok with a warning
-        return res.status(200).json({ ok: true, subscribed: true, warning: e?.message || "Failed to send welcome email" })
-      }
-    }
+function buildConfirmationText(confirmUrl: string): string {
+  return `Confirm your GhostMark Studio subscription
 
-    return res.json({ ok: true, subscribed: true, welcome })
-  } catch (e: any) {
-    const message = e?.message || "Failed to subscribe"
-    return res.status(500).json({ ok: false, message })
-  }
+Someone entered this address to subscribe to the GhostMark Studio newsletter.
+
+Confirm here: ${confirmUrl}
+
+If this was not you, do nothing. No subscription is created unless you follow
+the link above, and we will not email this address again.
+This link expires in 24 hours.`
 }

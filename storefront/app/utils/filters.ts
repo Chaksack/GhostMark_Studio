@@ -5,13 +5,13 @@
  * -------------------------
  * Two exports live in this file and they are intentionally NOT redundant:
  *
- *   1. `filterOptions` — the original static lists. These are still imported
+ *   1. `filterOptions`: the original static lists. These are still imported
  *      directly by every PLP (`/products`, `/categories/*`, `/collections/*`,
  *      `/shop`). The values are the hard-coded baseline / fallback used when
  *      the backend has nothing to say (e.g. SSR before `ensureResolved()`,
  *      a Medusa outage, or an empty catalogue).
  *
- *   2. `useFilterOptions()` — the live composable. Wraps `useFilterFacets`
+ *   2. `useFilterOptions()`: the live composable. Wraps `useFilterFacets`
  *      and returns the same `{ category, price, quantity, leadTime, color,
  *      brand, sort }` shape, but with `category | color | brand` populated
  *      from Medusa when data exists. Pages can migrate at their own pace by
@@ -27,7 +27,7 @@
  *      color     → unique values of variant option titled /colou?r/i
  *      brand     → `product.metadata.brand` or title-case `tags[].value`
  *
- *  - Domain-specific (ALWAYS STATIC — these are commerce decisions, not
+ *  - Domain-specific (ALWAYS STATIC: these are commerce decisions, not
  *    catalog data, and changing them requires merchandising sign-off, not a
  *    schema migration):
  *      price     → bucket UX (£0-25 / £25-50 / £50-100 / £100+). A
@@ -97,7 +97,7 @@ export const filterOptions = {
  * payload. Used by the `sortedProducts` computed in every PLP page so we can
  * client-side sort by price without mutating the upstream array. Returns
  * `Number.POSITIVE_INFINITY` when no priced variant exists so `price-asc`
- * keeps unpriced rows at the tail and `price-desc` at the head — never
+ * keeps unpriced rows at the tail and `price-desc` at the head, never
  * accidentally interleaved into the priced list.
  */
 export function productMinPrice(product: any): number {
@@ -115,7 +115,7 @@ export function productMinPrice(product: any): number {
 
 /**
  * Apply the active sort key to a product list. Always returns a fresh array
- * (never mutates the input) — the PLP `sortedProducts` computed depends on
+ * (never mutates the input): the PLP `sortedProducts` computed depends on
  * referential change to retrigger downstream `<ProductCard>` keys.
  */
 export function applySort<T extends { created_at?: string | Date | null }>(
@@ -149,7 +149,7 @@ export function sortLabel(value: string): string {
 
 /**
  * Live filter options bound to the active Medusa catalogue. Composable form
- * so it can lean on `useFilterFacets`'s SSR-safe `useState` cache — the
+ * so it can lean on `useFilterFacets`'s SSR-safe `useState` cache: the
  * first PLP to call `ensureResolved()` pays the round-trip, every subsequent
  * caller reads the cached payload.
  *
@@ -178,13 +178,13 @@ export function useFilterOptions() {
   const liveOptions = computed(() => {
     const f = facets.value
     return {
-      // Live with static fallback — once Medusa returns at least one entry
+      // Live with static fallback: once Medusa returns at least one entry
       // we trust the live set entirely. Mixing live + static would risk
       // showing a category that doesn't exist in the catalogue.
       category: f.category.length ? f.category : filterOptions.category,
       color: f.color.length ? f.color : filterOptions.color,
       brand: f.brand.length ? f.brand : filterOptions.brand,
-      // Domain-specific — always static (see header docblock for rationale).
+      // Domain-specific: always static (see header docblock for rationale).
       price: filterOptions.price,
       quantity: filterOptions.quantity,
       leadTime: filterOptions.leadTime,
@@ -196,7 +196,7 @@ export function useFilterOptions() {
 }
 
 /**
- * Legacy shim — the canonical implementation now lives in
+ * Legacy shim: the canonical implementation now lives in
  * {@link useProductTypes} (`~/composables/useProductTypes`). This wrapper
  * preserves the original `{ typeIds, ensureTypeIds, ready }` contract used
  * by `/shop` and `/shop/canon` so they continue to compile while the next
@@ -205,9 +205,9 @@ export function useFilterOptions() {
  *
  * The returned `typeIds` is a `ComputedRef<Record<string, string | null>>`
  * that mirrors the new map. Legacy callers reading `typeIds.value['apparel']`
- * still work — they just get the value from the new state container.
+ * still work; they just get the value from the new state container.
  *
- * Do not add new callers — use `useProductTypes` (or, better, `useProducts`)
+ * Do not add new callers: use `useProductTypes` (or, better, `useProducts`)
  * for new code.
  *
  * @deprecated use `useProductTypes` from `~/composables/useProductTypes`

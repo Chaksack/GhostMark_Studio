@@ -5,7 +5,7 @@
 //   - apparel (D2C buy-as-is)  → /shop/[handle]
 //   - pod     (upload + MOQ)   → /products/[handle]
 //
-// We branch on `product.type.value` (the canonical taxonomy field — never
+// We branch on `product.type.value` (the canonical taxonomy field, never
 // heuristics) and emit per-type URL prefixes plus realistic <changefreq> /
 // <lastmod> hints. Static IA paths are listed first with hand-tuned
 // priorities; dynamic product paths follow at priority 0.6.
@@ -16,7 +16,7 @@
 //     outage degrades to a static-only sitemap instead of returning 500.
 //   - Apparel-route gap: until `/shop/[handle]` exists, apparel handles
 //     fall through to `/products/[handle]` (documented at the branch site).
-//   - Hard cap at 200 products via the `limit` query — Google's per-sitemap
+//   - Hard cap at 200 products via the `limit` query. Google's per-sitemap
 //     ceiling is 50,000; pagination/sitemap-index is a follow-up.
 
 import { defineEventHandler, setHeader } from 'h3'
@@ -85,11 +85,11 @@ export default defineEventHandler(async (event) => {
     })
     products = Array.isArray(res?.products) ? res.products : []
   } catch {
-    // Degrade to static-only on backend failure — never 500 the sitemap.
+    // Degrade to static-only on backend failure: never 500 the sitemap.
     products = []
   }
 
-  // Live collections — surfaces curated PLP URLs (e.g. /collections/dtf,
+  // Live collections: surfaces curated PLP URLs (e.g. /collections/dtf,
   // /collections/hot-deals) so crawlers discover the merchandised shelves
   // without a manual feed. Same failure posture as products: degrade to
   // static-only on backend failure.

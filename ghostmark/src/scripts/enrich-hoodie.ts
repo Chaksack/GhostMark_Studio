@@ -1,3 +1,57 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT. IT WOULD DESTROY THE ATELIER-HOODIE CATALOGUE
+ * AND REPRICE IT AT GBP 8,900.00 PER VARIANT.
+ * ============================================================================
+ *
+ * Two independent defects, either one sufficient to refuse.
+ *
+ * 1. FLIPPED UNIT CONVENTION.
+ *    `:prices` below writes `{ amount: 8900, currency_code: "gbp" }`. That was
+ *    correct when written, because the catalogue stored MINOR units then.
+ *
+ *    THE CONVENTION FLIPPED ON 2026-08-30. migrate-price-units converted the
+ *    catalogue to MAJOR units. Verified live against the database that day:
+ *
+ *        atelier-hoodie, gbp base:  89        <- correct, MAJOR (GBP 89.00)
+ *        this script would write:   8900      <- GBP 8,900.00, 100x
+ *
+ *    Same inversion as fix-gift-card-prices.ts. See its banner.
+ *
+ * 2. IT DELETES EVERY VARIANT FIRST, AND THE DELETION IS NOT RECOVERABLE
+ *    FROM ANY LEDGER.
+ *    Step 1 (`batchProductVariantsWorkflow ... delete`) removes every live
+ *    variant, and step 2 drops every option. Measured live on 2026-08-30:
+ *
+ *        live variants on atelier-hoodie ............... 32
+ *        live gbp price rows (7-rung ladder x 32) ..... 224
+ *        rows ledgered in gms_quantity_tier_migration .. 576
+ *          (6 real rungs x 32 variants x 3 currencies)
+ *
+ *    The rebuild creates 32 variants with ONE gbp price and NO quantity
+ *    ladder, so the 25/50/100/200/300/400 breaks are gone. Worse, the
+ *    quantity-tier ledger records those 576 rows by price_id only. Once the
+ *    variants are deleted those ids no longer exist, so that ledger's rollback
+ *    reports them as "already gone from the price table" and CLOSES THE LEDGER
+ *    for them. The ladder becomes unrecoverable by any automated path.
+ *
+ * The header below still claims "Idempotency: ... Safe to invoke repeatedly."
+ * That sentence was true of the shape and was never true of the CONTENT: each
+ * run destroys the priced ladder and rewrites the base price 100x high. It is
+ * left in place, and contradicted here, because deleting it would hide that a
+ * plausible-looking safety claim is what made this file dangerous to leave
+ * ungated.
+ *
+ * This is worse than a stale comment. A stale comment misleads a reader who
+ * can push back; stale executable intent just runs. The code is internally
+ * consistent and only the world moved, so no typecheck, test, or review of
+ * this file in isolation would catch it.
+ *
+ * Before running this again: rewrite the amount for major units, decide what
+ * happens to the quantity ladder it destroys, or delete the file. The hard
+ * gate below exists so that decision is made deliberately rather than by
+ * someone running a plausibly-named script.
+ * ========================================================================== */
+
 import { ExecArgs } from "@medusajs/framework/types";
 import {
   ContainerRegistrationKeys,
@@ -33,6 +87,26 @@ import {
  */
 export default async function enrichHoodie({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
+
+  // Hard gate. See the DO NOT RUN banner at the top of this file. This script
+  // deletes every atelier-hoodie variant (32 live, carrying a 7-rung price
+  // ladder and 576 ledgered tier rows) and rebuilds them at `amount: 8900`,
+  // which is GBP 8,900.00 under the MAJOR-unit convention adopted 2026-08-30.
+  // Throws rather than returns: a `return` exits 0 and any CI wrapper checking
+  // the exit status would read the refusal as a successful run.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    const msg =
+      "[enrich-hoodie] REFUSING TO RUN. This script deletes all 32 " +
+      "atelier-hoodie variants (destroying a 7-rung quantity ladder and 576 " +
+      "rows ledgered in gms_quantity_tier_migration, unrecoverable once the " +
+      "price ids are gone) and rebuilds them at amount 8900 gbp, which is " +
+      "GBP 8,900.00 since the catalogue moved to MAJOR units on 2026-08-30. " +
+      "Fix the arithmetic and decide what happens to the quantity ladder " +
+      "(or delete this file) before re-enabling.";
+    logger.error(msg);
+    throw new Error(msg);
+  }
+
   const productService = container.resolve(Modules.PRODUCT);
 
   const handle = "atelier-hoodie";

@@ -1,5 +1,5 @@
 /**
- * PDP page object — encapsulates the two product-type flows (POD vs apparel)
+ * PDP page object: encapsulates the two product-type flows (POD vs apparel)
  * the PDP renders. Locators target stable `data-test` hooks the source
  * markup ships in `app/pages/products/[handle].vue`. Anything that is
  * branched at the template level (price label, design editor section,
@@ -48,7 +48,22 @@ export class PdpPage {
     // is mounted at a given moment. We never want both to be visible.
     this.primaryAtc = page.locator('[data-test="primary-add-to-cart"]').first()
     this.atcError = page.locator('[data-test="add-to-cart-error"]').first()
-    this.stickyMobileBar = page.locator('div.fixed.inset-x-0.bottom-0.lg\\:hidden')
+    /*
+     * The sticky bar is matched by its `data-test` hook, NOT by its
+     * Tailwind classes.
+     *
+     * The previous locator was `div.fixed.inset-x-0.bottom-0.lg\:hidden`
+     * and it stopped matching the moment the cookie-banner P0 was fixed:
+     * the bar's `bottom-0` became
+     * `bottom-[var(--consent-height,0px)]` so that it rides ABOVE the
+     * consent banner instead of underneath it. The bar was still there
+     * and still correct; the test was pinned to a class name that was
+     * deliberately changed, so it reported a defect that did not exist.
+     *
+     * Styling classes are presentation and will keep changing. The
+     * `data-test` hook is the contract. Match on the contract.
+     */
+    this.stickyMobileBar = page.locator('[data-test="mobile-sticky-atc"]')
     this.desktopStickyAtc = page.locator('[data-test="desktop-sticky-atc"]')
     this.buySampleButton = page.locator('[data-test="buy-sample"]')
     this.variantSection = page.locator('[data-test="variant-section"]')
@@ -56,7 +71,7 @@ export class PdpPage {
 
   async goto(handle: string): Promise<void> {
     await this.page.goto(`/products/${encodeURIComponent(handle)}`)
-    // Wait for the H1 to settle before any assertions — Nuxt SSR hydrates
+    // Wait for the H1 to settle before any assertions: Nuxt SSR hydrates
     // the page-level title immediately, but the right-rail flow chrome
     // lights up after the product fetch resolves.
     await this.h1.waitFor({ state: 'visible' })

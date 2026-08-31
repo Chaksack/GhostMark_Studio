@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * /account/profile — editable customer profile.
+ * /account/profile: editable customer profile.
  *
  * The form is hydrated from `useCustomer().customer` and writes through
- * `sdk.store.customer.update`. Email is intentionally read-only — Medusa's
+ * `sdk.store.customer.update`. Email is intentionally read-only, Medusa's
  * email-change ceremony requires a verification round trip we haven't built
  * yet (and silently mutating it via `update` is a footgun).
  *

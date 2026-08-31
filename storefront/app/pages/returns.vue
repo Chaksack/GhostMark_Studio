@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /returns — Returns & refunds policy.
+ * /returns: Returns & refunds policy.
  */
 defineOptions({ name: 'PageReturns' })
 
@@ -46,7 +46,7 @@ const steps: Step[] = [
     number: '02',
     title: 'Pack',
     body:
-      'Fold the item back into its original mailer or any sturdy envelope. Pop the prepaid label inside the package — it\'s emailed within an hour.',
+      'Fold the item back into its original mailer or any sturdy envelope. Pop the prepaid label inside the package. It\'s emailed within an hour.',
   },
   {
     number: '03',
@@ -66,7 +66,7 @@ const acceptanceLists: AcceptanceList[] = [
       'Stocked styles in original, unworn condition',
       'Items returned within 30 days of delivery',
       'Faulty or misprinted items, at any time',
-      'Wrong size — we\'ll cover the swap shipping',
+      'Wrong size: we\'ll cover the swap shipping',
     ],
   },
   {
@@ -88,7 +88,7 @@ const timeline: Timeline[] = [
     number: '01',
     title: 'Received',
     body:
-      'A confirmation email lands the moment your parcel checks in at the studio — usually 2–3 working days after dispatch.',
+      'A confirmation email lands the moment your parcel checks in at the studio, usually 2–3 working days after dispatch.',
   },
   {
     number: '02',
@@ -114,7 +114,7 @@ const timeline: Timeline[] = [
       class="bg-merchery-tile"
       aria-labelledby="returns-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Returns &amp; refunds
         </p>
@@ -127,7 +127,7 @@ const timeline: Timeline[] = [
         </h1>
         <p class="max-w-[52ch] font-body text-body text-ink-700">
           Free returns on every stocked style for 30 days. No restocking fees,
-          no hoops to jump through. Custom orders are a different story —
+          no hoops to jump through. Custom orders are a different story,
           there's a note about that further down.
         </p>
       </div>
@@ -140,7 +140,7 @@ const timeline: Timeline[] = [
       class="bg-white"
       aria-labelledby="returns-headline-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="bg-merchery-sage p-10 lg:p-16">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Our promise
@@ -153,7 +153,7 @@ const timeline: Timeline[] = [
           </h2>
           <p class="mt-4 max-w-[52ch] font-body text-body text-ink-700">
             If a stocked piece doesn't fit, doesn't suit, or just isn't
-            what you expected — send it back. We pay the return postage
+            what you expected. Send it back. We pay the return postage
             and refund the original total in full.
           </p>
         </div>
@@ -161,14 +161,14 @@ const timeline: Timeline[] = [
     </section>
 
     <!-- ============================================================
-         3. How to start a return — 3-step numbered list
+         3. How to start a return: 3-step numbered list
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="returns-steps-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             How it works
           </p>
@@ -201,14 +201,14 @@ const timeline: Timeline[] = [
     </section>
 
     <!-- ============================================================
-         4. What we accept / don't — 2-up cards
+         4. What we accept / don't: 2-up cards
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="returns-acceptance-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Acceptance
           </p>
@@ -245,14 +245,14 @@ const timeline: Timeline[] = [
     </section>
 
     <!-- ============================================================
-         5. Refund timeline — 3-up timeline cards
+         5. Refund timeline: 3-up timeline cards
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="returns-timeline-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Refund timeline
           </p>
@@ -285,13 +285,13 @@ const timeline: Timeline[] = [
     </section>
 
     <!-- ============================================================
-         6. Custom orders caveat — sage warning tile
+         6. Custom orders caveat: sage warning tile
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="returns-custom-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="bg-merchery-sage p-10 lg:p-14">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             One important caveat
@@ -304,7 +304,7 @@ const timeline: Timeline[] = [
           </h2>
           <p class="mt-4 max-w-[52ch] font-body text-body text-ink-700">
             Anything printed, embroidered or finished to your spec is made
-            for you and you alone — we can't restock it. We mitigate this
+            for you and you alone: we can't restock it. We mitigate this
             by sending a physical sample for sign-off before any custom
             run goes to press. If something arrives faulty or doesn't
             match the approved sample,
@@ -325,9 +325,9 @@ const timeline: Timeline[] = [
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="returns-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <h2
               id="returns-cta-heading"
               class="font-display font-normal leading-[1.05] tracking-[-0.015em] text-ink-950"

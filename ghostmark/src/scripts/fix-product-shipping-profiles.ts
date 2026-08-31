@@ -1,5 +1,5 @@
 // =============================================================================
-// fix-product-shipping-profiles — backfill the default shipping_profile_id
+// fix-product-shipping-profiles: backfill the default shipping_profile_id
 // on every product that lacks one.
 //
 // Why this exists
@@ -7,7 +7,7 @@
 // Medusa v2's storefront /store/shipping-options endpoint filters returned
 // options to those linked to the same shipping profile(s) as the items in
 // the cart. Products without a shipping_profile_id are effectively
-// "shippable by no one" — `listShippingOptions` returns `[]`, the checkout
+// "shippable by no one": `listShippingOptions` returns `[]`, the checkout
 // surfaces no rates, and `cart.complete()` rejects with 400:
 //   "No shipping method selected but the cart contains items that require
 //    shipping."
@@ -51,7 +51,7 @@ export default async function fixProductShippingProfiles({
     (Array.isArray(args) && args.includes("--dry-run"))
 
   if (dryRun) {
-    logger.info("[fix-product-shipping-profiles] DRY-RUN — no writes.")
+    logger.info("[fix-product-shipping-profiles] DRY-RUN: no writes.")
   }
 
   // 1) Resolve the default shipping profile. seed.ts creates one with

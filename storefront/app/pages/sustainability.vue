@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * Sustainability — the editorial /transparency page.
+ * Sustainability: the editorial /transparency page.
  *
  * Restructured from a four-band commitments page into the six-section
  * merchery.co audit-transparency layout: a Made-in-transparency hero
  * followed by a B Corp panel, sourcing, 1% for the Planet, raw materials,
- * transport and factories — closing on a sage CTA band.
+ * transport and factories, closing on a sage CTA band.
  *
  * Each numbered section is its own `<section>` with `id="section-N"` so
  * footer / in-page anchors can deep-link straight to the band. Surfaces
@@ -20,12 +20,12 @@
 defineOptions({ name: 'PageSustainability' })
 
 useHead({
-  title: 'Made in transparency — GhostMark Studio',
+  title: 'Made in transparency · GhostMark Studio',
   meta: [
     {
       name: 'description',
       content:
-        'Made in transparency — our B Corp score, where we source materials, our 1% for the Planet pledge, the percentages behind every blank, our freight choices and the factories we work with.',
+        'Made in transparency: our B Corp score, where we source materials, our 1% for the Planet pledge, the percentages behind every blank, our freight choices and the factories we work with.',
     },
   ],
 })
@@ -62,7 +62,7 @@ const factories: FactoryStep[] = [
     country: 'Belgium',
     role: 'Customisation &amp; finishing',
     body:
-      'Screen, pad and laser work happens at the studio. We see every piece before it ships — proofs go out within 48 hours.',
+      'Screen, pad and laser work happens at the studio. We see every piece before it ships. Proofs go out within 48 hours.',
   },
   {
     city: 'Krakow',
@@ -77,14 +77,14 @@ const factories: FactoryStep[] = [
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — eyebrow "Made in transparency" + serif headline
+         1. Hero: eyebrow "Made in transparency" + serif headline
          ============================================================ -->
     <section
       id="section-1"
       class="bg-cream-tile"
       aria-labelledby="transparency-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Made in transparency
@@ -99,7 +99,7 @@ const factories: FactoryStep[] = [
             Print-on-demand was sold to the industry as a sustainability
             story and quietly turned into the opposite. We're trying to
             walk it back, and to show our working as we go. Six sections
-            below — pick one, or read them in order.
+            below. Pick one, or read them in order.
           </p>
           <div class="flex flex-wrap gap-3 pt-2">
             <UiButton
@@ -126,21 +126,21 @@ const factories: FactoryStep[] = [
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; replace with real photography</span>
+            >Image: replace with real photography</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         2. B Corp — score + body + circled-B logo
+         2. B Corp: score + body + circled-B logo
          ============================================================ -->
     <section
       id="section-2"
       class="bg-white"
       aria-labelledby="transparency-bcorp-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.55fr)_minmax(0,0.45fr)] lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.55fr)_minmax(0,0.45fr)] lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             01 &middot; B Corp
@@ -152,7 +152,7 @@ const factories: FactoryStep[] = [
             Certified B Corp since 2021.
           </h2>
           <p class="max-w-[52ch] font-body text-body text-ink-700">
-            Our last assessment scored 112.4 — comfortably past the 80-point
+            Our last assessment scored 112.4, comfortably past the 80-point
             certification floor and above the apparel-industry median of
             91.7. The full disclosure is published on B Lab\'s directory
             and re-assessed every three years.
@@ -212,20 +212,20 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         3. Sourcing — link out to /about/value-chain
+         3. Sourcing: link out to /about/value-chain
          ============================================================ -->
     <section
       id="section-3"
       class="bg-cream-warm"
       aria-labelledby="transparency-sourcing-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="aspect-[4/5] w-full overflow-hidden bg-cream-tile lg:order-2">
           <div class="flex h-full w-full items-center justify-center">
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; partner workshop photography</span>
+            >Image: partner workshop photography</span>
           </div>
         </div>
 
@@ -240,7 +240,7 @@ const factories: FactoryStep[] = [
             Named mills, named partners, two-day truck radius.
           </h2>
           <p class="max-w-[52ch] font-body text-body text-ink-700">
-            Every fibre we stock comes from a mill we can name in print —
+            Every fibre we stock comes from a mill we can name in print,
             most within a two-day truck ride of the studio. The full
             partner list lives on the <NuxtLink
               to="/about/value-chain"
@@ -263,14 +263,14 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         4. 1% for the Planet — partnership detail
+         4. 1% for the Planet: partnership detail
          ============================================================ -->
     <section
       id="section-4"
       class="bg-white"
       aria-labelledby="transparency-planet-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.55fr)_minmax(0,0.45fr)] lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.55fr)_minmax(0,0.45fr)] lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             03 &middot; 1% for the Planet
@@ -282,7 +282,7 @@ const factories: FactoryStep[] = [
             One percent of revenue, not profit.
           </h2>
           <p class="max-w-[52ch] font-body text-body text-ink-700">
-            One percent of every order — revenue, before margin — goes to
+            One percent of every order (revenue, before margin) goes to
             vetted environmental nonprofits chosen by the studio team each
             quarter. We've been an approved 1% for the Planet member since
             2021 and publish the beneficiary list every January.
@@ -318,14 +318,14 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         5. Raw materials — what we use + percentages
+         5. Raw materials: what we use + percentages
          ============================================================ -->
     <section
       id="section-5"
       class="bg-cream-warm"
       aria-labelledby="transparency-materials-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid grid-cols-1 gap-x-[30px] gap-y-10 pb-12 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
           <div class="flex flex-col gap-3">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -377,15 +377,15 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         6. Transport — shipping + offsets
+         6. Transport: shipping + offsets
          ============================================================ -->
     <section
       id="section-6"
       class="bg-white"
       aria-labelledby="transparency-transport-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             05 &middot; Transport
           </p>
@@ -393,7 +393,7 @@ const factories: FactoryStep[] = [
             id="transparency-transport-heading"
             class="font-display text-display-md font-normal text-ink-950"
           >
-            Sea, rail, recycled mailers — never airlift.
+            Sea, rail, recycled mailers. Never airlift.
           </h2>
         </div>
 
@@ -407,7 +407,7 @@ const factories: FactoryStep[] = [
             </h3>
             <p class="font-body text-body text-ink-700">
               0% of FY24 bulk movements went by air. The studio refuses
-              airlift even for late deliveries — we'd rather miss a date
+              airlift even for late deliveries, we'd rather miss a date
               than burn the offset budget.
             </p>
           </article>
@@ -442,14 +442,14 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         7. Our factories — link to /about/value-chain
+         7. Our factories: link to /about/value-chain
          ============================================================ -->
     <section
       id="section-7"
       class="bg-cream-warm"
       aria-labelledby="transparency-factories-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid grid-cols-1 gap-x-[30px] gap-y-10 pb-12 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
           <div class="flex flex-col gap-3">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -464,7 +464,7 @@ const factories: FactoryStep[] = [
           </div>
           <p class="max-w-[52ch] font-body text-body text-ink-700">
             Spinning, finishing and pick-pack live in three rooms across
-            three cities. Visit any of them — we'll book the trip.
+            three cities. Visit any of them. We'll book the trip.
           </p>
         </div>
 
@@ -508,15 +508,15 @@ const factories: FactoryStep[] = [
     </section>
 
     <!-- ============================================================
-         8. CTA band — sage slab linking to the (forthcoming) report
+         8. CTA band: sage slab linking to the (forthcoming) report
          ============================================================ -->
     <section
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="transparency-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <p class="text-eyebrow font-body uppercase text-ink-500">
               The full picture
             </p>

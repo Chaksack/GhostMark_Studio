@@ -1,5 +1,5 @@
 // =============================================================================
-// add-mockup-metadata — set per-side mockup URLs on customizable apparel.
+// add-mockup-metadata: set per-side mockup URLs on customizable apparel.
 //
 // The DesignEditor on the storefront looks for `metadata.mockup_front` and
 // `metadata.mockup_back` so the Konva stage can swap the background image
@@ -7,7 +7,7 @@
 // 4 images per product; this script picks the first as front and the second
 // as back (falling back to front if only one exists).
 //
-// Idempotent — re-running merges into existing metadata, never clobbers.
+// Idempotent: re-running merges into existing metadata, never clobbers.
 //
 // Usage:
 //   pnpm exec medusa exec ./src/scripts/add-mockup-metadata.ts

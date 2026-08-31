@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * About / Environmental footprint — sub-page of /about that drills into the
+ * About / Environmental footprint: sub-page of /about that drills into the
  * concrete numbers and roadmap behind GhostMark Studio's sustainability
  * posture.
  *
@@ -10,7 +10,7 @@
  * deep-links to the (forthcoming) full impact report PDF.
  *
  * Every surface is tokenised through the editorial palette
- * (`bg-cream-tile`, `bg-cream-warm`, `bg-merchery-sage`, `bg-accent-*`) —
+ * (`bg-cream-tile`, `bg-cream-warm`, `bg-merchery-sage`, `bg-accent-*`):
  * no `bg-[#hex]` literals, so a future re-skin can run through the
  * tailwind config alone.
  */
@@ -22,7 +22,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Our measured environmental footprint — CO₂ offset, water saved, renewable energy share and recycled-material percentages. Plus the materials, factories and freight choices behind every order.',
+        'Our measured environmental footprint: CO₂ offset, water saved, renewable energy share and recycled-material percentages. Plus the materials, factories and freight choices behind every order.',
     },
   ],
 })
@@ -104,7 +104,7 @@ const roadmap: RoadmapEntry[] = [
     year: '2025',
     title: 'Scope 3 disclosure published.',
     body:
-      'Full upstream emissions audit — every blank, ink and freight leg — published as an open dataset alongside the impact report.',
+      'Full upstream emissions audit (every blank, ink and freight leg) published as an open dataset alongside the impact report.',
     status: 'in-flight',
   },
   {
@@ -127,13 +127,13 @@ const roadmap: RoadmapEntry[] = [
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — cream tile + serif headline + body intro
+         1. Hero: cream tile + serif headline + body intro
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="footprint-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             About / Environmental footprint
@@ -157,21 +157,21 @@ const roadmap: RoadmapEntry[] = [
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; replace with real photography</span>
+            >Image: replace with real photography</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         2. Numbers — 4 metric tiles (CO₂, water, renewable, recycled)
+         2. Numbers: 4 metric tiles (CO₂, water, renewable, recycled)
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="footprint-numbers-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             By the numbers
           </p>
@@ -205,13 +205,13 @@ const roadmap: RoadmapEntry[] = [
     </section>
 
     <!-- ============================================================
-         3. Where we're at — 3-up pillar cards on cream-warm band
+         3. Where we're at: 3-up pillar cards on cream-warm band
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="footprint-pillars-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid grid-cols-1 gap-x-[30px] gap-y-10 pb-16 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
           <div class="flex flex-col gap-3">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -255,14 +255,14 @@ const roadmap: RoadmapEntry[] = [
     </section>
 
     <!-- ============================================================
-         4. Where we're going — roadmap timeline (2025/2026/2027)
+         4. Where we're going: roadmap timeline (2025/2026/2027)
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="footprint-roadmap-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Where we're going
           </p>
@@ -303,15 +303,15 @@ const roadmap: RoadmapEntry[] = [
     </section>
 
     <!-- ============================================================
-         5. CTA band — sage slab linking to the (forthcoming) report
+         5. CTA band: sage slab linking to the (forthcoming) report
          ============================================================ -->
     <section
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="footprint-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <p class="text-eyebrow font-body uppercase text-ink-500">
               The full picture
             </p>

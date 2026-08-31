@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import type { HttpTypes } from '@medusajs/types'
 
 /**
- * /account/addresses — saved shipping address book.
+ * /account/addresses: saved shipping address book.
  *
  * CRUD lives entirely in the Medusa SDK:
  *   - createAddress(body)            POST /store/customers/me/addresses
@@ -11,8 +11,8 @@ import type { HttpTypes } from '@medusajs/types'
  *   - deleteAddress(addressId)       DELETE /store/customers/me/addresses/:id
  *
  * After every mutation we re-run `useCustomer().refresh()` because the
- * canonical address list lives on the embedded `customer.addresses` array
- * — this keeps the rest of the app (cart prefill, account overview)
+ * canonical address list lives on the embedded `customer.addresses` array.
+ * This keeps the rest of the app (cart prefill, account overview)
  * consistent without juggling a second store.
  *
  * The "add" + "edit" flow shares one `<UiModal>` panel; we toggle between
@@ -218,7 +218,7 @@ const formatCityLine = (a: HttpTypes.StoreCustomerAddress) => {
             </p>
             <span
               v-if="a.is_default_shipping"
-              class="shrink-0 border border-ink-200 bg-cream-warm px-2 py-0.5 font-body text-[10px] uppercase tracking-wide text-ink-700"
+              class="gm-spec shrink-0 border border-ink-200 bg-cream-warm px-2 py-0.5 text-ink-700"
             >
               Default
             </span>
@@ -305,7 +305,7 @@ const formatCityLine = (a: HttpTypes.StoreCustomerAddress) => {
           novalidate
           @submit.prevent="onSubmit"
         >
-          <UiField label="Label" help="Optional — e.g. Home, Office.">
+          <UiField label="Label" help="Optional: e.g. Home, Office.">
             <UiInput v-model="form.address_name" type="text" name="address_name" />
           </UiField>
 

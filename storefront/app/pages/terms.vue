@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /terms — Terms of service (legal).
+ * /terms: Terms of service (legal).
  */
 defineOptions({ name: 'PageTerms' })
 
@@ -10,7 +10,7 @@ useHead({
     {
       name: 'description',
       content:
-        'The terms governing your use of the GhostMark Studio website and any orders you place with the studio — payments, shipping, returns, intellectual property and liability.',
+        'The terms governing your use of the GhostMark Studio website and any orders you place with the studio: payments, shipping, returns, intellectual property and liability.',
     },
   ],
 })
@@ -36,15 +36,15 @@ const sections: Section[] = [
     title: 'Account',
     body: [
       'You can browse the catalog without an account, but checkout, order history and saved designs require one. You\'re responsible for keeping your password confidential and for any activity on your account.',
-      'Tell us straight away if you suspect unauthorised access — email security@ghostmark.studio. We\'ll lock the account, force a password reset and audit recent activity together with you.',
+      'Tell us straight away if you suspect unauthorised access. Email security@ghostmark.studio. We\'ll lock the account, force a password reset and audit recent activity together with you.',
     ],
   },
   {
     id: 'orders-payments',
     title: 'Orders & payments',
     body: [
-      'Every order is an offer to purchase. The contract is formed when we send the order confirmation email — until that point we may decline an order, partially fulfil it, or contact you for clarification (typically over a custom run).',
-      'Prices are shown in the currency of your selected region and include VAT where applicable. Payment is taken in full at checkout. We accept all major debit and credit cards, Apple Pay, Google Pay and PayPal. We do not store full card numbers — payments are processed by our PCI-DSS certified provider.',
+      'Every order is an offer to purchase. The contract is formed when we send the order confirmation email. Until that point we may decline an order, partially fulfil it, or contact you for clarification (typically over a custom run).',
+      'Prices are shown in the currency of your selected region and include VAT where applicable. Payment is taken in full at checkout. We accept all major debit and credit cards, Apple Pay, Google Pay and PayPal. We do not store full card numbers: payments are processed by our PCI-DSS certified provider.',
     ],
   },
   {
@@ -102,7 +102,7 @@ const sections: Section[] = [
       class="bg-merchery-tile"
       aria-labelledby="terms-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Legal
         </p>
@@ -117,7 +117,7 @@ const sections: Section[] = [
         </p>
         <p class="max-w-[52ch] font-body text-body text-ink-700">
           The agreement between you and GhostMark Studio when you use the
-          site or place an order. Written to be read — not buried.
+          site or place an order. Written to be read, not buried.
         </p>
       </div>
     </section>
@@ -129,7 +129,7 @@ const sections: Section[] = [
       class="bg-white"
       aria-labelledby="terms-body-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
         <h2 id="terms-body-heading" class="sr-only">
           Terms of service details
         </h2>

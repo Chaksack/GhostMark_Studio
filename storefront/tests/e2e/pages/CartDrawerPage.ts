@@ -1,7 +1,7 @@
 /**
  * Cart drawer (CartDropdown.vue) is the desktop hover/click panel anchored
  * to the header cart icon. We keep this object tiny because the drawer
- * source ships almost no `data-test` hooks today — assertions stay anchored
+ * source ships almost no `data-test` hooks today: assertions stay anchored
  * to ARIA labels and visible copy that's part of the merchery layout.
  */
 import { Page, Locator } from '@playwright/test'
@@ -19,7 +19,7 @@ export class CartDrawerPage {
     this.cartTrigger = page.getByRole('button', { name: /^cart$/i }).or(
       page.getByRole('link', { name: /^cart$/i }),
     ).first()
-    // CartDropdown renders inside a HeadlessUI Popover — we anchor to the
+    // CartDropdown renders inside a HeadlessUI Popover: we anchor to the
     // ARIA label on the trigger and let the parent describe the drawer's
     // visible state via siblings.
     this.drawerRoot = page.locator('[aria-label="Cart"]').first()

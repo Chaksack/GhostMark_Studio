@@ -31,7 +31,7 @@ export const useCart = () => {
     const ageHours = (Date.now() - createdAt) / (1000 * 60 * 60)
     if (ageHours > 24) {
       // Inline the wipe because `clearCart()` is declared later in this
-      // closure and isn't hoisted — calling it here would be a TDZ error.
+      // closure and isn't hoisted; calling it here would be a TDZ error.
       cartId.value = null
       cart.value = null
       isReady.value = false
@@ -168,7 +168,7 @@ export const useCart = () => {
     cartId.value = null
     cart.value = null
     isReady.value = false
-    // Drop the sidecar timestamp too — otherwise a manual clearCart()
+    // Drop the sidecar timestamp too; otherwise a manual clearCart()
     // followed by a fresh mint would inherit an obsolete creation time
     // and the dev-mode staleness check could fire incorrectly on the
     // next session.
@@ -188,13 +188,13 @@ export const useCart = () => {
   // useRegion() already issues `sdk.store.cart.update(cartId, { region_id })`
   // which causes Medusa to recompute `currency_code`, line `unit_price`,
   // tax, and totals server-side. But without re-reading the cart, our local
-  // `cart` ref still mirrors the old region — header badge, mini-cart
+  // `cart` ref still mirrors the old region: header badge, mini-cart
   // drawer, and checkout summary show stale GBP totals after a switch to
   // EUR until the next page navigation triggers a fresh retrieve.
   //
   // We watch `regionId` here (rather than inside setRegion) so that ANY
-  // path that mutates the region cookie — direct setRegion call, future
-  // cookie-sync from the server, dev tools tampering — triggers a refresh.
+  // path that mutates the region cookie (direct setRegion call, future
+  // cookie-sync from the server, dev tools tampering) triggers a refresh.
   // Keeps the responsibility on the cart side: it knows when its own state
   // is stale, and consumers of useRegion don't need to know about cart.
   //
@@ -211,7 +211,7 @@ export const useCart = () => {
       async (newId, oldId) => {
         // No-op when the value didn't actually change (initial fire),
         // when the new id is null (region cleared), or when there's no
-        // cart yet to refresh — the next addItem() will mint a fresh
+        // cart yet to refresh. The next addItem() will mint a fresh
         // cart in the new region via ensureCart().
         if (!newId || newId === oldId) return
         if (!cartId.value) return

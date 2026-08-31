@@ -5,7 +5,7 @@
 @layer base {
 	/*
 	 * Editorial baseline: a warm offWhite floor (#F1EEE9) instead of the
-	 * cold zinc-50 default — every merchery section paints itself, but the
+	 * cold zinc-50 default, every merchery section paints itself, but the
 	 * body still needs a closer-to-cream baseline so any unpainted gap
 	 * (overscroll bounce, lazy-mounted islands, error pages) stays in the
 	 * warm palette rather than reading as a SaaS dashboard. ink-950 is the

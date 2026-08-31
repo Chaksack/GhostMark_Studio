@@ -1,16 +1,16 @@
 <script setup lang="ts">
 /**
- * /discover — curated landings hub.
+ * /discover: curated landings hub.
  *
  * The merchery shop/c/discover convention: a quiet hero introduces the
  * shelf concept, then a 3-up grid of curated entry tiles links to the
  * landing pages under `/discover/[slug]`. Each tile is a cream slab with
- * a serif H3, a body excerpt, and a 4:3 photo placeholder block — the
+ * a serif H3, a body excerpt, and a 4:3 photo placeholder block, the
  * same editorial rhythm used on `/categories`.
  *
  * The tile list is hard-coded here: these are editorial picks, not a
  * Medusa query. If/when the curation team wants the list to come from
- * Strapi, swap `TILES` for `useCms()` — the template iteration stays the
+ * Strapi, swap `TILES` for `useCms()`, the template iteration stays the
  * same.
  *
  * No Medusa calls happen on this page; it's pure layout. The downstream
@@ -37,14 +37,14 @@ const TILES: DiscoverTile[] = [
     slug: 'best-sellers',
     title: 'Best sellers',
     excerpt:
-      'The pieces our regulars reorder season after season — a working list of the studio canon.',
+      'The pieces our regulars reorder season after season, a working list of the studio canon.',
     surface: 'tile',
   },
   {
     slug: 'fast-shipping',
     title: 'Fast shipping',
     excerpt:
-      'Stocked in Brussels, Berlin and London with same-week dispatch — for briefs that landed yesterday.',
+      'Stocked in Brussels, Berlin and London with same-week dispatch, for briefs that landed yesterday.',
     surface: 'tile',
   },
   {
@@ -65,7 +65,7 @@ const TILES: DiscoverTile[] = [
     slug: 'back-to-school',
     title: 'Back to school',
     excerpt:
-      'Notebooks, totes and labels for the September handover — campus runs we re-cut every August.',
+      'Notebooks, totes and labels for the September handover, campus runs we re-cut every August.',
     surface: 'warm',
   },
   {
@@ -79,7 +79,7 @@ const TILES: DiscoverTile[] = [
     slug: 'recent',
     title: 'Recently added',
     excerpt:
-      'New blanks, new finishes, new colourways — the freshest entries on the studio shelf.',
+      'New blanks, new finishes, new colourways: the freshest entries on the studio shelf.',
     surface: 'warm',
   },
 ]
@@ -90,7 +90,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Curated landings from GhostMark Studio — spring, holiday, fast-shipping, new-hire kits and more. Eight shelves, one quiet voice.',
+        'Curated landings from GhostMark Studio: spring, holiday, fast-shipping, new-hire kits and more. Eight shelves, one quiet voice.',
     },
   ],
 })
@@ -99,13 +99,13 @@ useHead({
 <template>
   <main class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — eyebrow + serif H1 + intro paragraph
+         1. Hero: eyebrow + serif H1 + intro paragraph
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="discover-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Discover
         </p>
@@ -116,21 +116,21 @@ useHead({
           Curated for the moment.
         </h1>
         <p class="max-w-[52ch] font-body text-body text-ink-700">
-          Eight shelves we re-cut by hand each season. Pick a moment —
-          spring break, a new hire, the holiday rush — and we'll show
+          Eight shelves we re-cut by hand each season. Pick a moment
+          (spring break, a new hire, the holiday rush) and we'll show
           you the blanks, finishes and run sizes that fit it.
         </p>
       </div>
     </section>
 
     <!-- ============================================================
-         2. Tile grid — 1-up mobile, 2-up tablet, 3-up desktop
+         2. Tile grid: 1-up mobile, 2-up tablet, 3-up desktop
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="discover-grid-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <h2 id="discover-grid-heading" class="sr-only">
           All curated landings
         </h2>

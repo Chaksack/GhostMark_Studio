@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * /collections — curated product collections index.
+ * /collections: curated product collections index.
  *
  * Pulls all StoreCollection rows via `sdk.store.collection.list()`.
  * No collections seeded today => the page renders an editorial empty
  * state. When collections exist, each tile becomes a NuxtLink to
  * `/collections/{handle}` (TODO: add `[handle].vue` once the team
- * starts curating; until then the cards 404 by design — data-driven).
+ * starts curating; until then the cards 404 by design, data-driven).
  *
  * Layout mirrors `/categories` and `/products`:
  *   - cream-tile hero band with eyebrow + display heading
@@ -21,7 +21,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Browse seasonal and editorial product collections from GhostMark Studio — print-on-demand merch curated for thoughtful brands.',
+        'Browse seasonal and editorial product collections from GhostMark Studio: print-on-demand merch curated for thoughtful brands.',
     },
   ],
 })
@@ -44,13 +44,13 @@ const { data: collections, pending } = await useAsyncData('collections', async (
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — eyebrow + serif label
+         1. Hero: eyebrow + serif label
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="collections-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Catalog
         </p>
@@ -72,13 +72,13 @@ const { data: collections, pending } = await useAsyncData('collections', async (
     </section>
 
     <!-- ============================================================
-         2. Collection grid — 4:3 cream tiles
+         2. Collection grid: 4:3 cream tiles
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="collections-grid-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <h2 id="collections-grid-heading" class="sr-only">
           All collections
         </h2>
@@ -114,7 +114,7 @@ const { data: collections, pending } = await useAsyncData('collections', async (
           </p>
         </div>
 
-        <!-- Empty state — editorial, not apologetic -->
+        <!-- Empty state: editorial, not apologetic -->
         <div
           v-else
           class="mx-auto flex max-w-[44ch] flex-col items-center gap-4 py-section text-center"
@@ -127,7 +127,7 @@ const { data: collections, pending } = await useAsyncData('collections', async (
           </h3>
           <p class="font-body text-body text-ink-700">
             We're curating the first drops. In the meantime, the full
-            catalog is open — every blank we stock, no filter applied.
+            catalog is open: every blank we stock, no filter applied.
           </p>
           <NuxtLink
             to="/products"

@@ -1,16 +1,36 @@
 <script setup lang="ts">
 /**
- * /search — full-page search results, fed by `?q=` and (v22) `?type=`.
+ * /search: full-page search results, fed by `?q=` and (v22) `?type=`.
  *
  * Reads the `q` query param reactively (so the same page handles navigation
  * between successive searches without remount) and calls
- * `sdk.store.product.list({ q, limit: 24 })`. Failures collapse to an empty
- * result set so the page never throws — the empty state handles "no match"
- * and "backend down" identically.
+ * `sdk.store.product.list({ q, limit: 24 })`.
+ *
+ * ---------------------------------------------------------------------------
+ * "No matches" is a claim about the catalog, and we must have earned it
+ * ---------------------------------------------------------------------------
+ * This page used to swallow the fetch in `catch { return { products: [] } }`,
+ * which made "backend down" indistinguishable from "no match", the two were
+ * handled identically, by design, and that design was wrong. Reproduced live
+ * with the API blocked, `/search?q=hoodie` rendered:
+ *
+ *     NO MATCHES: No products match 'hoodie'.
+ *     Try different keywords, or browse the full catalog.
+ *
+ * Thirty seconds earlier that query returned two hoodies. The store blamed the
+ * customer's search term for its own outage and then sent them away.
+ *
+ * The catch is gone. `useAsyncData` surfaces `error`, and the template branches
+ * three ways (pending / error / resolved) with the resolved branch splitting
+ * into results and a genuine zero-result state. The invariant: **if `error` is
+ * set we never say "no matches", never echo a count, and never suggest a
+ * different keyword**, because a keyword was never the problem. That is the
+ * line Etsy and Amazon both hold; a failed load gets a retry, not spelling
+ * advice.
  *
  * The header form posts to /search?q=... so URLs are shareable.
  *
- * v22 — Type-aware narrowing:
+ * v22: Type-aware narrowing:
  *   `?type=pod` and `?type=apparel` mirror the `/products` PLP scoping so
  *   /search?q=tee&type=apparel returns only the D2C own-brand tees, and
  *   /search?q=tote&type=pod returns only the custom-print catalog. Slug →
@@ -30,7 +50,7 @@ const regionState = useRegion()
 // `region_id` + `fields=*variants.calculated_price`, ProductCard suppresses
 // the "From £X" line entirely (formatVariantPrice returns the em-dash and
 // the card hides it). The header dropdown gets prices because it always
-// requests the calculated_price field — but the field alone isn't enough
+// requests the calculated_price field, but the field alone isn't enough
 // without a region to compute against on this seeded data.
 await regionState.ensureRegion()
 
@@ -41,7 +61,7 @@ const queryParam = computed<string>(() => {
   return (raw ?? '').toString().trim()
 })
 
-// `?type=pod|apparel` — symmetric with the /products PLP. Anything else is
+// `?type=pod|apparel`: symmetric with the /products PLP. Anything else is
 // treated as no filter so a typo doesn't collapse the result set to zero.
 const typeFilter = computed<'pod' | 'apparel' | null>(() => {
   const raw = route.query.type
@@ -72,7 +92,7 @@ useHead(() => ({
         ? `Search results for "${queryParam.value}" across the GhostMark Studio catalog.`
         : 'Search the GhostMark Studio catalog for blanks, drops, and bespoke pieces.',
     },
-    // Search-result pages are infinite-permutation — keep them out of
+    // Search-result pages are infinite-permutation: keep them out of
     // the index so we don't pollute the SERP with thin pages.
     { name: 'robots', content: 'noindex, follow' },
   ],
@@ -85,28 +105,41 @@ useHead(() => ({
 // round-trip. `*type` is added to `fields` so the resulting ProductCard
 // chip overlay (which reads product.type.value) renders correctly without
 // a second fetch.
-const { data, pending, error } = await useAsyncData(
+const { data, pending, error, refresh } = await useAsyncData(
   'search-results',
   async () => {
     const q = queryParam.value
     if (!q) return { products: [] as any[] }
-    try {
-      const args: Record<string, unknown> = {
-        q,
-        limit: 24,
-        fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
-      }
-      if (regionState.regionId.value) args.region_id = regionState.regionId.value
-      if (activeTypeId.value) args.type_id = [activeTypeId.value]
-      const res = await sdk.store.product.list(args as any)
-      return { products: res.products ?? [] }
+    const args: Record<string, unknown> = {
+      q,
+      limit: 24,
+      fields: 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags',
     }
-    catch {
-      return { products: [] as any[] }
-    }
+    if (regionState.regionId.value) args.region_id = regionState.regionId.value
+    if (activeTypeId.value) args.type_id = [activeTypeId.value]
+    // Deliberately unguarded. A throw here populates `error` below, which is
+    // the only way the template can tell "the catalog has nothing" apart from
+    // "we never got an answer". Do not reintroduce a try/catch.
+    const res = await sdk.store.product.list(args as any)
+    return { products: res.products ?? [] }
   },
   { watch: [queryParam, () => regionState.regionId.value, typeFilter, activeTypeId] },
 )
+
+// Retry from the error state. `refresh()` re-runs the handler and flips
+// `pending`, which drives the button's busy state.
+const retrying = ref(false)
+
+const onRetry = async () => {
+  if (retrying.value) return
+  retrying.value = true
+  try {
+    await refresh()
+  }
+  finally {
+    retrying.value = false
+  }
+}
 
 // Defensive client-side narrowing for the case where ?type= is set but the
 // type-id resolver hasn't returned yet (cold cache / endpoint unavailable).
@@ -135,13 +168,13 @@ const scopeLabel = computed(() => {
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — eyebrow + serif label, query echoed
+         1. Hero: eyebrow + serif label, query echoed
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="search-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Search{{ scopeLabel }}
         </p>
@@ -149,7 +182,16 @@ const scopeLabel = computed(() => {
           id="search-hero-heading"
           class="font-display text-display-lg font-normal text-ink-950"
         >
-          <template v-if="queryParam">
+          <!--
+            The count is an assertion about the catalog. When `error` is set we
+            have no idea what the count is, so we drop it rather than print the
+            length of an empty array we never filled, "· 0 products" beside a
+            failed request is the same lie as "no matches", just quieter.
+          -->
+          <template v-if="queryParam && error">
+            Search results for &lsquo;{{ queryParam }}&rsquo;{{ scopeLabel }}
+          </template>
+          <template v-else-if="queryParam">
             Search results for &lsquo;{{ queryParam }}&rsquo;{{ scopeLabel }}
             &middot; {{ count }} {{ count === 1 ? 'product' : 'products' }}
           </template>
@@ -165,28 +207,52 @@ const scopeLabel = computed(() => {
     </section>
 
     <!-- ============================================================
-         2. Results grid — 4-up, ProductCard
+         2. Results grid: 4-up, ProductCard
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="search-results-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <h2 id="search-results-heading" class="sr-only">
           Search results
         </h2>
 
-        <div v-if="pending" class="py-20 text-center font-body text-caption text-ink-500">
+        <!-- 1 of 3: pending ------------------------------------------- -->
+        <div
+          v-if="pending"
+          role="status"
+          class="py-20 text-center font-body text-caption text-ink-500"
+        >
           Searching&hellip;
         </div>
 
-        <div v-else-if="error" class="py-20 text-center font-body text-caption text-ink-500">
-          Couldn't load search results.
-        </div>
+        <!--
+          2 of 3: the request failed. Note what is absent: no query echo, no
+          count, no "try different keywords". We do not know that the catalog
+          lacks a match, so we do not imply it, and we certainly do not put the
+          fault on what the customer typed.
+        -->
+        <UiEmptyState
+          v-else-if="error"
+          variant="error"
+          heading-tag="h3"
+          title="We couldn't run that search."
+          description="This is on us, not you. The catalog didn't answer. Try again in a moment."
+          :busy="retrying || pending"
+          @retry="onRetry"
+        >
+          <template #extra-actions>
+            <UiButton as="NuxtLink" to="/products" variant="outline" size="md">
+              Browse all products
+            </UiButton>
+          </template>
+        </UiEmptyState>
 
+        <!-- 3a of 3: resolved, with results ---------------------------- -->
         <ul
           v-else-if="products.length"
-          class="grid grid-cols-2 gap-[1.6rem] md:grid-cols-4 lg:gap-[3rem]"
+          class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 xl:grid-cols-5"
         >
           <ProductCard
             v-for="p in products"
@@ -195,27 +261,28 @@ const scopeLabel = computed(() => {
           />
         </ul>
 
-        <!-- Empty state -->
-        <div
+        <!--
+          3b of 3: resolved, and the catalog genuinely has nothing. Only here
+          have we earned the phrase "no matches" and the keyword suggestion.
+          Selfridges' zero-result page is the model: state the miss plainly,
+          then hand over a route back into real inventory rather than ending
+          the page.
+        -->
+        <UiEmptyState
           v-else-if="queryParam"
-          class="mx-auto flex max-w-[44ch] flex-col items-center gap-4 py-section text-center"
+          variant="empty"
+          heading-tag="h3"
+          :boxed="false"
+          eyebrow="No matches"
+          :title="`No products match ‘${queryParam}’${scopeLabel}.`"
+          description="Try different keywords, or browse the full catalog."
         >
-          <p class="text-eyebrow font-body uppercase text-ink-500">
-            No matches
-          </p>
-          <h3 class="font-display text-display-md font-normal text-ink-950">
-            No products match &lsquo;{{ queryParam }}&rsquo;{{ scopeLabel }}.
-          </h3>
-          <p class="font-body text-body text-ink-700">
-            Try different keywords, or browse the full catalog.
-          </p>
-          <NuxtLink
-            to="/products"
-            class="mt-2 inline-flex h-[48px] items-center justify-center bg-ink-900 px-7 font-body text-[14px] font-medium tracking-wide text-white transition-colors duration-base ease-emphasis hover:bg-ink-800"
-          >
-            Browse all products
-          </NuxtLink>
-        </div>
+          <template #actions>
+            <UiButton as="NuxtLink" to="/products" variant="merchery" size="md">
+              Browse all products
+            </UiButton>
+          </template>
+        </UiEmptyState>
       </div>
     </section>
   </div>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * /categories — top-level taxonomy index.
+ * /categories: top-level taxonomy index.
  *
  * NOTE on routing: this file lives at `pages/categories/index.vue` (not the
  * sibling `pages/categories.vue`) on purpose. When both exist, Nuxt treats
  * the `.vue` file as a parent layout for the `categories/` directory and
- * requires `<NuxtPage />` inside it — without that, every dynamic child
+ * requires `<NuxtPage />` inside it, without that, every dynamic child
  * (e.g. `/categories/apparel`) silently rendered THIS page instead of
  * `[parent]/index.vue`. Keeping the index inside the dir removes the
  * ambiguity: `/categories` hits this file, `/categories/<handle>` hits
@@ -13,7 +13,7 @@
  *
  * Surfaces top-tier categories from `useCategories()` so the page picks up
  * live Medusa data when the backend is awake and falls back to the bundled
- * stub list when it isn't. The composable does that swap internally — the
+ * stub list when it isn't. The composable does that swap internally, the
  * page just iterates `categories.value`.
  *
  * Layout follows the merchery editorial rhythm: cream-tile hero, white band
@@ -29,7 +29,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Shop GhostMark Studio by category — apparel, drinkware, accessories and lifestyle. Print-on-demand merch for thoughtful brands, made in low runs in Brussels, Berlin and London.',
+        'Shop GhostMark Studio by category: apparel, drinkware, accessories and lifestyle. Print-on-demand merch for thoughtful brands, made in low runs in Brussels, Berlin and London.',
     },
   ],
 })
@@ -40,13 +40,13 @@ const { categories, pending } = useCategories()
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — eyebrow + serif label
+         1. Hero: eyebrow + serif label
          ============================================================ -->
     <section
       class="bg-merchery-tile"
       aria-labelledby="categories-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Catalog
         </p>
@@ -68,13 +68,13 @@ const { categories, pending } = useCategories()
     </section>
 
     <!-- ============================================================
-         2. Category grid — 4:3 cream tiles, serif label centred
+         2. Category grid: 4:3 cream tiles, serif label centred
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="categories-grid-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <h2 id="categories-grid-heading" class="sr-only">
           All categories
         </h2>
@@ -114,15 +114,15 @@ const { categories, pending } = useCategories()
     </section>
 
     <!-- ============================================================
-         3. CTA band — sage slab pointing at /contact
+         3. CTA band: sage slab pointing at /contact
          ============================================================ -->
     <section
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="categories-cta-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <h2
               id="categories-cta-heading"
               class="font-display font-normal leading-[1.05] tracking-[-0.015em] text-ink-950"
@@ -131,7 +131,7 @@ const { categories, pending } = useCategories()
               Can't find the right blank?
             </h2>
             <p class="mt-4 font-body text-body text-ink-700">
-              We source for custom briefs every week — heavyweight tees, vintage
+              We source for custom briefs every week: heavyweight tees, vintage
               caps, ceramic that survives a dishwasher. Tell us what you need
               and we'll quote a small batch.
             </p>

@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
     let cartId: string | null =
       body.cart_id || getCookie(event, 'gms_cart_id') || null
 
-    // Step 1 — ensure a cart exists.
+    // Step 1: ensure a cart exists.
     if (!cartId) {
       const createRes = await fetch(`${baseUrl()}/store/carts`, {
         method: 'POST',
@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
       throw new Error('Cart id missing after create')
     }
 
-    // Step 2 — add line item with design metadata.
+    // Step 2: add line item with design metadata.
     const lineRes = await fetch(`${baseUrl()}/store/carts/${cartId}/line-items`, {
       method: 'POST',
       headers: medusaHeaders(),
@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
   } catch (e: unknown) {
     const message =
       e instanceof Error ? e.message : 'Backend unreachable'
-    // Don't 5xx — surface a structured "offline" payload so the UI can
+    // Don't 5xx: surface a structured "offline" payload so the UI can
     // distinguish a Medusa outage from a real client-side bug.
     return {
       ok: false,

@@ -1,21 +1,21 @@
 /**
- * useProducts — type-aware facade over `sdk.store.product.list`.
+ * useProducts: type-aware facade over `sdk.store.product.list`.
  *
  * Replaces the duplicated `sdk.store.product.list({ fields: '...,*type,...' })`
  * pattern that has cropped up across /shop, /shop/canon, /products, PDP
  * relateds, search, collections, and category pages. Centralising it gives us:
  *
- *   - A canonical `fields` glob — bump it once, every PLP gets the new
+ *   - A canonical `fields` glob: bump it once, every PLP gets the new
  *     expansion. No more "this page is missing *tags, that page is missing
  *     metadata" drift.
- *   - Server-side type filtering — `type: 'apparel' | 'pod'` resolves to a
+ *   - Server-side type filtering: `type: 'apparel' | 'pod'` resolves to a
  *     real `type_id` via {@link useProductTypes} and is pushed to Medusa,
  *     so the backend narrows the result set instead of every PLP shipping
  *     the full catalogue + client-side filter.
- *   - SSR-correct region wiring — every call awaits `useRegion().ensureRegion`
+ *   - SSR-correct region wiring: every call awaits `useRegion().ensureRegion`
  *     so the `region_id` query param is populated before the first SSR
  *     `useAsyncData` resolves. No client-side price hydration flicker.
- *   - Stable cache keys — keyed on `(type, offset, region, custom key)` so
+ *   - Stable cache keys: keyed on `(type, offset, region, custom key)` so
  *     two pages requesting the same view share the SSR payload.
  *
  * Non-goals:
@@ -39,17 +39,34 @@ import type { MaybeRef } from 'vue'
  *   - media: *images (full image relation, not just URLs)
  *   - pricing: *variants.calculated_price (region-scoped price)
  *   - option matrix: *variants.options.value, *options.values (for swatches)
- *   - taxonomy: *type (id + value — drives type-aware filtering)
+ *   - taxonomy: *type (id + value, drives type-aware filtering)
  *   - editorial: metadata, *tags (chips taxonomy)
  *
  * If a page needs a richer expansion (e.g. PDP variant inventory), pass
  * `fields` explicitly to {@link useProducts} or {@link useProduct}.
  */
+// `*options.title` is load-bearing and its absence fails SILENTLY.
+//
+// Medusa v2 expands only what you ask for, one level at a time: `*options.values`
+// returns each option's VALUES and no `title`, so a product came back as
+//     options: [ { values: [ { value: "220g" } ] } ]
+// with no way to know that option is "Size" rather than "Gender" or "Denomination".
+//
+// ProductCardVariant keys on that title to decide whether a product's option is
+// a colourway (render swatches) or a measure (render a mono spec token). Without
+// it every option-derived differentiator resolved to `none` and simply did not
+// render: no error, no warning, no console message, just Atelier Hoodie missing
+// its 4 colour dots and Studio Candle missing "220 G" on a page that otherwise
+// looked completely correct. Verified against :9000 both ways before changing it.
+//
+// The pattern matches what app/composables/useFilterFacets.ts:177 already does
+// (`*options.title,*options.values.value`), so this brings the list fields into
+// line with the one place in the repo that had it right.
 export const PRODUCT_LIST_FIELDS
-  = 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.values,*type,metadata,*tags'
+  = 'id,handle,title,subtitle,description,thumbnail,*images,*variants.calculated_price,*variants.options.value,*options.title,*options.values,*type,metadata,*tags'
 
 export interface UseProductsOptions {
-  /** Filter to a single commerce type — server-side via `type_id`. */
+  /** Filter to a single commerce type, server-side via `type_id`. */
   type?: 'apparel' | 'pod'
   /** Filter to one or more Medusa category IDs (server-side). */
   categoryId?: string | string[]
@@ -132,7 +149,7 @@ export const useProducts = (opts: MaybeRef<UseProductsOptions> = {}) => {
       await regionState.ensureRegion()
       // Resolve the type map before the SDK call so `type_id` makes it onto
       // the query string. If the resolution failed silently the call still
-      // goes out as an unfiltered list — callers should defensively client-
+      // goes out as an unfiltered list. Callers should defensively client-
       // side filter on `type.value` when `type` is specified.
       if (resolved.value.type) await typeRes.ensureResolved()
       const res = await sdk.store.product.list(args.value as Parameters<typeof sdk.store.product.list>[0])

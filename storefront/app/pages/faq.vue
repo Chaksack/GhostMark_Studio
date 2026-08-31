@@ -2,13 +2,13 @@
   <div>
     <!-- Hero -->
     <div class="bg-[#f5f1ec] py-14 text-center">
-      <h1 class="font-serif text-[36px] leading-tight text-zinc-950 sm:text-[48px]">Frequently asked questions</h1>
-      <p class="mx-auto mt-3 max-w-[50ch] text-[15px] text-zinc-600">
+      <h1 class="font-serif text-[36px] leading-tight text-ink-950 sm:text-[48px]">Frequently asked questions</h1>
+      <p class="mx-auto mt-3 max-w-[50ch] text-[15px] text-ink-700">
         Everything you need to know about ordering, pricing, customization, and more.
       </p>
     </div>
 
-    <div class="mx-auto w-full max-w-screen-xl px-5 py-12 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-rail px-gutter py-12">
       <div class="grid gap-10 lg:grid-cols-[220px_1fr]">
         <!-- Sidebar nav -->
         <nav class="hidden lg:block">
@@ -17,7 +17,7 @@
               v-for="cat in categories"
               :key="cat.slug"
               class="block w-full rounded-lg px-3 py-2 text-left text-[14px] transition"
-              :class="activeCategory === cat.slug ? 'bg-zinc-950 font-semibold text-white' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'"
+              :class="activeCategory === cat.slug ? 'bg-ink-950 font-semibold text-white' : 'text-ink-700 hover:bg-ink-100 hover:text-ink-950'"
               @click="scrollTo(cat.slug)"
               type="button"
             >
@@ -30,7 +30,7 @@
         <div class="lg:hidden">
           <select
             v-model="activeCategory"
-            class="w-full border border-zinc-200 bg-white px-3 py-2.5 text-[14px] text-zinc-950 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+            class="w-full border border-ink-400 bg-white px-3 py-2.5 text-[14px] text-ink-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-focus focus-visible:ring-offset-2 focus-visible:ring-offset-white"
             @change="scrollTo(activeCategory)"
           >
             <option v-for="cat in categories" :key="cat.slug" :value="cat.slug">{{ cat.label }}</option>
@@ -45,14 +45,14 @@
             :id="`faq-${cat.slug}`"
             :ref="(el) => { if (el) sectionRefs[cat.slug] = el as HTMLElement }"
           >
-            <h2 class="font-serif text-[24px] text-zinc-950">{{ cat.label }}</h2>
-            <div class="mt-4 divide-y divide-zinc-200 border-y border-zinc-200">
+            <h2 class="font-serif text-[24px] text-ink-950">{{ cat.label }}</h2>
+            <div class="mt-4 divide-y divide-ink-200 border-y border-ink-200">
               <details v-for="(q, i) in cat.questions" :key="i" class="group">
-                <summary class="flex cursor-pointer items-center justify-between py-4 text-[15px] font-medium text-zinc-950">
+                <summary class="flex cursor-pointer items-center justify-between py-4 text-[15px] font-medium text-ink-950">
                   {{ q.q }}
-                  <span class="text-[20px] font-light text-zinc-400 transition-transform duration-200 group-open:rotate-45">+</span>
+                  <span class="text-[20px] font-light text-ink-600 transition-transform duration-200 group-open:rotate-45">+</span>
                 </summary>
-                <div class="pb-4 text-[14px] leading-relaxed text-zinc-600">{{ q.a }}</div>
+                <div class="pb-4 text-[14px] leading-relaxed text-ink-700">{{ q.a }}</div>
               </details>
             </div>
           </section>
@@ -61,27 +61,27 @@
 
       <!-- Didn't find answer CTA -->
       <div class="mt-16 rounded-2xl bg-[#f5f1ec] p-8 text-center sm:p-12">
-        <h2 class="font-serif text-[28px] text-zinc-950">Didn't find an answer?</h2>
-        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-zinc-600">
+        <h2 class="font-serif text-[28px] text-ink-950">Didn't find an answer?</h2>
+        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-ink-700">
           Our team is happy to help with any questions you might have.
         </p>
         <NuxtLink
           to="/contact"
-          class="mt-6 inline-flex h-[48px] items-center justify-center bg-zinc-950 px-8 text-[14px] font-medium tracking-wide text-white hover:bg-zinc-800"
+          class="mt-6 inline-flex h-[48px] items-center justify-center bg-ink-950 px-8 text-[14px] font-medium tracking-wide text-white hover:bg-ink-800"
         >
           Contact us
         </NuxtLink>
       </div>
 
       <!-- Shop CTA banner -->
-      <div class="mt-12 rounded-2xl bg-zinc-950 p-8 text-center sm:p-12">
+      <div class="mt-12 rounded-2xl bg-ink-950 p-8 text-center sm:p-12">
         <h2 class="font-serif text-[28px] text-white">Ready to get started?</h2>
-        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-zinc-400">
+        <p class="mx-auto mt-2 max-w-[45ch] text-[15px] text-ink-600">
           Browse our catalog of sustainable branded merchandise.
         </p>
         <NuxtLink
           to="/products"
-          class="mt-6 inline-flex h-[48px] items-center justify-center bg-white px-8 text-[14px] font-medium tracking-wide text-zinc-950 hover:bg-zinc-100"
+          class="mt-6 inline-flex h-[48px] items-center justify-center bg-white px-8 text-[14px] font-medium tracking-wide text-ink-950 hover:bg-ink-100"
         >
           Shop now
         </NuxtLink>
@@ -108,7 +108,7 @@ const categories = [
     label: 'Ordering',
     questions: [
       { q: 'How do I place an order?', a: 'Simply browse our catalog, select your products, customize them with your branding, and submit your order. Our team will review and send you a proof for approval.' },
-      { q: 'What is the minimum order quantity?', a: 'MOQ varies by product and decoration method. Most items start at 50 units. Contact us for specific product MOQs.' },
+      { q: 'What is the minimum order quantity?', a: 'Most of the catalogue has no minimum: order a single piece if that is all you need. Where a custom run does carry one it is 25 pieces, and the figure is stated on the product page before anything reaches your basket.' },
       { q: 'Can I order samples before placing a bulk order?', a: 'Yes! We offer sample orders for most products so you can check quality before committing to a full order.' },
     ],
   },
@@ -126,7 +126,7 @@ const categories = [
     label: 'Customization',
     questions: [
       { q: 'What decoration methods do you offer?', a: 'We offer screen printing, embroidery, laser engraving, digital transfer, and direct-to-garment printing depending on the product.' },
-      { q: 'What file formats do you accept for logos?', a: 'We prefer vector files (AI, EPS, SVG) for the best results. High-resolution PNG and PDF files are also accepted.' },
+      { q: 'What file formats do you accept for logos?', a: 'The customiser takes PNG, JPEG and WebP. Upload the largest version you have. Vector files (AI, EPS, PDF, SVG) go to the artwork team rather than the uploader: send them with your order and we will vectorise at no charge.' },
       { q: 'Can I customize the packaging?', a: 'Yes, we offer custom packaging options including branded boxes, tissue paper, and stickers.' },
     ],
   },

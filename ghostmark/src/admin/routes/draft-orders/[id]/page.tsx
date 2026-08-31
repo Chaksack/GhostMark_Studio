@@ -99,7 +99,7 @@ async function downloadDraftReceiptPdf(draftOrder: DraftOrder) {
 }
 
 // Medusa v2 order totals are already decimal major-unit amounts (e.g. 42.00
-// means £42.00), not integer cents — do not divide by 100 here.
+// means £42.00), not integer cents. Do not divide by 100 here.
 function formatMoney(amount: number, currencyCode?: string): string {
   const currency = (currencyCode || "USD").toUpperCase()
   try {
@@ -173,7 +173,7 @@ const DraftOrderPageInner = () => {
           <div>
             <Heading level="h2">Draft Order</Heading>
             <Text size="small" className="text-ui-fg-subtle">
-              {draft ? String(draft.display_id || draft.id) : id || "—"}
+              {draft ? String(draft.display_id || draft.id) : id || "–"}
             </Text>
           </div>
         </div>
@@ -271,20 +271,20 @@ const DraftOrderPageInner = () => {
         {!isLoading && !isError && draft && (
           <div className="space-y-2">
             <Text>
-              <strong>Status:</strong> {draft.status || "—"}
+              <strong>Status:</strong> {draft.status || "–"}
             </Text>
             <Text>
-              <strong>Customer:</strong> {draft.customer?.email || draft.email || "—"}
+              <strong>Customer:</strong> {draft.customer?.email || draft.email || "–"}
             </Text>
             <Text>
               <strong>Total:</strong>{" "}
               {typeof draft.total === "number"
                 ? formatMoney(draft.total, draft.currency_code)
-                : "—"}
+                : "–"}
             </Text>
             <Text>
               <strong>Created:</strong>{" "}
-              {draft.created_at ? new Date(draft.created_at).toLocaleString() : "—"}
+              {draft.created_at ? new Date(draft.created_at).toLocaleString() : "–"}
             </Text>
           </div>
         )}

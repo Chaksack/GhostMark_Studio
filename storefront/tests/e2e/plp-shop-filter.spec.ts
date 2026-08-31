@@ -10,7 +10,7 @@
 import { test, expect } from '@playwright/test'
 import { PlpPage } from './pages/PlpPage'
 
-test.describe('PLP — type scoping', () => {
+test.describe('PLP: type scoping', () => {
   test('/shop renders the Studio Canon surface and links to apparel PDPs', async ({ page }) => {
     const plp = new PlpPage(page)
     await plp.gotoShop()
@@ -21,7 +21,7 @@ test.describe('PLP — type scoping', () => {
     expect(href).toMatch(/^\/products\//)
     if (href) {
       await page.goto(href)
-      // Apparel chrome contract — the per-unit price label is the
+      // Apparel chrome contract: the per-unit price label is the
       // canonical signal that we landed on apparel.
       await expect(page.locator('[data-test="apparel-price"]')).toBeVisible()
       await expect(page.locator('[data-test="from-price"]')).toHaveCount(0)
@@ -44,7 +44,7 @@ test.describe('PLP — type scoping', () => {
     expect(href).toMatch(/^\/products\//)
     if (href) {
       await page.goto(href)
-      // POD chrome contract — from-price + MOQ caption are mutually
+      // POD chrome contract: from-price + MOQ caption are mutually
       // exclusive with the apparel-price label.
       await expect(page.locator('[data-test="from-price"]')).toBeVisible()
       await expect(page.locator('[data-test="moq-caption"]')).toBeVisible()

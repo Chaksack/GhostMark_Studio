@@ -1,32 +1,51 @@
 <script setup lang="ts">
 // =============================================================================
-// ProductCardChips — small horizontal trust/value-prop chip rendered above the
-// product title.
+// ProductCardChips: the editorial eyebrow above a product card's title.
 //
-// As of the v2 IA mode-aware refactor this component is a *dumb renderer* over
-// a typed `Chip[]` (see `~/utils/chips`). The parent (`ProductCard`) is now
-// responsible for:
-//   1. Resolving raw badge keys from product metadata.
-//   2. Filtering them to the active commerce mode — derived primarily from
-//      `product.type.value` (`'apparel'` -> D2C chips, `'pod'` -> B2B/POD
-//      chips), with the explicit `mode` prop as a fallback.
-//   3. Capping the count for the target breakpoint.
-// All this component does is paint each chip with the right surface treatment.
+// This component is a dumb renderer over a typed `Chip[]` (see `~/utils/chips`).
+// `ProductCard` resolves the keys, filters them to the commerce mode, drops the
+// ones that don't belong on a browse card, and caps the count. All this does is
+// paint them.
 //
-// v18 chip discipline (per merchery audit):
-//   The previous variant axis (`default` / `highlight`) created visual noise
-//   because too many chips earned the highlight tone — the eye couldn't tell
-//   which signal actually mattered. We've collapsed to a single base surface
-//   (white + light inset ring) and reserved pistacho for the ONE chip that
-//   should pop on a scan: `LOW STOCK` (`chip.urgent === true`). Every other
-//   chip differentiates by LABEL, not by color.
+// -----------------------------------------------------------------------------
+// v21: chips left the photograph
+// -----------------------------------------------------------------------------
+// These used to be pill-shaped badges absolutely positioned over the product
+// image. They are now small-caps text in the meta block, above the title.
 //
-// We deliberately avoid `backdrop-blur-sm` (GPU-expensive and only useful when
-// the chip overlaps a mid-tone area). Long labels truncate with an ellipsis at
-// `max-w-[140px]` rather than wrapping inside the chip.
+// Three reasons, in order of weight:
 //
-// Bug 21 fix (P1) preserved: the parent still slices to a single chip on the
-// PLP, so the absolute strip never wraps to a second line on mobile.
+//  1. No major apparel reference puts a status chip on the photo. lululemon
+//     sets "TRENDING" / "BEST GIFT" in the meta block above the title; Urban
+//     Outfitters and Selfridges keep the image clean but for the wishlist
+//     heart. Selfridges' brand eyebrow is exactly this treatment.
+//  2. The photo is the card's whole job. The old implementation's own comment
+//     said it wanted "the photo as the dominant visual" and then covered it.
+//  3. The claims were landing on the wrong pictures. Catalogue photography is
+//     assigned per category, not per product, so "MADE IN EUROPE" was sitting
+//     over a candle and "BEST SELLER" over a photo of reading glasses.
+//
+// Losing the pill also removes the white fill and inset ring that existed only
+// to keep the label legible against an arbitrary photograph. Against the page
+// background the label needs no chrome at all, which is the point of an
+// eyebrow, and one less surface in a grid that had too many.
+//
+// -----------------------------------------------------------------------------
+// Urgency
+// -----------------------------------------------------------------------------
+// Exactly one chip in the catalog carries `urgent` (`LOW STOCK`). It used to
+// earn a pistacho FILL; as text it takes the semantic warning foreground
+// instead. Colour still does the work, the surface is gone, and the semantic
+// token means this tracks the design system rather than a raw palette value.
+//
+// -----------------------------------------------------------------------------
+// Wrapping
+// -----------------------------------------------------------------------------
+// Bug 21 (P1) was a 3-chip strip wrapping to two lines at ≤390px and eating the
+// top of the thumbnail. It cannot recur: there is no overlay left to eat, the
+// row is `flex-nowrap`, and the second chip is hidden below `md` so a 163px
+// 2-up mobile card renders exactly one. The breakpoint is pure CSS, so a
+// server-rendered grid has no hydration mismatch to worry about.
 // =============================================================================
 import type { Chip } from '~/utils/chips'
 
@@ -36,15 +55,32 @@ defineProps<{
 </script>
 
 <template>
-  <div v-if="chips.length" class="flex flex-wrap gap-x-2 gap-y-1">
+  <!--
+    The eyebrow row is ALWAYS rendered, even with no chips.
+
+    Dropping the ubiquitous `made_in_europe` from browse cards leaves 8 of 26
+    products with no eyebrow at all. If the row collapsed on those, their
+    titles would start ~19px higher than their neighbours', and every grid row
+    mixing the two would misalign its titles, prices and commerce lines, the
+    same defect the title's reserved two lines fixes one element down.
+
+    So the row reserves its height unconditionally. `min-h-[1.2rem]` is a
+    spacing value covering one 12px/1.2 eyebrow line; it is not a type size.
+    `aria-hidden` when empty so the reserved box is never announced as a blank
+    element by a screen reader.
+  -->
+  <div
+    :aria-hidden="chips.length ? undefined : 'true'"
+    class="mb-[2px] flex min-h-[1.2rem] flex-nowrap items-baseline gap-x-[0.6rem] overflow-hidden"
+  >
     <span
-      v-for="chip in chips"
+      v-for="(chip, i) in chips"
       :key="chip.key"
       :class="[
-        'text-[10px] font-medium uppercase tracking-[0.06em] px-[6px] py-[3px] md:px-2 md:py-1 rounded ring-1 ring-inset truncate max-w-[140px] pointer-events-auto',
-        chip.urgent
-          ? 'bg-pistacho text-ink-950 ring-pistacho/60'
-          : 'bg-white text-ink-950 ring-greyLines/30',
+        'text-eyebrow font-medium uppercase truncate',
+        chip.urgent ? 'text-semantic-warning-fg' : 'text-ink-500',
+        // Second chip is desktop-only, see the wrapping note above.
+        i > 0 ? 'hidden md:inline-block' : '',
       ]"
     >
       {{ chip.label }}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * /cookies — Cookies policy (legal).
+ * /cookies: Cookies policy (legal).
  *
  * Same structure as /privacy and /terms. Adds a "Manage preferences" CTA
- * at the top — placeholder click handler today, designed to plug into a
+ * at the top, placeholder click handler today, designed to plug into a
  * real consent platform later.
  */
 defineOptions({ name: 'PageCookies' })
@@ -14,7 +14,7 @@ useHead({
     {
       name: 'description',
       content:
-        'A clear breakdown of the cookies and similar technologies GhostMark Studio uses on this site — what they do, who sets them, and how to change your mind at any time.',
+        'A clear breakdown of the cookies and similar technologies GhostMark Studio uses on this site: what they do, who sets them, and how to change your mind at any time.',
     },
   ],
 })
@@ -38,7 +38,7 @@ const types: CookieType[] = [
     id: 'essential',
     label: 'Essential',
     body:
-      'Make the cart, checkout, login session and region selection work. Cannot be turned off in the consent banner — without them the site simply doesn\'t function.',
+      'Make the cart, checkout, login session and region selection work. Cannot be turned off in the consent banner. Without them the site simply doesn\'t function.',
   },
   {
     id: 'functional',
@@ -66,14 +66,14 @@ const sections: Section[] = [
     title: 'What are cookies?',
     body: [
       'Cookies are small text files stored on your device when you visit a website. They\'re used by almost every site on the modern web to keep you logged in, remember a cart, measure traffic, and personalise content. The cookies we set on ghostmark.studio are described in detail below.',
-      'We treat cookies the same way we treat the rest of our data practices — as little as possible, transparent about why, and easy to change your mind about.',
+      'We treat cookies the same way we treat the rest of our data practices: as little as possible, transparent about why, and easy to change your mind about.',
     ],
   },
   {
     id: 'how-to-manage',
     title: 'How to manage cookies',
     body: [
-      'You can change your consent at any time using the "Manage preferences" button at the top of this page. You can also block or delete cookies through your browser settings — every modern browser exposes this in its privacy or content settings panel.',
+      'You can change your consent at any time using the "Manage preferences" button at the top of this page. You can also block or delete cookies through your browser settings. Every modern browser exposes this in its privacy or content settings panel.',
       'Blocking essential cookies will break parts of the site (cart, checkout, account). Blocking analytics, functional or marketing cookies will not.',
     ],
   },
@@ -81,7 +81,7 @@ const sections: Section[] = [
     id: 'third-party-cookies',
     title: 'Third-party cookies',
     body: [
-      'Some pages embed content from third parties — Stripe (payments), Vimeo (product video), and occasionally a Twitter or Instagram embed. These third parties may set their own cookies governed by their own policies. We list the active ones in our consent banner so you can opt out of each individually.',
+      'Some pages embed content from third parties: Stripe (payments), Vimeo (product video), and occasionally a Twitter or Instagram embed. These third parties may set their own cookies governed by their own policies. We list the active ones in our consent banner so you can opt out of each individually.',
     ],
   },
   {
@@ -101,7 +101,7 @@ const sections: Section[] = [
 ]
 
 const onManagePreferences = () => {
-  // Placeholder — wire to the real cookie consent platform when it lands.
+  // Placeholder: wire to the real cookie consent platform when it lands.
   // No-op today. The button is keyboard- and screen-reader-reachable so the
   // banner integration can be slotted in without page-template changes.
 }
@@ -116,7 +116,7 @@ const onManagePreferences = () => {
       class="bg-merchery-tile"
       aria-labelledby="cookies-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Legal
         </p>
@@ -131,7 +131,7 @@ const onManagePreferences = () => {
         </p>
         <p class="max-w-[52ch] font-body text-body text-ink-700">
           What we set, why we set it, and how to change your mind at any
-          time. As few cookies as possible — and never shared with anyone
+          time. As few cookies as possible, and never shared with anyone
           we haven't told you about.
         </p>
         <div class="pt-2">
@@ -148,14 +148,14 @@ const onManagePreferences = () => {
     </section>
 
     <!-- ============================================================
-         2. Types of cookies — 4-up grid
+         2. Types of cookies: 4-up grid
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="cookies-types-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Types we use
           </p>
@@ -191,7 +191,7 @@ const onManagePreferences = () => {
       class="bg-cream-warm"
       aria-labelledby="cookies-body-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
         <h2 id="cookies-body-heading" class="sr-only">
           Cookies policy details
         </h2>

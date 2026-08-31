@@ -11,6 +11,12 @@ coverage
 
 !src/**
 
+# `!src/**` above re-includes everything under src/, which also re-includes
+# editor/agent scratch copies the root .gitignore had already excluded.
+# Re-exclude them here, after the negation, or they ship.
+src/**/*.bak
+src/**/*.bak-*
+
 ./tsconfig.tsbuildinfo
 medusa-db.sql
 build

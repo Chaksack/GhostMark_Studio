@@ -1,4 +1,4 @@
-// Phase 7 — register vue-konva on the client only.
+// Phase 7: register vue-konva on the client only.
 //
 // Konva uses the browser <canvas> API; importing it during SSR throws
 // (`canvas is not defined`). The `.client.ts` filename suffix tells Nuxt to

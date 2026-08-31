@@ -7,8 +7,8 @@
  *  - mobile-iphone covers the <md compact row (burger overlay, mobile
  *    sticky ATC bar with IntersectionObserver gate).
  *
- * Tests live under `tests/e2e/`. The dev server is NOT auto-started here
- * — running suites assumes either `npm run dev` is up locally or
+ * Tests live under `tests/e2e/`. The dev server is NOT auto-started here:
+ * running suites assumes either `npm run dev` is up locally or
  * E2E_BASE_URL points at a live deployment. We keep server lifecycle out
  * of the runner so a parallel agent doing a Playwright visual sweep on
  * the same dev server doesn't trip a port collision.

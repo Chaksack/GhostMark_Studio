@@ -1,5 +1,5 @@
 // =============================================================================
-// flag-customizable — exec script to flip `metadata.is_customizable = true`
+// flag-customizable: exec script to flip `metadata.is_customizable = true`
 // on a single product so the Konva DesignEditor renders on the storefront PDP.
 //
 // Usage:
@@ -8,7 +8,7 @@
 // product service (deterministic ordering is not guaranteed; pass an explicit
 // handle in CI).
 //
-// Idempotent — re-running with the same handle just re-writes the same flag,
+// Idempotent: re-running with the same handle just re-writes the same flag,
 // merging into any existing metadata (so we never clobber unrelated keys).
 // =============================================================================
 import { ExecArgs } from "@medusajs/framework/types"

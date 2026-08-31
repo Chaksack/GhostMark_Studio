@@ -1,6 +1,6 @@
 <template>
   <!--
-    Case-study mosaic — the editorial centrepiece of the home page.
+    Case-study mosaic: the editorial centrepiece of the home page.
     Positions GhostMark Studio as a creative agency that dresses other
     creative brands. Pinterest-style asymmetric grid: 2-up uniform on
     mobile, a 12-column asymmetric magazine layout from `lg` upward
@@ -17,19 +17,31 @@
     class="bg-warmGrey py-[6rem] lg:py-[10rem]"
     aria-labelledby="case-studies-heading"
   >
-    <div class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-rail px-gutter">
       <!-- Eyebrow + H2 + sub -->
-      <div class="mb-[4rem] max-w-[80rem] lg:mb-[6rem]">
-        <p class="mb-3 text-[12px] uppercase tracking-[0.18em] text-greyText">
+      <!--
+        The editorial centrepiece is bracketed in registration marks, the
+        corner ticks a printer sets to show where a sheet gets trimmed. This is
+        the second place the device appears (the first is the press colour bar
+        terminating the hero), which is what makes it a system rather than a
+        one-off flourish: a signature has to recur to be recognised.
+
+        Marks are applied HERE rather than on the mosaic tiles because the
+        tiles carry `overflow-hidden` for their image crop, which would clip
+        the ticks at their -1px offset. Padding is added so the ticks bracket
+        the text block instead of colliding with it.
+      -->
+      <div class="gm-reg-marks mb-[4rem] max-w-[800px] py-6 pl-6 lg:mb-[6rem]">
+        <p class="gm-spec mb-3 text-ink-600">
           Our products in real life
         </p>
         <h2
           id="case-studies-heading"
-          class="font-accent text-[3.2rem] leading-[3.6rem] text-ink-950 md:text-[4.8rem] md:leading-[5.2rem] lg:text-[6.4rem] lg:leading-[6.8rem]"
+          class="gm-display gm-display-xl text-ink-950"
         >
           As real as it gets.
         </h2>
-        <p class="mt-6 max-w-[56rem] text-[1.5rem] leading-[2rem] text-ink-700">
+        <p class="mt-6 max-w-[560px] text-[15px] leading-[20px] text-ink-700">
           Studios, agencies and teams send us their marks. We send them
           objects that outlast the campaign. A small selection from the canon.
         </p>
@@ -70,17 +82,20 @@
             loading="lazy"
             decoding="async"
           />
-          <!-- Bottom-anchored gradient scrim — keeps the caption legible
+          <!-- Bottom-anchored gradient scrim: keeps the caption legible
                regardless of the underlying photograph's exposure. -->
           <div
             class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/70 via-ink-950/20 to-transparent"
           />
           <div class="absolute bottom-0 left-0 right-0 z-[1] p-5 md:p-7">
-            <p class="mb-2 text-[11px] uppercase tracking-[0.18em] text-cream-50/85">
+            <!-- Was 11px. `.gm-spec` has a hard 12px floor and there is no
+                 smaller step in this system, so this lifts rather than gets
+                 an ad-hoc size. -->
+            <p class="gm-spec mb-2 text-cream-50/85">
               {{ c.brand }}
             </p>
             <h3
-              class="font-accent text-[1.6rem] leading-[1.9rem] text-cream-50 md:text-[2.2rem] md:leading-[2.5rem] lg:text-[2.8rem] lg:leading-[3.1rem]"
+              class="font-accent text-[16px] leading-[19px] text-cream-50 md:text-[22px] md:leading-[25px] lg:text-[28px] lg:leading-[31px]"
             >
               {{ c.title }}
             </h3>
@@ -93,7 +108,7 @@
 
 <script setup lang="ts">
 /**
- * Six placeholder case studies. All copy is fictional — replace as
+ * Six placeholder case studies. All copy is fictional, replace as
  * real client work ships. Image URLs target images.unsplash.com,
  * which is whitelisted in nuxt.config.ts under `image.domains` so a
  * future swap to <NuxtImg> for IPX optimisation is a one-line change.
@@ -101,7 +116,7 @@
  * Why <img> and not <NuxtImg>: these tiles are below the fold, well
  * past the LCP candidate, and we want lazy-load + decoding=async
  * without the IPX hop. NuxtPicture is reserved for hero / LCP-critical
- * imagery — see HeroSection.vue for the reference pattern.
+ * imagery: see HeroSection.vue for the reference pattern.
  */
 const cases = [
   {
@@ -155,7 +170,7 @@ const cases = [
 ]
 
 /**
- * Asymmetric layout map — index-keyed so we can read the magazine
+ * Asymmetric layout map: index-keyed so we can read the magazine
  * intent at a glance:
  *
  *   0 ─ big left tile     col-span-5  row-span-2  (anchors top-left)

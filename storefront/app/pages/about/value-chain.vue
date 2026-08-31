@@ -1,19 +1,19 @@
 <script setup lang="ts">
 /**
- * About / Value chain — sub-page of /about that walks the reader through
+ * About / Value chain: sub-page of /about that walks the reader through
  * the five steps a GhostMark order makes from brief to delivery, then
  * names the partners and certifications behind each step.
  *
  * Layout follows the merchery.co audit-about reference:
  *   1. Cream-tile hero with the headline + a short intro
  *   2. A five-step horizontal flow (collapsing to a vertical stack on
- *      mobile) — Design → Sourcing → Production → Customisation → Logistics
+ *      mobile): Design → Sourcing → Production → Customisation → Logistics
  *   3. A 3-up grid of named partners with cream-tile placeholder photos
  *   4. A "where in Europe" map placeholder with dashed-underlined city names
  *   5. A trust-badge strip mirroring the footer pattern (B Corp, GOTS,
  *      OEKO-TEX, FSC)
  *
- * Every surface is tokenised through the editorial palette — no
+ * Every surface is tokenised through the editorial palette, no
  * `bg-[#hex]` literals.
  */
 defineOptions({ name: 'PageAboutValueChain' })
@@ -24,7 +24,7 @@ useHead({
     {
       name: 'description',
       content:
-        'From brief to doorstep — the five steps every GhostMark order moves through, the named partners we work with at each one, and the European cities where they\'re based.',
+        'From brief to doorstep: the five steps every GhostMark order moves through, the named partners we work with at each one, and the European cities where they\'re based.',
     },
   ],
 })
@@ -112,7 +112,7 @@ const partners: Partner[] = [
     role: 'Packaging partner',
     city: 'Krakow, PL',
     body:
-      'Mailers, tape and labels — all FSC-certified, 100% post-consumer recycled, compostable in 90 days.',
+      'Mailers, tape and labels: all FSC-certified, 100% post-consumer recycled, compostable in 90 days.',
   },
 ]
 
@@ -136,13 +136,13 @@ const certifications: Certification[] = [
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — cream tile + serif headline + body intro
+         1. Hero: cream tile + serif headline + body intro
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="value-chain-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             About / Value chain
@@ -156,7 +156,7 @@ const certifications: Certification[] = [
           <p class="max-w-[44ch] font-body text-body text-ink-700">
             Five steps, six European cities, twenty-two named partners.
             Every order you place moves through the same chain in the same
-            order. We name everyone we work with — if a partner won't be
+            order. We name everyone we work with. If a partner won't be
             named, we don't work with them.
           </p>
         </div>
@@ -166,21 +166,21 @@ const certifications: Certification[] = [
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; replace with real photography</span>
+            >Image: replace with real photography</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         2. Flow — five horizontal steps (vertical on mobile)
+         2. Flow: five horizontal steps (vertical on mobile)
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="value-chain-flow-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             The flow
           </p>
@@ -231,14 +231,14 @@ const certifications: Certification[] = [
     </section>
 
     <!-- ============================================================
-         3. Materials & partners — 3-up named cards on cream-warm
+         3. Materials & partners: 3-up named cards on cream-warm
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="value-chain-partners-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Materials &amp; partners
           </p>
@@ -261,7 +261,7 @@ const certifications: Certification[] = [
                 <span
                   class="font-body text-caption text-ink-400"
                   aria-label="Image placeholder"
-                >Image &mdash; partner photo</span>
+                >Image: partner photo</span>
               </div>
             </div>
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -279,13 +279,13 @@ const certifications: Certification[] = [
     </section>
 
     <!-- ============================================================
-         4. Map — placeholder + dashed-underlined city list
+         4. Map: placeholder + dashed-underlined city list
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="value-chain-map-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid grid-cols-1 gap-x-[30px] gap-y-12 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)] lg:items-start">
           <div class="flex flex-col gap-6">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -319,7 +319,7 @@ const certifications: Certification[] = [
               <span
                 class="font-body text-caption text-ink-400"
                 aria-label="Map placeholder"
-              >Map &mdash; replace with real partner pins</span>
+              >Map: replace with real partner pins</span>
             </div>
           </div>
         </div>
@@ -327,14 +327,14 @@ const certifications: Certification[] = [
     </section>
 
     <!-- ============================================================
-         5. Certifications — trust-badge strip (matches footer pattern)
+         5. Certifications: trust-badge strip (matches footer pattern)
          ============================================================ -->
     <section
       class="bg-cream-tile"
       aria-labelledby="value-chain-certs-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-12 px-gutter py-section">
-        <div class="flex flex-col gap-3 lg:max-w-[44rem]">
+      <div class="mx-auto flex max-w-rail flex-col gap-12 px-gutter py-section">
+        <div class="flex flex-col gap-3 lg:max-w-[440px]">
           <p
             id="value-chain-certs-heading"
             class="text-eyebrow font-body uppercase text-ink-500"

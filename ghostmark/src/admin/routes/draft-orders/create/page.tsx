@@ -26,7 +26,7 @@ type InvoiceItemInput = {
 
 // NOTE: Medusa v2 order/line-item money fields (unit_price, total, subtotal, ...)
 // are already decimal amounts in the currency's major unit (e.g. 40.80 means
-// £40.80) — NOT integer minor units like cents. Do not multiply/divide by a
+// £40.80), NOT integer minor units like cents. Do not multiply/divide by a
 // currency factor anywhere in this file; confirmed by inspecting a draft order
 // created through this exact form, where a previous version of this code
 // multiplied the entered amount by 100 before sending it as `unit_price`,

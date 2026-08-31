@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /**
- * /press — Press kit landing page.
+ * /press: Press kit landing page.
  *
  * Editorial layout consistent with /about and /sustainability:
  *   - Cream-tile hero with eyebrow + serif headline.
- *   - "In the press" — 3-up logo placeholder strip.
- *   - "Press releases" — dated cards, serif title, dashed-underline link.
- *   - "Brand assets" — outline buttons for downloadable kits (placeholder #).
- *   - "Press contact" — single card with email + spokesperson.
+ *   - "In the press": 3-up logo placeholder strip.
+ *   - "Press releases": dated cards, serif title, dashed-underline link.
+ *   - "Brand assets": outline buttons for downloadable kits (placeholder #).
+ *   - "Press contact": single card with email + spokesperson.
  */
 defineOptions({ name: 'PagePress' })
 
@@ -69,7 +69,7 @@ const releases: Release[] = [
     iso: '2025-12-18',
     title: 'GhostMark joins 1% for the Planet as a permanent member',
     excerpt:
-      'One percent of all studio revenue — not profit — will be directed to vetted environmental nonprofits chosen by the studio team each quarter.',
+      'One percent of all studio revenue (not profit) will be directed to vetted environmental nonprofits chosen by the studio team each quarter.',
   },
 ]
 
@@ -83,13 +83,13 @@ const assets: Asset[] = [
 <template>
   <div class="bg-white text-ink-950">
     <!-- ============================================================
-         1. Hero — cream tile + serif headline
+         1. Hero: cream tile + serif headline
          ============================================================ -->
     <section
       class="bg-merchery-tile"
       aria-labelledby="press-hero-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-10 px-gutter py-section lg:grid-cols-2 lg:items-center">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-10 px-gutter py-section lg:grid-cols-2 lg:items-center">
         <div class="flex flex-col gap-6">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Press
@@ -117,21 +117,21 @@ const assets: Asset[] = [
             <span
               class="font-body text-caption text-ink-400"
               aria-label="Image placeholder"
-            >Image &mdash; press cover frame</span>
+            >Image: press cover frame</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         2. In the press — 3-up logo grid placeholders
+         2. In the press: 3-up logo grid placeholders
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="press-outlets-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             In the press
           </p>
@@ -159,14 +159,14 @@ const assets: Asset[] = [
     </section>
 
     <!-- ============================================================
-         3. Press releases — 3-up dated cards
+         3. Press releases: 3-up dated cards
          ============================================================ -->
     <section
       class="bg-cream-warm"
       aria-labelledby="press-releases-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
-        <div class="flex flex-col gap-3 pb-12 lg:max-w-[44rem]">
+      <div class="mx-auto max-w-rail px-gutter py-section">
+        <div class="flex flex-col gap-3 pb-12 lg:max-w-[440px]">
           <p class="text-eyebrow font-body uppercase text-ink-500">
             Press releases
           </p>
@@ -208,13 +208,13 @@ const assets: Asset[] = [
     </section>
 
     <!-- ============================================================
-         4. Brand assets — outline buttons for downloads
+         4. Brand assets: outline buttons for downloads
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="press-assets-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter py-section">
+      <div class="mx-auto max-w-rail px-gutter py-section">
         <div class="grid grid-cols-1 gap-x-[30px] gap-y-10 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
           <div class="flex flex-col gap-3">
             <p class="text-eyebrow font-body uppercase text-ink-500">
@@ -229,7 +229,7 @@ const assets: Asset[] = [
             <p class="max-w-[48ch] font-body text-body text-ink-700">
               Ready-to-use kits for editorial and partner work. Please
               don't recolour the wordmark, and please use the provided
-              clear-space ratios — there are notes inside the PDF.
+              clear-space ratios: there are notes inside the PDF.
             </p>
           </div>
           <ul class="flex flex-col gap-4">
@@ -261,15 +261,15 @@ const assets: Asset[] = [
     </section>
 
     <!-- ============================================================
-         5. Press contact — single card on sage band
+         5. Press contact: single card on sage band
          ============================================================ -->
     <section
       class="w-full bg-merchery-sage py-section"
       aria-labelledby="press-contact-heading"
     >
-      <div class="mx-auto max-w-[1320px] px-gutter">
+      <div class="mx-auto max-w-rail px-gutter">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
-          <div class="max-w-[40rem]">
+          <div class="max-w-[400px]">
             <p class="text-eyebrow font-body uppercase text-ink-500">
               Press contact
             </p>

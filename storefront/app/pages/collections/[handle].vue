@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * /collections/[handle] — single curated collection.
+ * /collections/[handle]: single curated collection.
  *
  * Mirrors the merchery PLP shell (oversized H1 + intro + filter bar + 4-up
  * grid) and adds collection-aware copy. Resolves the collection by handle via
@@ -8,7 +8,7 @@
  * collection id with region-aware pricing so calculated_price doesn't come
  * back null.
  *
- * Failure modes resolve to a soft "not found" panel inside the same route —
+ * Failure modes resolve to a soft "not found" panel inside the same route,
  * we never throw a 404 status (intentional: the /collections index already
  * deep-links to handles).
  */
@@ -27,7 +27,7 @@ const handle = computed(() => String(route.params.handle))
 
 await regionState.ensureRegion()
 
-// Live filter options — Medusa-backed `category`/`color`/`brand` pills with
+// Live filter options: Medusa-backed `category`/`color`/`brand` pills with
 // static fallback. `price`/`quantity`/`leadTime`/`sort` remain on the static
 // `filterOptions` import (domain-specific, see filters.ts header docblock).
 const { liveOptions, ensureResolved: ensureFilterOptionsResolved } = useFilterOptions()
@@ -90,7 +90,7 @@ const productCards = computed(() =>
   })),
 )
 
-// --- Filter state — same merchery pill bar as sibling PLPs.
+// --- Filter state: same merchery pill bar as sibling PLPs.
 const categoryFilter = ref<string[]>([])
 const priceFilter = ref<string[]>([])
 const quantityFilter = ref<string[]>([])
@@ -101,11 +101,11 @@ const fastShipping = ref(false)
 const sortBy = ref<string>('relevance')
 
 // Sort runs over the already-coerced `productCards` array so `images:null`
-// stripping isn't relitigated downstream — `applySort` reads `created_at` and
+// stripping isn't relitigated downstream, `applySort` reads `created_at` and
 // the variant pricing we already coerced through.
 const sortedProducts = computed(() => applySort(productCards.value as any[], sortBy.value))
 
-// --- Mobile sheet state — same pattern as the rest of the PLP family.
+// --- Mobile sheet state: same pattern as the rest of the PLP family.
 const filterSheetOpen = ref(false)
 const sortSheetOpen = ref(false)
 const totalActiveFilters = computed(() =>
@@ -130,11 +130,11 @@ function onClearFilters() {
 </script>
 
 <template>
-  <div class="lg:pt-[118px]">
-    <div class="relative px-[1.5rem] lg:px-[3rem]">
-      <!-- Breadcrumb — flow at <md so the 4-segment trail wraps cleanly above
+  <div>
+    <div class="relative mx-auto w-full max-w-rail px-gutter">
+      <!-- Breadcrumb: flow at <md so the 4-segment trail wraps cleanly above
            the H1 instead of fighting it for space at 320. -->
-      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:pt-0" aria-label="breadcrumbs">
+      <nav class="pt-[2rem] md:absolute md:top-[2rem] md:z-10 md:pt-0" aria-label="breadcrumbs">
         <ol class="flex flex-wrap items-center gap-x-1 gap-y-0">
           <li>
             <NuxtLink to="/" class="text-sm text-greyText hover:text-ink-950 hover:underline">
@@ -166,16 +166,16 @@ function onClearFilters() {
         </ol>
       </nav>
 
-      <h1 class="relative mb-[3rem] max-w-[110rem] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[4rem] sm:text-[4.4rem] lg:text-[8rem] leading-[4.4rem] sm:leading-[4.8rem] lg:leading-[8.8rem] tracking-[-0.01em] break-words">
+      <h1 class="relative mb-[3rem] max-w-[1100px] pt-[2rem] md:pt-[6rem] lg:pt-[10rem] mt-0 lg:mb-[6rem] text-[40px] sm:text-[44px] lg:text-[80px] leading-[44px] sm:leading-[48px] lg:leading-[88px] tracking-[-0.01em] break-words">
         {{ collection?.title ?? handle }}
       </h1>
 
-      <p v-if="(collection?.metadata?.description as string | undefined)" class="mb-[6rem] max-w-[56rem]">
+      <p v-if="(collection?.metadata?.description as string | undefined)" class="mb-[6rem] max-w-[560px]">
         {{ collection?.metadata?.description }}
       </p>
-      <p v-else class="mb-[6rem] max-w-[56rem]">
+      <p v-else class="mb-[6rem] max-w-[560px]">
         A curated edit from the GhostMark Studio canon. Considered objects for studios and
-        teams &mdash; produced in Bordeaux from 25 pieces, e-proof in 48 hours.
+        teams, produced in Bordeaux from 25 pieces, e-proof in 48 hours.
       </p>
 
       <div v-if="!collection" class="py-12 text-center">
@@ -195,7 +195,7 @@ function onClearFilters() {
             <FilterPill v-model="leadTimeFilter" label="Lead time" :options="filterOptions.leadTime" data-test="filter-leadtime" />
             <FilterPill v-model="colorFilter" label="Color" :options="liveOptions.color" data-test="filter-color" />
             <FilterPill v-model="brandFilter" label="Brands" :options="liveOptions.brand" data-test="filter-brand" />
-            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
+            <label class="inline-flex items-center min-h-[44px] gap-2 px-3 py-2 border border-greyLines rounded-none cursor-pointer hover:bg-uiGrey" data-test="filter-fast-shipping">
               <input v-model="fastShipping" type="checkbox" class="w-5 h-5 rounded border-greyLines text-ink-950 focus:ring-ink-950">
               <span class="text-[14px] text-ink-950">Fast shipping only</span>
             </label>
@@ -209,14 +209,14 @@ function onClearFilters() {
           />
         </nav>
 
-        <!-- Mobile filter bar — wired two-button row. Drops the inert prior
+        <!-- Mobile filter bar: wired two-button row. Drops the inert prior
              implementation and the offending `mx-[1.5rem]` (parent already has
              `px-[1.5rem]`, so nesting the margin caused horizontal overflow at
              320). 48px tall row hits WCAG touch target rules. -->
         <div class="flex gap-3 pb-[1rem] border-b border-greyLines md:hidden">
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="filterSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950">Filters{{ totalActiveFilters > 0 ? ` (${totalActiveFilters})` : '' }}</span>
@@ -226,7 +226,7 @@ function onClearFilters() {
           </button>
           <button
             type="button"
-            class="flex-1 inline-flex items-center justify-between min-h-[48px] border border-greyLines px-[1.6rem] hover:bg-uiGrey"
+            class="flex-1 inline-flex items-center justify-between min-h-11 border border-greyLines px-4 hover:bg-uiGrey"
             @click="sortSheetOpen = true"
           >
             <span class="text-[16px] font-medium text-ink-950 truncate">Sort: {{ sortLabel }}</span>
@@ -236,7 +236,7 @@ function onClearFilters() {
           </button>
         </div>
 
-        <!-- Mobile bottom sheets — Teleported, full-height drawer pattern. -->
+        <!-- Mobile bottom sheets: Teleported, full-height drawer pattern. -->
         <MobileFilterSheet
           v-model:open="filterSheetOpen"
           title="Filter products"
@@ -268,7 +268,7 @@ function onClearFilters() {
 
         <ul
           v-if="sortedProducts.length"
-          class="grid grid-cols-2 gap-[1.6rem] md:grid-cols-3 lg:grid-cols-4 lg:gap-[3rem] mt-[3rem]"
+          class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 xl:grid-cols-5 mt-[3rem]"
         >
           <ProductCard
             v-for="p in sortedProducts"
@@ -278,7 +278,7 @@ function onClearFilters() {
         </ul>
 
         <div v-else class="py-12 text-center">
-          <p class="mx-auto max-w-[44rem] font-body text-body text-ink-500">
+          <p class="mx-auto max-w-[440px] font-body text-body text-ink-500">
             No products in this collection yet.
             <NuxtLink to="/collections" class="ml-1 text-ink-950 underline decoration-dashed underline-offset-4 hover:decoration-solid">
               See all collections
@@ -292,7 +292,7 @@ function onClearFilters() {
       </template>
     </div>
 
-    <div class="mx-auto w-full max-w-screen-3xl px-5 sm:px-6 lg:px-8 mt-16 flex flex-col gap-12 mb-12">
+    <div class="mx-auto w-full max-w-rail px-gutter mt-16 flex flex-col gap-12 mb-12">
       <AppFaq />
       <AppNewsletter />
     </div>

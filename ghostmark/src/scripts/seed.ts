@@ -1,3 +1,31 @@
+/* ============================================================================
+ * DO NOT RUN THIS SCRIPT AGAINST THE POPULATED DATABASE.
+ * IT WOULD DROP GBP AS A STORE CURRENCY AND INJECT 1,000,000 STOCK UNITS.
+ * ============================================================================
+ *
+ * Unlike its siblings this file's PRICES are fine — it writes `amount: 10`,
+ * `amount: 15`, already MAJOR units, which is why migrate-price-units had to
+ * exclude it by provenance rather than sweep the whole table. The danger here
+ * is different.
+ *
+ * 1. IT REPLACES THE STORE CURRENCY SET, AND GBP IS NOT IN IT.
+ *    `:89-101` calls updateStoreCurrencies with supported_currencies =
+ *    [eur (is_default), usd]. This is a REPLACE, not a merge. Measured live on
+ *    2026-08-30, store_currency holds gbp (DEFAULT), eur, usd.
+ *    Running this would drop GBP entirely and make EUR the default, against a
+ *    store whose UK region, every completed order, and 1,354 live carts are
+ *    all GBP.
+ *
+ * 2. `:976` sets stocked_quantity: 1000000 on every inventory level.
+ *
+ * It is the canonical bootstrap seed and is correct for an EMPTY database.
+ * The gate below exists because nothing in the file distinguishes an empty
+ * database from this one, and the failure is silent and immediate.
+ *
+ * Before running this against real data: fix the currency set to include gbp,
+ * or point it at a fresh database.
+ * ========================================================================== */
+
 import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
 import {
   ContainerRegistrationKeys,
@@ -55,6 +83,15 @@ const updateStoreCurrencies = createWorkflow(
 );
 
 export default async function seedDemoData({ container }: ExecArgs) {
+  // Hard gate. See the DO NOT RUN banner at the top of this file.
+  // Throws rather than returns: a `return` exits 0 and any CI wrapper
+  // checking the exit status would read the refusal as a successful run.
+  if (process.env.I_HAVE_FIXED_THE_UNIT_CONVENTION !== "yes") {
+    const msg =
+      "[seed] REFUSING TO RUN. :89-101 REPLACES the store currency set with " + "[eur, usd] and would drop GBP, which is this store default, its UK region " + "currency, and the currency of every completed order. :976 also injects " + "1,000,000 stock units. Safe only against an EMPTY database.";
+    console.error(msg);
+    throw new Error(msg);
+  }
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);

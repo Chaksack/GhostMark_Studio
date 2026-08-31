@@ -1,19 +1,19 @@
 /**
- * useFilterFacets — single-flight facet harvester for PLP filter pills.
+ * useFilterFacets: single-flight facet harvester for PLP filter pills.
  *
  * The merchery filter bar shows Category / Color / Brand pills whose option
  * sets used to be hardcoded in `utils/filters.ts`. The live Medusa catalogue
  * publishes its own taxonomy through `product_categories`, variant option
  * values, and (eventually) product metadata / tags. This composable harvests
  * those values once per app boot and surfaces them as `{ value, label }`
- * tuples — the exact shape `<FilterPill>` already consumes, so the static
+ * tuples: the exact shape `<FilterPill>` already consumes, so the static
  * `filterOptions` import can be swapped for a live source without touching
  * the JSX.
  *
  * Why a sample, not a full crawl:
  *   Medusa v2's Store API doesn't expose a dedicated facet endpoint, so the
  *   only way to enumerate variant option values catalog-wide is to walk
- *   products. We cap the sample at 200 — large enough to cover the current
+ *   products. We cap the sample at 200: large enough to cover the current
  *   24-product catalogue with headroom, small enough to stay inside the SSR
  *   budget (one round-trip, no pagination). If/when the catalogue grows past
  *   a few hundred SKUs this becomes paged or moved to a custom Store API
@@ -21,15 +21,15 @@
  *   storage cost stays linear in unique values, not total products.
  *
  * Resolution strategy:
- *   1. Categories — `sdk.store.category.list({ parent_category_id: null })`
+ *   1. Categories: `sdk.store.category.list({ parent_category_id: null })`
  *      returns the live root tier. We surface `handle` as the value and
  *      `name` as the label so the URL stays human-readable.
- *   2. Color — walk the product sample, find each product's option titled
+ *   2. Color: walk the product sample, find each product's option titled
  *      `/colou?r/i` (Medusa's option titles are author-controlled, both
  *      spellings allowed), collect the unique `values[].value` strings.
- *   3. Brand — prefer `product.metadata.brand` (explicit author intent);
+ *   3. Brand: prefer `product.metadata.brand` (explicit author intent);
  *      fall back to short title-case `tags[].value` strings. The heuristic
- *      is deliberately conservative — generic descriptors like `cotton` or
+ *      is deliberately conservative: generic descriptors like `cotton` or
  *      `organic` are excluded by the leading-uppercase / TitleCase regex.
  *      KNOWN RISK: a tag like `Cotton` would still match. Acceptable until
  *      brands get a proper field.
@@ -40,7 +40,7 @@
  *   - Inflight promise is also held in `useState` so two concurrent
  *     `ensureResolved()` calls (e.g. two PLPs mid-navigation) share one
  *     network round-trip.
- *   - No `window` / `document` access — safe in the node renderer.
+ *   - No `window` / `document` access: safe in the node renderer.
  *   - On error we mark `resolved = true` anyway so a backend outage doesn't
  *     trigger an infinite retry loop on every page navigation; callers fall
  *     back to the static `filterOptions` baked into `utils/filters.ts`.
@@ -53,7 +53,7 @@ export interface FilterFacet {
   value: string
   /** Display label rendered inside the pill option list. */
   label: string
-  /** Optional product count — reserved for future facet-count UX. */
+  /** Optional product count: reserved for future facet-count UX. */
   count?: number
 }
 
@@ -86,7 +86,7 @@ const slugify = (raw: string): string =>
     .replace(/^-+|-+$/g, '')
 
 /**
- * Heuristic test for "this tag looks like a brand name" — short string that
+ * Heuristic test for "this tag looks like a brand name": short string that
  * starts with an uppercase letter or contains an internal capital. Excludes
  * lowercase descriptors (`cotton`, `organic`) and overly long marketing
  * phrases. False positives (e.g. `Cotton`) are tolerated until brand gets a
@@ -144,7 +144,7 @@ export const useFilterFacets = (): UseFilterFacetsReturn => {
     const next: FilterFacets = emptyFacets()
 
     // 1. Live categories. We surface only the root tier so the pill list
-    //    matches the user's mental model — "where do I start browsing" — not
+    //    matches the user's mental model ("where do I start browsing"), not
     //    every leaf. Sub-categories belong on the category page, not the
     //    global filter bar.
     try {
@@ -164,7 +164,7 @@ export const useFilterFacets = (): UseFilterFacetsReturn => {
         .filter((c): c is FilterFacet => Boolean(c))
     }
     catch {
-      // Categories endpoint down — leave the array empty so the caller
+      // Categories endpoint down: leave the array empty so the caller
       // falls back to the static taxonomy.
     }
 
@@ -212,7 +212,7 @@ export const useFilterFacets = (): UseFilterFacetsReturn => {
         }
       }
 
-      // Sort alphabetically for stable UX — pills shouldn't reshuffle on
+      // Sort alphabetically for stable UX: pills shouldn't reshuffle on
       // every navigation. Lowercase slug is the storage value; original
       // casing is the display label.
       next.color = [...colorSet]
@@ -223,7 +223,7 @@ export const useFilterFacets = (): UseFilterFacetsReturn => {
         .map(label => ({ value: slugify(label), label }))
     }
     catch (err) {
-      // Re-throw so `ensureResolved` records the error on state — categories
+      // Re-throw so `ensureResolved` records the error on state: categories
       // may still have succeeded above and are preserved in `next`.
       const message = err instanceof Error ? err.message : 'Facet harvest failed'
       state.value.facets = next

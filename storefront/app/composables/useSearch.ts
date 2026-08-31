@@ -2,7 +2,7 @@ import { ref, watch } from 'vue'
 import type { StoreProduct } from '@medusajs/types'
 
 /**
- * useSearch — debounced product search backed by Medusa's
+ * useSearch: debounced product search backed by Medusa's
  * `GET /store/products?q=...` endpoint.
  *
  * Why a hand-rolled debounce instead of `@vueuse/core`'s `useDebounceFn`?
@@ -74,7 +74,7 @@ export const useSearch = () => {
     }
   }
 
-  // Minimal trailing-edge debounce — clears the pending timer on every new
+  // Minimal trailing-edge debounce: clears the pending timer on every new
   // input and only fires `runSearch` after the user has paused for `delay` ms.
   const DEBOUNCE_MS = 250
   let timer: ReturnType<typeof setTimeout> | null = null

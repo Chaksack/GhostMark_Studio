@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * MobileFilterSheet — full-height bottom-sheet drawer used by the PLP
+ * MobileFilterSheet: full-height bottom-sheet drawer used by the PLP
  * to surface the facet pills (and a sort sheet) on screens below `lg`.
  *
  * Why bottom-sheet over modal:
@@ -17,8 +17,8 @@
  * in case the host route navigates while the sheet is open).
  *
  * Emits:
- *   - `update:open` — v-model:open contract for the host page
- *   - `clear` — host clears its own filter refs (the sheet doesn't own state)
+ *   - `update:open`: v-model:open contract for the host page
+ *   - `clear`: host clears its own filter refs (the sheet doesn't own state)
  */
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 
@@ -36,7 +36,7 @@ const emit = defineEmits<{
   (e: 'clear'): void
 }>()
 
-// Body scroll lock — only touch document on the client (SSR safety).
+// Body scroll lock: only touch document on the client (SSR safety).
 watch(() => props.open, (open) => {
   if (typeof document === 'undefined') return
   document.body.style.overflow = open ? 'hidden' : ''
@@ -106,12 +106,12 @@ onBeforeUnmount(() => {
             </svg>
           </button>
         </div>
-        <!-- Body — overscroll-contain so swipes inside the sheet don't chain
+        <!-- Body: overscroll-contain so swipes inside the sheet don't chain
              into the page scroll underneath (iOS Safari default). -->
         <div class="flex-1 overflow-y-auto overscroll-contain p-5 space-y-6">
           <slot />
         </div>
-        <!-- Sticky footer — sized 48px so both Clear and Apply hit WCAG touch
+        <!-- Sticky footer: sized 48px so both Clear and Apply hit WCAG touch
              target rules even on the smallest covered viewports (320). -->
         <div class="border-t border-greyLines p-4 flex gap-3">
           <button

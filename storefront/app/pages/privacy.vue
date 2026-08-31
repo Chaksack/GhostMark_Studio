@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
- * /privacy — Privacy policy (legal).
+ * /privacy: Privacy policy (legal).
  *
  * Editorial legal layout: cream-tile hero, prose body with serif h2s.
- * Copy is thoughtful placeholder language for a print-on-demand studio
- * — fit for a v0 launch, intended to be reviewed by counsel before
+ * Copy is thoughtful placeholder language for a print-on-demand studio,
+ * fit for a v0 launch, intended to be reviewed by counsel before
  * being treated as binding.
  */
 defineOptions({ name: 'PagePrivacy' })
@@ -15,7 +15,7 @@ useHead({
     {
       name: 'description',
       content:
-        'How GhostMark Studio collects, uses and protects your personal information — what we store, why we store it, and the rights you have over your data.',
+        'How GhostMark Studio collects, uses and protects your personal information: what we store, why we store it, and the rights you have over your data.',
     },
   ],
 })
@@ -33,15 +33,15 @@ const sections: Section[] = [
     id: 'information-we-collect',
     title: 'Information we collect',
     body: [
-      'When you place an order, request a sample, sign up to the newsletter or contact the studio, we collect the information you give us — name, email, billing and shipping address, phone number where provided, and order details. If you create an account, we additionally store the password as a salted hash.',
-      'When you browse the site, we automatically collect technical data through first-party cookies and our analytics tools — IP address, device and browser type, the pages you visit, the products you view, and the route you took to get here. This data is aggregated and not used to identify you personally.',
+      'When you place an order, request a sample, sign up to the newsletter or contact the studio, we collect the information you give us: name, email, billing and shipping address, phone number where provided, and order details. If you create an account, we additionally store the password as a salted hash.',
+      'When you browse the site, we automatically collect technical data through first-party cookies and our analytics tools: IP address, device and browser type, the pages you visit, the products you view, and the route you took to get here. This data is aggregated and not used to identify you personally.',
     ],
   },
   {
     id: 'how-we-use-it',
     title: 'How we use it',
     body: [
-      'We use your information to fulfil your order, communicate with you about it, prevent fraud, comply with our legal obligations, and improve the studio experience over time. With your explicit opt-in we also use your email to send the GhostMark Studio newsletter — twice a month, easy unsubscribe at the bottom of every issue.',
+      'We use your information to fulfil your order, communicate with you about it, prevent fraud, comply with our legal obligations, and improve the studio experience over time. With your explicit opt-in we also use your email to send the GhostMark Studio newsletter: twice a month, easy unsubscribe at the bottom of every issue.',
       'We never sell your personal information to a third party. We never share it with anyone outside the small circle of vendors strictly required to make the studio run (payment processor, shipping carrier, email platform, analytics provider).',
     ],
   },
@@ -49,7 +49,7 @@ const sections: Section[] = [
     id: 'cookies',
     title: 'Cookies',
     body: [
-      'We use first-party cookies for cart persistence, authentication, region selection and basic analytics. We use third-party cookies only with your consent — payment, embedded video and social-share widgets fall into this group. A full breakdown of the cookies we set lives in the cookies policy, where you can also change your preferences at any time.',
+      'We use first-party cookies for cart persistence, authentication, region selection and basic analytics. We use third-party cookies only with your consent: payment, embedded video and social-share widgets fall into this group. A full breakdown of the cookies we set lives in the cookies policy, where you can also change your preferences at any time.',
     ],
   },
   {
@@ -87,7 +87,7 @@ const sections: Section[] = [
       class="bg-merchery-tile"
       aria-labelledby="privacy-hero-heading"
     >
-      <div class="mx-auto flex max-w-[1320px] flex-col gap-6 px-gutter py-section">
+      <div class="mx-auto flex max-w-rail flex-col gap-6 px-gutter py-section">
         <p class="text-eyebrow font-body uppercase text-ink-500">
           Legal
         </p>
@@ -103,19 +103,19 @@ const sections: Section[] = [
         <p class="max-w-[52ch] font-body text-body text-ink-700">
           GhostMark Studio takes your privacy seriously. This page lays
           out exactly what we collect, why we collect it, and the rights
-          you have over your data — written in English a human can read.
+          you have over your data, written in English a human can read.
         </p>
       </div>
     </section>
 
     <!-- ============================================================
-         2. Body — section list with anchor headings
+         2. Body: section list with anchor headings
          ============================================================ -->
     <section
       class="bg-white"
       aria-labelledby="privacy-body-heading"
     >
-      <div class="mx-auto grid max-w-[1320px] grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
+      <div class="mx-auto grid max-w-rail grid-cols-1 gap-x-[30px] gap-y-12 px-gutter py-section lg:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)]">
         <h2 id="privacy-body-heading" class="sr-only">
           Privacy policy details
         </h2>

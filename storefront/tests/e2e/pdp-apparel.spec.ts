@@ -1,5 +1,5 @@
 /**
- * PDP — Apparel (Studio Canon / D2C) flow contract suite.
+ * PDP: Apparel (Studio Canon / D2C) flow contract suite.
  *
  * Locks in the chrome the storefront ships when `product.type.value === 'apparel'`:
  *  - Single per-unit price label, NO MOQ wording, NO E-proof copy.
@@ -15,7 +15,7 @@ import { PdpPage } from './pages/PdpPage'
 
 const APPAREL_HANDLE = 'studio-tee-charcoal'
 
-test.describe('PDP — apparel flow', () => {
+test.describe('PDP: apparel flow', () => {
   let pdp: PdpPage
 
   test.beforeEach(async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe('PDP — apparel flow', () => {
   test('renders apparel chrome (per-unit price, no MOQ, no design step)', async () => {
     await pdp.expectFlowMode('apparel')
     // The apparel headline must NOT carry B2B vocabulary. We assert the
-    // negative because the affirmative — "single per-unit price" — is
+    // negative because the affirmative ("single per-unit price") is
     // already covered by the visibility check in expectFlowMode.
     await expect(pdp.apparelPrice).not.toContainText(/MOQ/i)
     await expect(pdp.apparelPrice).not.toContainText(/E-proof/i)
@@ -43,7 +43,7 @@ test.describe('PDP — apparel flow', () => {
   })
 
   test('Add-to-cart without uploading does NOT show upload error', async ({ page }) => {
-    // Pick a size if the product carries one — apparel ATC is enabled
+    // Pick a size if the product carries one: apparel ATC is enabled
     // only once `finalVariantId` resolves.
     const sizePills = pdp.variantSection.getByRole('button').filter({
       hasNotText: /Add|favorit|share|color|customis|sample|details/i,

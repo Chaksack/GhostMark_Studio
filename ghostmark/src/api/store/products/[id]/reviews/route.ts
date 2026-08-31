@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { addReview, listReviews, getReviewStats } from "../../../../../services/reviews-db"
 import { verifyReviewToken } from "../../../../../services/review-token"
+import { enforceRateLimit, getClientIp, RATE_LIMITS } from "../../../../../utils/rate-limit"
 
 /**
  * GET /store/products/:id/reviews
@@ -48,8 +49,51 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     if (!productId || typeof body?.rating !== 'number') {
       return res.status(400).json({ ok: false, message: "product id and numeric rating are required" })
     }
-    // Optional token requirement
-    const requireToken = String(process.env.REQUIRE_REVIEW_TOKEN || "false").toLowerCase() === "true"
+    /*
+     * Rate limit BEFORE the token check, so an attacker probing for a valid
+     * token cannot use the 400 responses as a free oracle, and so the write
+     * path stays bounded if REQUIRE_REVIEW_TOKEN is ever turned off again.
+     *
+     * Two buckets, and the second is the one that matters. Every other policy
+     * in rate-limit.ts meters a cost the attacker imposes on someone else -
+     * an email to a victim, guesses against one case's secret - so a per-caller
+     * ceiling is the right shape there. Review spam is not that shape: the cost
+     * is reputational and it concentrates on a PRODUCT. An IP ceiling alone
+     * still lets a distributed client bury one product in five-star reviews
+     * with every individual IP comfortably under its own limit.
+     *
+     * The ceilings are deliberately loose. The signed token is the primary
+     * control - it is scoped to one order/product pair, which bounds legitimate
+     * volume far tighter than any rate limit can. These are the secondary
+     * control that still holds when a token leaks or the flag is off, so they
+     * are set to catch automation without throttling a genuine product launch.
+     */
+    const allowed = enforceRateLimit(res, [
+      { name: "review_submit_ip", key: getClientIp(req), ...RATE_LIMITS.REVIEW_SUBMIT_IP },
+      { name: "review_submit_product", key: productId, ...RATE_LIMITS.REVIEW_SUBMIT_PRODUCT },
+    ])
+    if (!allowed) {
+      return // 429 already sent
+    }
+
+    // Review token requirement. FAILS CLOSED.
+    //
+    // The default here is "true" and that is the whole point. It used to be
+    // "false", and REQUIRE_REVIEW_TOKEN is absent from .env (it exists in
+    // .env.template with an EMPTY value, which is falsy). The combination meant
+    // the entire verification block below never executed: anyone holding the
+    // publishable key — which ships in client-side JS and is therefore public —
+    // could POST a forged review for any product, with any rating, under any
+    // email address. The signed-token machinery in services/review-token.ts is
+    // careful, well-built work that was simply never invoked.
+    //
+    // Defaulting to "false" meant a variable nobody remembered to set silently
+    // disabled an authentication check. That is how this shipped, and it is the
+    // failure mode worth engineering against: a fresh deploy that forgets the
+    // variable must refuse reviews, not accept forged ones. Set
+    // REQUIRE_REVIEW_TOKEN=false explicitly and deliberately if you ever need
+    // the old behaviour; absence is no longer consent.
+    const requireToken = String(process.env.REQUIRE_REVIEW_TOKEN || "true").toLowerCase() === "true"
     if (requireToken) {
       const token = (body as any).reviewToken || (req.headers as any)["x-review-token"]
       if (!token) {

@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { renderEmailLayout, htmlToText } from './email-template'
+import { escapeHtmlMultiline } from '../utils/html'
 
 /**
  * Email service using Resend API.
@@ -64,10 +65,40 @@ export async function sendEmail(params: SendEmailParams) {
 
   // Ensure a unified HTML layout (black/white theme) for all emails.
   // Only wrap if not already a full HTML document.
-  if (!html || !/^\s*<!DOCTYPE html>/i.test(html) && !/<html[\s>]/i.test(html)) {
+  const isFullDocument =
+    !!html && (/^\s*<!DOCTYPE html>/i.test(html) || /<html[\s>]/i.test(html))
+
+  if (!isFullDocument) {
+    /**
+     * SECURITY: `text` is HTML-ESCAPED before being interpolated here.
+     *
+     * This line previously read:
+     *
+     *   `<p ...>${(text || '').replace(/\n/g, '<br/>')}</p>`
+     *
+     * with no escaping, which made EVERY text-only send in the codebase an
+     * HTML injection sink. Callers reasonably assume that passing `text`
+     * means "plain text" and that it will be treated as such - but this
+     * function silently promotes it to markup, so any caller interpolating
+     * user input into a text body was injecting into HTML without knowing it.
+     *
+     * The support routes did exactly that, feeding unescaped customer-supplied
+     * ticket subjects and message bodies into emails aimed at the ADMIN's
+     * mailbox. An attacker could plant an <a href> to their own domain in a
+     * message that arrives from our own verified sending domain, addressed to
+     * staff.
+     *
+     * escapeHtmlMultiline escapes first and converts newlines to <br/>
+     * afterwards, so a literal "<br/>" typed by a user renders as visible text
+     * rather than becoming a tag.
+     *
+     * A caller that genuinely needs markup passes `html` instead. That is the
+     * explicit, auditable way to say "this string is trusted HTML"; it should
+     * not be reachable by accident through the plain-text parameter.
+     */
     const bodyHtml = html
       ? html
-      : `<p style="margin:0 0 16px;">${(text || '').replace(/\n/g, '<br/>')}</p>`
+      : `<p style="margin:0 0 16px;">${escapeHtmlMultiline(text || '')}</p>`
     html = renderEmailLayout({ title: subject, bodyHtml, cta: null })
   }
 

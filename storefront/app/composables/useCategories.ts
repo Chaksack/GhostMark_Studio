@@ -1,7 +1,7 @@
 import type { StoreProductCategory } from '@medusajs/types'
 
 /**
- * useCategories — single source of truth for the storefront taxonomy.
+ * useCategories: single source of truth for the storefront taxonomy.
  *
  * The previous incarnation shipped a hardcoded `FALLBACK_CATEGORIES` seed
  * that masked an empty Medusa catalogue with synthetic labels (Apparel,
@@ -11,8 +11,8 @@ import type { StoreProductCategory } from '@medusajs/types'
  * whatever Medusa returns, and an empty list on failure (never a throw).
  *
  * Shape contract:
- *   - `CategoryItem`  : { label, handle }                — leaf nodes
- *   - `CategoryGroup` : { id, key, label, handle, to,    — top-level nodes,
+ *   - `CategoryItem`  : { label, handle }                  leaf nodes
+ *   - `CategoryGroup` : { id, key, label, handle, to,      top-level nodes,
  *                         items[], children?[] }           augmented with
  *                                                          presentation-side
  *                                                          fields (`key`,
@@ -28,15 +28,15 @@ import type { StoreProductCategory } from '@medusajs/types'
  *
  * SSR / hydration:
  *   - State is shared via `useState` so the SSR fetch result is sent to the
- *     client and reused — no second fetch on hydration, no flicker.
+ *     client and reused: no second fetch on hydration, no flicker.
  *   - Consumers call `await ensureResolved()` before reading
  *     `categories.value`. Multiple concurrent callers share the same
  *     in-flight promise (re-entry guarded by `state.pending`).
  *
  * Failure mode:
- *   - SDK errors (network, 5xx) are caught — `categories.value` stays an
+ *   - SDK errors (network, 5xx) are caught: `categories.value` stays an
  *     empty array. Nav simply renders the two primary mode entries (Shop
- *     and Studio POD) plus a separator and stops — better than throwing a
+ *     and Studio POD) plus a separator and stops, better than throwing a
  *     500 from layout.
  */
 
@@ -109,7 +109,7 @@ export const useCategories = () => {
           include_descendants_tree: true,
         })
         const raw: RawCategory[] = (res?.product_categories || []) as RawCategory[]
-        // Top-level only — descendants live nested in `category_children`.
+        // Top-level only: descendants live nested in `category_children`.
         const top = raw.filter(c => !c.parent_category_id).map(toGroup)
         state.value.list = top
       }
@@ -134,7 +134,7 @@ export const useCategories = () => {
     pending: computed(() => state.value.pending),
     error: computed(() => state.value.error),
     ensureResolved,
-    // `refresh` kept for parity with previous API surface — drops cached
+    // `refresh` kept for parity with previous API surface: drops cached
     // result and re-fires the fetch on next `ensureResolved()`.
     refresh: async () => {
       state.value.resolved = false

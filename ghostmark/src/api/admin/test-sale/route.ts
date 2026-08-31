@@ -46,7 +46,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         "1. Use the admin dashboard or API to add products to this price list",
         "2. Set discounted prices for specific variants",
         "3. The storefront should automatically show sale pricing for listed items",
-        "4. Use /api/debug/product-pricing?product_id=<id> to verify pricing data"
+        "4. Verify with GET /store/products/<id> against a region — the /api/debug/product-pricing endpoint it used to name was removed as an unauthenticated data leak"
       ]
     })
 

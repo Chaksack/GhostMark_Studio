@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 
 /**
- * Phase 7 — Stripe.js loader composable.
+ * Phase 7: Stripe.js loader composable.
  *
  * Why raw @stripe/stripe-js (no Vue wrapper)?
  *  - The Medusa V2 Stripe provider returns a `client_secret` from
@@ -15,7 +15,7 @@ import type { Stripe } from '@stripe/stripe-js'
  *    plays nicely with Headless UI + the existing checkout step machine.
  *
  * Singleton promise: `loadStripe()` injects the Stripe.js <script> on first
- * call and is idempotent on subsequent calls — but we still memoize the
+ * call and is idempotent on subsequent calls, but we still memoize the
  * promise here so SSR / multiple component mounts don't race.
  *
  * Configured-off contract: when `stripePublishableKey` is empty (e.g. local

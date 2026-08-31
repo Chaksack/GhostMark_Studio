@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 
 /**
- * AccountShell — the dashboard chrome shared by every authenticated
+ * AccountShell: the dashboard chrome shared by every authenticated
  * `/account/**` page (overview, orders, profile, addresses).
  *
  * Pattern choice: a per-page wrapper component instead of a Nuxt layout file.
@@ -22,7 +22,7 @@ import { computed, ref } from 'vue'
 interface Props {
   /** Page title shown above the main content (serif display). */
   pageTitle: string
-  /** Eyebrow above the page title — short, uppercase, sets context. */
+  /** Eyebrow above the page title, short, uppercase, sets context. */
   eyebrow?: string
   /** Optional descriptive sentence below the title. */
   intro?: string
@@ -74,7 +74,7 @@ const onLogout = async () => {
 
 <template>
   <section class="bg-cream-50">
-    <div class="mx-auto max-w-[1320px] px-gutter py-section">
+    <div class="mx-auto max-w-rail px-gutter py-section">
       <!-- Page header band ------------------------------------------------ -->
       <header class="mb-10 lg:mb-14">
         <p class="text-eyebrow font-body uppercase text-ink-500">

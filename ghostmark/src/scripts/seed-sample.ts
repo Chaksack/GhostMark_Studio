@@ -157,7 +157,7 @@ export default async function seedSample({ container }: ExecArgs) {
   for (const parent of tree) {
     const parentId = handleToId.get(parent.handle);
     if (!parentId) {
-      logger.warn(`Skipping children of "${parent.name}" — parent not found`);
+      logger.warn(`Skipping children of "${parent.name}": parent not found`);
       continue;
     }
     for (const child of parent.children) {
@@ -341,7 +341,7 @@ export default async function seedSample({ container }: ExecArgs) {
     const hasImages = (product.images?.length ?? 0) > 0;
     const hasThumb = !!product.thumbnail;
     if (hasImages && hasThumb) {
-      logger.info(`Skipping images for ${pHandle} — already populated`);
+      logger.info(`Skipping images for ${pHandle}: already populated`);
       continue;
     }
     const images = photoIds.map((id) => ({
@@ -422,7 +422,7 @@ export default async function seedSample({ container }: ExecArgs) {
   // Pricing lives in a separate module from product; the productService
   // doesn't expose `variants.prices` through its repo (the deep relation
   // throws inside mikro-orm: "Cannot read properties of undefined (reading
-  // 'strategy')"). Use the remote-query graph instead — it follows the
+  // 'strategy')"). Use the remote-query graph instead; it follows the
   // module link product_variant -> price_set -> prices for us.
   const { data: graphProducts } = await query.graph({
     entity: "product",
@@ -497,7 +497,7 @@ export default async function seedSample({ container }: ExecArgs) {
         `Patched prices on ${productsPatch.length} product(s) (${stats.pricesAdded} new currency rows).`
       );
     } catch (err) {
-      // Pricing API is the most fragile slice in v2 — log + continue rather
+      // Pricing API is the most fragile slice in v2: log + continue rather
       // than crashing the whole seed. Storefront still works without EUR/USD
       // prices; products just won't render in those regions.
       const msg = `updateProductsWorkflow(prices) failed: ${(err as Error).message}. Skipping price mirror; geo modal will still work but EUR/USD products may render with no price.`;
@@ -505,7 +505,7 @@ export default async function seedSample({ container }: ExecArgs) {
       stats.errors.push(msg);
     }
   } else {
-    logger.info("All variants already have EUR/USD prices — nothing to mirror.");
+    logger.info("All variants already have EUR/USD prices: nothing to mirror.");
   }
 
   // ---------------------------------------------------------------------------

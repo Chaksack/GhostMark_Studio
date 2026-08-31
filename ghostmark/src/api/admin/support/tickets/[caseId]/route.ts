@@ -1,7 +1,8 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { getTicketByCaseId, updateTicketStatus } from "../../../../../services/support-db"
+import { getTicketByCaseId, updateTicketStatus, toPublicTicket } from "../../../../../services/support-db"
 import { sendEmail } from "../../../../../services/email-service"
 import { renderEmailLayout, resolveBaseUrl } from "../../../../../services/email-template"
+import { escapeHtml, escapeHtmlAttr, escapeHtmlMultiline } from "../../../../../utils/html"
 
 /**
  * GET /admin/support/tickets/:caseId
@@ -11,9 +12,17 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     const caseId = (req.params as any).caseId as string
     const data = await getTicketByCaseId(caseId)
     if (!data) return res.status(404).json({ ok: false, message: "Ticket not found" })
-    return res.json({ ok: true, ticket: data.ticket, messages: data.messages })
+    /**
+     * toPublicTicket, not the raw row. getTicketByCaseId returns the internal
+     * SupportTicket, which carries secret_hash and the legacy plaintext
+     * secret_code. Neither has any business in an HTTP response, and the admin
+     * dashboard does not read them (verified: no reference to `secret` in
+     * src/admin/routes/support/**).
+     */
+    return res.json({ ok: true, ticket: toPublicTicket(data.ticket), messages: data.messages })
   } catch (e: any) {
-    return res.status(500).json({ ok: false, message: e?.message || "Failed to get ticket" })
+    console.error("[support] Failed to get ticket:", e)
+    return res.status(500).json({ ok: false, message: "Failed to get ticket" })
   }
 }
 
@@ -60,7 +69,7 @@ export async function PATCH(req: MedusaRequest, res: MedusaResponse) {
             <p style="margin:0 0 16px;color:#4b5563;">Transcript:</p>
             ${transcriptHtml}
             <p style="margin:16px 0 0;color:#4b5563;">View your case page:</p>
-            <p style="margin:0 0 16px;"><a href="${escapeAttr(caseUrl)}" style="color:#000;text-decoration:underline;">${escapeHtml(
+            <p style="margin:0 0 16px;"><a href="${escapeHtmlAttr(caseUrl)}" style="color:#000;text-decoration:underline;">${escapeHtml(
               caseUrl
             )}</a></p>
           `,
@@ -69,7 +78,7 @@ export async function PATCH(req: MedusaRequest, res: MedusaResponse) {
 
         await sendEmail({
           to: before.ticket.email,
-          subject: `Case ${caseId} closed — transcript inside`,
+          subject: `Case ${caseId} closed: transcript inside`,
           html,
         })
       }
@@ -95,7 +104,7 @@ function buildTranscriptHtml(messages: Array<{ sender: 'customer'|'admin'; messa
       return `
         <div style="border:2px solid #000;border-radius:8px;padding:12px 14px;background:#fff;margin:0 0 12px;">
           <div style="font-size:12px;color:#374151;margin:0 0 6px;">${escapeHtml(who)} • ${escapeHtml(when)}</div>
-          <div style="color:#111827;white-space:pre-wrap;line-height:1.6;">${escapeInlinePreserveNewlines(
+          <div style="color:#111827;white-space:pre-wrap;line-height:1.6;">${escapeHtmlMultiline(
             m.message
           )}</div>
         </div>
@@ -104,19 +113,13 @@ function buildTranscriptHtml(messages: Array<{ sender: 'customer'|'admin'; messa
     .join("")
 }
 
-function escapeHtml(s: string): string {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-}
-
-function escapeAttr(s: string): string {
-  return escapeHtml(s)
-}
-
-function escapeInlinePreserveNewlines(s: string): string {
-  return escapeHtml(String(s)).replace(/\n/g, "<br/>")
-}
+/*
+ * The three local escapers that used to live here (escapeHtml, escapeAttr,
+ * escapeInlinePreserveNewlines) have been retired in favour of the shared,
+ * unit-tested implementations in src/utils/html.ts.
+ *
+ * They were correct, but they were one of several copies scattered across the
+ * API routes, and duplicated escapers drift: this copy did not escape the
+ * backtick, another route had no escaper at all. One implementation, one place
+ * to fix, one place to test.
+ */

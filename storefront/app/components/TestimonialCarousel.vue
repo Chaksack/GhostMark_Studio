@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto w-full max-w-screen-3xl overflow-hidden px-5 sm:px-6 lg:px-8">
+  <section class="mx-auto w-full max-w-rail overflow-hidden px-gutter">
     <div class="relative">
       <!--
         Carousel track. The translateX transition is wrapped in a class that
@@ -18,11 +18,11 @@
           <!--
             Card max-width caps the prose at the editorial reading rail (680px)
             so the quote never runs edge-to-edge on tablet/desktop. Padding
-            ramps from 24px on phones to 48px on lg+ — 48px on a 320 viewport
+            ramps from 24px on phones to 48px on lg+, 48px on a 320 viewport
             ate roughly 30% of the card.
           -->
           <figure class="mx-auto max-w-[680px] rounded-[0.5rem] bg-offWhite p-6 sm:p-8 md:p-10 lg:p-12">
-            <blockquote class="font-serif text-[1.6rem] leading-[2.2rem] text-ink-950 sm:text-[2rem] sm:leading-[2.7rem] md:text-[2.4rem] md:leading-[3.2rem] lg:text-[3rem] lg:leading-[3.8rem]">
+            <blockquote class="font-serif text-[16px] leading-[22px] text-ink-950 sm:text-[20px] sm:leading-[27px] md:text-[24px] md:leading-[32px] lg:text-[30px] lg:leading-[38px]">
               &ldquo;{{ q.quote }}&rdquo;
             </blockquote>
             <figcaption class="mt-5 text-[13px] text-greyText sm:mt-6 sm:text-[14px]">
@@ -50,7 +50,7 @@
         >
           <span
             class="block h-2 rounded-full transition-all duration-200"
-            :class="i === current ? 'w-6 bg-black' : 'w-2 bg-greyLines [@media(hover:hover)]:group-hover:bg-zinc-400'"
+            :class="i === current ? 'w-6 bg-black' : 'w-2 bg-greyLines [@media(hover:hover)]:group-hover:bg-ink-400'"
             aria-hidden="true"
           />
         </button>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-// Placeholder copy — illustrative only. Replace with real customer testimonials
+// Placeholder copy: illustrative only. Replace with real customer testimonials
 // once sourced. Attribution to "Internal beta tester" makes clear these are not
 // real customers and avoids any impersonation risk.
 const testimonials = [
