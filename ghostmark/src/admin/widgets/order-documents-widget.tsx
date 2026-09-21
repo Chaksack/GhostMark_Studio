@@ -47,6 +47,7 @@ const OrderDocumentsWidget = ({ data }: { data: AdminOrderShape }) => {
   const [isDownloadingDispatch, setIsDownloadingDispatch] = useState(false)
   const [isSendingReceipt, setIsSendingReceipt] = useState(false)
   const [isSendingDispatch, setIsSendingDispatch] = useState(false)
+  const [isSendingDispatchToCustomer, setIsSendingDispatchToCustomer] = useState(false)
 
   const onDownloadReceipt = useCallback(async () => {
     setIsDownloadingReceipt(true)
@@ -107,6 +108,26 @@ const OrderDocumentsWidget = ({ data }: { data: AdminOrderShape }) => {
     }
   }, [data])
 
+  const onSendDispatchNoteToCustomer = useCallback(async () => {
+    const to = data.customer?.email || data.email
+    if (!to) {
+      toast.error("Order has no customer email")
+      return
+    }
+    setIsSendingDispatchToCustomer(true)
+    try {
+      await apiFetch(`/admin/dispatch-notes/${encodeURIComponent(data.id as string)}/send`, {
+        method: "POST",
+        body: { to },
+      })
+      toast.success(`Dispatch note sent to ${to}`)
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to send dispatch note")
+    } finally {
+      setIsSendingDispatchToCustomer(false)
+    }
+  }, [data])
+
   if (!data?.id) return null
 
   return (
@@ -131,6 +152,14 @@ const OrderDocumentsWidget = ({ data }: { data: AdminOrderShape }) => {
         </Button>
         <Button size="small" variant="secondary" isLoading={isSendingDispatch} onClick={onSendDispatchNote}>
           Send dispatch note to fulfilment
+        </Button>
+        <Button
+          size="small"
+          variant="secondary"
+          isLoading={isSendingDispatchToCustomer}
+          onClick={onSendDispatchNoteToCustomer}
+        >
+          Send dispatch note to customer
         </Button>
       </div>
     </Container>

@@ -80,8 +80,22 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
     const notificationModuleService = req.scope.resolve(Modules.NOTIFICATION) as any
 
-    const subject = `Dispatch Note ${dispatchNoteNumber} | ${process.env.INVOICE_ISSUER_NAME || "GhostMark Studio"}`
-    const html = `
+    // Same endpoint serves two audiences: the fulfilment inbox (default) and the
+    // customer (admin passes the customer's email as `to`). Word each accordingly.
+    const customerEmail = order?.customer?.email || order?.email
+    const toCustomer = Boolean(customerEmail) && to.toLowerCase() === String(customerEmail).toLowerCase()
+    const issuerName = process.env.INVOICE_ISSUER_NAME || "GhostMark Studio"
+
+    const subject = toCustomer
+      ? `Dispatch note for your order ${displayId} | ${issuerName}`
+      : `Dispatch Note ${dispatchNoteNumber} | ${issuerName}`
+    const html = toCustomer
+      ? `
+      <p style="margin:0 0 12px;">Hi,</p>
+      <p style="margin:0 0 12px;">Attached is the dispatch note for your order <strong>${displayId}</strong>. It lists the items included in your delivery, so please check it against your parcel when it arrives.</p>
+      <p style="margin:0;">Thank you for your business.</p>
+    `
+      : `
       <p style="margin:0 0 12px;">Hi,</p>
       <p style="margin:0 0 12px;">Attached is the dispatch note for order <strong>${displayId}</strong>.</p>
       <p style="margin:0;">Please check this delivery carefully.</p>
