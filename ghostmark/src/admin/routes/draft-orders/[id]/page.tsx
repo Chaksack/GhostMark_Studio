@@ -12,7 +12,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query"
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { apiFetch } from "../../../lib/sdk"
 
 type DraftOrder = {
@@ -35,48 +35,49 @@ type RetrieveDraftOrderResponse = {
 
 const __draftOrderQueryClient = new QueryClient()
 
-async function downloadDraftInvoicePdf(draftOrder: DraftOrder) {
-  const displayId = String(draftOrder.display_id || draftOrder.id)
-  const res = await fetch(
-    `/admin/invoices/draft-orders/${encodeURIComponent(draftOrder.id)}/pdf`,
-    {
-      method: "GET",
-      credentials: "include",
-    }
-  )
-
-  if (!res.ok) {
-    let msg = "Failed to download invoice"
-    try {
-      msg = (await res.text()) || msg
-    } catch {}
-    throw new Error(msg)
-  }
-
-  const blob = await res.blob()
-  const url = URL.createObjectURL(blob)
-
-  try {
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `invoice-${displayId}.pdf`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-  } finally {
-    URL.revokeObjectURL(url)
-  }
+type DocumentAction = {
+  key: string
+  label: string
+  // Same routes for orders and draft orders except invoices, which keep their
+  // original draft-specific path.
+  pdfUrl: (id: string) => string
+  sendUrl: (id: string) => string
+  filenamePrefix: string
 }
 
-async function downloadDraftReceiptPdf(draftOrder: DraftOrder) {
+const DOCUMENTS: DocumentAction[] = [
+  {
+    key: "invoice",
+    label: "Invoice",
+    pdfUrl: (id) => `/admin/invoices/draft-orders/${encodeURIComponent(id)}/pdf`,
+    sendUrl: (id) => `/admin/invoices/draft-orders/${encodeURIComponent(id)}/send`,
+    filenamePrefix: "invoice",
+  },
+  {
+    key: "receipt",
+    label: "Receipt",
+    pdfUrl: (id) => `/admin/receipts/${encodeURIComponent(id)}/pdf`,
+    sendUrl: (id) => `/admin/receipts/${encodeURIComponent(id)}/send`,
+    filenamePrefix: "receipt",
+  },
+  {
+    key: "dispatch",
+    label: "Dispatch note",
+    pdfUrl: (id) => `/admin/dispatch-notes/${encodeURIComponent(id)}/pdf`,
+    sendUrl: (id) => `/admin/dispatch-notes/${encodeURIComponent(id)}/send`,
+    filenamePrefix: "dispatch-note",
+  },
+]
+
+async function downloadDocumentPdf(doc: DocumentAction, draftOrder: DraftOrder) {
   const displayId = String(draftOrder.display_id || draftOrder.id)
-  const res = await fetch(`/admin/receipts/${encodeURIComponent(draftOrder.id)}/pdf`, {
+  const res = await fetch(doc.pdfUrl(draftOrder.id), {
     method: "GET",
     credentials: "include",
   })
 
   if (!res.ok) {
-    let msg = "Failed to download receipt"
+    let msg = `Failed to download ${doc.label.toLowerCase()}`
     try {
       msg = (await res.text()) || msg
     } catch {}
@@ -89,7 +90,7 @@ async function downloadDraftReceiptPdf(draftOrder: DraftOrder) {
   try {
     const a = document.createElement("a")
     a.href = url
-    a.download = `receipt-${displayId}.pdf`
+    a.download = `${doc.filenamePrefix}-${displayId}.pdf`
     document.body.appendChild(a)
     a.click()
     a.remove()
@@ -163,6 +164,40 @@ const DraftOrderPageInner = () => {
     },
   })
 
+  const customerEmail = draft?.customer?.email || draft?.email || ""
+  // Which document action is in flight, e.g. "send-receipt" / "download-invoice"
+  const [busy, setBusy] = useState<string | null>(null)
+
+  const runDownload = async (doc: DocumentAction) => {
+    if (!draft) return
+    setBusy(`download-${doc.key}`)
+    try {
+      await downloadDocumentPdf(doc, draft)
+      toast.success(`${doc.label} downloaded`)
+    } catch (e: any) {
+      toast.error(e?.message || `Failed to download ${doc.label.toLowerCase()}`)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  const runSend = async (doc: DocumentAction) => {
+    if (!draft) return
+    if (!customerEmail) {
+      toast.error("Draft order has no customer email")
+      return
+    }
+    setBusy(`send-${doc.key}`)
+    try {
+      await apiFetch(doc.sendUrl(draft.id), { method: "POST", body: { to: customerEmail } })
+      toast.success(`${doc.label} sent to ${customerEmail}`)
+    } catch (e: any) {
+      toast.error(e?.message || `Failed to send ${doc.label.toLowerCase()}`)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
@@ -178,65 +213,6 @@ const DraftOrderPageInner = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="small"
-            disabled={!draft || isLoading}
-            onClick={async () => {
-              if (!draft) return
-              try {
-                await downloadDraftInvoicePdf(draft)
-                toast.success("Invoice downloaded")
-              } catch (e: any) {
-                toast.error(e?.message || "Failed to download invoice")
-              }
-            }}
-          >
-            Download PDF
-          </Button>
-
-          <Button
-            variant="primary"
-            size="small"
-            disabled={!draft || isLoading}
-            onClick={async () => {
-              if (!draft) return
-              const to = draft.customer?.email || draft.email
-              if (!to) {
-                toast.error("Draft order has no customer email")
-                return
-              }
-              try {
-                await apiFetch(
-                  `/admin/invoices/draft-orders/${encodeURIComponent(draft.id)}/send`,
-                  { method: "POST" }
-                )
-                toast.success(`Invoice sent to ${to}`)
-              } catch (e: any) {
-                toast.error(e?.message || "Failed to send invoice")
-              }
-            }}
-          >
-            Send invoice
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="small"
-            disabled={!draft || isLoading}
-            onClick={async () => {
-              if (!draft) return
-              try {
-                await downloadDraftReceiptPdf(draft)
-                toast.success("Receipt downloaded")
-              } catch (e: any) {
-                toast.error(e?.message || "Failed to download receipt")
-              }
-            }}
-          >
-            Download receipt
-          </Button>
-
           <Button
             variant="secondary"
             size="small"
@@ -289,6 +265,45 @@ const DraftOrderPageInner = () => {
           </div>
         )}
       </div>
+
+      {draft && (
+        <div className="px-6 py-4">
+          <Heading level="h3">Documents</Heading>
+          <Text size="small" className="text-ui-fg-subtle">
+            {customerEmail
+              ? `Emailed documents are sent to ${customerEmail}`
+              : "Add a customer email to this draft order to enable sending"}
+          </Text>
+
+          <div className="mt-3 divide-y rounded-lg border">
+            {DOCUMENTS.map((doc) => (
+              <div key={doc.key} className="flex items-center justify-between gap-4 px-4 py-3">
+                <Text weight="plus">{doc.label}</Text>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    isLoading={busy === `download-${doc.key}`}
+                    disabled={busy !== null}
+                    onClick={() => runDownload(doc)}
+                  >
+                    Download PDF
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="small"
+                    isLoading={busy === `send-${doc.key}`}
+                    disabled={busy !== null || !customerEmail}
+                    onClick={() => runSend(doc)}
+                  >
+                    Send via email
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Container>
   )
 }
