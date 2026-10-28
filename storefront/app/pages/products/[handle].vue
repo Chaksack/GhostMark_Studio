@@ -439,6 +439,7 @@
                       :variant-id="finalVariantId"
                       :print-locations="printLocations"
                       :techniques="techniques"
+                      :quantity="qty"
                       @added="onDesignAdded"
                       @error="onDesignError"
                       @live-preview="onLivePreview"
@@ -1806,7 +1807,12 @@ const onDesignUploadedStateChange = (payload: { anyUploaded: boolean }) => {
 // the call is type-checked and survives any future markup refactor inside
 // the editor. The ref resolves through <ClientOnly> because defineExpose
 // surfaces the method on the resolved instance regardless of the wrapper.
-const designEditorRef = ref<{ openFilePicker: () => void } | null>(null)
+//
+// `submitDesign()` is the same reason, for a bigger stake: it's DesignEditor's
+// real capture-upload-attach flow (see its defineExpose comment). onAddToCart
+// below calls it for POD items instead of a plain addItem(), or the uploaded
+// design never reaches the order.
+const designEditorRef = ref<{ openFilePicker: () => void; submitDesign: () => Promise<boolean> } | null>(null)
 
 function onMobileUploadClick() {
   designEditorRef.value?.openFilePicker()
@@ -1840,7 +1846,26 @@ const onAddToCart = async () => {
   addError.value = null
   addSuccess.value = false
   try {
-    await addItem(finalVariantId.value, qty.value)
+    // POD products with an uploaded design MUST go through DesignEditor's
+    // own submitDesign() — it captures the stage, uploads the preview, and
+    // attaches isCustomized/designDataJson/previewImageUrl to the line item.
+    // A plain addItem(variantId, qty) here would silently drop the design:
+    // the customer gets a normal order confirmation, the order lands in
+    // admin, and there is no record anywhere of what to print. (This is
+    // exactly what used to happen — the gate above only checked that
+    // *something* was uploaded, not that this click would actually carry
+    // it through.) Non-POD / apparel products have no DesignEditor mounted
+    // and keep using the plain addItem() path below.
+    if (isPOD.value && printLocations.value.length > 0) {
+      const ok = await designEditorRef.value?.submitDesign()
+      if (!ok) {
+        // DesignEditor already set its own errorMessage and emitted
+        // 'error' → onDesignError → addError.value. Nothing more to do.
+        return
+      }
+    } else {
+      await addItem(finalVariantId.value, qty.value)
+    }
     addSuccess.value = true
     setTimeout(() => { addSuccess.value = false }, 3000)
   } catch (e) {

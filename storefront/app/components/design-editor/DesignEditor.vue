@@ -94,12 +94,19 @@ interface Props {
   techniques?: Technique[]
   /** Default print area used when a location omits its own `area`. */
   defaultArea?: DesignArea
+  /**
+   * Quantity to submit with the line item. Owned by the parent PDP's qty
+   * stepper — this component has no quantity UI of its own. Defaults to 1
+   * so the editor's own "Add customised item" button still works standalone.
+   */
+  quantity?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variantId: null,
   techniques: () => [],
   defaultArea: undefined,
+  quantity: 1,
 })
 
 const emit = defineEmits<{
@@ -619,18 +626,22 @@ const captureStageBlob = async (): Promise<Blob | null> => {
   })
 }
 
-const onSubmit = async () => {
+// Returns true on success, false on failure — lets an external caller (the
+// PDP's primary "Add to cart" button) await the real outcome instead of
+// only reacting to the `added`/`error` events, which still fire either way
+// for this component's own "Add customised item" button.
+const onSubmit = async (): Promise<boolean> => {
   errorMessage.value = null
   successMessage.value = null
   if (!props.variantId) {
     errorMessage.value = 'Please select a variant first.'
     emit('error', errorMessage.value)
-    return
+    return false
   }
   if (!anyUploaded.value) {
     errorMessage.value = 'Upload a design on at least one location before adding to cart.'
     emit('error', errorMessage.value)
-    return
+    return false
   }
   if (anyUploadingOriginal.value) {
     // The background upload of the original file is what production
@@ -639,7 +650,7 @@ const onSubmit = async () => {
     // artwork. A second's wait is much cheaper.
     errorMessage.value = 'Hang on — your design is still uploading. This usually takes a second.'
     emit('error', errorMessage.value)
-    return
+    return false
   }
 
   submitting.value = true
@@ -690,7 +701,10 @@ const onSubmit = async () => {
       method: 'POST',
       body: {
         variant_id: props.variantId,
-        quantity: 1,
+        // Previously hardcoded to 1 — silently ignored whatever quantity
+        // the customer selected on the PDP (e.g. 25). The PDP owns the
+        // real value and passes it down via the `quantity` prop.
+        quantity: props.quantity,
         design_data: {
           designs: designsPayload,
           activeLocation: activeKey.value,
@@ -715,10 +729,12 @@ const onSubmit = async () => {
       successMessage.value = 'Added to cart!'
     }
     emit('added', { previewUrl: uploadRes.url, cartId: cartRes.cart_id })
+    return true
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Failed to add design.'
     errorMessage.value = msg
     emit('error', msg)
+    return false
   } finally {
     submitting.value = false
   }
@@ -751,15 +767,24 @@ const activeLabel = computed<string>(() => {
 })
 
 // -----------------------------------------------------------------------------
-// Public API — exposed via defineExpose for the parent PDP to drive the
-// hidden <input type="file"> without resorting to a DOM querySelector.
+// Public API — exposed via defineExpose for the parent PDP.
 //
-// The PDP renders a native-size mobile upload button OUTSIDE this component's
-// transform: scale() wrapper (the wrapper would shrink any visible button to
-// ~26px and fail WCAG 2.5.5 / Apple HIG 44pt). That button calls into
-// `editorRef.value?.openFilePicker()` which forwards to the actual file input
-// living in the helper panel. CSS transforms do not affect programmatic
-// .click(), so the picker opens normally.
+// openFilePicker(): drives the hidden <input type="file"> without resorting
+// to a DOM querySelector. The PDP renders a native-size mobile upload button
+// OUTSIDE this component's transform: scale() wrapper (the wrapper would
+// shrink any visible button to ~26px and fail WCAG 2.5.5 / Apple HIG 44pt).
+// That button calls into `editorRef.value?.openFilePicker()` which forwards
+// to the actual file input living in the helper panel. CSS transforms do not
+// affect programmatic .click(), so the picker opens normally.
+//
+// submitDesign(): the SAME capture-upload-attach flow this component's own
+// "Add customised item" button calls on `onSubmit`. The PDP's primary
+// "Add to cart" button (data-test="primary-add-to-cart") must route through
+// this — NOT a plain cart.addLineItem — for POD products, or the uploaded
+// design silently never reaches the line item's metadata (isCustomized /
+// designDataJson / previewImageUrl all end up unset, and the order placed
+// from checkout carries zero record of what to print). See onAddToCart in
+// app/pages/products/[handle].vue.
 //
 // Keep this surface MINIMAL: every method exposed here becomes part of the
 // component's public contract for parents.
@@ -768,7 +793,7 @@ function openFilePicker(): void {
   fileInput.value?.click()
 }
 
-defineExpose({ openFilePicker })
+defineExpose({ openFilePicker, submitDesign: onSubmit })
 </script>
 
 <template>
