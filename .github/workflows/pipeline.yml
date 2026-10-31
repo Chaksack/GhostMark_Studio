@@ -6,7 +6,14 @@ on:
     paths:
       - 'terraform/**'
       - 'ghostmark/**'
-      - 'ghostmark-storefront/**'
+      # 'storefront/**', not 'ghostmark-storefront/**'. The latter has never
+      # existed in this repo — the top-level directories are ghostmark/,
+      # gms_strapi/, review/, storefront/ and terraform/. Every storefront-only
+      # push to main or staging therefore matched no path and triggered
+      # nothing, silently. A filter that names a non-existent directory does
+      # not fail; it just never fires, which is the worst way for CI to be
+      # wrong.
+      - 'storefront/**'
       - '.github/workflows/**'
 
 env:
@@ -53,6 +60,37 @@ jobs:
           echo "latest_tag=latest-${ENVIRONMENT}" >> "$GITHUB_OUTPUT"
           echo "service_backend=ghostmark-${ENVIRONMENT}-backend" >> "$GITHUB_OUTPUT"
           echo "service_storefront=ghostmark-${ENVIRONMENT}-storefront" >> "$GITHUB_OUTPUT"
+
+  tests:
+    name: Tests (backend unit)
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install backend deps
+        working-directory: ghostmark
+        run: pnpm install --frozen-lockfile
+
+      # NOT piped into `tail`, `head` or any other command. A piped
+      # invocation returns the EXIT CODE OF THE PIPE, not of the test run, so
+      # the step goes green no matter how many tests failed. That has already
+      # happened in this repo — tests/e2e/pod-shelf.spec.ts carries a note
+      # about a CI step shaped that way passing on 32 failures.
+      - name: Backend unit tests
+        working-directory: ghostmark
+        run: pnpm run test:unit
 
   sonar-scan:
     name: SonarQube Code Analysis
@@ -363,7 +401,11 @@ jobs:
   build-push-deploy:
     name: Build, Push Images & Deploy to ECS
     runs-on: ubuntu-latest
-    needs: tf-apply
+    # `tests` gates the IMAGES, not the infrastructure. Terraform can still
+    # converge on a red test run — that is deliberate, because blocking infra
+    # on application tests strands half-applied stacks. What must not happen
+    # is shipping an image whose tests failed.
+    needs: [tf-apply, tests]
     env:
       ENVIRONMENT: ${{ needs.setup.outputs.environment }}
       ECS_CLUSTER: ${{ needs.setup.outputs.ecs_cluster }}
