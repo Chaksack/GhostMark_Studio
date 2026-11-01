@@ -1878,6 +1878,7 @@ import type { DesignDraft } from '~/composables/useDesignDraft'
 // products before the swap. See the header of ~/utils/printMetadata.
 import {
   parsePrintLocations,
+  printLocationFees,
   parseTechniques,
   isCustomizable as isCustomizableProduct,
 } from '~/utils/printMetadata'
@@ -2315,7 +2316,14 @@ const printMoq = computed<number>(() => {
 
 // Mode, not type: a minimum is a consequence of printing, so it binds a
 // custom ORDER. An apparel buyer taking the blank still buys one.
-const moq = computed<number>(() => (showsPrintCommerce.value ? printMoq.value : 1))
+const moq = computed<number>(() => {
+  if (!showsPrintCommerce.value) return 1
+  // A customised SHOP product is a one-off: blank price + a fee per printed
+  // side, from a single item. Only the made-to-order studio lane keeps its
+  // minimum. The server enforces the same rule (print-pricing minimumFor).
+  if (isCustomOrder.value && !requiresDesign.value) return 1
+  return printMoq.value
+})
 
 // "Is this product subject to a minimum the buyer needs to know about?"
 //
@@ -2389,7 +2397,18 @@ const leadTime = computed<string>(() => {
 const customTerms = computed<string>(() => {
   if (!canCustomise.value) return ''
   const parts = ['Printed to order', `~${leadTime.value} working days`]
-  if (printMoq.value > 1) parts.push(`minimum ${printMoq.value}`)
+  // Only the made-to-order lane has a minimum once customised; a shop product
+  // can be printed one at a time.
+  if (requiresDesign.value && printMoq.value > 1) parts.push(`minimum ${printMoq.value}`)
+  // State each side's fee before the upload, for the same reason the
+  // minimum is stated here: a price discovered after the work is done is
+  // the defect, only later.
+  const fees = printLocationFees(product.value, currencyCode.value)
+  for (const loc of printLocations.value) {
+    const fee = fees[loc.key]
+    if (fee === null) parts.push(`${loc.label} not available in ${currencyCode.value.toUpperCase()}`)
+    else if (typeof fee === 'number' && fee > 0) parts.push(`${loc.label} +${formatMoney(fee)}`)
+  }
   return parts.join(' · ')
 })
 
@@ -2571,6 +2590,8 @@ const initialSelections = (): Record<string, string> => {
 
 const selectedOptions = useState<Record<string, string>>(stateKey.value, initialSelections)
 
+// Defaults: give every option group a value once its options are known.
+// Reads only the option groups and the selection, never the URL.
 watchEffect(() => {
   let mutated = false
   const next = { ...selectedOptions.value }
@@ -2579,15 +2600,41 @@ watchEffect(() => {
       next[og.id] = og.values[0]
       mutated = true
     }
-    const raw = route.query[og.title]
-    const v = Array.isArray(raw) ? raw[0] : raw
-    if (typeof v === 'string' && og.values.includes(v) && next[og.id] !== v) {
-      next[og.id] = v
-      mutated = true
-    }
   }
   if (mutated) selectedOptions.value = next
 })
+
+// URL → selection, ONLY when the URL itself changes: back/forward, a shared
+// link, a navigation to the same product with a different query.
+//
+// This used to live in the watchEffect above, which re-ran on every change
+// to `selectedOptions` and forced each group back to the URL's value. The
+// URL lags the click (it is written afterwards, by the watcher below), so
+// once any option was in the query string every later click was reverted
+// before it could be written: on a cold page the second pick in a group
+// worked and every pick after it silently did nothing. On a multi-axis
+// product the first pick wrote ALL axes to the URL at once, which froze
+// every other group on its default.
+//
+// No loop: the state → URL watcher bails when the query is unchanged, and
+// this one only writes when the URL disagrees with the selection.
+watch(
+  [() => route.query, optionGroups],
+  ([query]) => {
+    let mutated = false
+    const next = { ...selectedOptions.value }
+    for (const og of optionGroups.value) {
+      const raw = query[og.title]
+      const v = Array.isArray(raw) ? raw[0] : raw
+      if (typeof v === 'string' && og.values.includes(v) && next[og.id] !== v) {
+        next[og.id] = v
+        mutated = true
+      }
+    }
+    if (mutated) selectedOptions.value = next
+  },
+  { immediate: true },
+)
 
 const onSelectOption = (optionId: string, value: string) => {
   selectedOptions.value = { ...selectedOptions.value, [optionId]: value }
@@ -2606,9 +2653,10 @@ const onSelectOption = (optionId: string, value: string) => {
 // which re-fired this watcher. Forever.
 //
 // Fix: diff the resulting query against `route.query` BEFORE navigating
-// and bail when they're equivalent. The route-query→state sync is already
-// covered by the `watchEffect` above (which reads `route.query`), so the
-// redundant `watch(() => route.query, …)` has been removed.
+// and bail when they're equivalent. Route-query → state sync is the
+// `watch([route.query, optionGroups])` above, which fires on URL changes
+// only; it is not part of a loop because neither side writes when the two
+// already agree.
 const queriesEqual = (
   a: Record<string, string | (string | null)[] | null | undefined>,
   b: Record<string, string>,
@@ -2926,13 +2974,21 @@ const priceAt = (q: number): QuantityQuote => {
   // branch, an apparel product with zero tiers would still read
   // `tiers[0].unitAmount` (which falls back to the first variant's
   // calculated amount), correct numerically but semantically misleading.
-  const unitAmount = isApparel.value
+  //
+  // A CUSTOMISED order is priced by the server as tier(qty) + the fee of each
+  // printed side, so it reads the tier row even on apparel, and adds the fee:
+  // the number on the button must be the number on the cart line.
+  const blankUnit = isApparel.value && !isCustomOrder.value
     ? (unitPrice.value ?? 0)
     : (row?.unitAmount ?? 0)
+  const unitAmount = blankUnit > 0 ? Math.round((blankUnit + printFeePerUnit.value) * 100) / 100 : 0
 
   const base = baselineUnit.value
-  const savePct = base > 0 && unitAmount > 0 && unitAmount < base
-    ? Math.round(((base - unitAmount) / base) * 100)
+  // Saving is a property of the volume tier, so it is measured on the blank
+  // part only. Measured on fee-inclusive prices, every row would read as
+  // "no saving" the moment a side carries a fee.
+  const savePct = base > 0 && blankUnit > 0 && blankUnit < base
+    ? Math.round(((base - blankUnit) / base) * 100)
     : 0
 
   return { qty: q, unitAmount, total: unitAmount * q, tierQty: row?.qty ?? q, savePct }
@@ -3148,6 +3204,35 @@ const { addItem, ensureCart, cartId, refresh: refreshCart } = useCart()
 interface AttachedDesign { key: string; label: string; filename: string | null }
 
 const attachedDesigns = ref<AttachedDesign[]>([])
+
+// --- Print fees -----------------------------------------------------------
+// Fee per side in the active currency: number, 0 when the side prints free,
+// null when the merchant priced it but not in this currency (the server will
+// refuse that side; see `printLocationFees`).
+const sideFees = computed<Record<string, number | null>>(() =>
+  printLocationFees(product.value, currencyCode.value),
+)
+
+/** Sides that will be charged: the editor's attached sides, or a saved draft's. */
+const chargedSideKeys = computed<string[]>(() => {
+  if (attachedDesigns.value.length) return attachedDesigns.value.map((d) => d.key)
+  const designs = (savedDraft.value?.commit?.design_data as any)?.designs
+  if (!designs || typeof designs !== 'object') return []
+  return Object.entries(designs).filter(([, v]) => v).map(([k]) => k)
+})
+
+/** Fee added to each unit of a customised order. 0 for a blank order. */
+const printFeePerUnit = computed<number>(() => {
+  if (!isCustomOrder.value) return 0
+  return chargedSideKeys.value.reduce((sum, k) => sum + (sideFees.value[k] ?? 0), 0)
+})
+
+/** Printed sides this currency cannot be charged for. Blocks add-to-cart. */
+const unpricedSides = computed<string[]>(() =>
+  chargedSideKeys.value
+    .filter((k) => sideFees.value[k] === null)
+    .map((k) => printLocations.value.find((l) => l.key === k)?.label ?? k),
+)
 
 const onDesignUploadedStateChange = (
   payload: { anyUploaded: boolean; attached: AttachedDesign[] },
@@ -3410,6 +3495,14 @@ const onAddToCart = async () => {
     addError.value = 'Upload a design before adding to cart.'
     addSuccess.value = false
     scrollToEditor()
+    return
+  }
+
+  // A printed side the merchant has not priced in this currency cannot be
+  // charged, and the server will refuse it. Say which side, here.
+  if (sendsDesign && unpricedSides.value.length) {
+    addError.value = `Printing on ${unpricedSides.value.join(' and ')} isn’t available in ${currencyCode.value.toUpperCase()} yet. Remove that side or switch region.`
+    addSuccess.value = false
     return
   }
 

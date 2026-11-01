@@ -26,6 +26,25 @@
     </div>
 
     <div class="mx-auto w-full max-w-rail px-gutter py-10">
+      <!--
+        Customised items a region switch could not carry over (a printed side
+        not priced in the new currency). Above both branches on purpose: if
+        every item was dropped the cart is empty, and the empty state must not
+        be the only thing the customer sees.
+      -->
+      <div
+        v-if="droppedItems.length"
+        role="status"
+        class="mb-6 flex items-start justify-between gap-4 border border-ink-300 bg-white px-4 py-3 text-[14px] text-ink-950"
+        data-test="cart-dropped-notice"
+      >
+        <p>
+          We removed {{ droppedItems.map((d) => d.title).join(', ') }} when you changed region:
+          printing on it isn’t available in this currency yet. Switch back to your previous region to order it.
+        </p>
+        <button type="button" class="gm-tap-44 shrink-0 text-ink-700 underline" @click="droppedItems = []">Dismiss</button>
+      </div>
+
       <div v-if="!isReady" class="py-20 text-center text-ink-600">Loading cart&hellip;</div>
 
       <!--
@@ -322,6 +341,8 @@ import { formatMoneyOrNull } from '~/utils/money'
 
 useHead({ title: 'Cart' })
 const { cart, isReady, ensureCart, updateItem, removeItem } = useCart()
+// Set by useRegion().setRegion() from the backend's customised_items_dropped.
+const droppedItems = useState<{ title: string; reason: string }[]>('gms_cart_dropped', () => [])
 await ensureCart()
 
 const items = computed(() => (cart.value?.items ?? []) as any[])

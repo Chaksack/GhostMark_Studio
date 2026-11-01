@@ -175,6 +175,20 @@ export const useCart = () => {
 
   const updateItem = async (lineItemId: string, quantity: number) => {
     const c = await ensureCart()
+    // A customised line (artwork attached) is priced by the server: tier
+    // price for its quantity plus the print fee. Medusa keeps an explicit
+    // price unchanged when the quantity moves, so the stock route would leave
+    // it on the old tier, and the backend now refuses customised lines there.
+    // Its own route re-tiers it.
+    const line = (cart.value?.items ?? c?.items ?? []).find((i: any) => i?.id === lineItemId)
+    const customised = line?.metadata?.isCustomized === true || line?.metadata?.isCustomized === 'true'
+    if (customised) {
+      await sdk.client.fetch(`/store/carts/${c.id}/line-items-custom/${lineItemId}`, {
+        method: 'POST',
+        body: { quantity },
+      })
+      return await refresh()
+    }
     const res = await sdk.store.cart.updateLineItem(c.id, lineItemId, { quantity } as any, { fields: '*items,*items.variant.product.type,*region' } as any)
     cart.value = (res as any).cart
     return cart.value

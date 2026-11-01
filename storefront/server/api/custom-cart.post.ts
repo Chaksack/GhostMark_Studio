@@ -85,21 +85,39 @@ export default defineEventHandler(async (event) => {
       throw new Error('Cart id missing after create')
     }
 
-    // Step 2: add line item with design metadata.
-    const lineRes = await fetch(`${baseUrl()}/store/carts/${cartId}/line-items`, {
+    // Step 2: add the customised line through Medusa's priced route.
+    //
+    // NOT the stock /line-items route: that one now refuses any line carrying
+    // artwork, because it would add it at the blank price and skip the print
+    // fee. /line-items-custom prices the line server-side (tier price for the
+    // quantity + the fee of each side that carries artwork) from the product
+    // record. This request deliberately carries NO price.
+    const lineRes = await fetch(`${baseUrl()}/store/carts/${cartId}/line-items-custom`, {
       method: 'POST',
       headers: medusaHeaders(),
       body: JSON.stringify({
         variant_id: body.variant_id,
         quantity,
         metadata: {
-          isCustomized: true,
           designDataJson: JSON.stringify(body.design_data ?? {}),
           previewImageUrl: body.preview_url ?? null,
         },
       }),
     })
     if (!lineRes.ok) {
+      // A 4xx is Medusa refusing THIS order (a side not priced in this
+      // currency, below a made-to-order minimum, a malformed design). That is
+      // an answer, not an outage: pass its message through instead of letting
+      // the catch below report it as "couldn't reach the cart service".
+      if (lineRes.status >= 400 && lineRes.status < 500) {
+        const refusal = (await lineRes.json().catch(() => null)) as { message?: string } | null
+        return {
+          ok: false,
+          error: refusal?.message || `Could not add this item (${lineRes.status})`,
+          cart_id: cartId,
+          cart: null,
+        }
+      }
       throw new Error(`Could not add line item (${lineRes.status})`)
     }
     const result = (await lineRes.json()) as MedusaCartResponse

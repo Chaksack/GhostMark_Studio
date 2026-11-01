@@ -160,3 +160,39 @@ export const parseTechniques = (
     })
     .filter((t): t is Technique => t !== null)
 }
+
+/**
+ * Per-side print fee in one currency, mirroring the server's pricing rule
+ * (ghostmark/src/utils/print-pricing.ts) so the price the page quotes is the
+ * price the cart charges:
+ *
+ *   - no `surcharge` on a location  -> 0     (printing there is free)
+ *   - a `surcharge` with this currency -> that amount, major units
+ *   - a `surcharge` WITHOUT this currency -> null: the server refuses to print
+ *     that side in this currency, so the page must say so, not quote £0.
+ *
+ * The SERVER prices the line; this only lets the page show the same number
+ * before the customer commits.
+ */
+export const printLocationFees = (
+  product: PrintMetadataSource | null | undefined,
+  currencyCode: string,
+): Record<string, number | null> => {
+  const out: Record<string, number | null> = {}
+  const raw = asArray(product?.metadata?.print_locations)
+  const cur = currencyCode.toLowerCase()
+  for (const entry of raw) {
+    if (!entry || typeof entry !== 'object') continue
+    const e = entry as Record<string, unknown>
+    if (typeof e.key !== 'string' || !e.key) continue
+    const s = e.surcharge
+    if (!s || typeof s !== 'object' || Array.isArray(s)) { out[e.key] = 0; continue }
+    const valid = Object.entries(s as Record<string, unknown>)
+      .map(([c, a]) => [c.toLowerCase(), typeof a === 'number' ? a : Number(a)] as const)
+      .filter(([c, n]) => /^[a-z]{3}$/.test(c) && Number.isFinite(n) && n >= 0)
+    if (!valid.length) { out[e.key] = 0; continue }
+    const hit = valid.find(([c]) => c === cur)
+    out[e.key] = hit ? Math.round(hit[1] * 100) / 100 : null
+  }
+  return out
+}

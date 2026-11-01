@@ -164,7 +164,13 @@ export const useRegion = () => {
       try {
         const cartId = useCookie<string | null>(CART_COOKIE).value
         if (cartId) {
-          await sdk.store.cart.update(cartId, { region_id: (resolved as any).id } as any)
+          const res: any = await sdk.store.cart.update(cartId, { region_id: (resolved as any).id } as any)
+          // Customised lines are re-priced in the new currency by the backend
+          // (preserve-customised-lines). Any it could not price there are
+          // listed here; keep them so /cart can say what was removed rather
+          // than an item vanishing silently.
+          const dropped = Array.isArray(res?.customised_items_dropped) ? res.customised_items_dropped : []
+          useState<{ title: string; reason: string }[]>('gms_cart_dropped', () => []).value = dropped
         }
       } catch {
         // Swallow: cookie flip is authoritative; next cart read picks it up.

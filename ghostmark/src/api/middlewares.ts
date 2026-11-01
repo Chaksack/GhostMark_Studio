@@ -4,6 +4,7 @@ import {
   attachOrderAccessToken,
   requireOrderAccess,
 } from "../utils/order-access"
+import { preserveCustomisedLinesOnRegionChange } from "../utils/preserve-customised-lines"
 
 /**
  * =============================================================================
@@ -87,6 +88,15 @@ export default defineMiddlewares({
       matcher: "/store/carts/:id/complete",
       method: ["POST"],
       middlewares: [attachOrderAccessToken],
+    },
+    {
+      // A region change deletes every explicitly priced line, which includes
+      // every customised one (artwork attached). This re-adds them priced in
+      // the new currency, or reports them in `customised_items_dropped`.
+      // Exact path: does not capture /store/carts/:id/line-items or /complete.
+      matcher: "/store/carts/:id",
+      method: ["POST"],
+      middlewares: [preserveCustomisedLinesOnRegionChange],
     },
   ],
 })

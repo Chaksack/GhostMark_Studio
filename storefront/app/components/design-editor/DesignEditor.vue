@@ -1421,7 +1421,16 @@ const collectDesignPayload = async (): Promise<CollectDesignResult> => {
       const slot = designs.value[key]
       if (!slot?.image) return null
       return {
-        imageUrl: slot.imageUrl,
+        // NEVER the slot's live `imageUrl` on a fresh upload: that is a
+        // `blob:` object URL, a handle into this tab's memory that resolves
+        // nowhere else and dies when the tab closes (and is revoked on
+        // unmount below). Persisting it put a dead link on every customised
+        // line item. The durable copy is `originalUrl`, so `imageUrl`
+        // carries that, matching what a restored draft already does (it
+        // sets `imageUrl: slot.originalUrl`). Null when the background
+        // upload missed the wait budget; the key stays so the pinned shape
+        // does not change.
+        imageUrl: isRestorableUrl(slot.imageUrl) ? slot.imageUrl : (slot.originalUrl ?? null),
         position: slot.position,
         scale: slot.scale,
         rotation: slot.rotation,

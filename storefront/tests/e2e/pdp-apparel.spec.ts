@@ -99,6 +99,7 @@ test.describe('PDP: apparel flow', () => {
     await expect(terms).toBeVisible()
     await expect(terms).toContainText(/printed to order/i)
     await expect(terms).toContainText(/working days/i)
-    await expect(terms).toContainText(/minimum \d+/i)
+    // One-off printing: a customised shop product has no minimum.
+    await expect(terms).not.toContainText(/minimum \d+/i)
   })
 })

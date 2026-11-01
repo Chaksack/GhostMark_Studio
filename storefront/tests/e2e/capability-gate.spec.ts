@@ -133,6 +133,19 @@ test.describe('PDP capability gate: the editor and the payload must agree', () =
           "The customer's artwork is discarded silently and they are charged for a plain item. " +
           `Bodies: ${calls.map((c) => c.body.slice(0, 120)).join(' | ')}`,
       ).toBeGreaterThan(0)
+
+      // The artwork must travel as a URL that resolves after this tab is
+      // gone. A `blob:` object URL is a handle into this tab's memory: it
+      // resolves nowhere else, dies on close, and the editor revokes it on
+      // unmount. Persisted onto the line item it is a dead link that looks
+      // like a real one to anything reading the order later.
+      for (const c of carrying) {
+        const blobs = c.body.match(/blob:[^"\\]*/g) || []
+        expect(
+          blobs,
+          `${handle} sent design_data carrying browser-local object URLs: ${blobs.join(', ')}`,
+        ).toEqual([])
+      }
     })
   }
 
@@ -154,6 +167,42 @@ test.describe('PDP capability gate: the editor and the payload must agree', () =
       const zeroed = steps.filter((s) => /^0\.\s/.test(s) || /^-\d+\.\s/.test(s))
       expect(zeroed, `${handle} renders ${zeroed.join(' / ')}. Steps: ${steps.join(' / ')}`).toEqual([])
     }
+  })
+
+  test('a customised shop product can be ordered one at a time', async ({ page, context }) => {
+    // Attaching artwork used to force the bulk minimum (25 tees). A shop
+    // product is now a one-off once customised: blank price + print fee.
+    const calls = await interceptCartWrites(context)
+    await page.goto(`/products/${APPAREL_CUSTOMISABLE}`)
+    await settlePage(page)
+    const sizes = page.locator('button[aria-label^="Size" i]')
+    if (await sizes.count()) await sizes.last().click()
+    await page.locator('input[type=file]').first().setInputFiles({
+      name: 'design.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC',
+        'base64',
+      ),
+    })
+    await page.waitForTimeout(2500)
+    const atc = page.locator('[data-test="primary-add-to-cart"]')
+    await atc.evaluate((el) => el.scrollIntoView({ block: 'center' }))
+    await atc.click()
+    await page.waitForTimeout(3000)
+    const custom = calls.filter((c) => c.endpoint === 'custom-cart')
+    expect(custom.length, 'add-to-cart sent no customised line').toBeGreaterThan(0)
+    expect(JSON.parse(custom[0].body).quantity, 'a customised shop item was forced up to a minimum').toBe(1)
+  })
+
+  test('a made-to-order product still states its minimum before the upload', async ({ page }) => {
+    // cable-organiser is commerce_mode 'studio': it cannot be bought blank,
+    // so the minimum binds every order and must be on the page up front.
+    await page.goto(`/products/${POD_CUSTOMISABLE}`)
+    await settlePage(page)
+    const terms = page.locator('[data-test="custom-production-terms"]')
+    await expect(terms).toBeVisible()
+    await expect(terms).toContainText(/minimum\s+\d+/i)
   })
 
   test('a product that offers customisation states its production terms', async ({ page }) => {
@@ -196,8 +245,13 @@ test.describe('PDP capability gate: the editor and the payload must agree', () =
     const text = (await terms.innerText()).trim()
     expect(text, `production terms must quote a lead time, got "${text}"`)
       .toMatch(/\d+\s*-\s*\d+\s*working days/i)
-    expect(text, `production terms must quote the minimum, got "${text}"`)
-      .toMatch(/minimum\s+\d+/i)
+    // A customised SHOP product is a one-off (blank price + a fee per printed
+    // side), so it must NOT quote a bulk minimum: that was the rule until the
+    // business chose to sell single personalised items, and quoting it now
+    // would turn away exactly the customer the change is for. The
+    // made-to-order lane keeps its minimum; see the studio test below.
+    expect(text, `a shop product can be printed one at a time; terms must not quote a minimum, got "${text}"`)
+      .not.toMatch(/minimum\s+\d+/i)
 
     // The printed lead time must not silently equal the shelf estimate: if
     // they ever converge, one of the two numbers is wrong.

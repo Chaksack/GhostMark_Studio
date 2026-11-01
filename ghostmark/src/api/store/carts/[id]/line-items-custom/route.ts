@@ -1,238 +1,94 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+// =============================================================================
+// POST /store/carts/:id/line-items-custom
+//
+// Add a customised line: a product with the customer's artwork printed on it.
+// The ONLY way a line carrying artwork can enter a cart (the stock
+// /line-items route refuses one, see workflows/hooks/customised-line-guards.ts).
+//
+//   body: {
+//     variant_id: string,
+//     quantity:   number,
+//     metadata: { designDataJson: string, previewImageUrl?: string | null }
+//   }
+//
+// The price is decided HERE, never by the caller: tier price at this quantity
+// plus the fee of every print location carrying artwork. See
+// utils/print-pricing.ts for the rule and where the fees live.
+//
+// This path previously held an unused mock that kept an in-memory "cart",
+// priced everything at a hard-coded 12.99 and accepted a caller-supplied unit
+// price. Nothing called it; it is replaced rather than left as a decoy.
+// =============================================================================
 
-interface CustomLineItemRequest {
-  variant_id: string
-  quantity: number
-  customer_type?: 'individual' | 'corporate'
-  customization?: {
-    design_areas?: string[]
-    print_methods?: string[]
-    colors?: number
-    layers?: number
-    express_delivery?: boolean
-    artwork_files?: Array<{
-      url: string
-      type: string
-      design_area: string
-    }>
-  }
-  bulk_pricing?: {
-    unit_price: number
-    setup_fee: number
-    total_discount: number
-    tier_discount: number
-  }
-  metadata?: Record<string, any>
+import { randomUUID } from "node:crypto"
+import { MedusaStoreRequest, MedusaResponse } from "@medusajs/framework/http"
+import { addToCartWorkflow } from "@medusajs/medusa/core-flows"
+import { refetchCart } from "@medusajs/medusa/api/store/carts/helpers"
+
+import {
+  CustomisationError,
+  isUploadPath,
+  loadCartContext,
+  quoteCustomisedLine,
+  storeCartFields,
+  toMedusaError,
+} from "../../../../../utils/print-pricing"
+
+type Body = {
+  variant_id?: unknown
+  quantity?: unknown
+  metadata?: { designDataJson?: unknown; previewImageUrl?: unknown } | null
 }
 
-interface EnhancedLineItem {
-  variant_id: string
-  quantity: number
-  unit_price: number
-  title: string
-  subtitle?: string
-  thumbnail?: string
-  customization: {
-    type: 'pod' | 'standard'
-    design_areas: string[]
-    print_methods: string[]
-    colors: number
-    layers: number
-    express_delivery: boolean
-    setup_fee: number
-    customization_fee: number
-  }
-  pricing: {
-    base_price: number
-    customization_price: number
-    setup_fee: number
-    express_delivery_fee: number
-    bulk_discount: number
-    total_unit_price: number
-  }
-  metadata: Record<string, any>
-}
+export async function POST(req: MedusaStoreRequest<Body>, res: MedusaResponse) {
+  const cartId = req.params.id
+  const body = (req.body ?? {}) as Body
 
-// Mock cart storage (in production, this would integrate with Medusa cart service)
-const mockCarts: Record<string, any> = {}
-
-const calculateCustomLineItemPricing = (request: CustomLineItemRequest) => {
-  const basePrice = 12.99 // Mock base price
-  const customizationFee = (request.customization?.colors || 1) * 0.75 + 
-                          (request.customization?.layers || 1) * 1.25
-  const setupFee = request.bulk_pricing?.setup_fee || 5.00
-  const expressDeliveryFee = request.customization?.express_delivery ? 25.00 : 0
-  const bulkDiscount = request.bulk_pricing?.total_discount || 0
-
-  const subtotal = (basePrice + customizationFee) * request.quantity
-  const discountAmount = (subtotal * bulkDiscount) / 100
-  const totalPrice = subtotal - discountAmount + setupFee + expressDeliveryFee
-
-  return {
-    base_price: basePrice,
-    customization_price: customizationFee,
-    setup_fee: setupFee,
-    express_delivery_fee: expressDeliveryFee,
-    bulk_discount: discountAmount,
-    total_unit_price: totalPrice / request.quantity
-  }
-}
-
-export async function POST(req: MedusaRequest, res: MedusaResponse) {
   try {
-    const { id: cartId } = req.params
-    const requestData = req.body as CustomLineItemRequest
-
-    if (!cartId) {
-      return res.status(400).json({ message: "Cart ID is required" })
+    if (typeof body.variant_id !== "string" || !body.variant_id) {
+      throw new CustomisationError("variant_id is required.", 400)
+    }
+    const preview = body.metadata?.previewImageUrl ?? null
+    if (preview !== null && !isUploadPath(preview)) {
+      throw new CustomisationError("previewImageUrl must be an uploaded file path.", 400)
     }
 
-    if (!requestData.variant_id || !requestData.quantity) {
-      return res.status(400).json({
-        message: "Missing required fields: variant_id, quantity"
-      })
-    }
+    const cart = await loadCartContext(req.scope, cartId)
+    const quote = await quoteCustomisedLine(
+      req.scope,
+      cart,
+      body.variant_id,
+      body.quantity,
+      body.metadata?.designDataJson,
+    )
 
-    // Initialize cart if doesn't exist
-    if (!mockCarts[cartId]) {
-      mockCarts[cartId] = {
-        id: cartId,
-        items: [],
-        customer_type: 'individual',
-        region: 'us',
-        currency: 'usd',
-        totals: {
-          subtotal: 0,
-          tax: 0,
-          total: 0
-        }
-      }
-    }
-
-    const cart = mockCarts[cartId]
-    
-    // Calculate pricing
-    const pricing = calculateCustomLineItemPricing(requestData)
-
-    // Create enhanced line item
-    const lineItem: EnhancedLineItem = {
-      variant_id: requestData.variant_id,
-      quantity: requestData.quantity,
-      unit_price: pricing.total_unit_price,
-      title: `Custom Product - ${requestData.customization?.print_methods?.join(', ') || 'Standard'}`,
-      subtitle: `${requestData.quantity} units`,
-      customization: {
-        type: 'pod',
-        design_areas: requestData.customization?.design_areas || ['front'],
-        print_methods: requestData.customization?.print_methods || ['dtg'],
-        colors: requestData.customization?.colors || 1,
-        layers: requestData.customization?.layers || 1,
-        express_delivery: requestData.customization?.express_delivery || false,
-        setup_fee: pricing.setup_fee,
-        customization_fee: pricing.customization_price
-      },
-      pricing,
-      metadata: {
-        customer_type: requestData.customer_type || 'individual',
-        bulk_tier: requestData.quantity >= 100 ? 'enterprise' : 
-                  requestData.quantity >= 50 ? 'bulk' :
-                  requestData.quantity >= 25 ? 'volume' : 'standard',
-        created_at: new Date().toISOString(),
-        ...requestData.metadata
-      }
-    }
-
-    // Add to cart
-    cart.items.push(lineItem)
-    cart.customer_type = requestData.customer_type || cart.customer_type
-
-    // Recalculate cart totals
-    const subtotal = cart.items.reduce((sum: number, item: EnhancedLineItem) => 
-      sum + (item.unit_price * item.quantity), 0)
-    const tax = subtotal * 0.08 // 8% tax
-    const total = subtotal + tax
-
-    cart.totals = {
-      subtotal: Math.round(subtotal * 100) / 100,
-      tax: Math.round(tax * 100) / 100,
-      total: Math.round(total * 100) / 100
-    }
-
-    // Response format similar to Medusa's cart structure
-    return res.status(201).json({
-      cart: {
-        ...cart,
-        total: cart.totals.total,
-        subtotal: cart.totals.subtotal,
-        tax_total: cart.totals.tax,
-        item_count: cart.items.length,
-        items: cart.items.map((item: EnhancedLineItem) => ({
-          id: `item_${Date.now()}_${Math.random()}`,
-          title: item.title,
-          subtitle: item.subtitle,
-          thumbnail: item.thumbnail,
-          variant: {
-            id: item.variant_id,
-            title: item.title
+    await addToCartWorkflow(req.scope).run({
+      input: {
+        cart_id: cartId,
+        items: [
+          {
+            variant_id: body.variant_id,
+            quantity: quote.quantity,
+            unit_price: quote.unit_price,
+            metadata: {
+              isCustomized: true,
+              designDataJson: body.metadata!.designDataJson as string,
+              previewImageUrl: preview,
+              printSurcharge: quote.surcharge,
+              // Two customised lines of the same variant must never merge:
+              // Medusa merges on variant + deep-equal metadata, and a merge
+              // would sum the quantities while keeping a unit price that was
+              // tiered for only one of them.
+              customLineKey: randomUUID(),
+            },
           },
-          quantity: item.quantity,
-          unit_price: Math.round(item.unit_price * 100), // Medusa uses cents
-          total: Math.round(item.unit_price * item.quantity * 100),
-          metadata: {
-            ...item.metadata,
-            customization: item.customization,
-            pricing_breakdown: item.pricing
-          }
-        }))
-      }
+        ],
+      },
     })
 
-  } catch (error: any) {
-    console.error('Error adding custom line item:', error)
-    return res.status(500).json({
-      message: error?.message || "Failed to add custom item to cart"
-    })
-  }
-}
-
-export async function GET(req: MedusaRequest, res: MedusaResponse) {
-  try {
-    const { id: cartId } = req.params
-
-    if (!cartId) {
-      return res.status(400).json({ message: "Cart ID is required" })
-    }
-
-    const cart = mockCarts[cartId]
-    
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" })
-    }
-
-    return res.json({
-      cart: {
-        ...cart,
-        items: cart.items.map((item: EnhancedLineItem) => ({
-          id: `item_${item.variant_id}`,
-          title: item.title,
-          subtitle: item.subtitle,
-          variant: { id: item.variant_id },
-          quantity: item.quantity,
-          unit_price: Math.round(item.unit_price * 100),
-          total: Math.round(item.unit_price * item.quantity * 100),
-          metadata: {
-            ...item.metadata,
-            customization: item.customization,
-            pricing_breakdown: item.pricing
-          }
-        }))
-      }
-    })
-
-  } catch (error: any) {
-    console.error('Error fetching cart:', error)
-    return res.status(500).json({
-      message: error?.message || "Failed to fetch cart"
-    })
+    const fresh = await refetchCart(cartId, req.scope, storeCartFields)
+    return res.status(200).json({ cart: fresh })
+  } catch (e) {
+    throw toMedusaError(e)
   }
 }
