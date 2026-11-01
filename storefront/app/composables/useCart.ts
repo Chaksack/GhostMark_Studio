@@ -9,6 +9,18 @@
 let cartRegionWatcherWired = false
 
 export const useCart = () => {
+  // In-flight resolution is parked on the Nuxt app instance, NOT at module
+  // scope. On the client the two are equivalent (one app per tab), but on
+  // the server the module is evaluated once per process and shared by every
+  // concurrent request, so a module-level promise would hand one visitor's
+  // cart to another visitor who happened to render at the same moment.
+  // `useNuxtApp()` is per-request on the server and a singleton on the
+  // client, which is exactly the scope this guard needs. Nuxt's own
+  // `useAsyncData` parks its promises the same way (`nuxtApp._asyncDataPromises`).
+  const nuxtApp = useNuxtApp() as ReturnType<typeof useNuxtApp> & {
+    _gmsCartResolution?: Promise<any> | null
+  }
+
   const cartId = useCookie<string | null>('gms_cart_id', { sameSite: 'lax' })
   const cart = useState<any | null>('gms_cart', () => null)
   const isReady = useState<boolean>('gms_cart_ready', () => false)
@@ -36,6 +48,7 @@ export const useCart = () => {
       cart.value = null
       isReady.value = false
       cartCreatedAtCookie.value = null
+      nuxtApp._gmsCartResolution = null
       if (typeof localStorage !== 'undefined') {
         try { localStorage.removeItem('gms_cart_id') } catch {}
       }
@@ -54,6 +67,7 @@ export const useCart = () => {
       cart.value = null
       isReady.value = false
       cartCreatedAtCookie.value = null
+      nuxtApp._gmsCartResolution = null
       if (typeof localStorage !== 'undefined') {
         try { localStorage.removeItem('gms_cart_id') } catch {}
       }
@@ -69,35 +83,80 @@ export const useCart = () => {
   const sdk = useMedusaClient()
   const regionState = useRegion()
 
+  /**
+   * Resolve the active cart, minting one if needed.
+   *
+   * Concurrency contract: callers may invoke this simultaneously and will
+   * all receive the SAME cart. `ensureCart()` is called from several
+   * independent `onMounted` hooks that fire in the same tick. On the
+   * homepage that is three: `pages/index.vue`, plus `<CartDropdown>`
+   * twice over, because AppHeader mounts it in both the desktop rail and
+   * the mobile rail.
+   *
+   * Without a shared in-flight promise every one of those callers reads
+   * `cart.value?.id` as empty (nothing has resolved yet), awaits
+   * `ensureRegion()` and the retrieve, and then POSTs `/store/carts`.
+   * Measured on a cold homepage load against the dev server: three carts
+   * minted per page view, 3/3 runs, dropping to one with this guard in
+   * place. Two of those three were orphaned empty cart rows in the shared
+   * database, and because the last writer wins on both `cart` and the
+   * `gms_cart_id` cookie, an item added to the first cart could vanish
+   * behind the third — the cart page reading "Your cart is empty"
+   * straight after a successful add.
+   *
+   * The body below is unchanged; it is only wrapped so that the first
+   * caller does the work and the rest await its result. The promise is
+   * released once it settles, so a failed attempt is retried rather than
+   * cached as a permanent error.
+   */
   const ensureCart = async () => {
     if (cart.value?.id) {
       isReady.value = true
       return cart.value
     }
 
-    if (!regionState.regionId.value) await regionState.ensureRegion()
+    // Join an attempt already underway instead of starting a second one.
+    if (nuxtApp._gmsCartResolution) return await nuxtApp._gmsCartResolution
 
-    if (cartId.value) {
-      try {
-        const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*items.variant.product.type,*region' } as any)
-        cart.value = (res as any).cart
-        isReady.value = true
-        return cart.value
-      } catch {
-        cartId.value = null
+    const resolve = async () => {
+      if (!regionState.regionId.value) await regionState.ensureRegion()
+
+      if (cartId.value) {
+        try {
+          const res = await sdk.store.cart.retrieve(cartId.value, { fields: '*items,*items.variant.product.type,*region' } as any)
+          cart.value = (res as any).cart
+          isReady.value = true
+          return cart.value
+        } catch {
+          cartId.value = null
+        }
       }
+
+      const created = await sdk.store.cart.create({ region_id: regionState.regionId.value as any } as any)
+      cart.value = (created as any).cart
+      cartId.value = cart.value.id
+      // Stamp creation time so the dev-mode 24h staleness check has a
+      // reference point. Only writes on actual cart mints (not on cookie
+      // retrieve) so the timestamp reflects when the backend cart was
+      // born, not when this composable last hydrated it.
+      cartCreatedAtCookie.value = new Date().toISOString()
+      isReady.value = true
+      return cart.value
     }
 
-    const created = await sdk.store.cart.create({ region_id: regionState.regionId.value as any } as any)
-    cart.value = (created as any).cart
-    cartId.value = cart.value.id
-    // Stamp creation time so the dev-mode 24h staleness check has a
-    // reference point. Only writes on actual cart mints (not on cookie
-    // retrieve) so the timestamp reflects when the backend cart was
-    // born, not when this composable last hydrated it.
-    cartCreatedAtCookie.value = new Date().toISOString()
-    isReady.value = true
-    return cart.value
+    // No `await` sits between starting `resolve()` and publishing its
+    // promise, so control cannot pass to another caller in between: every
+    // later caller is guaranteed to observe a populated slot.
+    const pending = resolve()
+    nuxtApp._gmsCartResolution = pending
+    try {
+      return await pending
+    } finally {
+      // Only the originating caller clears it. Late joiners already hold
+      // their own reference to `pending`, so releasing the slot here
+      // cannot strand them.
+      if (nuxtApp._gmsCartResolution === pending) nuxtApp._gmsCartResolution = null
+    }
   }
 
   const refresh = async () => {
@@ -168,6 +227,10 @@ export const useCart = () => {
     cartId.value = null
     cart.value = null
     isReady.value = false
+    // Abandon any resolution still in flight. Without this, a mint that
+    // was already mid-request would be adopted by the next ensureCart()
+    // call and resurrect the very cart this function was asked to drop.
+    nuxtApp._gmsCartResolution = null
     // Drop the sidecar timestamp too; otherwise a manual clearCart()
     // followed by a fresh mint would inherit an obsolete creation time
     // and the dev-mode staleness check could fire incorrectly on the
