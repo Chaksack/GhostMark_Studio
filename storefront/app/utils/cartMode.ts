@@ -11,7 +11,8 @@
 //   2. line item metadata.commerce_mode
 //   3. variant.metadata.commerce_mode
 //   4. variant.product.metadata.commerce_mode
-//   5. Custom-design signals (line metadata.design_data | preview_url)
+//   5. Custom-design signals (line metadata.isCustomized | designDataJson
+//      | previewImageUrl — the keys /api/custom-cart actually writes)
 //   6. MOQ heuristic: quantity >= 25 → pod
 //   7. Default → apparel
 //
@@ -50,25 +51,41 @@ function classify(raw: unknown): CartLineMode | null {
  * mode; never throws.
  */
 export function inferLineMode(item: any): CartLineMode {
-  // 1. Source of truth: product.type.value (canonical backend taxonomy)
+  // 1. CUSTOM-DESIGN SIGNALS COME FIRST, and the order matters more than it
+  //    looks. These used to sit at step 5, below the type and commerce_mode
+  //    checks — which made them unreachable for every product that can
+  //    actually carry a design.
+  //
+  //    `studio-tee-charcoal` is `type.value: 'apparel'` and
+  //    `commerce_mode: 'shop'`, so the old step 1 returned 'apparel' and the
+  //    function never looked at the artwork. Verified live: a line carrying
+  //    isCustomized:true, designDataJson and
+  //    previewImageUrl:/uploads/designs/... still classified as apparel, so
+  //    the cart rendered it in the apparel list with the stock product photo
+  //    instead of the customer's own proof.
+  //
+  //    The mode is a property of the ORDER, not of the product's lane — the
+  //    same correction the PDP capability migration made. A line with artwork
+  //    attached IS a print order, whatever shelf the product sits on.
+  if (item?.metadata?.isCustomized) return 'pod'
+  if (item?.metadata?.designDataJson) return 'pod'
+  if (item?.metadata?.previewImageUrl) return 'pod'
+
+  // 2. Source of truth for an AS-IS line: product.type.value
   const fromType = classify(item?.variant?.product?.type?.value)
   if (fromType) return fromType
 
-  // 2. Line-level metadata override (explicit per-line classification)
+  // 3. Line-level metadata override (explicit per-line classification)
   const fromLineMeta = classify(item?.metadata?.commerce_mode)
   if (fromLineMeta) return fromLineMeta
 
-  // 3. Variant-level metadata fallback
+  // 4. Variant-level metadata fallback
   const fromVariantMeta = classify(item?.variant?.metadata?.commerce_mode)
   if (fromVariantMeta) return fromVariantMeta
 
-  // 4. Product-level metadata fallback
+  // 5. Product-level metadata fallback
   const fromProductMeta = classify(item?.variant?.product?.metadata?.commerce_mode)
   if (fromProductMeta) return fromProductMeta
-
-  // 5. Custom-design signals: uploaded designs are POD by definition
-  if (item?.metadata?.design_data) return 'pod'
-  if (item?.metadata?.preview_url) return 'pod'
 
   // 6. MOQ heuristic: final fallback for legacy lines with zero metadata
   if ((item?.quantity ?? 0) >= POD_MOQ_FALLBACK) return 'pod'

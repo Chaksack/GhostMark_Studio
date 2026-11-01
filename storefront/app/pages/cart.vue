@@ -350,8 +350,13 @@ const podSubtotalText = computed(() => {
   return formatMoney(sumLines(podItems.value))
 })
 
+// `previewImageUrl`, not `preview_url`. The latter is the request-body field
+// the PDP posts; the line item carries the camelCase key (see
+// custom-cart.post.ts:98). Reading the wrong one meant a customised line
+// showed the blank product photo, so the customer had no confirmation their
+// artwork had survived add-to-cart — the one place that reassurance matters.
 const podThumb = (item: any) =>
-  item?.metadata?.preview_url
+  item?.metadata?.previewImageUrl
   || item?.thumbnail
   || item?.variant?.product?.thumbnail
   || item?.product?.thumbnail

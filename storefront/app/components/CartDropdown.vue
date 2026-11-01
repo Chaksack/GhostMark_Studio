@@ -105,8 +105,8 @@
               <li v-for="item in podItems" :key="item.id" class="flex items-start gap-3 px-4 py-3">
                 <div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-ink-100 bg-cream-50">
                   <img
-                    v-if="(item.metadata?.preview_url || item.thumbnail) && !failedThumbs.has(item.id)"
-                    :src="item.metadata?.preview_url || item.thumbnail"
+                    v-if="(item.metadata?.previewImageUrl || item.thumbnail) && !failedThumbs.has(item.id)"
+                    :src="item.metadata?.previewImageUrl || item.thumbnail"
                     :alt="item.title"
                     class="h-full w-full object-cover"
                     loading="lazy"
@@ -191,7 +191,7 @@ import { inferLineMode, needsEProof } from '~/utils/cartMode'
 import { formatMoney } from '~/utils/money'
 
 // Ids whose line-item image 404'd. Covers both lists below: the apparel rows
-// read `thumbnail`, the POD rows read `metadata.preview_url` first. Either can
+// read `thumbnail`, the POD rows read `metadata.previewImageUrl` first. Either can
 // be present-but-dead, which the old `v-if` treated as present and rendered as
 // a collapsed <img> showing alt text. Set-keyed because both are v-for rows.
 const failedThumbs = reactive(new Set<string>())
